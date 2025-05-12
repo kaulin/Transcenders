@@ -1,6 +1,6 @@
 import Fastify from 'fastify';
 import 'dotenv/config';
-import { registerPingRoutes } from './routes/ping.routes';
+import { registerPingRoutes } from './routes/ping.routes.js'; //includes have to be wiht .js for prod to work, dev setup will still use the .ts correctly
 
 // start fastify
 const app = Fastify({ logger: true });
