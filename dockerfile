@@ -2,6 +2,7 @@
 FROM node:current-alpine3.21 AS development
 
 WORKDIR /app
+USER root
 COPY package*.json ./
 RUN npm ci --include=dev
 COPY . .
@@ -16,6 +17,7 @@ RUN npm run build
 # Production stage
 FROM node:current-alpine3.21 AS production
 WORKDIR /app
+USER root
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist

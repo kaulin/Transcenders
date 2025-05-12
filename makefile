@@ -1,82 +1,145 @@
 # Transcenders Makefile - Docker management commands
 
-all: dev
+################################################################################
+# DEVELOPMENT
+################################################################################
+
+all: setup dev
 
 # Install dependencies locally for VSCode IntelliSense
 setup:
 	@echo "Installing dependencies locally"
-	npm install
+	npm ci --include=dev
 
 # Development environment (hot-reloading)
-dev: setup stop
+dev:
 	@echo "Starting development environment..."
 	docker compose up -d
 
 # Start development with visible logs
-dev-logs: stop
+dev-logs: stop-dev
 	@echo "Starting development environment with logs..."
 	docker compose up
 
-# Build development image
-build:
-	docker compose build
-
-# Stop production container
-stop-prod:
-	@echo "Checking for production containers..."
-	-docker stop transcenders-prod >/dev/null 2>&1
-	-docker rm transcenders-prod >/dev/null 2>&1
+# Show logs
+logs:
+	docker compose logs -f
 
 # Stop development containers
 stop-dev:
 	@echo "Checking for development containers..."
 	docker compose down
 
-# Build production image
-build-prod:
-	docker build --target production -t transcenders:prod .
-
-# Run production container
-prod: build-prod stop
-	@echo "Starting production container..."
-	docker run --name transcenders-prod -p 3000:3000 -d transcenders:prod
-
-# Stop all containers
-stop: stop-dev stop-prod
-	@echo "All containers stopped"
-
 # Restart development environment
-restart: stop dev
+restart: stop-dev dev
 	@echo "Development environment restarted"
 
-# Clean everything (volumes, images)
-clean: stop
-	@echo "Cleaning all Docker resources..."
-	docker compose down -v
-	-docker rmi transcenders:prod
-	-docker rmi transcenders-api
-	-docker system prune -f
+################################################################################
+# PACKAGE MANAGEMENT
+################################################################################
 
-# Show logs
-logs:
-	docker compose logs -f
+# Add a package (fast, avoids rebuild)
+add:
+	@read -p "Enter package name: " package; \
+	echo "Installing $$package locally..."; \
+	npm install $$package; \
+	echo "Ensuring development container is running..."; \
+	docker compose up -d dev; \
+	echo "Installing $$package in container..."; \
+	docker compose exec dev npm install $$package; \
+	echo "Package $$package installed successfully."
+
+# Remove a package (fast, avoids rebuild)
+remove:
+	@read -p "Enter package name: " package; \
+	echo "Removing $$package locally..."; \
+	npm uninstall $$package; \
+	echo "Ensuring development container is running..."; \
+	docker compose up -d dev; \
+	echo "Removing $$package from container..."; \
+	docker compose exec dev npm uninstall $$package; \
+	echo "Package $$package removed successfully."
+
+# Verify package installation
+verify:
+	@read -p "Enter package name: " package; \
+	echo "Ensuring development container is running..."; \
+	docker compose up -d dev; \
+	echo "Checking $$package in container..."; \
+	docker compose exec dev npm ls $$package; \
+	echo "Checking $$package locally..."; \
+	npm ls $$package
+
+################################################################################
+# PRODUCTION
+################################################################################
+
+# Run production container using docker compose (builds if needed)
+prod: stop-prod
+	@echo "Starting production container..."
+	docker compose -f docker-compose.prod.yml up -d
 
 # Show production logs
 logs-prod:
 	docker logs -f transcenders-prod
 
-help:
-	@echo "Available commands:"
-	@echo "  make				- Start development environment (stops prod if running)"
-	@echo "  make dev			- Start development environment (stops prod if running)"
-	@echo "  make dev-logs		- Start development with visible logs"
-	@echo "  make build			- Build development Docker image"
-	@echo "  make build-prod	- Build production Docker image"
-	@echo "  make prod			- Build and run production container (stops dev if running)"
-	@echo "  make stop			- Stop all containers"
-	@echo "  make restart		- Restart development environment"
-	@echo "  make clean			- Remove all containers, volumes and images"
-	@echo "  make logs			- Show development logs"
-	@echo "  make logs-prod		- Show production logs"
+# Stop production container using docker compose
+stop-prod:
+	@echo "Stopping production container..."
+	docker compose -f docker-compose.prod.yml down
 
-.PHONY: all dev dev-logs build stop-prod stop-dev build-prod prod stop restart clean logs logs-prod help
+################################################################################
+# CLEAN
+################################################################################
+
+# Stop all containers
+stop: stop-dev stop-prod
+	@echo "All containers stopped"
+
+# Rebuild dev environment clearly separated into build and start
+rebuild: stop
+	@echo "Completely rebuilding development environment..."
+	docker compose build --no-cache
+	docker compose up -d
+
+# Clean everything (volumes, images)
+clean: stop
+	@echo "Cleaning all Docker resources..."
+	docker compose down -v
+	-docker rmi transcenders-prod:hive
+	-docker rmi transcenders-dev:hive
+	-docker system prune -f
+
+################################################################################
+# HELP
+################################################################################
+
+help:
+	@echo ""
+	@echo "========== Transcenders Makefile =========="
+	@echo ""
+	@echo "Development:"
+	@echo "  make, make all         Start development environment (default)"
+	@echo "  make dev-logs          Start development with visible logs"
+	@echo "  make restart           Restart development environment"
+	@echo "  make logs              Show development logs"
+	@echo "  make stop-dev          Stop development containers"
+	@echo ""
+	@echo "Package Management:"
+	@echo "  make add               Add a package (prompts for name)"
+	@echo "  make remove            Remove a package (prompts for name)"
+	@echo "  make verify            Verify package installation (prompts for name)"
+	@echo ""
+	@echo "Production:"
+	@echo "  make prod              Run production container (builds if needed)"
+	@echo "  make logs-prod         Show production logs"
+	@echo "  make stop-prod         Stop production container"
+	@echo ""
+	@echo "Utilities:"
+	@echo "  make stop              Stop all containers"
+	@echo "  make rebuild           Rebuild dev environment (no cache)"
+	@echo "  make clean             Remove all containers, volumes, and images"
+	@echo ""
+	@echo "==========================================="
+
+.PHONY: all dev dev-logs stop-prod stop-dev prod stop restart clean logs logs-prod help add remove verify rebuild setup

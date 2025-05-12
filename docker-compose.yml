@@ -1,9 +1,10 @@
 services:
-  api:
+  dev:
+    container_name: transcenders-dev
+    image: transcenders-dev:hive
     build:
       context: .
       target: development
-    command: npm run dev
     volumes:
       - .:/app
       - node_modules:/app/node_modules
@@ -11,11 +12,5 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - PORT=3000
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 volumes:
   node_modules:
