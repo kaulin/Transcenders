@@ -1,0 +1,12 @@
+services:
+  prod:
+    container_name: transcenders-prod
+    image: transcenders-prod:hive
+    build:
+      context: .
+      target: production
+    ports:
+      - "30000:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
