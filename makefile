@@ -2,8 +2,13 @@
 
 all: dev
 
+# Install dependencies locally for VSCode IntelliSense
+setup:
+	@echo "Installing dependencies locally"
+	npm install
+
 # Development environment (hot-reloading)
-dev: stop
+dev: setup stop
 	@echo "Starting development environment..."
 	docker compose up -d
 
@@ -49,6 +54,7 @@ clean: stop
 	@echo "Cleaning all Docker resources..."
 	docker compose down -v
 	-docker rmi transcenders:prod
+	-docker rmi transcenders-api
 	-docker system prune -f
 
 # Show logs
@@ -61,15 +67,16 @@ logs-prod:
 
 help:
 	@echo "Available commands:"
-	@echo "  make dev            - Start development environment (stops prod if running)"
-	@echo "  make dev-logs       - Start development with visible logs"
-	@echo "  make build          - Build development Docker image"
-	@echo "  make build-prod     - Build production Docker image"
-	@echo "  make prod           - Build and run production container (stops dev if running)"
-	@echo "  make stop           - Stop all containers"
-	@echo "  make restart        - Restart development environment"
-	@echo "  make clean          - Remove all containers, volumes and images"
-	@echo "  make logs           - Show development logs"
-	@echo "  make logs-prod      - Show production logs"
+	@echo "  make				- Start development environment (stops prod if running)"
+	@echo "  make dev			- Start development environment (stops prod if running)"
+	@echo "  make dev-logs		- Start development with visible logs"
+	@echo "  make build			- Build development Docker image"
+	@echo "  make build-prod	- Build production Docker image"
+	@echo "  make prod			- Build and run production container (stops dev if running)"
+	@echo "  make stop			- Stop all containers"
+	@echo "  make restart		- Restart development environment"
+	@echo "  make clean			- Remove all containers, volumes and images"
+	@echo "  make logs			- Show development logs"
+	@echo "  make logs-prod		- Show production logs"
 
 .PHONY: all dev dev-logs build stop-prod stop-dev build-prod prod stop restart clean logs logs-prod help
