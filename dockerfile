@@ -1,18 +1,24 @@
-FROM node:current-alpine3.21
+# Development stage
+FROM node:current-alpine3.21 AS development
 
-# 1. lay down a writable working directory
 WORKDIR /app
-
-# 2. copy *only* manifests first => cacheable npm ci layer
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm ci --include=dev
-
-# 3. copy the rest of the source so tsx can find *.ts files
 COPY . .
-
-# 4. developer conveniences
 ENV NODE_ENV=development
 EXPOSE 3000
+CMD ["npm", "run", "dev"]
 
-# 5. default entrypoint (compose can still override)
-CMD ["npm","run","dev"]
+# Build stage
+FROM development AS build
+RUN npm run build
+
+# Production stage
+FROM node:current-alpine3.21 AS production
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=build /app/dist ./dist
+EXPOSE 3000
+ENV NODE_ENV=production
+CMD ["node", "dist/server.js"]
