@@ -1,17 +1,13 @@
 import Fastify from 'fastify';
 import 'dotenv/config';
+import { registerPingRoutes } from './routes/ping.routes';
 
+// start fastify
 const app = Fastify({ logger: true });
 
-app.get('/ping', async () => ({ pong: 'it works!' }));
-// app.get('/ping', function (request, reply) {
-//   return { request: request.url };
-// });
-app.get('/test', async () => {
-  return { test: 'test' };
-});
-
 const start = async () => {
+  //register my testing routes from ./routes/ping.routes.ts
+  registerPingRoutes(app);
   try {
     await app.listen({
       port: process.env.PORT ? +process.env.PORT : 3000,
