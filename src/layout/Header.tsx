@@ -19,13 +19,17 @@ function Header () {
         { user? (
             <>
                 <nav className="flex justify-between items-center p-6 m-4">
-                    <LanguageSwitch />
-                    <div className="flex gap-4 items-center">
+					<div className="flex basis-1/3 justify-start">
+                    	<LanguageSwitch />
+					</div>
+                    <div className="flex basis-1/3 justify-center gap-4">
                         <Link to="/" className="menu-button">{t('home')}</Link>
                         <Link to="/profile" className="menu-button">{t('profile')}</Link>
                         <Link to="/settings" className="menu-button">{t('settings')}</Link>
                     </div>
-                    <button onClick={handleLogout}>{t('log_out')}</button>
+					<div className="flex basis-1/3 justify-end">
+                    	<button onClick={handleLogout}>{t('log_out')}</button>
+					</div>
                 </nav>
             </>
         ) : (
@@ -38,3 +42,4 @@ function Header () {
 }
 
 export default Header
+
