@@ -19,7 +19,7 @@ function SignUp() {
 
     return (
         <main className="h-full w-full flex-1 flex items-center justify-center">
-            <div className="login-bubble">
+            <div className="bubble w-[90vw] flex flex-col justify-center p-14 mb-52">
                 <h1>{t('create_account')}</h1>
                 <div className="mt-4">
                     <input
@@ -43,12 +43,12 @@ function SignUp() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     </div>
-                        <button className="mt-2 menu-button" onClick={handleSignUp}>{t('sign_up')}</button>
+                        <button className="mt-2 button-text" onClick={handleSignUp}>{t('sign_up')}</button>
                     <div>
                 </div>
-                <div className="my-6">
+                <div className="text-white m-4 ">
                     <p>{t('existing_user')}?
-                        <Link to="/" className="menu-button underline underline-offset-2"> {t('log_in')}</Link>
+                        <Link to="/" className="button-text underline underline-offset-2"> {t('log_in')}</Link>
                     </p>
                 </div>
                 </div>

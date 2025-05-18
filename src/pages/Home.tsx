@@ -11,10 +11,10 @@ function Home() {
                 <h1 className="text-4xl">{t('hello')} {user?.name} </h1>
                 <p className="text-text mb-8">{t('welcome')}!</p>
                 <div className="flex flex-col">
-                    <button className="rounded-full bg-gradient-to-t from-[#ffddd6b7] to-[#b192ff78] p-4 menu-button mt-6">
+                    <button className="rounded-full bg-gradient-to-t from-[#ffddd6b7] to-[#b192ff78] p-4 button-text mt-6">
                         {t('start_match')}
                     </button>
-                    <button className="rounded-full bg-gradient-to-t from-[#ffddd6b7] to-[#b192ff78] p-4 menu-button mt-4">
+                    <button className="rounded-full bg-gradient-to-t from-[#ffddd6b7] to-[#b192ff78] p-4 button-text mt-4">
                         {t('start_tournament')}
                 </button>
                 </div>
