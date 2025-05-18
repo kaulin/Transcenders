@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        @apply min-h-screen bg-gradient-to-b from-[#8a63ff] to-[#ffc3b6];
+    }
+
+    main {
+        @apply text-center text-lg mt-4;
+    }
+
+    h1 {
+        @apply text-text text-2xl font-bold mt-6;
+    }
+
+    p {
+        @apply text-text;
+    }
+
+    button {
+        @apply text-white hover:text-[#ffe0d9];
+    }
+
+    .menu-button {
+        @apply text-white hover:text-[#ffe0d9];
+    }
+
+    .bubble {
+        @apply bg-white bg-opacity-15 rounded-full max-w-md aspect-square shadow;
+    }
+
+    .login-bubble {
+        @apply bg-white bg-opacity-10 rounded-full w-[90vw] max-w-md aspect-square mb-52 shadow-xl shadow-[#a28bb44e] flex flex-col items-center justify-center p-6;
+    }
+
+    .login-input-field {
+        @apply rounded-lg bg-white bg-opacity-50 p-1 text-text placeholder-white;
+    }
+}
