@@ -31,7 +31,7 @@ function Profile() {
               <img
               src={previewUrl}
               alt="Avatar preview"
-              className="bubble"
+              className="bubble w-44 h-44"
               />
               ) : (
                 <div className="bubble w-44 h-44 bg-white bg-opacity-25"></div>
