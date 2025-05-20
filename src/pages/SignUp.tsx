@@ -43,9 +43,8 @@ function SignUp() {
 
 			<button className="mt-2 button-text" onClick={handleSignUp}>{t('sign_up')}</button>
 
-			<p className="mx-10 mt-6">{t('existing_user')}?
-				<Link to="/" className="button-text underline underline-offset-2"> {t('log_in')}</Link>
-			</p>
+			<p className="mt-6">{t('existing_user')}?</p>
+			<p><Link to="/" className="button-text underline underline-offset-2"> {t('log_in')}</Link></p>
 		</div>
     )
 }

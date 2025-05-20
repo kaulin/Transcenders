@@ -44,6 +44,10 @@
         @apply bg-white bg-opacity-10 rounded-full aspect-square shadow-xl shadow-[#a28bb44e];
     }
 
+    .background-bubble {
+        @apply rounded-full aspect-square shadow-xl shadow-[#a28bb44e] bg-gradient-to-tr from-[#824ea778] to-[#ffe4deb4] z-0;
+    }
+
     .login-input-field {
         @apply rounded-lg bg-white bg-opacity-50 p-1 text-white placeholder-white mt-2;
     }	

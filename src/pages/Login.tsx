@@ -18,29 +18,59 @@ function SignIn() {
     }
 
     return (
-		<div className="bubble w-[90vw] max-w-md flex flex-col justify-center items-center p-14">
-			<h1 className="text-2xl mb-3">{t('online_log_in')}</h1>
+		<div className="relative max-w-md flex justify-center items-center">
+			<div className="bubble w-[90vw] z-10 p-14 flex flex-col justify-center items-center">
+				<h1 className="text-2xl mb-3">{t('online_log_in')}</h1>
 
-			<input
-				type="text" value={username}
-				placeholder={t("username")}
-				className="login-input-field"
-				onChange={(e) => setUsername(e.target.value)}
-			/>
+				<input
+					type="text" value={username}
+					placeholder={t("username")}
+					className="login-input-field"
+					onChange={(e) => setUsername(e.target.value)}
+				/>
 
-			<input
-				type="password" value={password}
-				placeholder={t("password")}
-				className="login-input-field"
-				onChange={(e) => setPassword(e.target.value)}
-			/>
+				<input
+					type="password" value={password}
+					placeholder={t("password")}
+					className="login-input-field"
+					onChange={(e) => setPassword(e.target.value)}
+				/>
 
-			<button className="mt-2 button-text" onClick={handleLogin}>{t('log_in')}</button>
+				<button className="mt-2 button-text" onClick={handleLogin}>
+				{t('log_in')}
+				</button>
 
-			<p className="mt-6">
+				<p className="mt-6">
 				{t('new_user')}?
 				<Link to="/SignUp" className="button-text underline underline-offset-2"> {t('sign_up')}</Link>
-			</p>
+				</p>
+			</div>
+				<div className="bubble absolute -bottom-2/4 -right-3/4 w-96 bg-white bg-opacity-10 z-10 flex flex-col justify-center items-center">
+					<h1 className="text-2xl mb-3">Start a local match</h1>
+					<input
+						type="text" value={username}
+						placeholder={t("Player 1")}
+						className="login-input-field"
+						onChange={(e) => setUsername(e.target.value)}
+					/>
+
+					<input
+						type="text" value={username}
+						placeholder={t("Player2")}
+						className="login-input-field"
+						onChange={(e) => setUsername(e.target.value)}
+					/>
+					<button className="button-text mt-2">Start</button>
+				</div>
+				<div className="background-bubble absolute -top-2/4 -left-1/4 w-12"></div>
+				<div className="background-bubble absolute -right-2/3 w-32">
+					<div className="background-bubble absolute -right-full w-16"></div>
+					<div className="background-bubble absolute -bottom-1/4 -right-3/4 w-6"></div>
+				</div>
+				<div className="background-bubble absolute -top-1/4 -left-2/3 w-36"></div>
+				<div className="background-bubble absolute -bottom-3/4 -right-4 w-52"></div>
+				<div className="background-bubble absolute -top-2/3 -right-1/4 w-96"></div>
+				<div className="background-bubble absolute -bottom-1/4 -left-2/3 w-80"></div>
 		</div>
     )
 }
