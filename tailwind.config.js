@@ -1,16 +1,14 @@
 export default {
   content: [
-    "./index.html",
+    "./styles/index.html",
     "./src/**/*.{js,ts,jsx,tsx}"
   ],
   darkMode: 'class', // Enables toggling dark mode using a class
   theme: {
     extend: {
       colors: {
-        cyan: "#1AB2B9",
-        fuchsia: "#FFE4FF",
-        background: "#1F2937",
-        text: "#F9FAFB"
+		bg_primary: "#8a63ff",
+		bg_secondary: "#ffc3b6",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"]
