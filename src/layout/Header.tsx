@@ -18,7 +18,7 @@ function Header () {
 
         { user? (
             <>
-                <nav className="flex justify-between items-center p-6 m-4">
+                <nav className="flex justify-between items-center p-10">
 					<div className="flex basis-1/3 justify-start">
                     	<LanguageSwitch />
 					</div>
@@ -42,4 +42,3 @@ function Header () {
 }
 
 export default Header
-

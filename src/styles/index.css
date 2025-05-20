@@ -9,11 +9,19 @@
     }
 
     main {
-        @apply text-center text-lg mt-4;
+        @apply flex h-full w-full justify-center items-center flex-1 pb-36 text-center text-lg;
     }
 
+	div {
+		@apply text-white;
+	}
+
+	p {
+		@apply text-white;
+	}
+
     h1 {
-        @apply text-white text-2xl font-bold mt-6;
+        @apply text-white font-bold;
     }
 
     button {
@@ -28,11 +36,15 @@
         @apply text-white hover:text-[#ffe0d9];
     }
 
+	.play-button {
+		@apply rounded-full bg-gradient-to-t from-[#ffddd6b7] to-[#b192ff78] p-4 button-text mt-4;
+	}
+
     .bubble {
-        @apply bg-white bg-opacity-10 rounded-full max-w-md aspect-square shadow-xl shadow-[#a28bb44e];
+        @apply bg-white bg-opacity-10 rounded-full aspect-square shadow-xl shadow-[#a28bb44e];
     }
 
     .login-input-field {
-        @apply rounded-lg bg-white bg-opacity-50 p-1 text-white placeholder-white;
+        @apply rounded-lg bg-white bg-opacity-50 p-1 text-white placeholder-white mt-2;
     }	
 }

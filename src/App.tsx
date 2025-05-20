@@ -6,7 +6,7 @@ import Header from './layout/Header'
 import Footer from './layout/Footer'
 import MainContainer from './layout/MainContainer'
 
-import SignIn from './pages/Login'
+import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import Home from './pages/Home'
 import Tournament from './pages/Tournament'
@@ -18,8 +18,8 @@ const App = () => {
 
   return (
     <div className="relative h-screen overflow-hidden">
+      <main>
       <Header />
-      <main className="h-full">
          {user ? (
           <>
             <Routes>
@@ -33,9 +33,9 @@ const App = () => {
         ) : (
           <>
             <Routes>
-              <Route path="/" element={<SignIn />} />
-              <Route path="/SignUp" element={<SignUp />} />
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </Routes>
           </>
         )}

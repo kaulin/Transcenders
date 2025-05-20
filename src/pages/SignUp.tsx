@@ -18,42 +18,35 @@ function SignUp() {
     }
 
     return (
-        <main className="h-full w-full flex-1 flex items-center justify-center">
-            <div className="bubble w-[90vw] flex flex-col justify-center p-14 mb-52">
-                <h1>{t('create_account')}</h1>
-                <div className="mt-4">
-                    <input
-                        type="text" value={username}
-                        placeholder={t('username')}
-                        className="login-input-field"
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                </div>
-                <div className="mt-2">
-                    <input
-                        type="password"
-                        placeholder={t('password')}
-                        className="login-input-field"
-                    />
-                <div className="mt-2">
-                    <input
-                        type="password" value={password}
-                        placeholder={t('confirm_password')}
-                        className="login-input-field"
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    </div>
-                        <button className="mt-2 button-text" onClick={handleSignUp}>{t('sign_up')}</button>
-                    <div>
-                </div>
-                <div className="text-white m-4 ">
-                    <p>{t('existing_user')}?
-                        <Link to="/" className="button-text underline underline-offset-2"> {t('log_in')}</Link>
-                    </p>
-                </div>
-                </div>
-            </div>
-        </main>
+		<div className="bubble w-[90vw] max-w-md flex flex-col justify-center items-center p-14">
+			<h1 className="text-2xl mb-3">{t('create_account')}</h1>
+
+			<input
+				type="text" value={username}
+				placeholder={t('username')}
+				className="login-input-field"
+				onChange={(e) => setUsername(e.target.value)}
+			/>
+
+			<input
+				type="password"
+				placeholder={t('password')}
+				className="login-input-field"
+			/>
+
+			<input
+				type="password" value={password}
+				placeholder={t('confirm_password')}
+				className="login-input-field"
+				onChange={(e) => setPassword(e.target.value)}
+			/>
+
+			<button className="mt-2 button-text" onClick={handleSignUp}>{t('sign_up')}</button>
+
+			<p className="mx-10 mt-6">{t('existing_user')}?
+				<Link to="/" className="button-text underline underline-offset-2"> {t('log_in')}</Link>
+			</p>
+		</div>
     )
 }
 
