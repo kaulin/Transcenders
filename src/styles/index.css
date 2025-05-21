@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+    html {
+        @apply min-h-screen bg-gradient-to-b from-bg_primary to-bg_secondary;
+    }
+
+    main {
+        @apply flex h-full w-full justify-center items-center flex-1 pb-36 text-center text-lg;
+    }
+
+	div {
+		@apply text-white;
+	}
+
+	p {
+		@apply text-white;
+	}
+
+    h1 {
+        @apply text-white font-bold;
+    }
+
+    button {
+        @apply text-white hover:text-[#ffe0d9];
+    }
+
+}
+
+@layer components {
+
+    .button-text {
+        @apply text-white hover:text-[#ffe0d9];
+    }
+
+	.play-button {
+		@apply rounded-full bg-gradient-to-t from-[#ffddd6b7] to-[#b192ff78] p-4 button-text mt-4;
+	}
+
+    .bubble {
+        @apply bg-white bg-opacity-10 rounded-full aspect-square shadow-xl shadow-[#a28bb44e];
+    }
+
+    .background-bubble {
+        @apply rounded-full aspect-square shadow-xl shadow-[#a28bb44e] bg-gradient-to-tr from-[#824ea778] to-[#ffe4deb4] z-0;
+    }
+
+    .login-input-field {
+        @apply rounded-lg bg-white bg-opacity-50 p-1 text-white placeholder-white mt-2;
+    }	
+}
