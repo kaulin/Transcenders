@@ -62,15 +62,15 @@ function SignIn() {
 					/>
 					<button className="button-text mt-2">Start</button>
 				</div>
-				<div className="background-bubble absolute -top-2/4 -left-1/4 w-12"></div>
-				<div className="background-bubble absolute -right-2/3 w-32">
-					<div className="background-bubble absolute -right-full w-16"></div>
-					<div className="background-bubble absolute -bottom-1/4 -right-3/4 w-6"></div>
+				<div className="bg-bubble-2"></div>
+				<div className="bg-bubble-4">
+					<div className="bg-bubble-3"></div>
+					<div className="bg-bubble-1"></div>
 				</div>
-				<div className="background-bubble absolute -top-1/4 -left-2/3 w-36"></div>
-				<div className="background-bubble absolute -bottom-3/4 -right-4 w-52"></div>
-				<div className="background-bubble absolute -top-2/3 -right-1/4 w-96"></div>
-				<div className="background-bubble absolute -bottom-1/4 -left-2/3 w-80"></div>
+				<div className="bg-bubble-5"></div>
+				<div className="bg-bubble-6"></div>
+				<div className="bg-bubble-7"></div>
+				<div className="bg-bubble-8"></div>
 		</div>
     )
 }

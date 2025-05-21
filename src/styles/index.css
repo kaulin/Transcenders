@@ -40,15 +40,47 @@
 		@apply rounded-full bg-gradient-to-t from-[#ffddd6b7] to-[#b192ff78] p-4 button-text mt-4;
 	}
 
+    .login-input-field {
+        @apply rounded-lg bg-white bg-opacity-50 p-1 text-white placeholder-white mt-2;
+    }
+
     .bubble {
         @apply bg-white bg-opacity-10 rounded-full aspect-square shadow-xl shadow-[#a28bb44e];
     }
 
-    .background-bubble {
-        @apply rounded-full aspect-square shadow-xl shadow-[#a28bb44e] bg-gradient-to-tr from-[#824ea778] to-[#ffe4deb4] z-0;
+    .bg-bubble {
+        @apply rounded-full aspect-square shadow-xl bg-gradient-to-t z-0;
     }
 
-    .login-input-field {
-        @apply rounded-lg bg-white bg-opacity-50 p-1 text-white placeholder-white mt-2;
-    }	
+	.bg-bubble-1 {
+        @apply bg-bubble absolute -bottom-1/4 -right-3/4 w-6 shadow-[#5b446bc7] bg-gradient-to-t from-[#5d387756] via-[#75499330] to-[#ffe4de3e];
+    }
+
+	.bg-bubble-2 {
+        @apply bg-bubble absolute -top-2/4 -left-1/4 w-12 shadow-[#6e5482a7] from-[#4d2e6365] via-[#67418130] to-[#eae5ff13];
+    }
+
+	.bg-bubble-3 {
+        @apply bg-bubble absolute -right-full w-16 shadow-[#725786aa] bg-gradient-to-t from-[#5d38777e] via-[#75499330] to-[#ffe4de29];
+    }
+
+	.bg-bubble-4 {
+        @apply bg-bubble absolute -right-2/3 w-32 shadow-[#87669ead] bg-gradient-to-t from-[#5d387763] via-[#75499330] to-[#ffe4de20];
+    }
+
+	.bg-bubble-5 {
+        @apply bg-bubble absolute -top-1/4 -left-2/3 w-36 shadow-[#7b5e92b9] from-[#4d2e6367] via-[#67418130] to-[#eae5ff13];
+    }
+
+	.bg-bubble-6 {
+        @apply bg-bubble absolute -bottom-3/4 -right-4 w-52 shadow-[#624b7376] from-[#5d387788] via-[#75499330] to-[#ffe4de41];
+    }
+
+	.bg-bubble-7 {
+        @apply bg-bubble absolute -bottom-1/4 -left-2/3 w-80 shadow-[#624b7379] bg-gradient-to-t from-[#5d387782] via-[#75499330] to-[#ffe4de2b];
+    }
+
+	.bg-bubble-8 {
+        @apply bg-bubble absolute -top-2/3 -right-1/4 w-96 shadow-[#6e548280] from-[#643f7e79] via-[#7b4f9830] to-[#eae5ff1b];
+    }
 }
