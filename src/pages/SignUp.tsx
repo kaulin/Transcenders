@@ -47,16 +47,6 @@ function SignUp() {
 				<p className="mt-6">{t('existing_user')}?</p>
 				<p><Link to="/" className="button-text underline underline-offset-2"> {t('log_in')}</Link></p>
 			</div>
-				{/* <div className="bg-bubble absolute -bottom-2/4 -right-3/4 w-96 shadow-[#8f6ea9c3] from-[#5d38776f] via-[#75499330] to-[#ffe4de3b]"></div> */}
-				<div className="bg-bubble-2"></div>
-				<div className="bg-bubble-4">
-					<div className="bg-bubble-3"></div>
-					<div className="bg-bubble-1"></div>
-				</div>
-				<div className="bg-bubble-5"></div>
-				<div className="bg-bubble-6"></div>
-				<div className="bg-bubble-7"></div>
-				<div className="bg-bubble-8"></div>
 		</div>
     )
 }

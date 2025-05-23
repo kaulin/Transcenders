@@ -9,7 +9,7 @@
     }
     
     main {
-        @apply flex h-full w-full justify-center items-center flex-1 pb-24 text-center text-lg;
+        @apply flex h-full w-full z-10 justify-center items-center flex-1 pb-24 text-center text-lg;
     }
 
 	div {
@@ -25,7 +25,7 @@
     }
 
     button {
-        @apply text-white hover:text-[#d49aeb];
+        @apply text-white hover:text-[#6a5373c6];
     }
 
 }
@@ -33,7 +33,7 @@
 @layer components {
 
     .button-text {
-        @apply text-white hover:text-[#e7b2fa];
+        @apply text-white hover:text-[#6a5373c6];
     }
 
 	.play-button {
@@ -52,7 +52,47 @@
         @apply rounded-full aspect-square shadow-xl bg-gradient-to-t z-0;
     }
 
-	.bg-bubble-1 {
+    .bg-bubble-1 {
+        @apply bg-bubble absolute z-0 w-6 shadow-[#734b58b1]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
+    }
+
+	.bg-bubble-2 {
+        @apply bg-bubble absolute z-0 w-12 shadow-[#734b598b]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
+    }
+
+	.bg-bubble-3 {
+        @apply bg-bubble absolute w-16 z-0 shadow-[#734b578a]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
+    }
+
+	.bg-bubble-4 {
+        @apply bg-bubble absolute w-32 z-0 shadow-[#734b5986]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe128];
+    }
+
+	.bg-bubble-5 {
+        @apply bg-bubble absolute w-36 z-0 shadow-[#734b5987]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe11e];
+    }
+
+	.bg-bubble-6 {
+        @apply bg-bubble absolute w-52 z-0 shadow-[#734b5e79]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe130];
+    }
+
+	.bg-bubble-7 {
+        @apply bg-bubble absolute w-80 z-0 shadow-[#734b5293]
+        bg-gradient-to-t from-[#933e56b2] via-[#ea8f719a] to-[#fcefe12b];
+    }
+
+	.bg-bubble-8 {
+        @apply bg-bubble absolute w-96 z-0 shadow-[#734b5083]
+        bg-gradient-to-t from-[#933e56a8] via-[#ea8f719a] to-[#fcefe11b];
+    }
+    
+	/* .bg-bubble-1 {
         @apply bg-bubble absolute -bottom-1/4 -right-3/4 w-6 shadow-[#734b58b1]
         bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
     }
@@ -90,5 +130,5 @@
 	.bg-bubble-8 {
         @apply bg-bubble absolute -top-2/3 -right-1/4 w-96 shadow-[#734b5083]
         bg-gradient-to-t from-[#933e56a8] via-[#ea8f719a] to-[#fcefe11b];
-    }
+    } */
 }

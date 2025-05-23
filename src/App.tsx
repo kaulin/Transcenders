@@ -18,6 +18,21 @@ const App = () => {
 
   return (
     <div className="relative h-screen overflow-hidden">
+      <div className="bg-bubble-8 left-2/4 top-10"></div>
+      <div className="bg-bubble-8 left-10 -top-6"></div>
+      <div className="bg-bubble-8 left-2/4 -bottom-28"></div>
+      <div className="bg-bubble-8 -right-10 top-1/4"></div>
+      <div className="bg-bubble-7 left-1/3 top-2/4"></div>
+      <div className="bg-bubble-7 right-48 bottom-16"></div>
+      <div className="bg-bubble-7 -left-16 top-1/3"></div>
+      <div className="bg-bubble-7 left-16 -bottom-28"></div>
+      <div className="bg-bubble-6 top-1/4 left-1/4"></div>
+      <div className="bg-bubble-6 top-1/2 left-3/4"></div>
+      <div className="bg-bubble-5 right-3/4 bottom-1/4"></div>
+      <div className="bg-bubble-5 left-3/4 -top-4"></div>
+      <div className="bg-bubble-3 right-1/2 top-8"></div>
+      <div className="bg-bubble-3 right-1/4 top-1/4"></div>
+
       <main>
       <Header />
          {user ? (
@@ -45,3 +60,5 @@ const App = () => {
 }
 
 export default App
+
+// 2560 1920 1280 640
