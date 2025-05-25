@@ -23,22 +23,22 @@ function Profile() {
   }
 
   return (
-	<div className="flex w-full items-center grow">
-		<div className="flex basis-2/5 justify-center items-center">
+	<div className="z-10 w-full h-full flex gap-6 p-8 pt-24">
+		<div className="profile-box">
 			<div>
 				{previewUrl ? (
 				<img
 				src={previewUrl}
 				alt="Avatar preview"
-				className="bubble w-44 object-cover"
+				className="bubble w-56 object-cover"
 				/>
 				) : (
-				<div className="bubble w-44 bg-white bg-opacity-25"></div>
+				<div className="bubble w-56 bg-white bg-opacity-25"></div>
 				)}
 			</div>
 			
-			<div className="pl-6">
-				<h1 className="flex justify-center text-4xl">{user?.name}</h1>
+			<div>
+				<h1 className="flex justify-center text-3xl uppercase">{user?.name}</h1>
 
 				<input
 					type="file"
@@ -57,17 +57,24 @@ function Profile() {
 			</div>
 		</div>
 		
-		<div className="flex basis-3/5 justify-center">
+		<div className="profile-box">
 			<div>
-				<h1 className="flex text-4xl">
-				{t('games_played')} 0
+				<h1 className="flex text-3xl uppercase">
+				{t('games_played')}
 				</h1>
 				
-				<div className="flex justify-evenly py-2 text-[#ffebe7b7]">
+				<div className="flex justify-between py-2 text-[#ffebe7b7]">
+					<div>{t('total')} 0</div>
 					<div>{t('wins')} 0</div>
 					<div>{t('losses')} 0</div>
 				</div>
 			</div>
+		</div>
+
+		<div className="profile-box">
+				<h1 className="flex text-3xl uppercase">
+					{t('history')}
+				</h1>
 		</div>
 	</div>
   );

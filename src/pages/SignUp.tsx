@@ -18,8 +18,8 @@ function SignUp() {
     }
 
     return (
-		<div className="relative max-w-md flex justify-center items-center">
-			<div className="bubble w-[90vw] z-10 p-14 flex flex-col justify-center items-center">
+		<div className="relative max-w-md flex justify-center items-center pb-32">
+			<div className="bubble w-[90vw] z-10 p-16 flex flex-col justify-center items-center">
 				<h1 className="text-2xl mb-3">{t('create_account')}</h1>
 
 				<input

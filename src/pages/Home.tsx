@@ -6,7 +6,7 @@ function Home() {
     const { user } = useUser()
 
     return (
-		<div>
+		<div className="z-10 pb-32">
 			<h1 className="text-4xl">{t('hello')} {user?.name}</h1>
 			<p className="mb-10">{t('welcome')}!</p>
 
