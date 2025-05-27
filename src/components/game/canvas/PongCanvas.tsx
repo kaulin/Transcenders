@@ -17,12 +17,12 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 	
 		context.clearRect(0, 0, canvasWidth, canvasHeight);
 	
-		context.fillStyle = '#DB7093'; // Light pink, #DB7093, #FFB6C1
-		context.strokeStyle = '#E29AE2'; // Bright purple
+		context.fillStyle = '#8366FF'; // text, paddles, and ball
+		context.strokeStyle = '#FFB6C1'; // center line
 	
 		//center line
 		context.beginPath();
-		context.setLineDash([10, 15]); // Create dashed line
+		context.setLineDash([10, 15]); // create dashed line
 		context.moveTo(canvasWidth / 2, 0);
 		context.lineTo(canvasWidth / 2, canvasHeight);
 		context.lineWidth = 2;
@@ -82,14 +82,14 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
   
 	// React hook to draw the game whenever gameState changes
 	useEffect(() => {
-		const canvas = canvasRef.current;
+		const canvas = canvasRef.current;	//get html canvas element
 		if (!canvas) return;
 	
-		const context = canvas.getContext('2d');
+		const context = canvas.getContext('2d'); //getContext returns a CanvasRenderingContext2D object
 		if (!context) return;
 	
 		//canvas background
-		context.fillStyle = '#E29AE2'; // bright purple
+		context.fillStyle = '#B366FF'; // #E29AE2 bright purple
 		context.fillRect(0, 0, canvas.width, canvas.height);
 	
 		// draw the game elements

@@ -6,7 +6,7 @@ function LocalGame() {
 	const { t } = useTranslation()
 
 	return (
-		<div className="min-h-screen bg-gray-100 pt-24 pb-8">
+		<div className="min-h-screen pt-32 pb-8">
 			<div className="container mx-auto px-4">
 				{/* Back button */}
 				<div className="mb-6">

@@ -35,8 +35,11 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 	const updateGame = useCallback((timestamp: number) => {
 		lastUpdateTimeRef.current = timestamp;
 	
-		if (gameState.status === GameStatus.RUNNING) {
+			//first update movement and collisions
 			setGameState(prevState => {
+				if (prevState.status !== GameStatus.RUNNING) {
+            		return prevState;
+        		}
 				let newState = { ...prevState };
 		
 				// move the left paddle based on W/S keys
@@ -74,20 +77,16 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 				// check collisions
 				newState = checkWallCollision(newState);
 				newState = handlePaddleCollisions(newState);
-		
+
 				//point scored?
 				const { newState: stateAfterScoring, scored } = checkScore(newState);
-				newState = stateAfterScoring;
 				if (scored)
-					newState = resetBall(newState);
-		
-				return newState;
+					return resetBall(stateAfterScoring);
+				return stateAfterScoring;
 			});
-		}
-	
 		// Continue game loop
 		animationFrameRef.current = requestAnimationFrame(updateGame);
-	}, [gameState.status, keysPressed]); //dependency array: useCallback only creates a new version of this function when these values change
+	}, [keysPressed]); //dependency array: useCallback only creates a new version of this function when these values change
 	
 	// Start the game loop when the component mounts
 	useEffect(() => {

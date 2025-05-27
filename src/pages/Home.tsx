@@ -13,11 +13,11 @@ function Home() {
 
 			<div className="flex flex-col">
 				<button className="play-button">
-					{t('start_match')}
+					{t('start_match', 'Play Online Game')}
 				</button>
 
 				<button className="play-button">
-					{t('start_tournament')}
+					{t('start_tournament', 'Start Tournament')}
 				</button>
 
 				<Link to="/local-game">
