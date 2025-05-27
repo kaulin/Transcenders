@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
+import { Link } from 'react-router-dom' //added
 
 function Home() {
     const { t } = useTranslation()
@@ -18,6 +19,12 @@ function Home() {
 				<button className="play-button">
 					{t('start_tournament')}
 				</button>
+
+				<Link to="/local-game">
+				<button className="play-button">
+					{t('play_local_game', 'Play Local Game')}
+				</button>
+				</Link>
 			</div>
 		</div>
 	)

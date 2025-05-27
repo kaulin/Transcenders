@@ -17,8 +17,8 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 	
 		context.clearRect(0, 0, canvasWidth, canvasHeight);
 	
-		context.fillStyle = '#FFB6C1'; // Light pink
-		context.strokeStyle = '#DDA0DD'; // Plum
+		context.fillStyle = '#DB7093'; // Light pink, #DB7093, #FFB6C1
+		context.strokeStyle = '#E29AE2'; // Bright purple
 	
 		//center line
 		context.beginPath();
@@ -89,7 +89,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 		if (!context) return;
 	
 		//canvas background
-		context.fillStyle = '#8E24AA'; // Medium purple
+		context.fillStyle = '#E29AE2'; // bright purple
 		context.fillRect(0, 0, canvas.width, canvas.height);
 	
 		// draw the game elements
@@ -101,7 +101,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 		ref={canvasRef}
 		width={gameState.canvasWidth}
 		height={gameState.canvasHeight}
-		className="bg-pink-900 border border-purple-400 rounded shadow-lg"
+		className="bg-purple-300 border border-purple-400 rounded shadow-lg"
 		/>
 	);
 };
