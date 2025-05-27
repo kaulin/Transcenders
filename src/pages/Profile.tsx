@@ -23,60 +23,60 @@ function Profile() {
   }
 
   return (
-	<div className="z-10 w-full h-full flex gap-6 p-8 pt-24">
-		<div className="profile-box">
-			<div>
-				{previewUrl ? (
-				<img
-				src={previewUrl}
-				alt="Avatar preview"
-				className="bubble w-56 object-cover"
-				/>
-				) : (
-				<div className="bubble w-56 bg-white bg-opacity-25"></div>
-				)}
-			</div>
-			
-			<div>
-				<h1 className="flex justify-center text-3xl uppercase">{user?.name}</h1>
-
-				<input
-					type="file"
-					accept="image/*"
-					onChange={handleFileChange}
-					ref={fileInputRef}
-					className="hidden"
+		<div className="w-full h-full z-10 flex p-11 pt-24 gap-6">
+			<div className="profile-box">
+				<div>
+					{previewUrl ? (
+					<img
+					src={previewUrl}
+					alt="Avatar preview"
+					className="bubble w-64 object-cover"
 					/>
-
-				<button
-					onClick={handleUploadClick}
-					className="px-4 text-[#ffebe7b7] hover:text-white py-2"
-					>
-				{t("avatar")}
-				</button>
-			</div>
-		</div>
-		
-		<div className="profile-box">
-			<div>
-				<h1 className="flex text-3xl uppercase">
-				{t('games_played')}
-				</h1>
+					) : (
+					<div className="bubble w-64 bg-white bg-opacity-25"></div>
+					)}
+				</div>
 				
-				<div className="flex justify-between py-2 text-[#ffebe7b7]">
-					<div>{t('total')} 0</div>
-					<div>{t('wins')} 0</div>
-					<div>{t('losses')} 0</div>
+				<div>
+					<h1 className="flex justify-center text-4xl uppercase">{user?.name}</h1>
+
+					<input
+						type="file"
+						accept="image/*"
+						onChange={handleFileChange}
+						ref={fileInputRef}
+						className="hidden"
+						/>
+
+					<button
+						onClick={handleUploadClick}
+						className="px-4 text-[#ffebe7b7] hover:text-white py-2"
+						>
+					{t("avatar")}
+					</button>
 				</div>
 			</div>
-		</div>
+			
+			<div className="profile-box">
+				<div>
+					<h1 className="flex text-4xl uppercase">
+					{t('games_played')}
+					</h1>
+					
+					<div className="flex justify-between py-2 text-[#ffebe7b7]">
+						<div>{t('total')} 0</div>
+						<div>{t('wins')} 0</div>
+						<div>{t('losses')} 0</div>
+					</div>
+				</div>
+			</div>
 
-		<div className="profile-box">
-				<h1 className="flex text-3xl uppercase">
+			<div className="profile-box">
+				<h1 className="flex text-4xl uppercase">
 					{t('history')}
-				</h1>
+					</h1>
+			</div>
 		</div>
-	</div>
   );
 }
 

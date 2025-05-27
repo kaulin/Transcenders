@@ -18,9 +18,9 @@ function SignIn() {
     }
 
     return (
-		<div className="relative max-w-md flex justify-center items-center pb-32">
-			<div className="bubble w-[90vw] z-10 p-16 flex flex-col justify-center items-center">
-				<h1 className="text-2xl mb-3">{t('online_log_in')}</h1>
+		<div className="relative max-w-md flex justify-center items-center pb-24">
+			<div className="bubble w-[90vw] z-10 p-14 flex flex-col justify-center items-center">
+				<h1 className="text-2xl py-3 px-6">{t('online_log_in')}</h1>
 
 				<input
 					type="text" value={username}
@@ -36,11 +36,11 @@ function SignIn() {
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 
-				<button className="mt-2 button-text" onClick={handleLogin}>
+				<button className="pt-2 button-text" onClick={handleLogin}>
 				{t('log_in')}
 				</button>
 
-				<p className="mt-6">
+				<p className="pt-6">
 				{t('new_user')}?
 				<Link to="/SignUp" className="button-text underline underline-offset-2"> {t('sign_up')}</Link>
 				</p>
