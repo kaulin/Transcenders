@@ -83,7 +83,7 @@
 
 	.bg-bubble-6 {
         @apply bg-bubble absolute w-52 z-0 shadow-[#734b5e88]
-        bg-gradient-to-t from-[#933e56ad] via-[#ea8f719a] to-[#fcefe130];
+        bg-gradient-to-t from-[#933e56b5] via-[#ea8f719a] to-[#fcefe130];
     }
 
 	.bg-bubble-7 {
