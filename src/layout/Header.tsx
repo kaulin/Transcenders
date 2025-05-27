@@ -22,7 +22,7 @@ function Header () {
 					<div className="flex basis-1/3 justify-start">
                     	<LanguageSwitch />
 					</div>
-                    <div className="flex basis-1/3 justify-center gap-4">
+                    <div className="flex basis-1/3 justify-center gap-4 uppercase">
                         <Link to="/" className="button-text">{t('home')}</Link>
                         <Link to="/profile" className="button-text">{t('profile')}</Link>
                         <Link to="/settings" className="button-text">{t('settings')}</Link>
