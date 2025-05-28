@@ -57,7 +57,7 @@ export const Controls = {
 };
 
 export const DEFAULT_GAME_SETTINGS = {
-	paddleWidth: 15,
+	paddleWidth: 50,
 	paddleHeight: 100,
 	paddleSpeed: 10,
 	ballRadius: 10,
@@ -115,8 +115,6 @@ export const createInitialGameState = (
 
 //resets ball to the center with random direction
 export const resetBall = (gameState: GameState): GameState => {
-
-	console.log('🔄 RESETTING BALL - Current scores:', { left: gameState.leftScore, right: gameState.rightScore });
 	// shallow cloning the current state
 	const newState: GameState = { ...gameState };
   
@@ -135,7 +133,5 @@ export const resetBall = (gameState: GameState): GameState => {
 		dx: Math.cos(angle) * direction * gameState.ball.initialSpeed,
 		dy: Math.sin(angle) * gameState.ball.initialSpeed
 	};
-	console.log('🔄 BALL RESET COMPLETE - Final scores:', { left: newState.leftScore, right: newState.rightScore });
-  
 	return newState;
 };
