@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PongCanvas from './canvas/PongCanvas';
 import { 
 	type GameState, 
@@ -21,73 +21,68 @@ interface GameContainerProps {
 
 //react functional component
 const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600 }) => {
-	// state declarations
-	const [gameState, setGameState] = useState<GameState>(
-		createInitialGameState(width, height)
-	);
-	const [keysPressed, setKeysPressed] = useState<{ [key: string]: boolean }>({});
-	
-	// reference declarations
-	const lastUpdateTimeRef = React.useRef<number>(0);
-	const animationFrameRef = React.useRef<number>(0);
-	
-	// Update game state for each frame
-	const updateGame = useCallback((timestamp: number) => {
-		lastUpdateTimeRef.current = timestamp;
-	
-			//first update movement and collisions
-			setGameState(prevState => {
-				if (prevState.status !== GameStatus.RUNNING) {
-            		return prevState;
-        		}
-				let newState = { ...prevState };
-		
-				// move the left paddle based on W/S keys
-				if (keysPressed[Controls.leftPaddle.up.toLowerCase()]) {
-					newState.leftPaddle.position.y = Math.max(
-						0,
-						newState.leftPaddle.position.y - newState.leftPaddle.speed
-					);
-				}
-				if (keysPressed[Controls.leftPaddle.down.toLowerCase()]) {
-					newState.leftPaddle.position.y = Math.min(
-						newState.canvasHeight - newState.leftPaddle.height,
-						newState.leftPaddle.position.y + newState.leftPaddle.speed
-					);
-				}
-		
-				// move right paddle based on arrow keys
-				if (keysPressed[Controls.rightPaddle.up.toLowerCase()]) {
-					newState.rightPaddle.position.y = Math.max(
-						0,
-						newState.rightPaddle.position.y - newState.rightPaddle.speed
-					);
-				}
-				if (keysPressed[Controls.rightPaddle.down.toLowerCase()]) {
-					newState.rightPaddle.position.y = Math.min(
-						newState.canvasHeight - newState.rightPaddle.height,
-						newState.rightPaddle.position.y + newState.rightPaddle.speed
-					);
-				}
-		
-				// move ball
-				newState.ball.position.x += newState.ball.velocity.dx;
-				newState.ball.position.y += newState.ball.velocity.dy;
-		
-				// check collisions
-				newState = checkWallCollision(newState);
-				newState = handlePaddleCollisions(newState);
+	const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
+    const [keysPressed, setKeysPressed] = useState<{ [key: string]: boolean }>({});
+    
+    // Ref for game loop to prevent stale closures
+    const gameStateRef = useRef(gameState);
+    const animationFrameRef = useRef<number>(0);
+    
+    // Keep ref in sync with state
+    useEffect(() => {
+        gameStateRef.current = gameState;
+    }, [gameState]);
 
-				//point scored?
-				const { newState: stateAfterScoring, scored } = checkScore(newState);
-				if (scored)
-					return resetBall(stateAfterScoring);
-				return stateAfterScoring;
-			});
-		// Continue game loop
-		animationFrameRef.current = requestAnimationFrame(updateGame);
-	}, [keysPressed]); //dependency array: useCallback only creates a new version of this function when these values change
-	
+    const updateGame = useCallback((timestamp: number) => {
+        // Read from ref (always current)
+        const currentState = gameStateRef.current;
+        
+        if (currentState.status !== GameStatus.RUNNING) {
+            animationFrameRef.current = requestAnimationFrame(updateGame);
+            return;
+        }
+
+        let newState = { ...currentState };
+
+        // move paddles
+        if (keysPressed[Controls.leftPaddle.up.toLowerCase()]) {
+            newState.leftPaddle.position.y = Math.max(0, newState.leftPaddle.position.y - newState.leftPaddle.speed);
+        }
+        if (keysPressed[Controls.leftPaddle.down.toLowerCase()]) {
+            newState.leftPaddle.position.y = Math.min(newState.canvasHeight - newState.leftPaddle.height, newState.leftPaddle.position.y + newState.leftPaddle.speed);
+        }
+        if (keysPressed[Controls.rightPaddle.up.toLowerCase()]) {
+            newState.rightPaddle.position.y = Math.max(0, newState.rightPaddle.position.y - newState.rightPaddle.speed);
+        }
+        if (keysPressed[Controls.rightPaddle.down.toLowerCase()]) {
+            newState.rightPaddle.position.y = Math.min(newState.canvasHeight - newState.rightPaddle.height, newState.rightPaddle.position.y + newState.rightPaddle.speed);
+        }
+
+        // move ball
+        newState.ball.position.x += newState.ball.velocity.dx;
+        newState.ball.position.y += newState.ball.velocity.dy;
+
+        // check collisions
+        newState = checkWallCollision(newState);
+        newState = handlePaddleCollisions(newState);
+
+        // check scoring
+        const { newState: stateAfterScoring, scored } = checkScore(newState);
+        
+        if (scored) {
+            console.log('🎯 GOAL! Scores:', { left: stateAfterScoring.leftScore, right: stateAfterScoring.rightScore });
+            newState = resetBall(stateAfterScoring);
+        } else {
+            newState = stateAfterScoring;
+        }
+
+        // update state triggers re-render
+        setGameState(newState);
+
+        // continue game loop
+        animationFrameRef.current = requestAnimationFrame(updateGame);
+    }, [keysPressed]);
+
 	// Start the game loop when the component mounts
 	useEffect(() => {
 		animationFrameRef.current = requestAnimationFrame(updateGame);
@@ -145,11 +140,11 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 			}));
 		};
 	
-		// Add event listeners: window is a browser global object
+		// add event listeners: window is a browser global object
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('keyup', handleKeyUp);
 	
-		// Remove event listeners on cleanup
+		// remove event listeners on cleanup
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
 			window.removeEventListener('keyup', handleKeyUp);
@@ -157,45 +152,51 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 	}, []);
 	
 	return (
-		<div className="flex flex-col items-center justify-center p-4">
-			<h1 className="text-3xl font-bold mb-4">Pong Game</h1>
-			<div className="relative">
-			<PongCanvas gameState={gameState} />
-			</div>
-			<div className="mt-4 space-y-2">
-			<button
-				className="px-4 py-2 bg-bg_primary text-white rounded hover:bg-opacity-90"
-				onClick={() => {
-					setGameState(prevState => {
-						if (prevState.status === GameStatus.WAITING || 
-							prevState.status === GameStatus.PAUSED) {
-							return resetBall({
-								...prevState,
-								status: GameStatus.RUNNING
-							});
-						} else if (prevState.status === GameStatus.RUNNING) {
-							return {
-								...prevState,
-								status: GameStatus.PAUSED
-							};
-						}
-					return prevState;
-					});
-				}}
-			>
-				{gameState.status === GameStatus.RUNNING ? 'Pause' : 'Start/Resume'}
-			</button>
-			<button
-				className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-opacity-90"
-				onClick={() => {
-					setGameState(createInitialGameState(width, height));
-				}}
-			>
-				Reset Game
-			</button>
-			</div>
-		</div>
-	);
+        <div className="flex flex-col items-center justify-center p-4">
+            <h1 className="text-3xl font-bold mb-4">Pong Game</h1>
+            <div className="text-xl font-bold mb-2">
+                Score: {gameState.leftScore} - {gameState.rightScore}
+            </div>
+            
+            <div className="relative">
+                <PongCanvas gameState={gameState} />
+            </div>
+            
+            <div className="mt-4 space-y-2">
+                <button
+                    className="px-4 py-2 bg-bg_primary text-white rounded hover:bg-opacity-90"
+                    onClick={() => {
+                        setGameState(prevState => {
+                            if (prevState.status === GameStatus.WAITING || 
+                                prevState.status === GameStatus.PAUSED) {
+                                return resetBall({
+                                    ...prevState,
+                                    status: GameStatus.RUNNING
+                                });
+                            } else if (prevState.status === GameStatus.RUNNING) {
+                                return {
+                                    ...prevState,
+                                    status: GameStatus.PAUSED
+                                };
+                            }
+                            return prevState;
+                        });
+                    }}
+                >
+                    {gameState.status === GameStatus.RUNNING ? 'Pause' : 'Start/Resume'}
+                </button>
+                
+                <button
+                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-opacity-90"
+                    onClick={() => {
+                        setGameState(createInitialGameState(width, height));
+                    }}
+                >
+                    Reset Game
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default GameContainer;
