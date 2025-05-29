@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
+import { Link } from 'react-router-dom'
 
 function Home() {
     const { t } = useTranslation()
@@ -11,9 +12,7 @@ function Home() {
 			<p className="mb-10">{t('welcome')}!</p>
 
 			<div className="flex flex-col">
-				<button className="play-button">
-					{t('start_match')}
-				</button>
+				<Link to="/LocalGame" className="play-button">{t('start_match')}</Link>
 
 				<button className="play-button">
 					{t('start_tournament')}
