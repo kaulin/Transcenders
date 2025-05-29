@@ -194,7 +194,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 			ref={canvasRef}
 			width={gameState.canvasWidth}
 			height={gameState.canvasHeight}
-			className="profile-box"
+			className="bg-purple-300 border border-purple-400 rounded shadow-lg"
 		/>
 	);
 };
