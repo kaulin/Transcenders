@@ -37,7 +37,7 @@
     }
 
 	.play-button {
-		@apply rounded-full bg-white bg-opacity-10 border p-4 button-text mt-4;
+		@apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text mt-4;
 	}
 
     .login-input-field {

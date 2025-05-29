@@ -41,7 +41,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 				// Load all images (replace these paths with your actual image paths)
 				await Promise.all([
 					loadImage(leftPaddleImg, '/images/player1.png'),
-					loadImage(rightPaddleImg, '/images/playertwo.png'),
+					loadImage(rightPaddleImg, '/images/player2.png'),
 					loadImage(ballImg, '/images/ball.png')
 				]);
 
@@ -65,7 +65,8 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 	
 		context.clearRect(0, 0, canvasWidth, canvasHeight);
 	
-		context.fillStyle = '#8366FF'; // text color
+		// context.fillStyle = '#8366FF'; // text color
+		context.fillStyle = '#FFFFFF';
 		context.strokeStyle = '#FFB6C1'; // center line
 	
 		// center line
@@ -155,7 +156,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 	
 		// Game status messages
 		if (state.status === GameStatus.WAITING) {
-			context.fillStyle = '#8366FF';
+			context.fillStyle = '#FFFFFF';
 			context.font = '24px Arial';
 			context.fillText('Press Space to Start', canvasWidth / 2, canvasHeight / 2 + 60);
 
@@ -166,7 +167,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 	
 		if (state.status === GameStatus.PAUSED) {
 			context.font = '36px Arial';
-			context.fillStyle = 'rgba(240, 233, 31, 0.97)';
+			context.fillStyle = '#FFFFFF';
 			context.fillText('PaW-SED', canvasWidth / 2, canvasHeight / 2);
 			context.font = '18px Arial';
 			context.fillText('Press Space to Resume', canvasWidth / 2, canvasHeight / 2 + 30);
@@ -194,7 +195,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 			ref={canvasRef}
 			width={gameState.canvasWidth}
 			height={gameState.canvasHeight}
-			className="bg-purple-300 border border-purple-400 rounded shadow-lg"
+			className="profile-box"
 		/>
 	);
 };

@@ -157,13 +157,13 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 				Score: {gameState.leftScore} - {gameState.rightScore}
 			</div>
 			
-			<div className="relative">
+			{/* <div className="relative"> */}
 				<PongCanvas gameState={gameState} />
-			</div>
+			{/* </div> */}
 			
-			<div className="mt-4 space-y-2">
+			<div className="flex w-full justify-center gap-10">
 				<button
-					className="px-4 py-2 bg-bg_primary text-white rounded hover:bg-opacity-90"
+					className="play-button"
 					onClick={() => {
 						setGameState(prevState => {
 							if (prevState.status === GameStatus.WAITING || 
@@ -186,7 +186,7 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 				</button>
 				
 				<button
-					className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-opacity-90"
+					className="play-button"
 					onClick={() => {
 						setGameState(createInitialGameState(width, height));
 					}}
