@@ -69,7 +69,6 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 		const { newState: stateAfterScoring, scored } = checkScore(newState);
 		
 		if (scored) {
-			console.log('🎯 GOAL! Scores:', { left: stateAfterScoring.leftScore, right: stateAfterScoring.rightScore });
 			newState = resetBall(stateAfterScoring);
 		} else {
 			newState = stateAfterScoring;

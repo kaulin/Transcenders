@@ -79,26 +79,17 @@ export const checkScore = (gameState: GameState): { newState: GameState, scored:
 	const newState = { ...gameState };
 	let scored = false;
 
-	const leftBoundary = ball.position.x - ball.radius;
-	const rightBoundary = ball.position.x + ball.radius;
-
-	console.log(`🔍 checkScore: ballX=${ball.position.x.toFixed(1)}, leftBoundary=${leftBoundary.toFixed(1)}, rightBoundary=${rightBoundary.toFixed(1)}, canvasWidth=${canvasWidth}`);
-
-	console.log(`Ball position: x=${ball.position.x}, canvasWidth=${canvasWidth}`);
-
 	// if ball passes left edge, right player scores
 	if (ball.position.x - ball.radius <= 0) {
-		console.log('🎯 RIGHT PLAYER SCORES!', { leftBoundary, currentScores: { left: leftScore, right: rightScore } });		newState.rightScore = rightScore + 1;
+		newState.rightScore = rightScore + 1;
 		newState.rightScore = rightScore + 1;
 		scored = true;
 	}
 
 	// if ball passes the right edge, left player scores
 	if (ball.position.x + ball.radius >= canvasWidth) {
-		console.log('🎯 LEFT PLAYER SCORES!', { rightBoundary, canvasWidth, currentScores: { left: leftScore, right: rightScore } });
 		newState.leftScore = leftScore + 1;
 		scored = true;
 	}
-	console.log(`✅ checkScore result: scored=${scored}, newScores={left: ${newState.leftScore}, right: ${newState.rightScore}}`);
 	return { newState, scored };
 };
