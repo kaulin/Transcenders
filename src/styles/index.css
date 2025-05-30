@@ -96,9 +96,6 @@
         bg-gradient-to-t from-[#933e56a8] via-[#ea8f719a] to-[#fcefe11b];
     }
     
-    .profile-box {
-        @apply basis-1/3 rounded-lg bg-[#966d54] bg-opacity-40 border items-center flex flex-col justify-center gap-10;
-    }
 	/* .bg-bubble-1 {
         @apply bg-bubble absolute -bottom-1/4 -right-3/4 w-6 shadow-[#734b58b1]
         bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
