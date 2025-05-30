@@ -110,6 +110,7 @@ clean: stop
 	docker compose down -v
 	-docker rmi transcenders-prod:hive
 	-docker rmi transcenders-dev:hive
+	-docker rmi auth-service:hive
 	-docker system prune -f
 
 ################################################################################
