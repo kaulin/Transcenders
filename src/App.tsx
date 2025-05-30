@@ -12,6 +12,7 @@ import Home from './pages/Home'
 import Tournament from './pages/Tournament'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import LocalGame from './pages/LocalGame'
 
 const App = () => {
   const { user } = useUser()
@@ -39,6 +40,7 @@ const App = () => {
           <>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/localgame" element={<LocalGame />} />
               <Route path="/tournament" element={<Tournament />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
