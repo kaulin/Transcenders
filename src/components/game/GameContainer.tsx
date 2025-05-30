@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from "react-i18next";
 import PongCanvas from './canvas/PongCanvas';
+
 import { 
 	type GameState, 
 	GameStatus, 
@@ -26,6 +28,8 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 	// Ref for game loop to prevent stale closures
 	const gameStateRef = useRef(gameState);
 	const animationFrameRef = useRef<number>(0);
+
+	const { t } = useTranslation();
 	
 	// Keep ref in sync with state
 	useEffect(() => {
@@ -161,7 +165,7 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 				<PongCanvas gameState={gameState} />
 			{/* </div> */}
 			
-			<div className="flex w-full justify-center gap-10">
+			<div className="flex w-full justify-center gap-6">
 				<button
 					className="play-button"
 					onClick={() => {
@@ -182,7 +186,7 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 						});
 					}}
 				>
-					{gameState.status === GameStatus.RUNNING ? 'Pause' : 'Start/Resume'}
+					{gameState.status === GameStatus.RUNNING ? t('pause') : t('play')}
 				</button>
 				
 				<button
@@ -191,7 +195,7 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 						setGameState(createInitialGameState(width, height));
 					}}
 				>
-					Reset Game
+					{t('reset')}
 				</button>
 			</div>
 		</div>

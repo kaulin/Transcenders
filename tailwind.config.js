@@ -4,6 +4,20 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}"
   ],
   darkMode: 'class', // Enables toggling dark mode using a class
+  safelist: [
+    {
+      pattern: /col-start-(\d+)/,
+    },
+    {
+      pattern: /col-span-(\d+)/,
+    },
+    {
+      pattern: /row-start-(\d+)/,
+    },
+    {
+      pattern: /row-span-(\d+)/,
+    },
+  ],
   theme: {
     extend: {
       colors: {
