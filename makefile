@@ -10,6 +10,8 @@ all: setup dev
 setup:
 	@echo "Installing dependencies locally"
 	npm ci --include=dev
+	@echo "Installing auth-service dependencies..."
+	cd services/auth-service && npm ci --include=dev
 
 # Development environment (hot-reloading)
 dev:

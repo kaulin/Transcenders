@@ -1,4 +1,17 @@
 services:
+  auth:
+    container_name: auth-service
+    image: auth-service:hive
+    build:
+      context: ./services/auth-service
+      target: development
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./services/auth-service:/app
+      - auth_node_modules:/app/node_modules
   dev:
     container_name: transcenders-dev
     image: transcenders-dev:hive
@@ -15,3 +28,4 @@ services:
       - NODE_ENV=development
 volumes:
   node_modules:
+  auth_node_modules:
