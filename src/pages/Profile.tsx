@@ -23,8 +23,8 @@ function Profile() {
   }
 
   return (
-		<div className="w-full h-full z-10 flex p-11 pt-24 gap-6">
-			<div className="profile-box">
+		<div className="w-full h-full z-10 flex p-11 pt-32 gap-6">
+			<div className="profile-box px-4 pt-32">
 				<div>
 					{previewUrl ? (
 					<img
@@ -57,22 +57,31 @@ function Profile() {
 				</div>
 			</div>
 			
-			<div className="profile-box">
+			<div className="profile-box px-4 pt-16">
 				<div>
-					<h1 className="flex text-4xl uppercase">
+					<h1 className="flex text-3xl uppercase">
 					{t('games_played')}
 					</h1>
 					
 					<div className="flex justify-between py-2 text-[#ffebe7b7]">
-						<div>{t('total')} 0</div>
-						<div>{t('wins')} 0</div>
-						<div>{t('losses')} 0</div>
+						<div className="flex flex-col">
+							<div>{t('total')}</div>
+							<div>0</div>
+						</div>
+						<div className="flex flex-col">
+							<div>{t('wins')}</div>
+							<div>0</div>
+						</div>
+						<div className="flex flex-col">
+							<div>{t('losses')}</div>
+							<div>0</div>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<div className="profile-box">
-				<h1 className="flex text-4xl uppercase">
+			<div className="profile-box px-4 pt-16">
+				<h1 className="flex text-3xl uppercase">
 					{t('history')}
 					</h1>
 			</div>

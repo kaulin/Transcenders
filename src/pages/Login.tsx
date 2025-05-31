@@ -36,7 +36,7 @@ function SignIn() {
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 
-				<button className="pt-2 button-text" onClick={handleLogin}>
+				<button className="mt-2 button-text" onClick={handleLogin}>
 				{t('log_in')}
 				</button>
 

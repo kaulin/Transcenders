@@ -45,7 +45,7 @@
     }
 
 	.profile-box  {
-		@apply flex basis-1/3 rounded-lg bg-[#6b3e2f52] border flex-col items-center justify-center gap-6
+		@apply flex basis-1/3 rounded-lg bg-[#6b3e2f52] border flex-col items-center gap-6
 	}
 
     .bubble {
@@ -57,42 +57,42 @@
     }
 
     .bg-bubble-1 {
-        @apply bg-bubble absolute w-[10%] shadow-[#734b58b1]
+        @apply bg-bubble absolute max-w-[10%] shadow-[#734b58b1]
         bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
     }
 
 	.bg-bubble-2 {
-        @apply bg-bubble absolute w-[20%] shadow-[#734b598b]
+        @apply bg-bubble absolute max-w-[20%] shadow-[#734b598b]
         bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
     }
 
 	.bg-bubble-3 {
-        @apply bg-bubble absolute w-[30%] shadow-[#734b578a]
+        @apply bg-bubble absolute max-w-[30%] shadow-[#734b578a]
         bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
     }
 
 	.bg-bubble-4 {
-        @apply bg-bubble absolute w-[40%] shadow-[#734b5986]
+        @apply bg-bubble absolute max-w-[40%] shadow-[#734b5986]
         bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe128];
     }
 
 	.bg-bubble-5 {
-        @apply bg-bubble absolute w-[50%] shadow-[#734b5987]
+        @apply bg-bubble absolute max-w-[50%] shadow-[#734b5987]
         bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe11e];
     }
 
 	.bg-bubble-6 {
-        @apply bg-bubble absolute w-[60%] shadow-[#734b5e88]
+        @apply bg-bubble absolute max-w-[60%] shadow-[#734b5e88]
         bg-gradient-to-t from-[#933e56b5] via-[#ea8f719a] to-[#fcefe130];
     }
 
 	.bg-bubble-7 {
-        @apply bg-bubble absolute w-[70%] shadow-[#734b5282]
+        @apply bg-bubble absolute max-w-[70%] shadow-[#734b5282]
         bg-gradient-to-t from-[#96425ab2] via-[#ea8f719a] to-[#fcefe12b];
     }
 
 	.bg-bubble-8 {
-        @apply bg-bubble absolute w-[80%] shadow-[#734b5083]
+        @apply bg-bubble absolute max-w-[80%] shadow-[#734b5083]
         bg-gradient-to-t from-[#933e56a8] via-[#ea8f719a] to-[#fcefe11b];
     }
 }
