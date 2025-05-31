@@ -3,18 +3,22 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --inspect=0.0.0.0:9229 src/server.ts",
+    "dev": "tsx watch --inspect=0.0.0.0:9230 src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "bcrypt": "6.0.0",
+    "dotenv": "^16.5.0",
     "fastify": "^5.3.2",
-    "dotenv": "^16.5.0"
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.15.12",
-    "typescript": "^5.8.3",
-    "tsx": "^4.19.4"
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
   }
 }

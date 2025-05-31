@@ -2,12 +2,24 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Node (Docker, auto‑reload)",
+      "name": "Attach to Node (Docker)",
       "type": "node",
       "request": "attach",
       "address": "localhost",
       "port": 9229,
       "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/app",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Attach to Auth Service (Docker)",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9230,
+      "localRoot": "${workspaceFolder}/services/auth-service",
       "remoteRoot": "/app",
       "restart": true,
       "autoAttachChildProcesses": true,
