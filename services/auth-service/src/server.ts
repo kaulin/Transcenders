@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import 'dotenv/config';
+import { testDatabase } from './db.js';
 
 const app = Fastify({ logger: true });
 
@@ -7,6 +8,10 @@ const start = async () => {
   // Basic health check route
   app.get('/health', async () => {
     return { status: 'ok', service: 'auth-service' };
+  });
+  app.get('/db', async () => {
+    const result = await testDatabase();
+    return result;
   });
 
   try {
