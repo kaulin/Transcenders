@@ -1,5 +1,5 @@
 import { getDB } from '../db/database';
-import { CreateUserRequest, GetUsersQuery, User } from '../types/user.types';
+import { CreateUserRequest, GetUsersQuery, UpdateUserRequest, User } from '../types/user.types';
 
 /**
  * Endpoints
@@ -96,6 +96,37 @@ export class UserService {
       return !!user;
     } catch (error) {
       console.log('failed to check user', error);
+      throw error;
+    }
+  }
+
+  static async updateUser(id: number, updates: Partial<UpdateUserRequest>) {
+    try {
+      const database = await getDB();
+
+      // build dynamic sql based on provided keys in the interface
+      const fields = Object.keys(updates);
+      if (fields.length === 0) {
+        throw new Error('No fields to update');
+      }
+
+      const setFields = fields.map((field) => `${field} = ?`).join(', ');
+      const values = Object.values(updates);
+      values.push(id.toString());
+
+      const sql = `
+      UPDATE users
+      SET ${setFields}, modified_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+      `;
+
+      const result = await database.run(sql, values);
+      if ((result.changes || 0) === 0) {
+        return null;
+      }
+      return await this.getUserById(id);
+    } catch (error) {
+      console.log('failed to update user', error);
       throw error;
     }
   }

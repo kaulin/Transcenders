@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/UserService';
-import { CreateUserRequest } from '../types/user.types';
+import { CreateUserRequest, UpdateUserRequest } from '../types/user.types';
 
 export class UserController {
   static async getUsers(request: FastifyRequest, reply: FastifyReply) {
@@ -22,6 +22,28 @@ export class UserController {
       return { success: true, data: user };
     } catch (error: any) {
       reply.code(500);
+      return { success: false, error: error.message };
+    }
+  }
+
+  static async updateUser(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { id } = request.params as { id: string };
+      const userId = parseInt(id);
+
+      if (isNaN(userId) || userId <= 0) {
+        reply.code(400);
+        return { success: false, error: 'Invalid user ID' };
+      }
+
+      const updates = request.body as Partial<UpdateUserRequest>;
+      const updatedUser = await UserService.updateUser(userId, updates);
+      if (!updatedUser) {
+        reply.code(404);
+        return { success: false, error: 'User not found' };
+      }
+      return { success: true, data: updatedUser };
+    } catch (error: any) {
       return { success: false, error: error.message };
     }
   }

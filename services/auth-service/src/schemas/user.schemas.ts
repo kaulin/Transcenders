@@ -1,4 +1,5 @@
 import { Type } from '@fastify/type-provider-typebox';
+import { TSchema } from '@sinclair/typebox';
 
 const UserSchema = Type.Object({
   id: Type.Number(),
@@ -10,8 +11,6 @@ const UserSchema = Type.Object({
 });
 
 // Success response wrapper
-import { TSchema } from '@sinclair/typebox';
-
 const SuccessResponseSchema = (data: TSchema) =>
   Type.Object({
     success: Type.Literal(true),
@@ -38,6 +37,24 @@ export const createUserSchema = {
   response: {
     201: SuccessResponseSchema(UserSchema),
     500: ErrorResponseSchema,
+  },
+};
+
+export const updateUserSchema = {
+  params: Type.Object({
+    id: Type.String({ pattern: '^[0-9]+$' }),
+  }),
+  body: Type.Partial(
+    Type.Object({
+      username: Type.String({ minLength: 3, maxLength: 20 }),
+      email: Type.String({ format: 'email' }),
+      display_name: Type.String({ maxLength: 50 }),
+    }),
+  ),
+  response: {
+    200: SuccessResponseSchema(UserSchema),
+    404: ErrorResponseSchema,
+    400: ErrorResponseSchema,
   },
 };
 
