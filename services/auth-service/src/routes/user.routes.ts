@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { UserController } from '../controllers/UserController';
-import { createUserSchema, getUsersSchema, updateUserSchema } from '../schemas/user.schemas';
+import { createUserSchema, updateUserSchema } from '../schemas/user.schemas';
 
 export async function registerUserRoutes(app: FastifyInstance) {
-  app.get('/api/users', { schema: getUsersSchema }, UserController.getUsers);
+  app.get('/api/users', UserController.getUsers);
   app.post('/api/users', { schema: createUserSchema }, UserController.addUser);
   app.get('/api/users/:id', UserController.getUserById);
   app.patch('/api/users/:id', { schema: updateUserSchema }, UserController.updateUser);

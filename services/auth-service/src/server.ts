@@ -18,6 +18,11 @@ const app = Fastify({
           }
         : undefined,
   },
+  ajv: {
+    customOptions: {
+      removeAdditional: true,
+    },
+  },
 }).withTypeProvider<TypeBoxTypeProvider>();
 
 if (process.env.NODE_ENV === 'development') {
