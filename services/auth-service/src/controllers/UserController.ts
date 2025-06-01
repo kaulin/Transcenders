@@ -1,120 +1,93 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/UserService';
-import { CreateUserRequest, UpdateUserRequest } from '../types/user.types';
+import { CreateUserRequest, UpdateUserRequest, UserExistsResponse } from '../types/user.types';
+import { ResponseHelper } from '../utils/responseHelpers';
 
 export class UserController {
   static async getUsers(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const users = await UserService.getAllUsers({});
-      return { success: true, data: users };
-    } catch (error: any) {
-      return { success: false, error: error.message };
-    }
+    const users = await UserService.getAllUsers({});
+    return ResponseHelper.success(reply, users);
+  }
+
+  static async checkUserExists(request: FastifyRequest, reply: FastifyReply) {
+    const { identifier } = request.params as { identifier: string };
+    const exists = await UserService.checkUserExists(identifier);
+    const response: UserExistsResponse = {
+      exists,
+      identifier,
+      available: !exists,
+    };
+    return ResponseHelper.success(reply, response);
   }
 
   static async addUser(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      // safe cast because schema validation ensures the structure matches
-      // maybe make types from schemas later for easier types
-      const userdata = request.body as CreateUserRequest;
-      const user = await UserService.createUser(userdata);
-      reply.code(201);
-      return { success: true, data: user };
-    } catch (error: any) {
-      reply.code(500);
-      return { success: false, error: error.message };
-    }
+    const userdata = request.body as CreateUserRequest;
+    const user = await UserService.createUser(userdata);
+    return ResponseHelper.success(reply, user, 201);
   }
 
   static async updateUser(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params as { id: string };
-      const userId = parseInt(id);
+    const { id } = request.params as { id: string };
+    const userId = parseInt(id);
 
-      if (isNaN(userId) || userId <= 0) {
-        reply.code(400);
-        return { success: false, error: 'Invalid user ID' };
-      }
-
-      const updates = request.body as Partial<UpdateUserRequest>;
-      const updatedUser = await UserService.updateUser(userId, updates);
-      if (!updatedUser) {
-        reply.code(404);
-        return { success: false, error: 'User not found' };
-      }
-      return { success: true, data: updatedUser };
-    } catch (error: any) {
-      return { success: false, error: error.message };
+    if (isNaN(userId) || userId <= 0) {
+      ResponseHelper.throwBadRequest('Invalid user ID');
     }
+
+    const updates = request.body as Partial<UpdateUserRequest>;
+    const updatedUser = await UserService.updateUser(userId, updates);
+    if (!updatedUser) {
+      ResponseHelper.throwNotFound('User not found');
+    }
+    return ResponseHelper.success(reply, updatedUser);
   }
 
   static async deleteUser(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params as { id: string };
-      const userId = parseInt(id);
-      if (isNaN(userId) || userId <= 0) {
-        reply.code(400);
-        return { success: false, error: 'invalid used ID' };
-      }
-      const deleted = await UserService.deleteUser(userId);
-      if (!deleted) {
-        reply.code(404);
-        return { success: false, error: 'User not found' };
-      }
-
-      reply.code(200);
-      return { success: true, message: 'User deleted successfully' };
-    } catch (error: any) {
-      return { success: false, error: error.message };
+    const { id } = request.params as { id: string };
+    const userId = parseInt(id);
+    if (isNaN(userId) || userId <= 0) {
+      ResponseHelper.throwBadRequest('Invalid user ID');
     }
+    const deleted = await UserService.deleteUser(userId);
+    if (!deleted) {
+      ResponseHelper.throwNotFound('User not found');
+    }
+    return ResponseHelper.success(reply, { message: 'User deleted successfully' });
   }
 
   static async getUser(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { username, email } = request.query as { username?: string; email?: string };
+    const { username, email } = request.query as { username?: string; email?: string };
 
-      if (username) {
-        const user = await UserService.getUserByUsername(username);
-        if (!user) {
-          reply.code(404);
-          return { success: false, error: 'User not found' };
-        }
-        return { success: true, data: user };
+    if (username) {
+      const user = await UserService.getUserByUsername(username);
+      if (!user) {
+        ResponseHelper.throwNotFound('User not found');
       }
-
-      if (email) {
-        const user = await UserService.getUserByEmail(email);
-        if (!user) {
-          reply.code(404);
-          return { success: false, error: 'User not found' };
-        }
-        return { success: true, data: user };
-      }
-      reply.code(400);
-      return { success: false, error: 'Must provide username or email parameter' };
-    } catch (error: any) {
-      reply.code(500);
-      return { success: false, error: error.message };
+      return ResponseHelper.success(reply, user);
     }
+
+    if (email) {
+      const user = await UserService.getUserByEmail(email);
+      if (!user) {
+        ResponseHelper.throwNotFound('User not found');
+      }
+      return ResponseHelper.success(reply, user);
+    }
+    ResponseHelper.throwBadRequest('Must provide username or email parameter');
   }
 
   static async getUserById(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params as { id: string };
+    const { id } = request.params as { id: string };
 
-      const userId = parseInt(id);
-      if (isNaN(userId) || userId <= 0) {
-        reply.code(400);
-        return { success: false, error: 'invalid user ID' };
-      }
-      const user = await UserService.getUserById(userId);
-      if (!user) {
-        reply.code(404);
-        return { success: false, error: 'User not found' };
-      }
-      return { success: true, data: user };
-    } catch (error: any) {
-      return { success: false, error: error.message };
+    const userId = parseInt(id);
+    if (isNaN(userId) || userId <= 0) {
+      ResponseHelper.throwBadRequest('Invalid user ID');
     }
+
+    const user = await UserService.getUserById(userId);
+    if (!user) {
+      ResponseHelper.throwNotFound('User not found');
+    }
+    return ResponseHelper.success(reply, user);
   }
 }

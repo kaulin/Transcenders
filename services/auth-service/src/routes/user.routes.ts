@@ -1,10 +1,15 @@
 import { FastifyInstance } from 'fastify';
 import { UserController } from '../controllers/UserController';
-import { createUserSchema, updateUserSchema } from '../schemas/user.schemas';
+import { checkExistsSchema, createUserSchema, updateUserSchema } from '../schemas/user.schemas';
 
 export async function registerUserRoutes(app: FastifyInstance) {
   app.get('/api/users', UserController.getUsers);
   app.post('/api/users', { schema: createUserSchema }, UserController.addUser);
+  app.get(
+    '/api/users/check/:identifier',
+    { schema: checkExistsSchema },
+    UserController.checkUserExists,
+  );
   app.get('/api/users/:id', UserController.getUserById);
   app.get('/api/users/search', UserController.getUser);
   app.patch('/api/users/:id', { schema: updateUserSchema }, UserController.updateUser);
@@ -25,6 +30,14 @@ curl -X POST http://localhost:3001/api/users \
 
  */
 
+/** check if user exists (param :identifier can be username or email)
+
+curl -X GET http://localhost:3001/api/users/check/imnothere
+curl -X GET http://localhost:3001/api/users/check/allar
+curl -X GET http://localhost:3001/api/users/check/allar@example.com
+
+*/
+
 /** get a user by id (ie: id 2)
 
 curl -X GET http://localhost:3001/api/users/2
@@ -38,7 +51,7 @@ curl -X GET http://localhost:3001/api/users/search?email=allar@example.com
 
 */
 
-/** update user (ie: change display name to allar on user ID 1)
+/** update user (ie: change display name to allar on user ID 1) NB! invalid keys get scrapped
 
 curl -X PATCH http://localhost:3001/api/users/1 \
 -H "Content-Type: application/json" \

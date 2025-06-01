@@ -32,3 +32,12 @@ export const updateUserSchema = {
     ),
   ),
 };
+
+export const checkExistsSchema = {
+  params: Type.Object(
+    {
+      identifier: Type.String({ minLength: 3, maxLength: 50 }),
+    },
+    { additionalProperties: false },
+  ),
+};
