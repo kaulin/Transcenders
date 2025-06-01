@@ -4,7 +4,32 @@ import { registerAdminRoutes } from './routes/admin.routes.js';
 import { registerUserRoutes } from './routes/user.routes.js';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
-const app = Fastify({ logger: true }).withTypeProvider<TypeBoxTypeProvider>();
+const app = Fastify({
+  logger: {
+    level: 'info',
+    transport:
+      process.env.NODE_ENV === 'development'
+        ? {
+            target: 'pino-pretty',
+            options: {
+              translateTime: 'HH:MM:ss Z',
+              ignore: 'pid,hostname',
+            },
+          }
+        : undefined,
+  },
+}).withTypeProvider<TypeBoxTypeProvider>();
+
+if (process.env.NODE_ENV === 'development') {
+  app.addHook('onSend', async (request, reply, payload) => {
+    try {
+      const parsed = JSON.parse(payload as string);
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      return payload;
+    }
+  });
+}
 
 const start = async () => {
   try {
