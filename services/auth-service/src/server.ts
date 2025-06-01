@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import 'dotenv/config';
-import { testDatabase } from './db.js';
+import { DatabaseTestService } from './services/DatabaseTestService.js';
+import { DatabaseTestResponse } from './types/database.types.js';
 
 const app = Fastify({ logger: true });
 
@@ -10,7 +11,7 @@ const start = async () => {
     return { status: 'ok', service: 'auth-service' };
   });
   app.get('/db', async () => {
-    const result = await testDatabase();
+    const result: DatabaseTestResponse = await DatabaseTestService.runTests();
     return result;
   });
 
