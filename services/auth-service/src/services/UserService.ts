@@ -12,7 +12,7 @@ import { CreateUserRequest, GetUsersQuery, UpdateUserRequest, User } from '../ty
  */
 
 export class UserService {
-  static async createUser(userData: CreateUserRequest): Promise<User> {
+  static async createUser(userData: CreateUserRequest): Promise<User | null> {
     try {
       const database = await getDB();
 
@@ -21,9 +21,9 @@ export class UserService {
         [userData.username, userData.email, userData.display_name || userData.username],
       );
       if (!result.lastID) {
-        throw new Error('Failed to create user');
+        return null;
       }
-      const user = await database.get('SELECT * FROM users WHERE id = ?', [result.lastID]);
+      const user = await this.getUserById(result.lastID);
       return user as User;
     } catch (error) {
       console.log('failed to create user', error);
@@ -100,7 +100,7 @@ export class UserService {
     }
   }
 
-  static async updateUser(id: number, updates: Partial<UpdateUserRequest>) {
+  static async updateUser(id: number, updates: Partial<UpdateUserRequest>): Promise<User | null> {
     try {
       const database = await getDB();
 
@@ -114,11 +114,7 @@ export class UserService {
       const values = Object.values(updates);
       values.push(id.toString());
 
-      const sql = `
-      UPDATE users
-      SET ${setFields}, modified_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-      `;
+      const sql = `UPDATE users SET ${setFields}, modified_at = CURRENT_TIMESTAMP WHERE id = ?`;
 
       const result = await database.run(sql, values);
       if ((result.changes || 0) === 0) {

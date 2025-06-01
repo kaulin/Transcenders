@@ -23,6 +23,9 @@ export class UserController {
   static async addUser(request: FastifyRequest, reply: FastifyReply) {
     const userdata = request.body as CreateUserRequest;
     const user = await UserService.createUser(userdata);
+    if (!user) {
+      ResponseHelper.throwError('Failed to create user');
+    }
     return ResponseHelper.success(reply, user, 201);
   }
 

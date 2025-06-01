@@ -37,6 +37,9 @@ export class DatabaseTestService {
         username: 'itsme',
         email: 'amario@mario.fi',
       });
+      if (!testCreate) {
+        throw new Error('Test 5 failed');
+      }
       console.log('Test user creation:', testCreate.display_name);
 
       // Test 6: Get all users
@@ -46,7 +49,9 @@ export class DatabaseTestService {
 
       // Test 7: cleanup test
       console.log('Test 7: cleanup using deleteUser');
-      const cleanup1 = await UserService.deleteUser(testCreate.id);
+      if (testCreate?.id) {
+        const cleanup1 = await UserService.deleteUser(testCreate.id);
+      }
       if (testUser?.id) {
         const cleanup2 = await UserService.deleteUser(testUser.id);
       }
