@@ -29,14 +29,6 @@ export interface UpdateUserRequest {
 }
 
 /**
- * Request body for removing an existing user
- */
-export interface RemoveUserRequest {
-  username: string;
-  email: string;
-}
-
-/**
  * Response for checking if a user exists
  */
 export interface UserExistsResponse {

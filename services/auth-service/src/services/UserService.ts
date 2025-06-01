@@ -1,5 +1,5 @@
 import { getDB } from '../db/database';
-import { CreateUserRequest, GetUsersQuery, RemoveUserRequest, User } from '../types/user.types';
+import { CreateUserRequest, GetUsersQuery, User } from '../types/user.types';
 
 /**
  * Endpoints
@@ -100,14 +100,11 @@ export class UserService {
     }
   }
 
-  static async deleteUser(userData: RemoveUserRequest): Promise<boolean> {
+  static async deleteUser(userId: number): Promise<boolean> {
     try {
       const database = await getDB();
 
-      const result = await database.run('DELETE FROM users WHERE username = ? AND email = ?', [
-        userData.username,
-        userData.email,
-      ]);
+      const result = await database.run('DELETE FROM users WHERE id = ?', [userId]);
 
       return (result.changes || 0) > 0;
     } catch (error) {

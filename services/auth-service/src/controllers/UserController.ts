@@ -26,6 +26,27 @@ export class UserController {
     }
   }
 
+  static async deleteUser(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { id } = request.params as { id: string };
+      const userId = parseInt(id);
+      if (isNaN(userId) || userId <= 0) {
+        reply.code(400);
+        return { success: false, error: 'invalid used ID' };
+      }
+      const deleted = await UserService.deleteUser(userId);
+      if (!deleted) {
+        reply.code(404);
+        return { success: false, error: 'User not found' };
+      }
+
+      reply.code(200);
+      return { success: true, message: 'User deleted successfully' };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
+
   static async getUser(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { username, email } = request.query as { username?: string; email?: string };
@@ -62,7 +83,7 @@ export class UserController {
       const userId = parseInt(id);
       if (isNaN(userId) || userId <= 0) {
         reply.code(400);
-        return { success: false, error: 'invalid used ID' };
+        return { success: false, error: 'invalid user ID' };
       }
       const user = await UserService.getUserById(userId);
       if (!user) {

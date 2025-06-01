@@ -26,8 +26,10 @@ export class DatabaseTestService {
 
       // Test 4: Test user operations
       console.log('Test 4: Testing user existance...');
-      const testExists = await UserService.checkUserExists('testuser');
+      const testExists = await UserService.checkUserExists('testuser4242');
+      const testUser = await UserService.getUserByUsername('testuser4242');
       console.log('Test user exists:', testExists);
+      console.log('Test user object:', testUser);
 
       // Test 5: Test user operations
       console.log('Test 5: Testing user creation...');
@@ -44,14 +46,10 @@ export class DatabaseTestService {
 
       // Test 7: cleanup test
       console.log('Test 7: cleanup using deleteUser');
-      const cleanup1 = await UserService.deleteUser({
-        username: 'itsme',
-        email: 'amario@mario.fi',
-      });
-      const cleanup2 = await UserService.deleteUser({
-        username: 'testuser4242',
-        email: 'test4242@example.com',
-      });
+      const cleanup1 = await UserService.deleteUser(testCreate.id);
+      if (testUser?.id) {
+        const cleanup2 = await UserService.deleteUser(testUser.id);
+      }
       const afterCleanup = await UserService.getAllUsers({});
       if (usersResult.length - afterCleanup.length != 2) {
         throw new Error('cleanup test failed');
