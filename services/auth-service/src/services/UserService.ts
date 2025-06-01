@@ -1,6 +1,16 @@
 import { getDB } from '../db/database';
 import { CreateUserRequest, GetUsersQuery, RemoveUserRequest, User } from '../types/user.types';
 
+/**
+ * Endpoints
+ * GET /api/users - get all users (with pagination)
+ * POST /api/users - create new user
+ * GET /api/users/:id - get specific user by ID
+ * PUT /api/users/:id - update user
+ * DELETE /api/users/:id - delete user
+ * GET /api/users/check/:identifier - check if username/email exists
+ */
+
 export class UserService {
   static async createUser(userData: CreateUserRequest): Promise<User> {
     try {
@@ -17,6 +27,39 @@ export class UserService {
       return user as User;
     } catch (error) {
       console.log('failed to create user', error);
+      throw error;
+    }
+  }
+
+  static async getUserByUsername(username: string): Promise<User | null> {
+    try {
+      const database = await getDB();
+      const user = await database.get('SELECT * FROM users WHERE username = ?', [username]);
+      return user ? (user as User) : null;
+    } catch (error: any) {
+      console.log('failed to get user', error);
+      throw error;
+    }
+  }
+
+  static async getUserByEmail(email: string): Promise<User | null> {
+    try {
+      const database = await getDB();
+      const user = await database.get('SELECT * FROM users WHERE email = ?', [email]);
+      return user ? (user as User) : null;
+    } catch (error: any) {
+      console.log('failed to get user', error);
+      throw error;
+    }
+  }
+
+  static async getUserById(id: number): Promise<User | null> {
+    try {
+      const database = await getDB();
+      const user = await database.get('SELECT * FROM users WHERE id = ?', [id]);
+      return user ? (user as User) : null;
+    } catch (error: any) {
+      console.log('failed to get user', error);
       throw error;
     }
   }
