@@ -3,7 +3,7 @@ import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
 
-function SignIn() {
+function Login() {
     const { t } = useTranslation()
     const { setUser } = useUser()
 
@@ -18,21 +18,21 @@ function SignIn() {
     }
 
     return (
-		<div className="relative max-w-md flex justify-center items-center pb-24">
-			<div className="bubble w-[90vw] z-10 p-14 flex flex-col justify-center items-center">
-				<h1 className="text-2xl py-3 px-6">{t('online_log_in')}</h1>
+		<div className="flex h-full justify-center items-center pb-28">
+			<div className="bubble w-[min(90vw,90vh)] max-w-[500px] z-10 p-16 flex flex-col justify-center items-center">
+				<h1 className="text-2xl py-3">{t('online_log_in')}</h1>
 
 				<input
 					type="text" value={username}
 					placeholder={t("username")}
-					className="login-input-field"
+					className="login-input-field mt-2"
 					onChange={(e) => setUsername(e.target.value)}
 				/>
 
 				<input
 					type="password" value={password}
 					placeholder={t("password")}
-					className="login-input-field"
+					className="login-input-field mt-2"
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 
@@ -45,25 +45,8 @@ function SignIn() {
 				<Link to="/SignUp" className="button-text underline underline-offset-2"> {t('sign_up')}</Link>
 				</p>
 			</div>
-			{/* <div className="bubble absolute -bottom-2/4 -right-3/4 w-96 bg-white bg-opacity-10 z-10 flex flex-col justify-center items-center">
-				<h1 className="text-2xl mb-3">Start a local match</h1>
-				<input
-					type="text" value={username}
-					placeholder={t("Player 1")}
-					className="login-input-field"
-					onChange={(e) => setUsername(e.target.value)}
-				/>
-
-				<input
-					type="text" value={username}
-					placeholder={t("Player2")}
-					className="login-input-field"
-					onChange={(e) => setUsername(e.target.value)}
-				/>
-				<button className="button-text mt-2">Start</button>
-			</div> */}
 		</div>
     )
 }
 
-export default SignIn
+export default Login
