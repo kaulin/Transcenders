@@ -19,6 +19,10 @@ export default {
     },
   ],
   theme: {
+    container: {
+      center: true,
+    },
+
     extend: {
       colors: {
         bg_primary: "#8a63ff",

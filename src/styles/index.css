@@ -4,14 +4,11 @@
 
 @layer base {
 
+
     html {
-        @apply min-h-screen bg-gradient-to-t from-[#e6c8b5] via-[#ebccbd] to-[#e6c8b5];
+        @apply min-h-screen bg-gradient-to-t from-[#ebd4c6] via-[#eccebd] to-[#ebd4c6];
     }
     
-    main {
-        @apply flex h-full w-full z-10 justify-center items-center flex-1 text-center text-lg;
-    }
-
 	div {
 		@apply text-white;
 	}
@@ -37,17 +34,17 @@
     }
 
 	.play-button {
-		@apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text mt-4 min-w-24;
+		@apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text text-center mt-4 min-w-24;
 	}
 
     .login-input-field {
-        @apply rounded-lg bg-white bg-opacity-20 p-1 text-white placeholder-white mt-2;
+        @apply rounded-lg bg-white bg-opacity-20 p-1 text-white placeholder-white;
     }
 
-	.profile-box  {
-		@apply flex basis-1/3 rounded-lg bg-[#6b3e2f52] border flex-col items-center gap-6
+    .profile-box  {
+		@apply rounded-lg bg-[#c8ac97a4] border flex flex-col items-center
 	}
-
+    
     .bubble {
         @apply bg-white bg-opacity-10 rounded-full aspect-square border;
     }

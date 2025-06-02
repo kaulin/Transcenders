@@ -5,8 +5,8 @@ import { useUser } from '../contexts/UserContext';
 import Login from '../pages/Login'
 import SignUp from '../pages/SignUp'
 import Home from '../pages/Home'
+import Dashboard from '../pages/Dashboard'
 import Profile from '../pages/Profile'
-import Settings from '../pages/Settings'
 import Tournament from '../pages/Tournament'
 import LocalGame from '../pages/LocalGame'
 
@@ -20,8 +20,8 @@ const MainContainer = () => {
             <Route path="/" element={<Home />} />
             <Route path="/localgame" element={<LocalGame />} />
             <Route path="/tournament" element={<Tournament />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         ) : (

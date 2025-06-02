@@ -24,8 +24,8 @@ const Header = () => {
 					</div>
                     <div className="flex basis-1/3 justify-center gap-4 uppercase">
                         <Link to="/" className="button-text text-lg">{t('home')}</Link>
+                        <Link to="/dashboard" className="button-text text-lg">dashboard</Link>
                         <Link to="/profile" className="button-text text-lg">{t('profile')}</Link>
-                        <Link to="/settings" className="button-text text-lg">{t('settings')}</Link>
                     </div>
 					<div className="flex basis-1/3 justify-end">
                     	<button onClick={handleLogout}>{t('log_out')}</button>
