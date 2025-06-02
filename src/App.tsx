@@ -1,18 +1,6 @@
-// import { Routes, Route, Navigate } from 'react-router-dom'
-
-// import { useUser } from "./contexts/UserContext"
-
 import Header from './layout/Header'
 import MainContainer from './layout/MainContainer'
 // import Footer from './layout/Footer'
-
-// import Login from './pages/Login'
-// import SignUp from './pages/SignUp'
-// import Home from './pages/Home'
-// import Tournament from './pages/Tournament'
-// import Profile from './pages/Profile'
-// import Settings from './pages/Settings'
-// import LocalGame from './pages/LocalGame'
 
 // import Background from './components/Background'
 
