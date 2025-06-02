@@ -1,35 +1,13 @@
 {
   "name": "transcenders",
+  "private": true,
+  "workspaces": [
+        "packages/*",
+        "services/*",
+        "web"
+      ],
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "dev": "tsx watch --inspect=0.0.0.0:9229 src/server.ts --tsc",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "lint": "eslint src --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\""
-  },
-  "keywords": [],
+  "description": "transcenders",
   "author": "",
-  "license": "ISC",
-  "description": "",
-  "type": "module",
-  "dependencies": {
-    "@fastify/cors": "^11.0.1",
-    "dotenv": "^16.5.0",
-    "fastify": "^5.3.2",
-    "pino": "^9.6.0"
-  },
-  "devDependencies": {
-    "@types/node": "^22.15.12",
-    "@typescript-eslint/eslint-plugin": "^8.32.0",
-    "@typescript-eslint/parser": "^8.32.0",
-    "eslint": "^9.26.0",
-    "eslint-plugin-prettier": "^5.4.0",
-    "globals": "^16.1.0",
-    "prettier": "^3.5.3",
-    "tsx": "^4.19.4",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.32.0"
+  "license": "ISC"
   }
-}
