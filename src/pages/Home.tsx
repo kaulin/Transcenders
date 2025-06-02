@@ -7,7 +7,7 @@ function Home() {
     const { user } = useUser()
 
     return (
-		<div className="pb-24 z-10">
+		<div className="flex h-full flex-col justify-center items-center pb-28">
 			<h1 className="text-4xl">{t('hello')} {user?.name}</h1>
 			<p className="mb-10">{t('welcome')}!</p>
 
