@@ -10,8 +10,6 @@ all: setup dev
 setup:
 	@echo "Installing dependencies locally"
 	npm ci --include=dev
-	@echo "Building contracts package"
-	npm run build --workspace=@transcenders/contracts
 
 # Development environment (hot-reloading)
 dev:
