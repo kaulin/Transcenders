@@ -1,4 +1,4 @@
-import { User } from './user.types';
+import { User } from '@transcenders/contracts';
 
 /**
  * Database configuration options

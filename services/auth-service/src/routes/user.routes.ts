@@ -1,6 +1,12 @@
 import { FastifyInstance } from 'fastify';
 import { UserController } from '../controllers/UserController';
-import { checkExistsSchema, createUserSchema, updateUserSchema } from '../schemas/user.schemas';
+import {
+  checkExistsSchema,
+  createUserSchema,
+  deleteUserSchema,
+  getUserByIdSchema,
+  updateUserSchema,
+} from '@transcenders/contracts';
 
 export async function registerUserRoutes(app: FastifyInstance) {
   app.get('/api/users', UserController.getUsers);
@@ -10,10 +16,10 @@ export async function registerUserRoutes(app: FastifyInstance) {
     { schema: checkExistsSchema },
     UserController.checkUserExists,
   );
-  app.get('/api/users/:id', UserController.getUserById);
+  app.get('/api/users/:id', { schema: getUserByIdSchema }, UserController.getUserById);
   app.get('/api/users/search', UserController.getUser);
   app.patch('/api/users/:id', { schema: updateUserSchema }, UserController.updateUser);
-  app.delete('/api/users/:id', UserController.deleteUser);
+  app.delete('/api/users/:id', { schema: deleteUserSchema }, UserController.deleteUser);
 }
 
 /** get all users

@@ -1,6 +1,6 @@
 # Base image
 FROM node:24-slim AS base
-WORKDIR /app
+WORKDIR /workspace
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libsqlite3-0 \
@@ -13,16 +13,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3 \
         libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
-COPY package*.json ./
-RUN npm ci
-COPY . .
-ENV NODE_ENV=development
-EXPOSE 3000 9230
-CMD ["npm", "run", "dev"]
 
-# Build stage
-FROM development AS build
-RUN npm run build
+COPY package.json package-lock.json ./
+COPY packages/contracts/ ./packages/contracts/
+COPY services/auth-service/package.json ./services/auth-service/
+
+RUN npm ci --workspace=auth-service
+
+COPY services/auth-service/ ./services/auth-service/
+
+WORKDIR /workspace/services/auth-service
+
+ENV NODE_ENV=development
+EXPOSE 3000 9228
+CMD ["npm", "run", "dev"]
 
 # Production stage
 FROM base AS production
@@ -32,10 +36,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 libsqlite3-dev \
 && rm -rf /var/lib/apt/lists/*
 
-COPY package*.json ./
-RUN npm ci --omit=dev
-COPY --from=build /app/dist ./dist
-VOLUME ["/app/data"]
+COPY package.json package-lock.json ./
+COPY packages/contracts/ ./packages/contracts/
+COPY services/auth-service/package.json ./services/auth-service/
+
+RUN npm ci --workspace=auth-service --omit=dev
+
+WORKDIR /workspace/services/auth-service
+COPY --from=build /workspace/services/auth-service/dist ./dist
+
+VOLUME ["/workspace/services/auth-service/data"]
 EXPOSE 3000
 ENV NODE_ENV=production
 CMD ["node", "dist/server.js"]

@@ -1,23 +1,29 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/UserService';
-import { CreateUserRequest, UpdateUserRequest, UserExistsResponse } from '../types/user.types';
+import {
+  CreateUserRequest,
+  DeleteUserData,
+  UpdateUserRequest,
+  User,
+  UserExistsData,
+} from '@transcenders/contracts';
 import { ResponseHelper } from '../utils/responseHelpers';
 
 export class UserController {
   static async getUsers(request: FastifyRequest, reply: FastifyReply) {
-    const users = await UserService.getAllUsers({});
+    const users: User[] = await UserService.getAllUsers({});
     return ResponseHelper.success(reply, users);
   }
 
   static async checkUserExists(request: FastifyRequest, reply: FastifyReply) {
     const { identifier } = request.params as { identifier: string };
     const exists = await UserService.checkUserExists(identifier);
-    const response: UserExistsResponse = {
+    const data: UserExistsData = {
       exists,
       identifier,
       available: !exists,
     };
-    return ResponseHelper.success(reply, response);
+    return ResponseHelper.success(reply, data);
   }
 
   static async addUser(request: FastifyRequest, reply: FastifyReply) {
@@ -55,7 +61,8 @@ export class UserController {
     if (!deleted) {
       ResponseHelper.throwNotFound('User not found');
     }
-    return ResponseHelper.success(reply, { message: 'User deleted successfully' });
+    const data: DeleteUserData = { message: 'User deleted successfully' };
+    return ResponseHelper.success(reply, data);
   }
 
   static async getUser(request: FastifyRequest, reply: FastifyReply) {

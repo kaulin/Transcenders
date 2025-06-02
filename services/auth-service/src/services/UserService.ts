@@ -1,5 +1,5 @@
 import { getDB } from '../db/database';
-import { CreateUserRequest, GetUsersQuery, UpdateUserRequest, User } from '../types/user.types';
+import { CreateUserRequest, GetUsersQuery, UpdateUserRequest, User } from '@transcenders/contracts';
 
 /**
  * Endpoints
