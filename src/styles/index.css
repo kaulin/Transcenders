@@ -48,11 +48,11 @@
         @apply bg-white bg-opacity-10 rounded-full aspect-square border;
     }
 
-    .bg-bubble {
+    /* .bg-bubble {
         @apply rounded-full aspect-square shadow-xl bg-gradient-to-t w-full z-0;
-    }
+    } */
 
-    .bg-bubble-1 {
+    /* .bg-bubble-1 {
         @apply bg-bubble absolute max-w-[10%] shadow-[#734b58b1]
         bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
     }
@@ -90,5 +90,5 @@
 	.bg-bubble-8 {
         @apply bg-bubble absolute max-w-[80%] shadow-[#734b5083]
         bg-gradient-to-t from-[#933e56a8] via-[#ea8f719a] to-[#fcefe11b];
-    }
+    } */
 }

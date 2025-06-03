@@ -1,14 +1,8 @@
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-type PieChartsProps = {
-  wins: number;
-  losses: number;
-};
+const COLORS = ['#a8d43752', '#5d6b2f52']
 
-const COLORS = ['#a8d43752', '#5d6b2f52'];
-
-const PieCharts: React.FC<PieChartsProps> = ({ wins, losses }) => {
-  const total = wins + losses
+const PieCharts = () => {
 
   const singleMatchData = [
     { name: 'Wins', value: 30 },
@@ -26,7 +20,7 @@ const PieCharts: React.FC<PieChartsProps> = ({ wins, losses }) => {
   ]; 
 
   return (
-    <div className="flex w-full justify-around gap-4">
+    <div className="flex w-full">
       {[
         { title: "Matches by Type", data: matchTypeData },
         { title: "Single Match", data: singleMatchData },
@@ -66,4 +60,4 @@ const PieCharts: React.FC<PieChartsProps> = ({ wins, losses }) => {
   );
 };
 
-export default PieCharts;
+export default PieCharts
