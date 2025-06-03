@@ -75,42 +75,42 @@ export const createInitialGameState = (
 	const paddleOffset = 20; // distance from edge of canvas
 
 	return {
-	status: GameStatus.WAITING,
-	canvasWidth: width,
-	canvasHeight: height,
-	leftScore: 0,
-	rightScore: 0,
-	leftPaddle: {
-		position: {
-			x: paddleOffset,
-			y: height / 2 - paddleHeight / 2
+		status: GameStatus.WAITING,
+		canvasWidth: width,
+		canvasHeight: height,
+		leftScore: 0,
+		rightScore: 0,
+		leftPaddle: {
+			position: {
+				x: paddleOffset,
+				y: height / 2 - paddleHeight / 2
+			},
+			width: paddleWidth,
+			height: paddleHeight,
+			speed: DEFAULT_GAME_SETTINGS.paddleSpeed
 		},
-		width: paddleWidth,
-		height: paddleHeight,
-		speed: DEFAULT_GAME_SETTINGS.paddleSpeed
-	},
-	rightPaddle: {
-		position: {
-			x: width - paddleOffset - paddleWidth,
-			y: height / 2 - paddleHeight / 2
+		rightPaddle: {
+			position: {
+				x: width - paddleOffset - paddleWidth,
+				y: height / 2 - paddleHeight / 2
+			},
+			width: paddleWidth,
+			height: paddleHeight,
+			speed: DEFAULT_GAME_SETTINGS.paddleSpeed
 		},
-		width: paddleWidth,
-		height: paddleHeight,
-		speed: DEFAULT_GAME_SETTINGS.paddleSpeed
-	},
-	ball: {
-		position: {
-		x: width / 2,
-		y: height / 2
-		},
-		radius: DEFAULT_GAME_SETTINGS.ballRadius,
-		velocity: {
-		dx: 0,
-		dy: 0
-	  },
-	  initialSpeed: DEFAULT_GAME_SETTINGS.ballInitialSpeed
-	}
-  };
+		ball: {
+			position: {
+			x: width / 2,
+			y: height / 2
+			},
+			radius: DEFAULT_GAME_SETTINGS.ballRadius,
+			velocity: {
+			dx: 0,
+			dy: 0
+		  },
+		  initialSpeed: DEFAULT_GAME_SETTINGS.ballInitialSpeed
+		}
+	};
 };
 
 //resets ball to the center with random direction

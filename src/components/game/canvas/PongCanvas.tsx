@@ -183,6 +183,19 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 			context.font = '18px Arial';
 			context.fillText('Press Space to Resume', canvasWidth / 2, canvasHeight / 2 + 30);
 		}
+
+		if (state.status === GameStatus.ENDED) {
+			context.font = '36px Arial';
+			context.fillStyle = '#FFFFFF';
+			console.log('leftscore: ', leftScore, 'rightscore: ', rightScore);
+			if (leftScore >= 10) {
+				context.fillText('Player 1 wins!', canvasWidth / 2, canvasHeight / 2);
+			} else if (rightScore >= 10) {
+				context.fillText('Player 2 wins!', canvasWidth / 2, canvasHeight / 2);
+			}
+			context.font = '18px Arial';
+			context.fillText('What a Claw-some victory!', canvasWidth / 2, canvasHeight / 2 + 30);
+		}
 	};
   
 	// React hook to draw the game whenever gameState orr image state changes
