@@ -2,12 +2,12 @@
   "name": "transcenders",
   "private": true,
   "workspaces": [
-        "packages/*",
-        "services/*",
-        "web"
-      ],
+    "packages/*",
+    "services/*", 
+    "web"
+  ],
   "version": "1.0.0",
   "description": "transcenders",
   "author": "",
   "license": "ISC"
-  }
+}
