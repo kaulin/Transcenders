@@ -54,11 +54,24 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 				setImagesLoaded(true);
 			} catch (error) {
 				console.error('Failed to load game images:', error);
-				// Fallback: keep imagesLoaded as false to use shape drawing
+				// keep imagesLoaded as false to use shape drawing
 			}
 		};
 		loadImages();
 	}, []);
+
+	//calcuulates scaled dimensions for paddle images
+	const scaledDimensions = (
+		image: HTMLImageElement,
+		targetHeight: number
+	): { width:number; height: number } => {
+		const ratio = image.naturalWidth / image.naturalHeight;
+		const scaledWidth = targetHeight * ratio;
+		 return {
+			width :scaledWidth,
+			height: targetHeight
+		};
+	};
 
 	const drawGame = (context: CanvasRenderingContext2D, state: GameState) => {
 		const { leftPaddle, rightPaddle, ball, leftScore, rightScore, canvasWidth, canvasHeight } = state;
@@ -86,24 +99,23 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 	
 		// draw paddles and ball
 		if (imagesLoaded && images.leftPaddle && images.rightPaddle && images.ball) {
-			// need to make paddles bigger to see the images better
-			const paddleScale = 1.5;
-			const paddleWidth = leftPaddle.width * paddleScale;
-			const paddleHeight = leftPaddle.height * paddleScale;
-			
-			// Center the larger image on the original paddle position
-			const leftPaddleX = leftPaddle.position.x - (paddleWidth - leftPaddle.width) / 2;
-			const leftPaddleY = leftPaddle.position.y - (paddleHeight - leftPaddle.height) / 2;
-			const rightPaddleX = rightPaddle.position.x - (paddleWidth - rightPaddle.width) / 2;
-			const rightPaddleY = rightPaddle.position.y - (paddleHeight - rightPaddle.height) / 2;
+			//calculate dimensions for left paddle
+			const leftPaddleScaled = scaledDimensions(images.leftPaddle, leftPaddle.height);
+			const leftPaddleX = leftPaddle.position.x - (leftPaddleScaled.width - leftPaddle.width) / 2;
+			const leftPaddleY = leftPaddle.position.y - (leftPaddleScaled.height - leftPaddle.height) / 2;
+
+			//dimensions for right paddle
+			const rightPaddleScaled = scaledDimensions(images.rightPaddle, rightPaddle.height);
+			const rightPaddleX = rightPaddle.position.x - (rightPaddleScaled.width - rightPaddle.width) / 2;
+			const rightPaddleY = rightPaddle.position.y - (rightPaddleScaled.height - rightPaddle.height) / 2;
 			
 			// draw left paddle
 			context.drawImage(
 				images.leftPaddle,
 				leftPaddleX,
 				leftPaddleY,
-				paddleWidth,
-				paddleHeight
+				leftPaddleScaled.width,
+				leftPaddleScaled.height
 			);
 	
 			// draw right paddle
@@ -111,13 +123,12 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 				images.rightPaddle,
 				rightPaddleX,
 				rightPaddleY,
-				paddleWidth,
-				paddleHeight
+				rightPaddleScaled.width,
+				rightPaddleScaled.height
 			);
 	
-			// Make ball bigger too
-			const ballScale = 2;
-			const ballSize = ball.radius * 2 * ballScale;
+			// draw ball
+			const ballSize = ball.radius * 2;
 			context.drawImage(
 				images.ball,
 				ball.position.x - (ballSize / 2),
@@ -174,7 +185,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 		}
 	};
   
-	// React hook to draw the game whenever gameState changes
+	// React hook to draw the game whenever gameState orr image state changes
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
@@ -188,7 +199,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 	
 		// Draw the game elements
 		drawGame(context, gameState);
-	}, [gameState, imagesLoaded, images]); // Added dependencies for image state
+	}, [gameState, imagesLoaded, images]);
 
 	return (
 		<canvas
