@@ -42,6 +42,10 @@ COPY services/auth-service/package.json ./services/auth-service/
 
 RUN npm ci --workspace=auth-service --omit=dev
 
+COPY services/auth-service/ ./services/auth-service/
+RUN npm run build --workspace=auth-service
+COPY dist/ ./dist/
+
 WORKDIR /workspace/services/auth-service
 COPY --from=build /workspace/services/auth-service/dist ./dist
 
