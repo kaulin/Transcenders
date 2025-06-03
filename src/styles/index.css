@@ -3,10 +3,9 @@
 @tailwind utilities;
 
 @layer base {
-
-
+    
     html {
-        @apply min-h-screen bg-gradient-to-t from-[#ebd4c6] via-[#eccebd] to-[#ebd4c6];
+        @apply min-h-screen bg-gradient-to-t from-[#e0cec2] via-[#e0cec2] to-[#e0cec2];
     }
     
 	div {
@@ -40,9 +39,9 @@
     .login-input-field {
         @apply rounded-lg bg-white bg-opacity-20 p-1 text-white placeholder-white;
     }
-
+    
     .profile-box  {
-		@apply rounded-lg bg-[#c8ac97a4] border flex flex-col items-center
+		@apply rounded-lg bg-[#d3bfb1c4] border flex flex-col items-center
 	}
     
     .bubble {

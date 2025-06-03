@@ -90,7 +90,7 @@ const Dashboard = () => {
 					{t('games_played')}
 				</h1>
 				
-				<div className="flex flex-col w-full rounded-lg bg-[#f6dfd148] p-4">
+				<div className="flex flex-col w-full rounded-lg bg-[#f3e4db48] p-4">
 					<div className="flex justify-around py-6 text-xl uppercase">
 						<div className="flex flex-col">
 							<div>{t('total')}</div>
