@@ -6,20 +6,17 @@ import {
   deleteUserSchema,
   getUserByIdSchema,
   updateUserSchema,
+  USER_ROUTES,
 } from '@transcenders/contracts';
 
 export async function registerUserRoutes(app: FastifyInstance) {
-  app.get('/users', UserController.getUsers);
-  app.post('/users', { schema: createUserSchema }, UserController.addUser);
-  app.get(
-    '/users/check/:identifier',
-    { schema: checkExistsSchema },
-    UserController.checkUserExists,
-  );
-  app.get('/users/:id', { schema: getUserByIdSchema }, UserController.getUserById);
-  app.get('/users/search', UserController.getUser);
-  app.patch('/users/:id', { schema: updateUserSchema }, UserController.updateUser);
-  app.delete('/users/:id', { schema: deleteUserSchema }, UserController.deleteUser);
+  app.get(USER_ROUTES.USERS, UserController.getUsers);
+  app.post(USER_ROUTES.USERS, { schema: createUserSchema }, UserController.addUser);
+  app.get(USER_ROUTES.CHECK_USER, { schema: checkExistsSchema }, UserController.checkUserExists);
+  app.get(USER_ROUTES.USER_BY_ID, { schema: getUserByIdSchema }, UserController.getUserById);
+  app.get(USER_ROUTES.SEARCH_USER, UserController.getUser);
+  app.patch(USER_ROUTES.USER_BY_ID, { schema: updateUserSchema }, UserController.updateUser);
+  app.delete(USER_ROUTES.USER_BY_ID, { schema: deleteUserSchema }, UserController.deleteUser);
 }
 
 /** get all users
