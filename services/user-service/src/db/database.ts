@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { DatabaseConfig, DatabaseInitResult, DatabaseStatus } from '../types/database.types';
+import 'dotenv/config';
 
 console.log('Loading database.ts file...');
 let db: Database | null = null;
@@ -10,6 +11,24 @@ let dbStatus: DatabaseStatus = {
   databasePath: '',
   tablesCount: 0,
 };
+
+// Environment-aware database configuration with env variable support
+function getDatabaseConfig(): DatabaseConfig {
+  // Use environment variables with sensible defaults
+  const filename = process.env.DATABASE_PATH || './data/users.db';
+  const fileDir = process.env.DATABASE_DIR || './data';
+  const verbose = process.env.NODE_ENV === 'development';
+
+  console.log(`Database path: ${filename}`);
+  console.log(`Database directory: ${fileDir}`);
+  console.log(`Verbose mode: ${verbose}`);
+
+  return {
+    filename,
+    fileDir,
+    verbose,
+  };
+}
 
 async function ensureDataDir(dataPath: string): Promise<void> {
   try {
@@ -87,11 +106,7 @@ async function databaseFileExists(filepath: string): Promise<boolean> {
 }
 
 export async function getDB(): Promise<Database> {
-  const config: DatabaseConfig = {
-    filename: '/app/data/users.db',
-    fileDir: '/app/data',
-    verbose: process.env.NODE_ENV === 'development',
-  };
+  const config: DatabaseConfig = getDatabaseConfig();
   const fileExists = await databaseFileExists(config.filename);
   if (!fileExists && db) {
     console.log('Database file missing, reinitializing...');

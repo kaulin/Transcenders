@@ -4,7 +4,7 @@
 # DEVELOPMENT
 ################################################################################
 
-all: setup dev
+all: setup dev web-dev
 
 # Install dependencies locally for VSCode IntelliSense
 setup:
@@ -15,6 +15,13 @@ setup:
 dev:
 	@echo "Starting development environment..."
 	docker compose up -d
+
+# Everything local (for developers who can't use containers)
+local:
+	@echo "Starting backend services locally..."
+	@echo "Backend at: http://localhost:3001"
+	@echo "Frontend at: http://localhost:5173"
+	npm run dev:all
 
 # Start development with visible logs
 dev-logs: stop-dev
@@ -33,6 +40,20 @@ stop-dev:
 # Restart development environment
 restart: stop-dev dev
 	@echo "Development environment restarted"
+
+################################################################################
+# WEB FRONTEND
+################################################################################
+
+# Setup web dependencies
+web-setup:
+	@echo "Installing web dependencies..."
+	npm install --workspace=web
+
+# Start web development server (local)
+web-dev:
+	@echo "Starting web development server..."
+	npm run dev --workspace=web
 
 ################################################################################
 # PRODUCTION

@@ -11,6 +11,8 @@ services:
       - "9228:9228"
     environment:
       - NODE_ENV=development
+      - DATABASE_PATH=/workspace/services/user-service/data/users.db
+      - DATABASE_DIR=/workspace/services/user-service/data
     volumes:
       - ./services/user-service:/workspace/services/user-service
       - user_node_modules:/workspace/services/user-service/node_modules
