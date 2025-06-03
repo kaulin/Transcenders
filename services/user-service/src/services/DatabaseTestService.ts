@@ -1,5 +1,5 @@
-import { getDB } from '../db/database';
-import { DatabaseTestResponse } from '../types/database.types';
+import { getDB } from '../db/database.js';
+import { DatabaseTestResponse } from '../types/database.types.js';
 import { UserService } from './UserService.js';
 
 export class DatabaseTestService {

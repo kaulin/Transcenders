@@ -4,7 +4,7 @@ services:
     image: transcenders-prod:hive
     build:
       context: .
-      dockerfile: services/auth-service/dockerfile
+      dockerfile: services/user-service/dockerfile
       target: production
     ports:
       - "30000:3000"

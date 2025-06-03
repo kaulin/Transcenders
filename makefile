@@ -70,7 +70,7 @@ rebuild: stop
 clean: stop
 	@echo "Cleaning all Docker resources..."
 	docker compose down
-	-docker rmi auth-service:hive
+	-docker rmi user-service:hive
 	-docker system prune -f
 
 ################################################################################

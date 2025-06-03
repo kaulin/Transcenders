@@ -16,13 +16,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY package.json package-lock.json ./
 COPY packages/contracts/ ./packages/contracts/
-COPY services/auth-service/package.json ./services/auth-service/
+COPY services/user-service/package.json ./services/user-service/
 
-RUN npm ci --workspace=auth-service
+RUN npm ci --workspace=user-service
 
-COPY services/auth-service/ ./services/auth-service/
+COPY services/user-service/ ./services/user-service/
 
-WORKDIR /workspace/services/auth-service
+WORKDIR /workspace/services/user-service
 
 ENV NODE_ENV=development
 EXPOSE 3000 9228
@@ -38,18 +38,18 @@ libsqlite3-dev \
 
 COPY package.json package-lock.json ./
 COPY packages/contracts/ ./packages/contracts/
-COPY services/auth-service/package.json ./services/auth-service/
+COPY services/user-service/package.json ./services/user-service/
 
-RUN npm ci --workspace=auth-service --omit=dev
+RUN npm ci --workspace=user-service --omit=dev
 
-COPY services/auth-service/ ./services/auth-service/
-RUN npm run build --workspace=auth-service
+COPY services/user-service/ ./services/user-service/
+RUN npm run build --workspace=user-service
 COPY dist/ ./dist/
 
-WORKDIR /workspace/services/auth-service
-COPY --from=build /workspace/services/auth-service/dist ./dist
+WORKDIR /workspace/services/user-service
+COPY --from=build /workspace/services/user-service/dist ./dist
 
-VOLUME ["/workspace/services/auth-service/data"]
+VOLUME ["/workspace/services/user-service/data"]
 EXPOSE 3000
 ENV NODE_ENV=production
 CMD ["node", "dist/server.js"]

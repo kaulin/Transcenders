@@ -4,7 +4,7 @@ services:
     image: auth-service:hive
     build:
       context: .
-      dockerfile: services/auth-service/dockerfile
+      dockerfile: services/user-service/dockerfile
       target: development
     ports:
       - "3001:3000"
@@ -12,10 +12,10 @@ services:
     environment:
       - NODE_ENV=development
     volumes:
-      - ./services/auth-service:/workspace/services/auth-service
-      - auth_node_modules:/workspace/services/auth-service/node_modules
-      - auth_db:/workspace/services/auth-service/data
+      - ./services/user-service:/workspace/services/user-service
+      - user_node_modules:/workspace/services/user-service/node_modules
+      - user_db:/workspace/services/user-service/data
       - ./packages/contracts:/workspace/packages/contracts
 volumes:
-  auth_node_modules:
-  auth_db:
+  user_node_modules:
+  user_db:

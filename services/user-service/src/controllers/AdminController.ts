@@ -9,7 +9,7 @@ export class AdminController {
   static async getHealth(request: FastifyRequest, reply: FastifyReply): Promise<HealthResponse> {
     return {
       success: true,
-      service: 'auth-service',
+      service: 'user-service',
       status: 'ok',
       timestamp: new Date().toISOString(),
     };
