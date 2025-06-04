@@ -114,7 +114,7 @@ export class UserService {
       const values = Object.values(updates);
       values.push(id.toString());
 
-      const sql = `UPDATE users SET ${setFields}, modified_at = CURRENT_TIMESTAMP WHERE id = ?`;
+      const sql = `UPDATE users SET ${setFields} WHERE id = ?`;
 
       const result = await database.run(sql, values);
       if ((result.changes || 0) === 0) {

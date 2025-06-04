@@ -96,6 +96,18 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
       FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE,
       CHECK (user1_id < user2_id)  -- guarantees canonical order and uniqueness
     );
+
+    CREATE TRIGGER IF NOT EXISTS users_updated_at
+    AFTER UPDATE ON users
+    BEGIN
+      UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS friend_relationships_updated_at
+    AFTER UPDATE ON friend_relationships
+    BEGIN
+      UPDATE friend_relationships SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
   `;
     // trigger for updating modified_at,
     // and other init stuff
