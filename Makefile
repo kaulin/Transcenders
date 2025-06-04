@@ -17,7 +17,7 @@ dev:
 	docker compose up -d
 
 # Everything local (for developers who can't use containers)
-local:
+local: setup
 	@echo "Starting backend services locally..."
 	@echo "Backend at: http://localhost:3001"
 	@echo "Frontend at: http://localhost:5173"
