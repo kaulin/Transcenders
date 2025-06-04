@@ -97,6 +97,12 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
       CHECK (user1_id < user2_id)  -- guarantees canonical order and uniqueness
     );
 
+    CREATE INDEX idx_friend_requests_recipient_pending
+      ON friend_requests(recipient_id)
+      WHERE state = 'pending';
+
+    CREATE INDEX idx_friendships_user2 ON friendships(user2_id);
+
     CREATE TRIGGER IF NOT EXISTS users_updated_at
     AFTER UPDATE ON users
     BEGIN
@@ -119,8 +125,14 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     return {
       success: true,
       databasePath: config.filename,
-      indexesCreated: ['idx_users_username', 'idx_users_email', 'idx_users_created_at'],
-      tablesCreated: ['users'],
+      indexesCreated: [
+        'idx_users_username',
+        'idx_users_email',
+        'idx_users_created_at',
+        'idx_friendships_user2',
+        'idx_friend_requests_recipient_pending',
+      ],
+      tablesCreated: ['users', 'friend_requests', 'friendships'],
       triggersCreated: [],
     };
   } catch (error) {
