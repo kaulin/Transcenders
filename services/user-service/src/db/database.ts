@@ -74,7 +74,7 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
     CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
 
-    CREATE TABLE friend_requests (
+    CREATE TABLE IF NOT EXISTS friend_requests (
       id            INTEGER PRIMARY KEY,
       initiator_id  INTEGER NOT NULL,
       recipient_id  INTEGER NOT NULL,
@@ -87,7 +87,7 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
       CHECK (initiator_id <> recipient_id)
     );
 
-    CREATE TABLE friendships (
+    CREATE TABLE IF NOT EXISTS friendships (
       user1_id   INTEGER NOT NULL,
       user2_id   INTEGER NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -103,10 +103,10 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
       UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
     END;
 
-    CREATE TRIGGER IF NOT EXISTS friend_relationships_updated_at
-    AFTER UPDATE ON friend_relationships
+    CREATE TRIGGER IF NOT EXISTS friend_requests_updated_at
+    AFTER UPDATE ON friend_requests
     BEGIN
-      UPDATE friend_relationships SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+      UPDATE friend_requests SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
     END;
   `;
     // trigger for updating modified_at,
