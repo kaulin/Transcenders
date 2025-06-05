@@ -1,17 +1,23 @@
 services:
-  dev:
-    container_name: transcenders-dev
-    image: transcenders-dev:hive
+  auth:
+    container_name: auth-service
+    image: auth-service:hive
     build:
       context: .
+      dockerfile: services/user-service/dockerfile
       target: development
-    volumes:
-      - .:/app
-      - node_modules:/app/node_modules
     ports:
-      - "3000:3000"
-      - "9229:9229"
+      - "3001:3000"
+      - "9228:9228"
     environment:
       - NODE_ENV=development
+      - DATABASE_PATH=/workspace/services/user-service/data/users.db
+      - DATABASE_DIR=/workspace/services/user-service/data
+    volumes:
+      - ./services/user-service:/workspace/services/user-service
+      - user_node_modules:/workspace/services/user-service/node_modules
+      - user_db:/workspace/services/user-service/data
+      - ./packages/contracts:/workspace/packages/contracts
 volumes:
-  node_modules:
+  user_node_modules:
+  user_db:

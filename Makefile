@@ -4,7 +4,7 @@
 # DEVELOPMENT
 ################################################################################
 
-all: setup dev
+all: setup dev web-dev
 
 # Install dependencies locally for VSCode IntelliSense
 setup:
@@ -15,6 +15,13 @@ setup:
 dev:
 	@echo "Starting development environment..."
 	docker compose up -d
+
+# Everything local (for developers who can't use containers)
+local: setup
+	@echo "Starting backend services locally..."
+	@echo "Backend at: http://localhost:3001"
+	@echo "Frontend at: http://localhost:5173"
+	npm run dev:all
 
 # Start development with visible logs
 dev-logs: stop-dev
@@ -35,40 +42,18 @@ restart: stop-dev dev
 	@echo "Development environment restarted"
 
 ################################################################################
-# PACKAGE MANAGEMENT
+# WEB FRONTEND
 ################################################################################
 
-# Add a package (fast, avoids rebuild)
-add:
-	@read -p "Enter package name: " package; \
-	echo "Installing $$package locally..."; \
-	npm install $$package; \
-	echo "Ensuring development container is running..."; \
-	docker compose up -d dev; \
-	echo "Installing $$package in container..."; \
-	docker compose exec dev npm install $$package; \
-	echo "Package $$package installed successfully."
+# Setup web dependencies
+web-setup:
+	@echo "Installing web dependencies..."
+	npm install --workspace=web
 
-# Remove a package (fast, avoids rebuild)
-remove:
-	@read -p "Enter package name: " package; \
-	echo "Removing $$package locally..."; \
-	npm uninstall $$package; \
-	echo "Ensuring development container is running..."; \
-	docker compose up -d dev; \
-	echo "Removing $$package from container..."; \
-	docker compose exec dev npm uninstall $$package; \
-	echo "Package $$package removed successfully."
-
-# Verify package installation
-verify:
-	@read -p "Enter package name: " package; \
-	echo "Ensuring development container is running..."; \
-	docker compose up -d dev; \
-	echo "Checking $$package in container..."; \
-	docker compose exec dev npm ls $$package; \
-	echo "Checking $$package locally..."; \
-	npm ls $$package
+# Start web development server (local)
+web-dev:
+	@echo "Starting web development server..."
+	npm run dev --workspace=web
 
 ################################################################################
 # PRODUCTION
@@ -105,9 +90,8 @@ rebuild: stop
 # Clean everything (volumes, images)
 clean: stop
 	@echo "Cleaning all Docker resources..."
-	docker compose down -v
-	-docker rmi transcenders-prod:hive
-	-docker rmi transcenders-dev:hive
+	docker compose down
+	-docker rmi user-service:hive
 	-docker system prune -f
 
 ################################################################################
@@ -125,11 +109,6 @@ help:
 	@echo "  make logs              Show development logs"
 	@echo "  make stop-dev          Stop development containers"
 	@echo ""
-	@echo "Package Management:"
-	@echo "  make add               Add a package (prompts for name)"
-	@echo "  make remove            Remove a package (prompts for name)"
-	@echo "  make verify            Verify package installation (prompts for name)"
-	@echo ""
 	@echo "Production:"
 	@echo "  make prod              Run production container (builds if needed)"
 	@echo "  make logs-prod         Show production logs"
@@ -142,4 +121,4 @@ help:
 	@echo ""
 	@echo "==========================================="
 
-.PHONY: all dev dev-logs stop-prod stop-dev prod stop restart clean logs logs-prod help add remove verify rebuild setup
+.PHONY: all dev dev-logs stop-prod stop-dev prod stop restart clean logs logs-prod help rebuild setup
