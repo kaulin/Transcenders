@@ -3,6 +3,7 @@ import { Static, Type } from '@sinclair/typebox';
 /**
  * FIELD DEFINITIONS
  */
+const UserIdField = Type.Number();
 const UsernameField = Type.String({ minLength: 3, maxLength: 20 });
 const EmailField = Type.String({ format: 'email' });
 const DisplayNameField = Type.String({ maxLength: 50 });
@@ -15,7 +16,7 @@ const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
  * ENTITY SCHEMAS
  */
 const UserSchema = Type.Object({
-  id: IdField,
+  id: UserIdField,
   username: UsernameField,
   email: EmailField,
   display_name: DisplayNameField,
@@ -56,23 +57,24 @@ export const checkExistsSchema = {
   ),
 };
 
-export const getUserByIdSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-};
-
-export const deleteUserSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-};
-
 export const getUsersSchema = {
   querystring: Type.Object({
     search: Type.Optional(Type.String()),
     limit: Type.Optional(Type.Number({ minimum: 1, maximum: 100 })),
     offset: Type.Optional(Type.Number({ minimum: 0 })),
+  }),
+};
+
+export const getUserSchema = {
+  querystring: Type.Object({
+    username: Type.Optional(Type.String()),
+    email: Type.Optional(Type.String()),
+  }),
+};
+
+export const paramsIdSchema = {
+  params: Type.Object({
+    id: IdParamField,
   }),
 };
 
@@ -95,6 +97,8 @@ export const DeleteUserDataSchema = Type.Object({
 export type User = Static<typeof UserSchema>;
 export type CreateUserRequest = Static<typeof createUserSchema.body>;
 export type UpdateUserRequest = Static<typeof updateUserSchema.body>;
+export type GetUserRequest = Static<typeof getUserSchema.querystring>;
+export type ParamsIdRequest = Static<typeof paramsIdSchema.params>;
 export type UserExistsData = Static<typeof UserExistsDataSchema>;
 export type DeleteUserData = Static<typeof DeleteUserDataSchema>;
 export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
