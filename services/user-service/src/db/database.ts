@@ -97,11 +97,11 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
       CHECK (user1_id < user2_id)  -- guarantees canonical order and uniqueness
     );
 
-    CREATE INDEX idx_friend_requests_recipient_pending
+    CREATE INDEX IF NOT EXISTS idx_friend_requests_recipient_pending
       ON friend_requests(recipient_id)
       WHERE state = 'pending';
 
-    CREATE INDEX idx_friendships_user2 ON friendships(user2_id);
+    CREATE INDEX IF NOT EXISTS idx_friendships_user2 ON friendships(user2_id);
 
     CREATE TRIGGER IF NOT EXISTS users_updated_at
     AFTER UPDATE ON users
