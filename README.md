@@ -1,54 +1,135 @@
-# React + TypeScript + Vite
+# Transcenders
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Fastify-based TypeScript project with Docker development and production environments.
 
-Currently, two official plugins are available:
+## Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+- [Node.js](https://nodejs.org/) (for local development tools)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Quick Start
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+The fastest way to get started:
+
+```bash
+# Clone the repository (if you haven't already)
+git clone https://github.com/kaulin/Transcenders.git
+cd Transcenders
+
+# Install dependencies locally (for editor support)
+make setup
+# or manually: npm ci --include=dev
+
+# Start the development environment
+make dev
+# or manually: docker compose up -d
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Visit [http://localhost:3000/ping](http://localhost:3000/ping) to verify the server is running.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Development Workflow
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+1. The development container runs with hot-reloading enabled
+2. Any changes to source files will automatically restart the server
+3. Use `make logs` to see real-time logs from the server
+4. Use `make dev-logs` to start with visible logs
+
+## Project Structure
+
+## Developer Guide for Beginners
+
+### Creating Your First Route
+
+The project uses Fastify for route handling. Here's how to add a new route:
+
+1. **Choose where to add your route**: You can add to an existing route file in `src/routes/` or create a new one.
+
+2. **Example: Creating a new route file**:
+
+```typescript
+// Create a new file: src/routes/hello.routes.ts
+import { FastifyInstance } from 'fastify';
+
+interface HelloResponse {
+  message: string;
+  timestamp: number;
+}
+
+export async function registerHelloRoutes(app: FastifyInstance) {
+  // Simple GET route
+  app.get<{
+    Reply: HelloResponse;
+  }>('/hello', async () => {
+    return {
+      message: 'Hello, Transcenders!',
+      timestamp: Date.now()
+    };
+  });
+
+  // Route with parameters
+  app.get<{
+    Params: { name: string };
+    Reply: HelloResponse;
+  }>('/hello/:name', async (request) => {
+    const { name } = request.params;
+    return {
+      message: `Hello, ${name}!`,
+      timestamp: Date.now()
+    };
+  });
+}
 ```
+
+3. **Register your new routes in server.ts**:
+
+```typescript
+// In src/server.ts, add the import:
+import { registerHelloRoutes } from './routes/hello.routes.js';
+
+// And inside the start function, add:
+registerHelloRoutes(app);
+```
+
+4. **Test your new route**: Visit http://localhost:3000/hello or http://localhost:3000/hello/YourName
+
+## Debugging
+
+The project is configured for debugging with VS Code. To debug your application:
+
+1. **Ensure the development container is running**:
+   ```bash
+   make dev
+   ```
+
+2. **Open the VS Code debugger tab**: Click on the "Run and Debug" icon in the VS Code sidebar or press `Ctrl+Shift+D` (Windows/Linux) or `Cmd+Shift+D` (Mac)
+
+3. **Start debugging**: Click the green play button or press F5 to start debugging using the pre-configured launch configuration
+
+4. **Set breakpoints**: Click in the gutter next to line numbers to set breakpoints
+
+5. **Debug features available**:
+   - Use the debug console to evaluate expressions
+   - Inspect variables in the VARIABLES panel
+   - View the call stack in the CALL STACK panel
+   - Use the debug toolbar to step through code execution
+
+6. **Hot reloading while debugging**: The debugger will automatically reconnect when files change and the server restarts
+
+### Remote Debugging Tips
+
+- The development container exposes port `9229` for the Node.js debugger
+- For manual debugging outside VS Code, you can access chrome://inspect or edge://inspect
+- To debug from the terminal, use `docker compose exec dev node --inspect-brk=0.0.0.0:9229 dist/server.js`
+
+## Available Commands
+
+- `make dev`: Start the development environment
+- `make build`: Build the project
+- `make start`: Start the production server
+- `make stop`: Stop the development or production server
+- `make logs`: View logs from the server
+- `make dev-logs`: Start the development server with logs visible
+- `make help`: Show all make commands

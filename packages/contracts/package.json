@@ -1,0 +1,21 @@
+{
+  "name": "@transcenders/contracts",
+  "version": "1.0.0",
+  "description": "Shared schemas and types",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.33"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    
+    html {
+        @apply min-h-screen bg-gradient-to-t from-[#e0cec2] via-[#e0cec2] to-[#e0cec2];
+    }
+    
+	div {
+		@apply text-white;
+	}
+
+	p {
+		@apply text-white;
+	}
+
+    h1 {
+        @apply text-white font-bold;
+    }
+
+    button {
+        @apply text-white hover:text-[#6a5373c6];
+    }
+
+}
+
+@layer components {
+
+    .button-text {
+        @apply text-white hover:text-[#6a5373c6];
+    }
+
+	.play-button {
+		@apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text text-center mt-4 min-w-24;
+	}
+
+    .login-input-field {
+        @apply rounded-lg bg-white bg-opacity-20 p-1 text-white placeholder-white;
+    }
+    
+    .profile-box  {
+		@apply rounded-lg bg-[#d3bfb1c4] border flex flex-col items-center
+	}
+    
+    .bubble {
+        @apply bg-white bg-opacity-10 rounded-full aspect-square border;
+    }
+
+    /* .bg-bubble {
+        @apply rounded-full aspect-square shadow-xl bg-gradient-to-t w-full z-0;
+    } */
+
+    /* .bg-bubble-1 {
+        @apply bg-bubble absolute max-w-[10%] shadow-[#734b58b1]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
+    }
+
+	.bg-bubble-2 {
+        @apply bg-bubble absolute max-w-[20%] shadow-[#734b598b]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
+    }
+
+	.bg-bubble-3 {
+        @apply bg-bubble absolute max-w-[30%] shadow-[#734b578a]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
+    }
+
+	.bg-bubble-4 {
+        @apply bg-bubble absolute max-w-[40%] shadow-[#734b5986]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe128];
+    }
+
+	.bg-bubble-5 {
+        @apply bg-bubble absolute max-w-[50%] shadow-[#734b5987]
+        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe11e];
+    }
+
+	.bg-bubble-6 {
+        @apply bg-bubble absolute max-w-[60%] shadow-[#734b5e88]
+        bg-gradient-to-t from-[#933e56b5] via-[#ea8f719a] to-[#fcefe130];
+    }
+
+	.bg-bubble-7 {
+        @apply bg-bubble absolute max-w-[70%] shadow-[#734b5282]
+        bg-gradient-to-t from-[#96425ab2] via-[#ea8f719a] to-[#fcefe12b];
+    }
+
+	.bg-bubble-8 {
+        @apply bg-bubble absolute max-w-[80%] shadow-[#734b5083]
+        bg-gradient-to-t from-[#933e56a8] via-[#ea8f719a] to-[#fcefe11b];
+    } */
+}

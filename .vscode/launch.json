@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to User Service (Docker)",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9228,
+      "localRoot": "${workspaceFolder}/services/user-service",
+      "remoteRoot": "/app",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}
