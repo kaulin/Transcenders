@@ -1,7 +1,7 @@
 services:
-  auth:
-    container_name: auth-service
-    image: auth-service:hive
+  user-service:
+    container_name: user-service
+    image: user-service:hive
     build:
       context: .
       dockerfile: services/user-service/dockerfile
