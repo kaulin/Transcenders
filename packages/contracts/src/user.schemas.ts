@@ -11,6 +11,7 @@ const IdField = Type.Number();
 const TimestampField = Type.String();
 const IdParamField = Type.String({ pattern: '^[0-9]+$' });
 const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
+const FriendRequestStateField = Type.Union([Type.Literal('pending'), Type.Literal('declined')]);
 
 /**
  * ENTITY SCHEMAS
@@ -78,6 +79,20 @@ export const paramsIdSchema = {
   }),
 };
 
+export const requestFriendSchema = {
+  body: Type.Object({
+    initiator_id: UserIdField,
+    recipient_id: UserIdField,
+  }),
+};
+
+export const removeFriendSchema = {
+  body: Type.Object({
+    user_1: UserIdField,
+    user_2: UserIdField,
+  }),
+};
+
 /**
  * RESPONSE DATA SCHEMAS
  */
@@ -91,6 +106,21 @@ export const DeleteUserDataSchema = Type.Object({
   message: Type.String(),
 });
 
+export const FriendRequestsDataSchema = Type.Object({
+  id: UserIdField,
+  initiator_id: UserIdField,
+  recipient_id: UserIdField,
+  state: FriendRequestStateField,
+  created_at: TimestampField,
+  updated_at: TimestampField,
+});
+
+export const FriendshipDataSchema = Type.Object({
+  user1_id: UserIdField,
+  user2_id: UserIdField,
+  created_at: TimestampField,
+});
+
 /**
  * TYPE EXPORTS
  */
@@ -102,3 +132,7 @@ export type ParamsIdRequest = Static<typeof paramsIdSchema.params>;
 export type UserExistsData = Static<typeof UserExistsDataSchema>;
 export type DeleteUserData = Static<typeof DeleteUserDataSchema>;
 export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
+export type FriendRequestsData = Static<typeof FriendRequestsDataSchema>;
+export type FriendshipData = Static<typeof FriendshipDataSchema>;
+export type RequestFriendRequest = Static<typeof requestFriendSchema.body>;
+export type RemoveFriendRequest = Static<typeof removeFriendSchema.body>;
