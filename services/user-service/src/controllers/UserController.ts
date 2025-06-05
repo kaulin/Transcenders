@@ -3,11 +3,13 @@ import { UserService } from '../services/UserService';
 import {
   CreateUserRequest,
   DeleteUserData,
+  GetUserRequest,
+  ParamsIdRequest,
   UpdateUserRequest,
   User,
   UserExistsData,
 } from '@transcenders/contracts';
-import { ResponseHelper } from '../utils/responseHelpers';
+import { ResponseHelper } from '../utils/responseHelper';
 
 export class UserController {
   static async getUsers(request: FastifyRequest, reply: FastifyReply) {
@@ -36,7 +38,7 @@ export class UserController {
   }
 
   static async updateUser(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as { id: string };
+    const { id } = request.params as ParamsIdRequest;
     const userId = parseInt(id);
 
     if (isNaN(userId) || userId <= 0) {
@@ -52,7 +54,7 @@ export class UserController {
   }
 
   static async deleteUser(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as { id: string };
+    const { id } = request.params as ParamsIdRequest;
     const userId = parseInt(id);
     if (isNaN(userId) || userId <= 0) {
       ResponseHelper.throwBadRequest('Invalid user ID');
@@ -66,7 +68,7 @@ export class UserController {
   }
 
   static async getUser(request: FastifyRequest, reply: FastifyReply) {
-    const { username, email } = request.query as { username?: string; email?: string };
+    const { username, email } = request.query as GetUserRequest;
 
     if (username) {
       const user = await UserService.getUserByUsername(username);

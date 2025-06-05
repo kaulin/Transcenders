@@ -1,16 +1,6 @@
 import { getDB } from '../db/database';
 import { CreateUserRequest, GetUsersQuery, UpdateUserRequest, User } from '@transcenders/contracts';
 
-/**
- * Endpoints
- * GET /api/users - get all users (with pagination)
- * POST /api/users - create new user
- * GET /api/users/:id - get specific user by ID
- * PATCH /api/users/:id - update user
- * DELETE /api/users/:id - delete user
- * GET /api/users/check/:identifier - check if username/email exists
- */
-
 export class UserService {
   static async createUser(userData: CreateUserRequest): Promise<User | null> {
     try {
