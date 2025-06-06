@@ -1,8 +1,9 @@
-import Fastify from 'fastify';
-import 'dotenv/config';
-import { registerAdminRoutes } from './routes/admin.routes.js';
-import { registerUserRoutes } from './routes/user.routes.js';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import 'dotenv/config';
+import Fastify from 'fastify';
+import { registerAdminRoutes } from './routes/admin.routes.js';
+import { registerFriendshipRoutes } from './routes/friend.routes.js';
+import { registerUserRoutes } from './routes/user.routes.js';
 
 const app = Fastify({
   logger: {
@@ -40,6 +41,7 @@ const start = async () => {
   try {
     await registerAdminRoutes(app);
     await registerUserRoutes(app);
+    await registerFriendshipRoutes(app);
 
     await app.listen({
       port: process.env.PORT ? +process.env.PORT : 3000,
