@@ -29,7 +29,12 @@ export default {
         bg_secondary: "#ffc3b6",
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"]
+        sans: ["Inter", "sans-serif"],
+        satisfy: ['Satisfy', 'cursive'],
+        architect: ['"Architects Daughter"', 'cursive'],
+        lobster: ['Lobster', 'sans-serif'],
+        molle: ["Molle", "cursive"],
+        fascinate: ['Fascinate', 'system-ui'],
       }
     }
   },
