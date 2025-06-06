@@ -8,7 +8,7 @@
       "address": "localhost",
       "port": 9228,
       "localRoot": "${workspaceFolder}/services/user-service",
-      "remoteRoot": "/app",
+      "remoteRoot": "/workspace/services/user-service",
       "restart": true,
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen"
