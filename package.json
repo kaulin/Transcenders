@@ -10,11 +10,12 @@
   "description": "transcenders",
   "author": "",
   "license": "ISC",
-    "scripts": {
+  "scripts": {
     "dev:all": "concurrently --names 'BACKEND,FRONTEND' --prefix-colors 'blue,green' 'npm run dev --workspace=user-service' 'npm run dev --workspace=web'",
     "dev:backend": "npm run dev --workspace=user-service",
-    "dev:frontend": "npm run dev --workspace=web"
-},
+    "dev:frontend": "npm run dev --workspace=web",
+    "test": "tsx scripts/tests.ts"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
