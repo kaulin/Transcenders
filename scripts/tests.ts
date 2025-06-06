@@ -54,7 +54,12 @@ async function createUsers(): Promise<User[]> {
         users.push(response.data);
         console.log(`Created user: ${userData.username} (ID: ${response.data.id})`);
       } else {
+        const existing_user = await apiCall<User>(
+          'GET',
+          `${USER_ROUTES.SEARCH_USER}?username=${userData.username}`,
+        );
         console.log(`Failed to create user: ${userData.username} error: ${response.error}`);
+        if (existing_user) users.push(existing_user.data);
       }
     } catch (error) {
       console.log(`Error creating user ${userData.username}:`, error);
@@ -207,13 +212,12 @@ async function main() {
 
   try {
     const users = await createUsers();
-    console.log(`\nCreated ${users.length} users total`);
-    const db_users = await apiCall<User[]>('GET', USER_ROUTES.USERS);
+    console.log(`${users.length} test users in database`);
 
-    if (db_users.data?.length > 0) {
-      await createFriendships(db_users.data);
-      await createPendingRequests(db_users.data);
-      await testEndpoints(db_users.data);
+    if (users?.length > 0) {
+      await createFriendships(users);
+      await createPendingRequests(users);
+      await testEndpoints(users);
     }
 
     console.log('\nSeeding completed!');
