@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --inspect=0.0.0.0:9230 src/server.ts",
+    "dev": "tsx watch --inspect=0.0.0.0:9228 src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "clean": "rm -rf dist"
