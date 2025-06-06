@@ -7,7 +7,7 @@ import {
 import { FastifyInstance } from 'fastify';
 import { FriendshipController } from '../controllers/FriendshipController';
 
-export async function registerUserRoutes(app: FastifyInstance) {
+export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.get(
     FRIENDSHIP_ROUTES.USER_FRIENDS,
     { schema: paramsIdSchema },
