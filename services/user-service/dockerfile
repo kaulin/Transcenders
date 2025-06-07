@@ -9,8 +9,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Development stage
 FROM base AS development
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential \
-        python3 \
         libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
 

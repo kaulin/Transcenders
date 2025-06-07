@@ -1,23 +1,37 @@
 # Transcenders Makefile - Docker management commands
 
+all: setup-check dev
+
+################################################################################
+# SETUP
+################################################################################
+
+# Force setup (always runs)
+setup:
+	@echo "Installing dependencies locally"
+	npm ci --include=dev
+	@touch .setup-complete
+
+# Check if setup is needed
+setup-check:
+	@if [ ! -f ".setup-complete" ] || [ "package.json" -nt ".setup-complete" ] || [ "package-lock.json" -nt ".setup-complete" ]; then \
+		echo "Running setup..."; \
+		$(MAKE) setup; \
+	else \
+		echo "✅ Dependencies are up to date"; \
+	fi
+
 ################################################################################
 # DEVELOPMENT
 ################################################################################
 
-all: setup dev web-dev
-
-# Install dependencies locally for VSCode IntelliSense
-setup:
-	@echo "Installing dependencies locally"
-	npm ci --include=dev
-
 # Development environment (hot-reloading)
-dev:
+dev: web-dev
 	@echo "Starting development environment..."
 	docker compose up -d
 
 # Everything local (for developers who can't use containers)
-local: setup
+local: setup-check
 	@echo "Starting backend services locally..."
 	@echo "Backend at: http://localhost:3001"
 	@echo "Frontend at: http://localhost:5173"
@@ -102,23 +116,27 @@ help:
 	@echo ""
 	@echo "========== Transcenders Makefile =========="
 	@echo ""
+	@echo "Setup:"
+	@echo "  make setup             Force install dependencies"
+	@echo ""
 	@echo "Development:"
 	@echo "  make, make all         Start development environment (default)"
+	@echo "  make dev               Start development (skip setup check)"
 	@echo "  make dev-logs          Start development with visible logs"
-	@echo "  make restart           Restart development environment"
+	@echo "  make local             Run everything locally (no containers)"
 	@echo "  make logs              Show development logs"
-	@echo "  make stop-dev          Stop development containers"
+	@echo "  make restart           Restart development environment"
 	@echo ""
 	@echo "Production:"
-	@echo "  make prod              Run production container (builds if needed)"
+	@echo "  make prod              Start production container"
 	@echo "  make logs-prod         Show production logs"
-	@echo "  make stop-prod         Stop production container"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make stop              Stop all containers"
 	@echo "  make rebuild           Rebuild dev environment (no cache)"
-	@echo "  make clean             Remove all containers, volumes, and images"
+	@echo "  make clean             Remove all containers and images"
+	@echo "  make help              Show this help message"
 	@echo ""
 	@echo "==========================================="
 
-.PHONY: all dev dev-logs stop-prod stop-dev prod stop restart clean logs logs-prod help rebuild setup
+.PHONY: all dev dev-logs stop-prod stop-dev prod stop restart clean logs logs-prod help rebuild setup setup-check local web-setup web-dev
