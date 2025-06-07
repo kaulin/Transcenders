@@ -18,17 +18,18 @@ export class UserController {
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
-  static async checkUserExists(request: FastifyRequest, reply: FastifyReply) {
-    const { identifier } = request.params as { identifier: string };
-
-    const result = await UserService.checkUserExists(identifier);
-    return ResponseHelper.handleDatabaseResult(reply, result);
-  }
-
   static async addUser(request: FastifyRequest, reply: FastifyReply) {
     const userdata = request.body as CreateUserRequest;
 
     const result = await UserService.createUser(userdata);
+    return ResponseHelper.handleDatabaseResult(reply, result);
+  }
+
+  static async getUserById(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as ParamsIdRequest;
+    const userId = parseInt(id);
+
+    const result = await UserService.getUserById(userId);
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
@@ -49,7 +50,14 @@ export class UserController {
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
-  static async getUser(request: FastifyRequest, reply: FastifyReply) {
+  static async checkUserExists(request: FastifyRequest, reply: FastifyReply) {
+    const { identifier } = request.params as { identifier: string };
+
+    const result = await UserService.checkUserExists(identifier);
+    return ResponseHelper.handleDatabaseResult(reply, result);
+  }
+
+  static async getUserExact(request: FastifyRequest, reply: FastifyReply) {
     const query = request.query as GetUserRequest;
 
     if ('username' in query && query.username) {
@@ -60,13 +68,5 @@ export class UserController {
       const result = await UserService.getUserByEmail(query.email);
       return ResponseHelper.handleDatabaseResult(reply, result);
     }
-  }
-
-  static async getUserById(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as ParamsIdRequest;
-    const userId = parseInt(id);
-
-    const result = await UserService.getUserById(userId);
-    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }

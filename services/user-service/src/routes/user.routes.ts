@@ -16,6 +16,8 @@ export async function registerUserRoutes(app: FastifyInstance) {
     USER_ROUTES.USERS,
     {
       schema: {
+        description: 'List users (with optional query params: ?search=, ?limit=, ?offset=)',
+        tags: ['User'],
         querystring: getUsersSchema.querystring,
         response: standardApiResponses,
       },
@@ -24,9 +26,11 @@ export async function registerUserRoutes(app: FastifyInstance) {
   );
 
   app.post(
-    USER_ROUTES.USERS_CREATE,
+    USER_ROUTES.USERS,
     {
       schema: {
+        description: 'Create new user',
+        tags: ['User'],
         body: createUserSchema.body,
         response: standardApiResponses,
       },
@@ -35,20 +39,11 @@ export async function registerUserRoutes(app: FastifyInstance) {
   );
 
   app.get(
-    USER_ROUTES.CHECK_USER,
-    {
-      schema: {
-        params: checkExistsSchema.params,
-        response: standardApiResponses,
-      },
-    },
-    UserController.checkUserExists,
-  );
-
-  app.get(
     USER_ROUTES.USER_BY_ID,
     {
       schema: {
+        description: 'Get specific user by ID',
+        tags: ['User'],
         params: paramsIdSchema.params,
         response: standardApiResponses,
       },
@@ -56,21 +51,12 @@ export async function registerUserRoutes(app: FastifyInstance) {
     UserController.getUserById,
   );
 
-  app.get(
-    USER_ROUTES.SEARCH_USER,
-    {
-      schema: {
-        querystring: getUserSchema.querystring,
-        response: standardApiResponses,
-      },
-    },
-    UserController.getUser,
-  );
-
   app.patch(
-    USER_ROUTES.USER_UPDATE,
+    USER_ROUTES.USER_BY_ID,
     {
       schema: {
+        description: 'Update user by ID',
+        tags: ['User'],
         params: updateUserSchema.params,
         body: updateUserSchema.body,
         response: standardApiResponses,
@@ -80,14 +66,42 @@ export async function registerUserRoutes(app: FastifyInstance) {
   );
 
   app.delete(
-    USER_ROUTES.USER_REMOVE,
+    USER_ROUTES.USER_BY_ID,
     {
       schema: {
+        description: 'Delete user by ID',
+        tags: ['User'],
         params: paramsIdSchema.params,
         response: standardApiResponses,
       },
     },
     UserController.deleteUser,
+  );
+
+  app.get(
+    USER_ROUTES.USER_EXISTS,
+    {
+      schema: {
+        description: 'Check if username/email exists',
+        tags: ['User'],
+        params: checkExistsSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    UserController.checkUserExists,
+  );
+
+  app.get(
+    USER_ROUTES.USERS_EXACT,
+    {
+      schema: {
+        description: 'find user by name or email (query params: ?username=, ?email=)',
+        tags: ['User'],
+        querystring: getUserSchema.querystring,
+        response: standardApiResponses,
+      },
+    },
+    UserController.getUserExact,
   );
 }
 
