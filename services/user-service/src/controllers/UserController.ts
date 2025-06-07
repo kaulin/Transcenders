@@ -1,105 +1,72 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { UserService } from '../services/UserService';
 import {
   CreateUserRequest,
-  DeleteUserData,
   GetUserRequest,
+  GetUsersQuery,
   ParamsIdRequest,
   UpdateUserRequest,
-  User,
-  UserExistsData,
 } from '@transcenders/contracts';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { UserService } from '../services/UserService';
 import { ResponseHelper } from '../utils/responseHelper';
 
 export class UserController {
+  // UserController
   static async getUsers(request: FastifyRequest, reply: FastifyReply) {
-    const users: User[] = await UserService.getAllUsers({});
-    return ResponseHelper.success(reply, users);
+    const query = request.query as GetUsersQuery;
+
+    const result = await UserService.getAllUsers(query);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async checkUserExists(request: FastifyRequest, reply: FastifyReply) {
     const { identifier } = request.params as { identifier: string };
-    const exists = await UserService.checkUserExists(identifier);
-    const data: UserExistsData = {
-      exists,
-      identifier,
-      available: !exists,
-    };
-    return ResponseHelper.success(reply, data);
+
+    const result = await UserService.checkUserExists(identifier);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async addUser(request: FastifyRequest, reply: FastifyReply) {
     const userdata = request.body as CreateUserRequest;
-    const user = await UserService.createUser(userdata);
-    if (!user) {
-      ResponseHelper.throwError('Failed to create user');
-    }
-    return ResponseHelper.success(reply, user, 201);
+
+    const result = await UserService.createUser(userdata);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async updateUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as ParamsIdRequest;
     const userId = parseInt(id);
-
-    if (isNaN(userId) || userId <= 0) {
-      ResponseHelper.throwBadRequest('Invalid user ID');
-    }
-
     const updates = request.body as Partial<UpdateUserRequest>;
-    const updatedUser = await UserService.updateUser(userId, updates);
-    if (!updatedUser) {
-      ResponseHelper.throwNotFound('User not found');
-    }
-    return ResponseHelper.success(reply, updatedUser);
+
+    const result = await UserService.updateUser(userId, updates);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async deleteUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as ParamsIdRequest;
     const userId = parseInt(id);
-    if (isNaN(userId) || userId <= 0) {
-      ResponseHelper.throwBadRequest('Invalid user ID');
-    }
-    const deleted = await UserService.deleteUser(userId);
-    if (!deleted) {
-      ResponseHelper.throwNotFound('User not found');
-    }
-    const data: DeleteUserData = { message: 'User deleted successfully' };
-    return ResponseHelper.success(reply, data);
+
+    const result = await UserService.deleteUser(userId);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async getUser(request: FastifyRequest, reply: FastifyReply) {
-    const { username, email } = request.query as GetUserRequest;
+    const query = request.query as GetUserRequest;
 
-    if (username) {
-      const user = await UserService.getUserByUsername(username);
-      if (!user) {
-        ResponseHelper.throwNotFound('User not found');
-      }
-      return ResponseHelper.success(reply, user);
+    if ('username' in query && query.username) {
+      const result = await UserService.getUserByUsername(query.username);
+      return ResponseHelper.handleDatabaseResult(reply, result);
     }
-
-    if (email) {
-      const user = await UserService.getUserByEmail(email);
-      if (!user) {
-        ResponseHelper.throwNotFound('User not found');
-      }
-      return ResponseHelper.success(reply, user);
+    if ('email' in query && query.email) {
+      const result = await UserService.getUserByEmail(query.email);
+      return ResponseHelper.handleDatabaseResult(reply, result);
     }
-    ResponseHelper.throwBadRequest('Must provide username or email parameter');
   }
 
   static async getUserById(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as { id: string };
-
+    const { id } = request.params as ParamsIdRequest;
     const userId = parseInt(id);
-    if (isNaN(userId) || userId <= 0) {
-      ResponseHelper.throwBadRequest('Invalid user ID');
-    }
 
-    const user = await UserService.getUserById(userId);
-    if (!user) {
-      ResponseHelper.throwNotFound('User not found');
-    }
-    return ResponseHelper.success(reply, user);
+    const result = await UserService.getUserById(userId);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }

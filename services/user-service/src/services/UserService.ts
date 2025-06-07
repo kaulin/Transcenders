@@ -123,8 +123,9 @@ export class UserService {
     return DatabaseHelper.executeQuery<User[]>('get all users', async (database) => {
       let sql = SQL`SELECT * FROM users`;
       if (query.search) {
+        const searchTerm = `%${query.search}%`;
         sql.append(
-          SQL` WHERE username LIKE %${query.search}% OR email LIKE %${query.search}% OR display_name LIKE %${query.search}%`,
+          SQL` WHERE username LIKE ${searchTerm} OR email LIKE ${searchTerm} OR display_name LIKE ${searchTerm}`,
         );
       }
 

@@ -1,7 +1,10 @@
 import {
   checkExistsSchema,
   createUserSchema,
+  getUserSchema,
+  getUsersSchema,
   paramsIdSchema,
+  standardApiResponses,
   updateUserSchema,
   USER_ROUTES,
 } from '@transcenders/contracts';
@@ -9,13 +12,83 @@ import { FastifyInstance } from 'fastify';
 import { UserController } from '../controllers/UserController';
 
 export async function registerUserRoutes(app: FastifyInstance) {
-  app.get(USER_ROUTES.USERS, UserController.getUsers);
-  app.post(USER_ROUTES.USERS_CREATE, { schema: createUserSchema }, UserController.addUser);
-  app.get(USER_ROUTES.CHECK_USER, { schema: checkExistsSchema }, UserController.checkUserExists);
-  app.get(USER_ROUTES.USER_BY_ID, { schema: paramsIdSchema }, UserController.getUserById);
-  app.get(USER_ROUTES.SEARCH_USER, UserController.getUser);
-  app.patch(USER_ROUTES.USER_UPDATE, { schema: updateUserSchema }, UserController.updateUser);
-  app.delete(USER_ROUTES.USER_REMOVE, { schema: paramsIdSchema }, UserController.deleteUser);
+  app.get(
+    USER_ROUTES.USERS,
+    {
+      schema: {
+        querystring: getUsersSchema.querystring,
+        response: standardApiResponses,
+      },
+    },
+    UserController.getUsers,
+  );
+
+  app.post(
+    USER_ROUTES.USERS_CREATE,
+    {
+      schema: {
+        body: createUserSchema.body,
+        response: standardApiResponses,
+      },
+    },
+    UserController.addUser,
+  );
+
+  app.get(
+    USER_ROUTES.CHECK_USER,
+    {
+      schema: {
+        params: checkExistsSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    UserController.checkUserExists,
+  );
+
+  app.get(
+    USER_ROUTES.USER_BY_ID,
+    {
+      schema: {
+        params: paramsIdSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    UserController.getUserById,
+  );
+
+  app.get(
+    USER_ROUTES.SEARCH_USER,
+    {
+      schema: {
+        querystring: getUserSchema.querystring,
+        response: standardApiResponses,
+      },
+    },
+    UserController.getUser,
+  );
+
+  app.patch(
+    USER_ROUTES.USER_UPDATE,
+    {
+      schema: {
+        params: updateUserSchema.params,
+        body: updateUserSchema.body,
+        response: standardApiResponses,
+      },
+    },
+    UserController.updateUser,
+  );
+
+  app.delete(
+    USER_ROUTES.USER_REMOVE,
+    {
+      schema: {
+        params: paramsIdSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    UserController.deleteUser,
+  );
 }
 
 /** get all users
