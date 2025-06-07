@@ -6,7 +6,7 @@ all: setup-check dev
 # SETUP
 ################################################################################
 
-# Force setup (always runs)
+# Force setup
 setup:
 	@echo "Installing dependencies locally"
 	npm ci --include=dev
@@ -26,7 +26,7 @@ setup-check:
 ################################################################################
 
 # Development environment (hot-reloading)
-dev: web-dev
+dev: web-dev setup-check
 	@echo "Starting development environment..."
 	docker compose up -d
 
@@ -59,13 +59,8 @@ restart: stop-dev dev
 # WEB FRONTEND
 ################################################################################
 
-# Setup web dependencies
-web-setup:
-	@echo "Installing web dependencies..."
-	npm install --workspace=web
-
 # Start web development server (local)
-web-dev:
+web-dev: setup-check
 	@echo "Starting web development server..."
 	npm run dev --workspace=web
 
