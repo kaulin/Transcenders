@@ -15,4 +15,5 @@ export const FRIENDSHIP_ROUTES = {
   INCOMING_REQUESTS: '/friend/requests/:id',
   FRIEND_ACCEPT: '/friend/accept/:id',
   FRIEND_DECLINE: '/friend/decline/:id',
+  FRIEND_EXISTS: '/friend/exists/:id1/:id2',
 } as const;

@@ -1,4 +1,5 @@
 import {
+  CheckFriendshipExistsParams,
   ParamsIdRequest,
   RemoveFriendRequest,
   RequestFriendRequest,
@@ -51,6 +52,15 @@ export class FriendshipController {
     const { user_1, user_2 } = request.body as RemoveFriendRequest;
 
     const result = await FriendshipService.removeFriend(user_1, user_2);
+    return ResponseHelper.handleDatabaseResult(reply, result);
+  }
+
+  static async checkFriendshipExists(request: FastifyRequest, reply: FastifyReply) {
+    const { id1, id2 } = request.params as CheckFriendshipExistsParams;
+
+    const userId1 = parseInt(id1);
+    const userId2 = parseInt(id2);
+    const result = await FriendshipService.checkFriendshipExists(userId1, userId2);
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }

@@ -1,4 +1,5 @@
 import {
+  checkFriendshipExistsSchema,
   FRIENDSHIP_ROUTES,
   paramsIdSchema,
   removeFriendSchema,
@@ -69,6 +70,17 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
       },
     },
     FriendshipController.declineFriend,
+  );
+
+  app.get(
+    FRIENDSHIP_ROUTES.FRIEND_EXISTS,
+    {
+      schema: {
+        params: checkFriendshipExistsSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    FriendshipController.checkFriendshipExists,
   );
 }
 

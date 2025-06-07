@@ -20,6 +20,22 @@ export class FriendshipService {
     });
   }
 
+  static async checkFriendshipExists(
+    user1_id: number,
+    user2_id: number,
+  ): Promise<DatabaseResult<boolean>> {
+    return DatabaseHelper.executeQuery<boolean>('check friendship', async (database) => {
+      const min_id = Math.min(user1_id, user2_id);
+      const max_id = Math.max(user1_id, user2_id);
+      const sql = SQL`
+        SELECT 1 FROM friendships WHERE user1_id = ${min_id} AND user2_id = ${max_id}
+      `;
+
+      const result = await database.get(sql.text, sql.values);
+      return !!result;
+    });
+  }
+
   static async sendFriendRequest(
     initiator: number,
     recipient: number,
