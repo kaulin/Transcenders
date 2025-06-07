@@ -100,7 +100,7 @@ export class FriendshipService {
     const user2_id = Math.max(request.initiator_id, request.recipient_id);
 
     const insertQuery = SQL`
-      INSERT INTO friendships (user1_id, user2_id)
+      INSERT OR IGNORE INTO friendships (user1_id, user2_id)
       VALUES (${user1_id}, ${user2_id})
     `;
     await database.run(insertQuery.text, insertQuery.values);
