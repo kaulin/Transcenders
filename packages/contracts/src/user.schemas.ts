@@ -22,7 +22,7 @@ const UserSchema = Type.Object({
   email: EmailField,
   display_name: DisplayNameField,
   created_at: TimestampField,
-  modified_at: TimestampField,
+  updated_at: TimestampField,
 });
 export type User = Static<typeof UserSchema>;
 
