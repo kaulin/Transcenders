@@ -58,7 +58,7 @@ async function createUsers(): Promise<User[]> {
           'GET',
           `${USER_ROUTES.SEARCH_USER}?username=${userData.username}`,
         );
-        console.log(`Failed to create user: ${userData.username} error: ${response.error}`);
+        console.log(`Failed to create user: ${userData.username} | error: ${response.error}`);
         if (existing_user) users.push(existing_user.data);
       }
     } catch (error) {
@@ -97,7 +97,10 @@ async function createFriendships(users: User[]): Promise<void> {
 
       const requestResponse = await apiCall('POST', FRIENDSHIP_ROUTES.SEND_REQUEST, requestData);
       if (!requestResponse.success) {
-        console.log(`Failed to send friend request: ${user1.username} -> ${user2.username}`);
+        console.log(
+          `Failed to send friend request: ${user1.username} -> ${user2.username} | error:`,
+          requestResponse.error,
+        );
         continue;
       }
 
@@ -107,7 +110,10 @@ async function createFriendships(users: User[]): Promise<void> {
         FRIENDSHIP_ROUTES.INCOMING_REQUESTS.replace(':id', user2.id.toString()),
       );
       if (!incomingResponse.success || !incomingResponse.data) {
-        console.log(`Failed to get incoming requests for ${user2.username}`);
+        console.log(
+          `Failed to get incoming requests for ${user2.username} | error:`,
+          incomingResponse.error,
+        );
         continue;
       }
 
@@ -162,7 +168,8 @@ async function createPendingRequests(users: User[]): Promise<void> {
         console.log(`Created pending request: ${initiator.username} -> ${recipient.username}`);
       } else {
         console.log(
-          `Failed to create pending request: ${initiator.username} -> ${recipient.username}`,
+          `Failed to create pending request: ${initiator.username} -> ${recipient.username} | error:`,
+          response.error,
         );
       }
     } catch (error) {
