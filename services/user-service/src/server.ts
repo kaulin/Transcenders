@@ -1,3 +1,5 @@
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUi from '@fastify/swagger-ui';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { ApiResponse } from '@transcenders/contracts';
 import 'dotenv/config';
@@ -6,7 +8,7 @@ import { registerAdminRoutes } from './routes/admin.routes.js';
 import { registerFriendshipRoutes } from './routes/friend.routes.js';
 import { registerUserRoutes } from './routes/user.routes.js';
 
-const app = Fastify({
+const fastify = Fastify({
   logger: {
     level: 'info',
     transport:
@@ -28,7 +30,7 @@ const app = Fastify({
 }).withTypeProvider<TypeBoxTypeProvider>();
 
 if (process.env.NODE_ENV === 'development') {
-  app.addHook('onSend', async (request, reply, payload) => {
+  fastify.addHook('onSend', async (request, reply, payload) => {
     try {
       const parsed = JSON.parse(payload as string);
       return JSON.stringify(parsed, null, 2);
@@ -40,17 +42,58 @@ if (process.env.NODE_ENV === 'development') {
 
 const start = async () => {
   try {
-    app.addSchema(ApiResponse);
-    await registerAdminRoutes(app);
-    await registerUserRoutes(app);
-    await registerFriendshipRoutes(app);
+    // Register Swagger BEFORE schemas and routes
+    await fastify.register(fastifySwagger, {
+      openapi: {
+        openapi: '3.0.0',
+        info: {
+          title: 'User Service API',
+          description: 'API for user management and friendships',
+          version: '1.0.0',
+        },
+        servers: [
+          {
+            url: 'http://localhost:3001',
+            description: 'Development server',
+          },
+        ],
+      },
+    });
 
-    await app.listen({
-      port: process.env.PORT ? +process.env.PORT : 3000,
+    // Register Swagger UI
+    await fastify.register(fastifySwaggerUi, {
+      routePrefix: '/docs',
+      uiConfig: {
+        docExpansion: 'list',
+        deepLinking: false,
+      },
+      uiHooks: {
+        onRequest: function (request, reply, next) {
+          next();
+        },
+        preHandler: function (request, reply, next) {
+          next();
+        },
+      },
+      staticCSP: true,
+      transformStaticCSP: (header) => header,
+      transformSpecification: (swaggerObject, request, reply) => {
+        return swaggerObject;
+      },
+      transformSpecificationClone: true,
+    });
+
+    fastify.addSchema(ApiResponse);
+    await registerAdminRoutes(fastify);
+    await registerUserRoutes(fastify);
+    await registerFriendshipRoutes(fastify);
+
+    await fastify.listen({
+      port: process.env.PORT ? +process.env.PORT : 3001,
       host: '0.0.0.0',
     });
   } catch (err) {
-    app.log.error(err);
+    fastify.log.error(err);
     process.exit(1);
   }
 };
