@@ -142,7 +142,7 @@ async function createPendingRequests(users: User[]): Promise<void> {
     [7, 0], // henry -> alice
     [4, 6], // eve -> grace
     [5, 7], // frank -> henry
-    [6, 4], // grace -> eve
+    [6, 4], // grace -> eve autoaccept
   ];
 
   for (const [initiatorIdx, recipientIdx] of pendingRequests) {
