@@ -1,11 +1,18 @@
 export const USER_ROUTES = {
+  // GET /users - List users (with optional query params: ?search=, ?limit=, ?offset=)
+  // POST /users - Create new user
   USERS: '/users',
-  USERS_CREATE: '/users/create',
+
+  // GET /users/:id - Get specific user by ID
+  // PATCH /users/:id - Update user by ID
+  // DELETE /users/:id - Delete user by ID
   USER_BY_ID: '/users/:id',
-  USER_REMOVE: '/users/remove/:id',
-  USER_UPDATE: '/users/update/:id',
-  CHECK_USER: '/users/check/:identifier',
-  SEARCH_USER: '/users/search',
+
+  // GET /users/:identifier/exists - Check if username/email exists
+  USER_EXISTS: '/users/:identifier/exists',
+
+  // GET /users/match - find user by name or email (query params: ?username=, ?email=)
+  USERS_EXACT: '/users/exact',
 } as const;
 
 export const FRIENDSHIP_ROUTES = {
