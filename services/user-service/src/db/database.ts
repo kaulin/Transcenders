@@ -17,10 +17,12 @@ let dbStatus: DatabaseStatus = {
 // Environment-aware database configuration with env variable support
 function getDatabaseConfig(): DatabaseConfig {
   // Use environment variables with sensible defaults
-  const filename = process.env.DATABASE_PATH || './data/users.db';
-  const fileDir = process.env.DATABASE_DIR || './data';
+  const moduleRoot = path.resolve(import.meta.dirname, '../..');
+  const filename = path.resolve(moduleRoot, './data/users.db');
+  const fileDir = path.resolve(moduleRoot, './data/');
   const verbose = process.env.NODE_ENV === 'development';
 
+  console.log(`User-module path: ${moduleRoot}`);
   console.log(`Database path: ${filename}`);
   console.log(`Database directory: ${fileDir}`);
   console.log(`Verbose mode: ${verbose}`);
