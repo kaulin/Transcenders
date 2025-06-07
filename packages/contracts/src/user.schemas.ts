@@ -24,6 +24,7 @@ const UserSchema = Type.Object({
   created_at: TimestampField,
   modified_at: TimestampField,
 });
+export type User = Static<typeof UserSchema>;
 
 const userModifiableFields = Type.Object({
   username: UsernameField,
@@ -41,6 +42,7 @@ export const createUserSchema = {
     display_name: Type.Optional(DisplayNameField),
   }),
 };
+export type CreateUserRequest = Static<typeof createUserSchema.body>;
 
 export const updateUserSchema = {
   params: Type.Object({
@@ -48,6 +50,7 @@ export const updateUserSchema = {
   }),
   body: Type.Partial(userModifiableFields, { additionalProperties: false }),
 };
+export type UpdateUserRequest = Static<typeof updateUserSchema.body>;
 
 export const checkExistsSchema = {
   params: Type.Object(
@@ -65,6 +68,7 @@ export const getUsersSchema = {
     offset: Type.Optional(Type.Number({ minimum: 0 })),
   }),
 };
+export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
 
 export const getUserSchema = {
   querystring: Type.Object({
@@ -72,12 +76,14 @@ export const getUserSchema = {
     email: Type.Optional(Type.String()),
   }),
 };
+export type GetUserRequest = Static<typeof getUserSchema.querystring>;
 
 export const paramsIdSchema = {
   params: Type.Object({
     id: IdParamField,
   }),
 };
+export type ParamsIdRequest = Static<typeof paramsIdSchema.params>;
 
 export const requestFriendSchema = {
   body: Type.Object({
@@ -85,6 +91,7 @@ export const requestFriendSchema = {
     recipient_id: UserIdField,
   }),
 };
+export type RequestFriendRequest = Static<typeof requestFriendSchema.body>;
 
 export const removeFriendSchema = {
   body: Type.Object({
@@ -92,6 +99,15 @@ export const removeFriendSchema = {
     user_2: UserIdField,
   }),
 };
+export type RemoveFriendRequest = Static<typeof removeFriendSchema.body>;
+
+export const checkFriendshipExistsSchema = {
+  params: Type.Object({
+    id1: IdParamField,
+    id2: IdParamField,
+  }),
+};
+export type CheckFriendshipExistsParams = Static<typeof checkFriendshipExistsSchema.params>;
 
 /**
  * RESPONSE DATA SCHEMAS
@@ -101,10 +117,12 @@ export const UserExistsDataSchema = Type.Object({
   exists: Type.Boolean(),
   available: Type.Boolean(),
 });
+export type UserExistsData = Static<typeof UserExistsDataSchema>;
 
 export const DeleteUserDataSchema = Type.Object({
   message: Type.String(),
 });
+export type DeleteUserData = Static<typeof DeleteUserDataSchema>;
 
 export const FriendRequestsDataSchema = Type.Object({
   id: UserIdField,
@@ -114,17 +132,18 @@ export const FriendRequestsDataSchema = Type.Object({
   created_at: TimestampField,
   updated_at: TimestampField,
 });
+export type FriendRequestsData = Static<typeof FriendRequestsDataSchema>;
 
 export const FriendshipDataSchema = Type.Object({
   user1_id: UserIdField,
   user2_id: UserIdField,
   created_at: TimestampField,
 });
+export type FriendshipData = Static<typeof FriendshipDataSchema>;
 
 /**
  * RESPONSE SCHEMAS
  */
-
 export const ApiResponse = Type.Intersect(
   [
     Type.Object({ success: Type.Boolean() }),
@@ -135,6 +154,7 @@ export const ApiResponse = Type.Intersect(
   ],
   { $id: 'ApiResponse' },
 );
+export type ApiResponse = Static<typeof ApiResponse>;
 
 export const standardApiResponses = {
   200: { $ref: 'ApiResponse#' },
@@ -142,21 +162,3 @@ export const standardApiResponses = {
   404: { $ref: 'ApiResponse#' },
   500: { $ref: 'ApiResponse#' },
 } as const;
-
-export type ApiResponse = Static<typeof ApiResponse>;
-
-/**
- * TYPE EXPORTS
- */
-export type User = Static<typeof UserSchema>;
-export type CreateUserRequest = Static<typeof createUserSchema.body>;
-export type UpdateUserRequest = Static<typeof updateUserSchema.body>;
-export type GetUserRequest = Static<typeof getUserSchema.querystring>;
-export type ParamsIdRequest = Static<typeof paramsIdSchema.params>;
-export type UserExistsData = Static<typeof UserExistsDataSchema>;
-export type DeleteUserData = Static<typeof DeleteUserDataSchema>;
-export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
-export type FriendRequestsData = Static<typeof FriendRequestsDataSchema>;
-export type FriendshipData = Static<typeof FriendshipDataSchema>;
-export type RequestFriendRequest = Static<typeof requestFriendSchema.body>;
-export type RemoveFriendRequest = Static<typeof removeFriendSchema.body>;
