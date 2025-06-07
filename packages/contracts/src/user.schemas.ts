@@ -71,10 +71,21 @@ export const getUsersSchema = {
 export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
 
 export const getUserSchema = {
-  querystring: Type.Object({
-    username: Type.Optional(Type.String()),
-    email: Type.Optional(Type.String()),
-  }),
+  querystring: Type.Union([
+    // username only
+    Type.Object({
+      username: Type.String(),
+    }),
+    // email only
+    Type.Object({
+      email: Type.String(),
+    }),
+    // both username and email
+    Type.Object({
+      username: Type.String(),
+      email: Type.String(),
+    }),
+  ]),
 };
 export type GetUserRequest = Static<typeof getUserSchema.querystring>;
 
@@ -112,12 +123,6 @@ export type CheckFriendshipExistsParams = Static<typeof checkFriendshipExistsSch
 /**
  * RESPONSE DATA SCHEMAS
  */
-export const UserExistsDataSchema = Type.Object({
-  identifier: IdentifierField,
-  exists: Type.Boolean(),
-  available: Type.Boolean(),
-});
-export type UserExistsData = Static<typeof UserExistsDataSchema>;
 
 export const DeleteUserDataSchema = Type.Object({
   message: Type.String(),
@@ -160,5 +165,6 @@ export const standardApiResponses = {
   200: { $ref: 'ApiResponse#' },
   400: { $ref: 'ApiResponse#' },
   404: { $ref: 'ApiResponse#' },
+  409: { $ref: 'ApiResponse#' },
   500: { $ref: 'ApiResponse#' },
 } as const;
