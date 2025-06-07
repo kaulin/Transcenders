@@ -1,8 +1,10 @@
+import 'dotenv/config';
 import fs from 'fs/promises';
+import path from 'path';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { DatabaseConfig, DatabaseInitResult, DatabaseStatus } from '../types/database.types';
-import 'dotenv/config';
+import { DatabaseHelper } from '../utils/DatabaseHelper';
 
 console.log('Loading database.ts file...');
 let db: Database | null = null;
@@ -61,66 +63,15 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
       });
     }
 
-    const schema = `
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY,
-      username TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      display_name TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      modified_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-    CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
-    CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-    CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
-
-    CREATE TABLE IF NOT EXISTS friend_requests (
-      id            INTEGER PRIMARY KEY,
-      initiator_id  INTEGER NOT NULL,
-      recipient_id  INTEGER NOT NULL,
-      state         TEXT NOT NULL CHECK (state IN ('pending', 'declined')),
-      created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (initiator_id) REFERENCES users(id) ON DELETE CASCADE,
-      FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE,
-      UNIQUE (initiator_id, recipient_id),
-      CHECK (initiator_id <> recipient_id)
-    );
-
-    CREATE TABLE IF NOT EXISTS friendships (
-      user1_id   INTEGER NOT NULL,
-      user2_id   INTEGER NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (user1_id, user2_id),
-      FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE,
-      FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE,
-      CHECK (user1_id < user2_id)  -- guarantees canonical order and uniqueness
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_friend_requests_recipient_pending
-      ON friend_requests(recipient_id)
-      WHERE state = 'pending';
-
-    CREATE INDEX IF NOT EXISTS idx_friendships_user2 ON friendships(user2_id);
-
-    CREATE TRIGGER IF NOT EXISTS users_updated_at
-    AFTER UPDATE ON users
-    BEGIN
-      UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-    END;
-
-    CREATE TRIGGER IF NOT EXISTS friend_requests_updated_at
-    AFTER UPDATE ON friend_requests
-    BEGIN
-      UPDATE friend_requests SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-    END;
-  `;
-    // trigger for updating modified_at,
-    // and other init stuff
-
-    console.log('executing schema...');
-    await database.exec(schema);
-    console.log('schema executed');
+    const init_path = path.resolve(import.meta.dirname, 'init.sql');
+    const schema = DatabaseHelper.getSqlFromFile(init_path);
+    if (schema) {
+      console.log('executing schema...');
+      await database.exec(schema);
+      console.log('schema executed');
+    } else {
+      throw new Error('init.sql file not found');
+    }
 
     return {
       success: true,
@@ -130,10 +81,10 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
         'idx_users_email',
         'idx_users_created_at',
         'idx_friendships_user2',
-        'idx_friend_requests_recipient_pending',
+        'idx_friend_requests_recipient',
       ],
       tablesCreated: ['users', 'friend_requests', 'friendships'],
-      triggersCreated: [],
+      triggersCreated: ['friend_requests_updated_at', 'users_updated_at'],
     };
   } catch (error) {
     console.error('Database init failed:', error);
