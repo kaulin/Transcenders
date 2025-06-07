@@ -7,8 +7,8 @@ services:
       dockerfile: services/user-service/dockerfile
       target: development
     ports:
-      - "3001:3000"
-      - "9228:9228"
+      - '3001:3000'
+      - '9228:9228'
     environment:
       - NODE_ENV=development
       - DATABASE_PATH=/workspace/services/user-service/data/users.db
@@ -16,8 +16,6 @@ services:
     volumes:
       - ./services/user-service:/workspace/services/user-service
       - user_node_modules:/workspace/services/user-service/node_modules
-      - user_db:/workspace/services/user-service/data
       - ./packages/contracts:/workspace/packages/contracts
 volumes:
   user_node_modules:
-  user_db:
