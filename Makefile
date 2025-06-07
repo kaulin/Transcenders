@@ -1,6 +1,6 @@
 # Transcenders Makefile - Docker management commands
 
-all: setup-check dev
+all: setup-check dev web-dev
 
 ################################################################################
 # SETUP
@@ -26,7 +26,7 @@ setup-check:
 ################################################################################
 
 # Development environment (hot-reloading)
-dev: web-dev setup-check
+dev:
 	@echo "Starting development environment..."
 	docker compose up -d
 
@@ -99,7 +99,7 @@ rebuild: stop
 # Clean everything (volumes, images)
 clean: stop
 	@echo "Cleaning all Docker resources..."
-	docker compose down
+	docker compose down -v
 	-docker rmi user-service:hive
 	-docker system prune -f
 
