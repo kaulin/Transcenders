@@ -1,4 +1,5 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { ApiResponse } from '@transcenders/contracts';
 import 'dotenv/config';
 import Fastify from 'fastify';
 import { registerAdminRoutes } from './routes/admin.routes.js';
@@ -39,6 +40,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const start = async () => {
   try {
+    app.addSchema(ApiResponse);
     await registerAdminRoutes(app);
     await registerUserRoutes(app);
     await registerFriendshipRoutes(app);

@@ -122,6 +122,30 @@ export const FriendshipDataSchema = Type.Object({
 });
 
 /**
+ * RESPONSE SCHEMAS
+ */
+
+export const ApiResponse = Type.Intersect(
+  [
+    Type.Object({ success: Type.Boolean() }),
+    Type.Union([
+      Type.Object({ success: Type.Literal(true), data: Type.Unknown() }),
+      Type.Object({ success: Type.Literal(false), error: Type.String() }),
+    ]),
+  ],
+  { $id: 'ApiResponse' },
+);
+
+export const standardApiResponses = {
+  200: { $ref: 'ApiResponse#' },
+  400: { $ref: 'ApiResponse#' },
+  404: { $ref: 'ApiResponse#' },
+  500: { $ref: 'ApiResponse#' },
+} as const;
+
+export type ApiResponse = Static<typeof ApiResponse>;
+
+/**
  * TYPE EXPORTS
  */
 export type User = Static<typeof UserSchema>;

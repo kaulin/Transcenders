@@ -1,9 +1,7 @@
 import {
-  FriendRequestsData,
   ParamsIdRequest,
   RemoveFriendRequest,
   RequestFriendRequest,
-  User,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { FriendshipService } from '../services/FriendshipService';
@@ -14,47 +12,45 @@ export class FriendshipController {
     const { id } = request.params as ParamsIdRequest;
     const userId = parseInt(id);
 
-    const friends: User[] = await FriendshipService.getFriends(userId);
-    return ResponseHelper.success(reply, friends);
+    const result = await FriendshipService.getUserFriends(userId);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async sendRequest(request: FastifyRequest, reply: FastifyReply) {
     const { initiator_id, recipient_id } = request.body as RequestFriendRequest;
 
-    const success: boolean = await FriendshipService.sendRequest(initiator_id, recipient_id);
-    return ResponseHelper.success(reply, { success });
+    const result = await FriendshipService.sendFriendRequest(initiator_id, recipient_id);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async getIncomingFriendRequests(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as ParamsIdRequest;
     const userId = parseInt(id);
 
-    const requests: FriendRequestsData[] = await FriendshipService.getIncomingFriendRequests(
-      userId,
-    );
-    return ResponseHelper.success(reply, requests);
+    const result = await FriendshipService.getIncomingFriendRequests(userId);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async acceptFriend(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as ParamsIdRequest;
     const friendRequestId = parseInt(id);
 
-    const success: boolean = await FriendshipService.acceptFriend(friendRequestId);
-    return ResponseHelper.success(reply, success);
+    const result = await FriendshipService.acceptFriend(friendRequestId);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async declineFriend(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as ParamsIdRequest;
     const friendRequestId = parseInt(id);
 
-    const success: boolean = await FriendshipService.declineFriend(friendRequestId);
-    return ResponseHelper.success(reply, success);
+    const result = await FriendshipService.declineFriend(friendRequestId);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async removeFriend(request: FastifyRequest, reply: FastifyReply) {
     const { user_1, user_2 } = request.body as RemoveFriendRequest;
 
-    const success: boolean = await FriendshipService.removeFriend(user_1, user_2);
-    return ResponseHelper.success(reply, success);
+    const result = await FriendshipService.removeFriend(user_1, user_2);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }
