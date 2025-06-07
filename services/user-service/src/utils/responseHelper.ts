@@ -23,18 +23,6 @@ export class ResponseHelper {
     errorStatusCode = 500,
   ) {
     if (!result.success) {
-      if (result.error?.isConstraintError) {
-        console.warn(`Database constraint (non-critical): ${result.error.message}`);
-        return this.success(
-          reply,
-          {
-            success: true,
-            message: result.error.message,
-          },
-          successStatusCode,
-        );
-      }
-
       return this.error(reply, errorStatusCode, result.error?.message || 'Operation failed');
     }
 
