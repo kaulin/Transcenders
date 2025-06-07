@@ -26,44 +26,46 @@ export class DatabaseTestService {
 
       // Test 4: Test user operations
       console.log('Test 4: Testing user existance...');
-      const testExists = await UserService.checkUserExists('testuser4242');
-      const testUser = await UserService.getUserByUsername('testuser4242');
-      console.log('Test user exists:', testExists);
-      console.log('Test user object:', testUser);
+      const testExistsResult = await UserService.checkUserExists('testuser4242');
+      const testUserResult = await UserService.getUserByUsername('testuser4242');
+      console.log('Test user exists:', testExistsResult.success ? testExistsResult.data : false);
+      console.log('Test user object:', testUserResult.success ? testUserResult.data : null);
 
       // Test 5: Test user operations
       console.log('Test 5: Testing user creation...');
-      const testCreate = await UserService.createUser({
+      const testCreateResult = await UserService.createUser({
         username: 'itsme',
         email: 'amario@mario.fi',
       });
-      if (!testCreate) {
+      if (!testCreateResult.success) {
         throw new Error('Test 5 failed');
       }
-      console.log('Test user creation:', testCreate.display_name);
+      console.log('Test user creation:', testCreateResult.data?.display_name);
 
       // Test 6: Get all users
       console.log('Test 6: Retrieving users...');
       const usersResult = await UserService.getAllUsers({});
-      console.log(`Found ${usersResult.length} users in database`);
+      const usersData = usersResult.success ? usersResult.data : [];
+      console.log(`Found ${usersData!.length} users in database`);
 
       // Test 7: cleanup test
       console.log('Test 7: cleanup using deleteUser');
-      if (testCreate?.id) {
-        const cleanup1 = await UserService.deleteUser(testCreate.id);
+      if (testCreateResult.data?.id) {
+        const cleanup1 = await UserService.deleteUser(testCreateResult.data.id);
       }
-      if (testUser?.id) {
-        const cleanup2 = await UserService.deleteUser(testUser.id);
+      if (testUserResult.success && testUserResult.data?.id) {
+        const cleanup2 = await UserService.deleteUser(testUserResult.data.id);
       }
-      const afterCleanup = await UserService.getAllUsers({});
-      if (usersResult.length - afterCleanup.length != 2) {
+      const afterCleanupResult = await UserService.getAllUsers({});
+      const afterCleanupData = afterCleanupResult.success ? afterCleanupResult.data : [];
+      if (usersData!.length - afterCleanupData!.length != 2) {
         throw new Error('cleanup test failed');
       }
       return {
         message: 'All database tests passed successfully',
         timestamp: new Date().toISOString(),
         tables,
-        users: usersResult.slice(0, 5),
+        users: usersData!.slice(0, 5),
       };
     } catch (error) {
       console.error('❌ DatabaseTestService: Tests failed:', error);
