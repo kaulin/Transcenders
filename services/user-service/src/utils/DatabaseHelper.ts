@@ -24,17 +24,17 @@ export class DatabaseHelper {
     try {
       const database = await getDB();
       const data = await queryFn(database);
-      return { success: true, data };
+      return { success: true, data, operation };
     } catch (error: any) {
       console.log(`failed to ${operation}:`, error.message);
 
       return {
         success: false,
+        operation,
         error: {
           code: error.code || 'UNKNOWN_ERROR',
           message: error.message || 'Unknown database error',
           isConstraintError: error.code === 'SQLITE_CONSTRAINT',
-          operation,
         },
       };
     }
@@ -53,18 +53,18 @@ export class DatabaseHelper {
       try {
         const data = await transactionFn(database);
         await database.run('COMMIT');
-        return { success: true, data };
+        return { success: true, data, operation };
       } catch (error: any) {
         await database.run('ROLLBACK');
         console.log(`transaction failed for ${operation}:`, error.message);
 
         return {
           success: false,
+          operation,
           error: {
             code: error.code || 'UNKNOWN_ERROR',
             message: error.message || 'Unknown database error',
             isConstraintError: error.code === 'SQLITE_CONSTRAINT',
-            operation,
           },
         };
       }
@@ -73,11 +73,11 @@ export class DatabaseHelper {
 
       return {
         success: false,
+        operation,
         error: {
           code: error.code || 'UNKNOWN_ERROR',
           message: error.message || 'Unknown database error',
           isConstraintError: error.code === 'SQLITE_CONSTRAINT',
-          operation,
         },
       };
     }

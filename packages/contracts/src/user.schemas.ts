@@ -155,37 +155,36 @@ export type CheckFriendshipExistsRequest = Static<typeof checkFriendshipExistsSc
  * RESPONSE DATA SCHEMAS
  */
 
-export const DeleteUserDataSchema = Type.Object({
-  message: Type.String(),
-});
-export type DeleteUserData = Static<typeof DeleteUserDataSchema>;
-
-export const FriendRequestsDataSchema = Type.Object({
-  id: UserIdField,
-  initiator_id: UserIdField,
-  recipient_id: UserIdField,
-  state: FriendRequestStateField,
-  created_at: TimestampField,
-  updated_at: TimestampField,
-});
-export type FriendRequestsData = Static<typeof FriendRequestsDataSchema>;
-
-export const FriendshipDataSchema = Type.Object({
-  user1_id: UserIdField,
-  user2_id: UserIdField,
-  created_at: TimestampField,
-});
-export type FriendshipData = Static<typeof FriendshipDataSchema>;
+export const BooleanOperationResult = Type.Union([
+  Type.Object({
+    success: Type.Literal(true),
+    message: Type.Optional(Type.String()),
+  }),
+  Type.Object({
+    success: Type.Literal(false),
+    message: Type.Optional(Type.String()),
+  }),
+]);
+export type BooleanOperationResult = Static<typeof BooleanOperationResult>;
 
 /**
  * RESPONSE SCHEMAS
  */
 export const ApiResponse = Type.Intersect(
   [
-    Type.Object({ success: Type.Boolean() }),
+    Type.Object({ success: Type.Boolean(), operation: Type.String() }),
     Type.Union([
-      Type.Object({ success: Type.Literal(true), data: Type.Unknown() }),
-      Type.Object({ success: Type.Literal(false), error: Type.String() }),
+      Type.Object({
+        success: Type.Literal(true),
+        operation: Type.String(),
+        data: Type.Unknown(),
+      }),
+      Type.Object({
+        success: Type.Literal(true),
+        operation: Type.String(),
+        data: Type.Object({}, { additionalProperties: true }),
+      }),
+      Type.Object({ success: Type.Literal(false), operation: Type.String(), error: Type.String() }),
     ]),
   ],
   { $id: 'ApiResponse' },
