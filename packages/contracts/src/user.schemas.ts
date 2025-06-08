@@ -14,8 +14,9 @@ import { Static, Type } from '@sinclair/typebox';
  */
 const UserIdField = Type.Number();
 const UsernameField = Type.String({ minLength: 3, maxLength: 20 });
-//TODO fix email validation schema
-const EmailField = Type.String();
+const EmailField = Type.String({
+  pattern: `^[^@\s]+@[^@\s]+.[^@\s]+$`,
+});
 const DisplayNameField = Type.String({ maxLength: 50 });
 const AvatarField = Type.String();
 const LangField = Type.String({ maxLength: 2 });

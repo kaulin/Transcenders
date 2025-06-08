@@ -14,6 +14,23 @@ services:
     volumes:
       - ./services/user-service:/workspace/services/user-service
       - user_node_modules:/workspace/node_modules
-      - ./packages:/workspace/packages
+      - ./packages/contracts:/workspace/packages/contracts
+  auth-service:
+    container_name: auth-service
+    image: auth-service:hive
+    build:
+      context: .
+      dockerfile: services/auth-service/dockerfile
+      target: development
+    ports:
+      - '3002:3002'
+      - '9227:9227'
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./services/auth-service:/workspace/services/auth-service
+      - auth_node_modules:/workspace/node_modules
+      - ./packages/contracts:/workspace/packages/contracts
 volumes:
   user_node_modules:
+  auth_node_modules:
