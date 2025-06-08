@@ -15,12 +15,26 @@ export const USER_ROUTES = {
   USERS_EXACT: '/users/exact',
 } as const;
 
+/**
+ * FRIENDSHIP ROUTES - RESTful friendship and friend request management
+ */
 export const FRIENDSHIP_ROUTES = {
-  USER_FRIENDS: '/users/:id/friends',
-  REMOVE_FRIEND: '/friend/remove',
-  SEND_REQUEST: '/friend/request',
-  INCOMING_REQUESTS: '/friend/requests/:id',
-  FRIEND_ACCEPT: '/friend/accept/:id',
-  FRIEND_DECLINE: '/friend/decline/:id',
-  FRIEND_EXISTS: '/friend/exists/:id1/:id2',
+  // GET /users/:id/friendships - Get all friends for a user
+  USER_FRIENDSHIPS: '/users/:id/friendships',
+
+  // DELETE /users/:id/friendships/:friendId - Remove a friendship
+  FRIENDSHIP: '/users/:id/friendships/:friendId',
+
+  // GET /users/:id/friend-requests - Get incoming friend requests for a user
+  USER_FRIEND_REQUESTS: '/users/:id/friend-requests',
+
+  // POST /users/:id/friend-requests - Send friend request to specific user
+  SEND_FRIEND_REQUEST: '/users/:id/friend-requests/:recipientId',
+
+  // PUT /users/:id/friend-requests/:requestId - Accept a friend request
+  // DELETE /users/:id/friend-requests/:requestId - Decline/cancel a friend request
+  FRIEND_REQUEST: '/users/:id/friend-requests/:requestId',
+
+  // GET /friendships/:id1/:id2 - Check if friendship exists between two users
+  FRIENDSHIP_EXISTS: '/friendships/:id1/:id2',
 } as const;

@@ -1,9 +1,12 @@
 import {
+  acceptFriendSchema,
   checkFriendshipExistsSchema,
+  declineFriendSchema,
   FRIENDSHIP_ROUTES,
-  paramsIdSchema,
+  getFriendsSchema,
+  getRequestsSchema,
   removeFriendSchema,
-  requestFriendSchema,
+  sendFriendRequestSchema,
   standardApiResponses,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
@@ -11,61 +14,76 @@ import { FriendshipController } from '../controllers/FriendshipController';
 
 export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.get(
-    FRIENDSHIP_ROUTES.USER_FRIENDS,
+    FRIENDSHIP_ROUTES.USER_FRIENDSHIPS,
     {
       schema: {
-        params: paramsIdSchema.params,
+        description: 'Get all friends for a user',
+        tags: ['friendship'],
+        params: getFriendsSchema.params,
         response: standardApiResponses,
       },
     },
 
     FriendshipController.getFriends,
   );
+
   app.delete(
-    FRIENDSHIP_ROUTES.REMOVE_FRIEND,
+    FRIENDSHIP_ROUTES.FRIENDSHIP,
     {
       schema: {
-        body: removeFriendSchema.body,
+        description: 'Remove a friendship',
+        tags: ['friendship'],
+        params: removeFriendSchema.params,
         response: standardApiResponses,
       },
     },
     FriendshipController.removeFriend,
   );
-  app.post(
-    FRIENDSHIP_ROUTES.SEND_REQUEST,
+
+  app.get(
+    FRIENDSHIP_ROUTES.USER_FRIEND_REQUESTS,
     {
       schema: {
-        body: requestFriendSchema.body,
+        description: 'Get incoming friend requests for a user',
+        tags: ['friendship'],
+        params: getRequestsSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    FriendshipController.getRequests,
+  );
+
+  app.post(
+    FRIENDSHIP_ROUTES.SEND_FRIEND_REQUEST,
+    {
+      schema: {
+        description: 'Send friend request to specific user',
+        tags: ['friendship'],
+        params: sendFriendRequestSchema.params,
         response: standardApiResponses,
       },
     },
     FriendshipController.sendRequest,
   );
-  app.get(
-    FRIENDSHIP_ROUTES.INCOMING_REQUESTS,
+  app.put(
+    FRIENDSHIP_ROUTES.FRIEND_REQUEST,
     {
       schema: {
-        params: paramsIdSchema.params,
-        response: standardApiResponses,
-      },
-    },
-    FriendshipController.getIncomingFriendRequests,
-  );
-  app.post(
-    FRIENDSHIP_ROUTES.FRIEND_ACCEPT,
-    {
-      schema: {
-        params: paramsIdSchema.params,
+        description: 'Accept a friend request',
+        tags: ['friendship'],
+        params: acceptFriendSchema.params,
         response: standardApiResponses,
       },
     },
     FriendshipController.acceptFriend,
   );
-  app.post(
-    FRIENDSHIP_ROUTES.FRIEND_DECLINE,
+  app.delete(
+    FRIENDSHIP_ROUTES.FRIEND_REQUEST,
     {
       schema: {
-        params: paramsIdSchema.params,
+        description: 'Decline/cancel a friend request',
+        tags: ['friendship'],
+        params: declineFriendSchema.params,
         response: standardApiResponses,
       },
     },
@@ -73,9 +91,11 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   );
 
   app.get(
-    FRIENDSHIP_ROUTES.FRIEND_EXISTS,
+    FRIENDSHIP_ROUTES.FRIENDSHIP_EXISTS,
     {
       schema: {
+        description: 'Check if friendship exists between two users',
+        tags: ['friendship'],
         params: checkFriendshipExistsSchema.params,
         response: standardApiResponses,
       },

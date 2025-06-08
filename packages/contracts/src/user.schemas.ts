@@ -89,28 +89,59 @@ export const getUserSchema = {
 };
 export type GetUserRequest = Static<typeof getUserSchema.querystring>;
 
-export const paramsIdSchema = {
+export const userByIdSchema = {
   params: Type.Object({
     id: IdParamField,
   }),
 };
-export type ParamsIdRequest = Static<typeof paramsIdSchema.params>;
+export type userByIdRequest = Static<typeof userByIdSchema.params>;
 
-export const requestFriendSchema = {
-  body: Type.Object({
-    initiator_id: UserIdField,
-    recipient_id: UserIdField,
+export const acceptFriendSchema = {
+  params: Type.Object({
+    id: IdParamField,
+    requestId: IdParamField,
   }),
 };
-export type RequestFriendRequest = Static<typeof requestFriendSchema.body>;
+export type AcceptFriendRequest = Static<typeof acceptFriendSchema.params>;
+
+export const declineFriendSchema = {
+  params: Type.Object({
+    id: IdParamField,
+    requestId: IdParamField,
+  }),
+};
+export type DeclineFriendRequest = Static<typeof declineFriendSchema.params>;
+
+export const getFriendsSchema = {
+  params: Type.Object({
+    id: IdParamField,
+  }),
+};
+export type GetFriendsRequest = Static<typeof getFriendsSchema.params>;
+
+export const getRequestsSchema = {
+  params: Type.Object({
+    id: IdParamField,
+  }),
+};
+export type GetsRequestsRequest = Static<typeof getRequestsSchema.params>;
+
+// Add this to your user.schemas.ts
+export const sendFriendRequestSchema = {
+  params: Type.Object({
+    id: IdParamField,
+    recipientId: IdParamField,
+  }),
+};
+export type SendFriendRequestRequest = Static<typeof sendFriendRequestSchema.params>;
 
 export const removeFriendSchema = {
-  body: Type.Object({
-    user_1: UserIdField,
-    user_2: UserIdField,
+  params: Type.Object({
+    id: IdParamField,
+    friendId: IdParamField,
   }),
 };
-export type RemoveFriendRequest = Static<typeof removeFriendSchema.body>;
+export type RemoveFriendRequest = Static<typeof removeFriendSchema.params>;
 
 export const checkFriendshipExistsSchema = {
   params: Type.Object({
@@ -118,7 +149,7 @@ export const checkFriendshipExistsSchema = {
     id2: IdParamField,
   }),
 };
-export type CheckFriendshipExistsParams = Static<typeof checkFriendshipExistsSchema.params>;
+export type CheckFriendshipExistsRequest = Static<typeof checkFriendshipExistsSchema.params>;
 
 /**
  * RESPONSE DATA SCHEMAS
