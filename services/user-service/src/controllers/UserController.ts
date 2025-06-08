@@ -2,8 +2,8 @@ import {
   CreateUserRequest,
   GetUserRequest,
   GetUsersQuery,
-  ParamsIdRequest,
   UpdateUserRequest,
+  userByIdRequest,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/UserService';
@@ -26,7 +26,7 @@ export class UserController {
   }
 
   static async getUserById(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as ParamsIdRequest;
+    const { id } = request.params as userByIdRequest;
     const userId = parseInt(id);
 
     const result = await UserService.getUserById(userId);
@@ -34,7 +34,7 @@ export class UserController {
   }
 
   static async updateUser(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as ParamsIdRequest;
+    const { id } = request.params as userByIdRequest;
     const userId = parseInt(id);
     const updates = request.body as Partial<UpdateUserRequest>;
 
@@ -43,7 +43,7 @@ export class UserController {
   }
 
   static async deleteUser(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as ParamsIdRequest;
+    const { id } = request.params as userByIdRequest;
     const userId = parseInt(id);
 
     const result = await UserService.deleteUser(userId);
