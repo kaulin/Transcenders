@@ -9,6 +9,7 @@ import {
 } from '@transcenders/contracts';
 import SQL from 'sql-template-strings';
 import { Database } from 'sqlite';
+import { BooleanResultHelper } from '../utils/BooleanResultHelper';
 import { DatabaseHelper } from '../utils/DatabaseHelper';
 
 export class UserService {
@@ -148,16 +149,9 @@ export class UserService {
         const user = await database.get(sql.text, sql.values);
         const exists = !!user;
         if (exists) {
-          return {
-            success: true,
-            message: `User with identifier '${identifier}' exists in the database`,
-          };
-        } else {
-          return {
-            success: false,
-            message: `No user found with username or email '${identifier}'`,
-          };
+          return BooleanResultHelper.success(`Identifier '${identifier}' exists in the database`);
         }
+        return BooleanResultHelper.failure(`No user found with username or email '${identifier}'`);
       },
     );
   }
@@ -183,10 +177,7 @@ export class UserService {
       const userExists = await this.getUserByIdLogic(database, userId);
 
       if (!userExists) {
-        return {
-          success: false,
-          message: `Cannot delete user: no user found with id ${userId}`,
-        };
+        return BooleanResultHelper.failure(`no user found with id ${userId}`);
       }
 
       const sql = SQL`
@@ -196,16 +187,9 @@ export class UserService {
       const deleted = (result.changes || 0) > 0;
 
       if (deleted) {
-        return {
-          success: true,
-          message: `User with id ${userId} has been successfully deleted`,
-        };
-      } else {
-        return {
-          success: false,
-          message: `Delete operation completed but no changes were made to user ${userId}`,
-        };
+        return BooleanResultHelper.success(`User with id ${userId} has been successfully deleted`);
       }
+      return BooleanResultHelper.failure(`No changes were made to user ${userId}`);
     });
   }
 }
