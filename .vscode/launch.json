@@ -7,11 +7,25 @@
       "request": "attach",
       "address": "localhost",
       "port": 9228,
-      "localRoot": "${workspaceFolder}/services/user-service",
-      "remoteRoot": "/workspace/services/user-service",
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/workspace",
       "restart": true,
       "autoAttachChildProcesses": true,
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
+    },
+    {
+      "name": "Attach to Auth Service (Docker)",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9227,
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/workspace",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
     },
     {
       "name": "Attach to User Service (Local)",
@@ -19,10 +33,11 @@
       "request": "attach",
       "address": "localhost",
       "port": 9228,
-      "localRoot": "${workspaceFolder}/services/user-service",
+      "localRoot": "${workspaceFolder}",
       "restart": true,
       "autoAttachChildProcesses": true,
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
     }
   ]
 }
