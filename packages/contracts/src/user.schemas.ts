@@ -165,16 +165,11 @@ export const FriendRequestsDataSchema = Type.Object({
 });
 export type FriendRequestsData = Static<typeof FriendRequestsDataSchema>;
 
-export const BooleanOperationResult = Type.Union([
-  Type.Object({
-    success: Type.Literal(true),
-    message: Type.Optional(Type.String()),
-  }),
-  Type.Object({
-    success: Type.Literal(false),
-    message: Type.Optional(Type.String()),
-  }),
-]);
+export const BooleanOperationResult = Type.Object({
+  success: Type.Boolean(),
+  message: Type.String(),
+});
+
 export type BooleanOperationResult = Static<typeof BooleanOperationResult>;
 
 /**
