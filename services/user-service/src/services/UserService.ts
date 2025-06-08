@@ -27,10 +27,10 @@ export class UserService {
     userData: CreateUserRequest,
   ): Promise<User> {
     const sql = SQL`
-        INSERT INTO users (username, email, display_name)
+        INSERT INTO users (username, email, display_name, lang)
         VALUES (${userData.username}, ${userData.email}, ${
       userData.display_name || userData.username
-    })
+    }, ${userData.lang || 'en'})
       `;
 
     const result = await database.run(sql.text, sql.values);

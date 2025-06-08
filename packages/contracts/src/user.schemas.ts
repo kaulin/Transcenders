@@ -1,12 +1,23 @@
 import { Static, Type } from '@sinclair/typebox';
 
 /**
+ *
+  id INTEGER PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  display_name TEXT,
+  avatar, TEXT
+  language, TEXT
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
  * FIELD DEFINITIONS
  */
 const UserIdField = Type.Number();
 const UsernameField = Type.String({ minLength: 3, maxLength: 20 });
 const EmailField = Type.String({ format: 'email' });
 const DisplayNameField = Type.String({ maxLength: 50 });
+const AvatarField = Type.String();
+const LangField = Type.String({ maxLength: 2 });
 const IdField = Type.Number();
 const TimestampField = Type.String();
 const IdParamField = Type.String({ pattern: '^[0-9]+$' });
@@ -21,6 +32,8 @@ const UserSchema = Type.Object({
   username: UsernameField,
   email: EmailField,
   display_name: DisplayNameField,
+  avatar: AvatarField,
+  lang: LangField,
   created_at: TimestampField,
   updated_at: TimestampField,
 });
@@ -30,6 +43,8 @@ const userModifiableFields = Type.Object({
   username: UsernameField,
   email: EmailField,
   display_name: DisplayNameField,
+  avatar: AvatarField,
+  lang: LangField,
 });
 
 /**
@@ -40,6 +55,7 @@ export const createUserSchema = {
     username: UsernameField,
     email: EmailField,
     display_name: Type.Optional(DisplayNameField),
+    lang: Type.Optional(LangField),
   }),
 };
 export type CreateUserRequest = Static<typeof createUserSchema.body>;
