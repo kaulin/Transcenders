@@ -1,10 +1,4 @@
-import {
-  CreateUserRequest,
-  FRIENDSHIP_ROUTES,
-  RequestFriendRequest,
-  User,
-  USER_ROUTES,
-} from '@transcenders/contracts';
+import { CreateUserRequest, FRIENDSHIP_ROUTES, User, USER_ROUTES } from '@transcenders/contracts';
 import 'dotenv/config';
 
 const API_BASE = 'http://localhost:3001';
@@ -49,14 +43,14 @@ async function createUsers(): Promise<User[]> {
 
   for (const userData of SAMPLE_USERS) {
     try {
-      const response = await apiCall<User>('POST', USER_ROUTES.USERS_CREATE, userData);
+      const response = await apiCall<User>('POST', USER_ROUTES.USERS, userData);
       if (response.success) {
         users.push(response.data);
         console.log(`Created user: ${userData.username} (ID: ${response.data.id})`);
       } else {
         const existing_user = await apiCall<User>(
           'GET',
-          `${USER_ROUTES.SEARCH_USER}?username=${userData.username}`,
+          `${USER_ROUTES.USERS_EXACT}?username=${userData.username}`,
         );
         console.log(`Failed to create user: ${userData.username} | error: ${response.error}`);
         if (existing_user) users.push(existing_user.data);
@@ -90,25 +84,24 @@ async function createFriendships(users: User[]): Promise<void> {
 
     try {
       // Send friend request
-      const requestData: RequestFriendRequest = {
-        initiator_id: user1.id,
-        recipient_id: user2.id,
-      };
+      const requestPath = FRIENDSHIP_ROUTES.SEND_FRIEND_REQUEST.replace(
+        `:id`,
+        `${user1.id}`,
+      ).replace(`:recipientId`, `${user2.id}`);
 
-      const requestResponse = await apiCall('POST', FRIENDSHIP_ROUTES.SEND_REQUEST, requestData);
+      // console.log(`sendrequest path: ${requestPath}`);
+
+      const requestResponse = await apiCall('POST', requestPath);
       if (!requestResponse.success) {
         console.log(
           `Failed to send friend request: ${user1.username} -> ${user2.username} | error:`,
           requestResponse.error,
         );
-        continue;
       }
 
       // Get incoming requests to find the request ID
-      const incomingResponse = await apiCall<any[]>(
-        'GET',
-        FRIENDSHIP_ROUTES.INCOMING_REQUESTS.replace(':id', user2.id.toString()),
-      );
+      const incomingRequest = FRIENDSHIP_ROUTES.USER_FRIEND_REQUESTS.replace(':id', `${user2.id}`);
+      const incomingResponse = await apiCall<any[]>('GET', incomingRequest);
       if (!incomingResponse.success || !incomingResponse.data) {
         console.log(
           `Failed to get incoming requests for ${user2.username} | error:`,
@@ -126,8 +119,11 @@ async function createFriendships(users: User[]): Promise<void> {
 
       // Accept the friend request
       const acceptResponse = await apiCall(
-        'POST',
-        FRIENDSHIP_ROUTES.FRIEND_ACCEPT.replace(':id', request.id.toString()),
+        'PUT',
+        FRIENDSHIP_ROUTES.FRIEND_REQUEST.replace(':id', `${user1.id}`).replace(
+          ':requestId',
+          `${request.id}`,
+        ),
       );
       if (acceptResponse.success) {
         console.log(`Created friendship: ${user1.username} <-> ${user2.username}`);
@@ -158,12 +154,12 @@ async function createPendingRequests(users: User[]): Promise<void> {
     const recipient = users[recipientIdx];
 
     try {
-      const requestData: RequestFriendRequest = {
-        initiator_id: initiator.id,
-        recipient_id: recipient.id,
-      };
+      const requestPath = FRIENDSHIP_ROUTES.SEND_FRIEND_REQUEST.replace(
+        `:id`,
+        `${initiator.id}`,
+      ).replace(`:recipientId`, `${recipient.id}`);
 
-      const response = await apiCall('POST', FRIENDSHIP_ROUTES.SEND_REQUEST, requestData);
+      const response = await apiCall('POST', requestPath);
       if (response.success) {
         console.log(`Created pending request: ${initiator.username} -> ${recipient.username}`);
       } else {
@@ -198,14 +194,14 @@ async function testEndpoints(users: User[]): Promise<void> {
     const aliceId = users[0].id;
     const friendsResponse = await apiCall<User[]>(
       'GET',
-      FRIENDSHIP_ROUTES.USER_FRIENDS.replace(':id', aliceId.toString()),
+      FRIENDSHIP_ROUTES.USER_FRIENDSHIPS.replace(':id', aliceId.toString()),
     );
     console.log(`Alice has ${friendsResponse.data?.length || 0} friends`);
 
     // Test get incoming requests for first user
     const requestsResponse = await apiCall<any[]>(
       'GET',
-      FRIENDSHIP_ROUTES.INCOMING_REQUESTS.replace(':id', aliceId.toString()),
+      FRIENDSHIP_ROUTES.USER_FRIEND_REQUESTS.replace(':id', aliceId.toString()),
     );
     console.log(`Alice has ${requestsResponse.data?.length || 0} incoming friend requests`);
   } catch (error) {

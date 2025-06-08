@@ -81,7 +81,7 @@ export class UserService {
     return DatabaseHelper.executeQuery<User>('get user', async (database) => {
       const user = await this.getUserByIdLogic(database, id);
       if (!user) {
-        const error = new Error(`user with ${id} not found`);
+        const error = new Error(`user id '${id}'not found`);
         (error as any).code = DB_ERROR_CODES.RECORD_NOT_FOUND;
         throw error;
       }
@@ -96,7 +96,7 @@ export class UserService {
       `;
       const user = await database.get(sql.text, sql.values);
       if (!user) {
-        const error = new Error(`user with ${username} not found`);
+        const error = new Error(`user '${username}' not found`);
         (error as any).code = DB_ERROR_CODES.RECORD_NOT_FOUND;
         throw error;
       }
@@ -111,7 +111,7 @@ export class UserService {
       `;
       const user = await database.get(sql.text, sql.values);
       if (!user) {
-        const error = new Error(`user with ${email} not found`);
+        const error = new Error(`user with email '${email}' not found`);
         (error as any).code = DB_ERROR_CODES.RECORD_NOT_FOUND;
         throw error;
       }
@@ -152,7 +152,7 @@ export class UserService {
     return DatabaseHelper.executeQuery<User | null>('update user', async (database) => {
       const user = await this.updateUserLogic(database, id, updates);
       if (!user) {
-        const error = new Error(`user with ${id} not found`);
+        const error = new Error(`user with id '${id}' not found`);
         (error as any).code = DB_ERROR_CODES.RECORD_NOT_FOUND;
         throw error;
       }
