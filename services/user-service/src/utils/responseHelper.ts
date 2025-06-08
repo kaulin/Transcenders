@@ -2,14 +2,14 @@ import { DatabaseResult } from '@transcenders/contracts';
 import { FastifyReply } from 'fastify';
 
 export class ResponseHelper {
-  static success(reply: FastifyReply, data: any, statusCode = 200) {
+  static success(reply: FastifyReply, operation: string, data: any, statusCode = 200) {
     reply.code(statusCode);
-    return { success: true, data };
+    return { success: true, operation, data };
   }
 
-  static error(reply: FastifyReply, statusCode: number, message: string) {
+  static error(reply: FastifyReply, operation: string, statusCode: number, message: string) {
     reply.code(statusCode);
-    return { success: false, error: message };
+    return { success: false, operation, error: message };
   }
 
   /**
@@ -23,10 +23,15 @@ export class ResponseHelper {
     errorStatusCode = 500,
   ) {
     if (!result.success) {
-      return this.error(reply, errorStatusCode, result.error?.message || 'Operation failed');
+      return this.error(
+        reply,
+        result.operation,
+        errorStatusCode,
+        result.error?.message || 'Operation failed',
+      );
     }
 
-    return this.success(reply, result.data, successStatusCode);
+    return this.success(reply, result.operation, result.data, successStatusCode);
   }
 
   static throwError(message: string, statusCode = 500) {

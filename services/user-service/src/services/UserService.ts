@@ -1,4 +1,5 @@
 import {
+  BooleanOperationResult,
   CreateUserRequest,
   DatabaseResult,
   DB_ERROR_CODES,
@@ -135,14 +136,30 @@ export class UserService {
     });
   }
 
-  static async checkUserExists(identifier: string): Promise<DatabaseResult<boolean>> {
-    return DatabaseHelper.executeQuery<boolean>('check user exists', async (database) => {
-      const sql = SQL`
+  static async checkUserExists(
+    identifier: string,
+  ): Promise<DatabaseResult<BooleanOperationResult>> {
+    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+      'check user exists',
+      async (database) => {
+        const sql = SQL`
         SELECT 1 FROM users WHERE username = ${identifier} OR email = ${identifier} LIMIT 1
       `;
-      const user = await database.get(sql.text, sql.values);
-      return !!user;
-    });
+        const user = await database.get(sql.text, sql.values);
+        const exists = !!user;
+        if (exists) {
+          return {
+            success: true,
+            message: `User with identifier '${identifier}' exists in the database`,
+          };
+        } else {
+          return {
+            success: false,
+            message: `No user found with username or email '${identifier}'`,
+          };
+        }
+      },
+    );
   }
 
   static async updateUser(
@@ -160,13 +177,35 @@ export class UserService {
     });
   }
 
-  static async deleteUser(userId: number): Promise<DatabaseResult<boolean>> {
-    return DatabaseHelper.executeQuery<boolean>('delete user', async (database) => {
+  static async deleteUser(userId: number): Promise<DatabaseResult<BooleanOperationResult>> {
+    return DatabaseHelper.executeQuery<BooleanOperationResult>('delete user', async (database) => {
+      // First check if user exists
+      const userExists = await this.getUserByIdLogic(database, userId);
+
+      if (!userExists) {
+        return {
+          success: false,
+          message: `Cannot delete user: no user found with id ${userId}`,
+        };
+      }
+
       const sql = SQL`
         DELETE FROM users WHERE id = ${userId}
       `;
       const result = await database.run(sql.text, sql.values);
-      return (result.changes || 0) > 0;
+      const deleted = (result.changes || 0) > 0;
+
+      if (deleted) {
+        return {
+          success: true,
+          message: `User with id ${userId} has been successfully deleted`,
+        };
+      } else {
+        return {
+          success: false,
+          message: `Delete operation completed but no changes were made to user ${userId}`,
+        };
+      }
     });
   }
 }
