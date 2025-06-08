@@ -155,6 +155,16 @@ export type CheckFriendshipExistsRequest = Static<typeof checkFriendshipExistsSc
  * RESPONSE DATA SCHEMAS
  */
 
+export const FriendRequestsDataSchema = Type.Object({
+  id: UserIdField,
+  initiator_id: UserIdField,
+  recipient_id: UserIdField,
+  state: FriendRequestStateField,
+  created_at: TimestampField,
+  updated_at: TimestampField,
+});
+export type FriendRequestsData = Static<typeof FriendRequestsDataSchema>;
+
 export const BooleanOperationResult = Type.Union([
   Type.Object({
     success: Type.Literal(true),
