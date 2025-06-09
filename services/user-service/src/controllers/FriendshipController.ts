@@ -5,11 +5,11 @@ import {
   GetFriendsRequest,
   GetsRequestsRequest as GetRequests,
   RemoveFriendRequest,
+  ResponseHelper,
   SendFriendRequestRequest,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { FriendshipService } from '../services/FriendshipService';
-import { ResponseHelper } from '../utils/responseHelper';
 
 export class FriendshipController {
   static async getFriends(request: FastifyRequest, reply: FastifyReply) {

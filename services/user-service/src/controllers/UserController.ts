@@ -2,12 +2,12 @@ import {
   CreateUserRequest,
   GetUserRequest,
   GetUsersQuery,
+  ResponseHelper,
   UpdateUserRequest,
   userByIdRequest,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/UserService';
-import { ResponseHelper } from '../utils/responseHelper';
 
 export class UserController {
   // UserController
