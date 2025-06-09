@@ -11,7 +11,7 @@ let db: Database | null = null;
 
 function getDatabaseConfig(): DatabaseConfig {
   const moduleRoot = path.resolve(import.meta.dirname, '../..');
-  const filename = path.resolve(moduleRoot, './data/users.db');
+  const filename = path.resolve(moduleRoot, './data/auth.db');
   const fileDir = path.resolve(moduleRoot, './data/');
   const verbose = process.env.NODE_ENV === 'development';
 
@@ -49,13 +49,6 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     });
     console.log('Database connection opened');
 
-    try {
-      await fs.chmod(config.filename, 0o666);
-      console.log('Database file permissions set');
-    } catch (permError) {
-      console.warn('Could not set database permissions:', permError.message);
-    }
-
     if (config.verbose) {
       database.on('trace', (sql: string) => {
         console.log('SQL:', sql);
@@ -79,14 +72,12 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
       success: true,
       databasePath: config.filename,
       indexesCreated: [
-        'idx_users_username',
-        'idx_users_email',
-        'idx_users_created_at',
-        'idx_friendships_user2',
-        'idx_friend_requests_recipient',
+        'idx_user_credentials_user_id',
+        'idx_user_credentials_username',
+        'idx_user_credentials_email',
       ],
-      tablesCreated: ['users', 'friend_requests', 'friendships'],
-      triggersCreated: ['friend_requests_updated_at', 'users_updated_at'],
+      tablesCreated: ['user_credentials'],
+      triggersCreated: ['user_credentials_updated_at'],
     };
   } catch (error) {
     console.error('Database init failed:', error);
@@ -105,7 +96,7 @@ async function databaseFileExists(filepath: string): Promise<boolean> {
   }
 }
 
-export async function getDB(): Promise<Database> {
+export async function getAuthDB(): Promise<Database> {
   const config: DatabaseConfig = getDatabaseConfig();
   const fileExists = await databaseFileExists(config.filename);
   if (!fileExists && db) {
