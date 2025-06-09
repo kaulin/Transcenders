@@ -1,5 +1,6 @@
 import {
   BooleanOperationResult,
+  BooleanResultHelper,
   CreateUserRequest,
   DatabaseResult,
   DB_ERROR_CODES,
@@ -9,7 +10,6 @@ import {
 } from '@transcenders/contracts';
 import SQL from 'sql-template-strings';
 import { Database } from 'sqlite';
-import { BooleanResultHelper } from '../utils/BooleanResultHelper';
 import { DatabaseHelper } from '../utils/DatabaseHelper';
 
 export class UserService {
