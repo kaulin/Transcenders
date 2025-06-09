@@ -92,21 +92,16 @@ export const getUsersSchema = {
 export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
 
 export const getUserSchema = {
-  querystring: Type.Union([
-    // username only
-    Type.Object({
-      username: Type.String(),
-    }),
-    // email only
-    Type.Object({
-      email: Type.String(),
-    }),
-    // both username and email
-    Type.Object({
-      username: Type.String(),
-      email: Type.String(),
-    }),
-  ]),
+  querystring: Type.Object(
+    {
+      username: Type.Optional(Type.String()),
+      email: Type.Optional(Type.String()),
+    },
+    {
+      minProperties: 1,
+      additionalProperties: false,
+    },
+  ),
 };
 export type GetUserRequest = Static<typeof getUserSchema.querystring>;
 
