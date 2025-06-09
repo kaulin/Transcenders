@@ -2,6 +2,7 @@ import {
   BooleanOperationResult,
   BooleanResultHelper,
   CreateUserRequest,
+  DatabaseHelper,
   DatabaseResult,
   DB_ERROR_CODES,
   GetUsersQuery,
@@ -10,7 +11,7 @@ import {
 } from '@transcenders/contracts';
 import SQL from 'sql-template-strings';
 import { Database } from 'sqlite';
-import { DatabaseHelper } from '../utils/DatabaseHelper';
+import { getDB } from '../db/database';
 
 export class UserService {
   // Private logic methods for internal use
@@ -57,7 +58,7 @@ export class UserService {
       throw new Error('No fields to update');
     }
 
-    const setFields = fields.map((field) => `${field} = ?`).join(', ');
+    const setFields = fields.map((field) => `${field} = ?`).join(', database, ');
     const values = Object.values(updates);
     values.push(id.toString());
 
@@ -74,13 +75,15 @@ export class UserService {
 
   // Public API methods using DatabaseHelper
   static async createUser(userData: CreateUserRequest): Promise<DatabaseResult<User>> {
-    return DatabaseHelper.executeQuery<User>('create user', async (database) => {
+    const db = await getDB();
+    return DatabaseHelper.executeQuery<User>('create user', db, async (database) => {
       return await this.createUserLogic(database, userData);
     });
   }
 
   static async getUserById(id: number): Promise<DatabaseResult<User>> {
-    return DatabaseHelper.executeQuery<User>('get user', async (database) => {
+    const db = await getDB();
+    return DatabaseHelper.executeQuery<User>('get user', db, async (database) => {
       const user = await this.getUserByIdLogic(database, id);
       if (!user) {
         const error = new Error(`user id '${id}'not found`);
@@ -92,7 +95,8 @@ export class UserService {
   }
 
   static async getUserByUsername(username: string): Promise<DatabaseResult<User>> {
-    return DatabaseHelper.executeQuery<User>('get user by username', async (database) => {
+    const db = await getDB();
+    return DatabaseHelper.executeQuery<User>('get user by username', db, async (database) => {
       const sql = SQL`
         SELECT * FROM users WHERE username = ${username}
       `;
@@ -107,7 +111,8 @@ export class UserService {
   }
 
   static async getUserByEmail(email: string): Promise<DatabaseResult<User | null>> {
-    return DatabaseHelper.executeQuery<User | null>('get user by email', async (database) => {
+    const db = await getDB();
+    return DatabaseHelper.executeQuery<User | null>('get user by email', db, async (database) => {
       const sql = SQL`
         SELECT * FROM users WHERE email = ${email}
       `;
@@ -122,7 +127,8 @@ export class UserService {
   }
 
   static async getAllUsers(query: GetUsersQuery): Promise<DatabaseResult<User[]>> {
-    return DatabaseHelper.executeQuery<User[]>('get all users', async (database) => {
+    const db = await getDB();
+    return DatabaseHelper.executeQuery<User[]>('get all users', db, async (database) => {
       let sql = SQL`SELECT * FROM users`;
       if (query.search) {
         const searchTerm = `%${query.search}%`;
@@ -140,8 +146,10 @@ export class UserService {
   static async checkUserExists(
     identifier: string,
   ): Promise<DatabaseResult<BooleanOperationResult>> {
+    const db = await getDB();
     return DatabaseHelper.executeQuery<BooleanOperationResult>(
       'check user exists',
+      db,
       async (database) => {
         const sql = SQL`
         SELECT 1 FROM users WHERE username = ${identifier} OR email = ${identifier} LIMIT 1
@@ -160,7 +168,8 @@ export class UserService {
     id: number,
     updates: Partial<UpdateUserRequest>,
   ): Promise<DatabaseResult<User | null>> {
-    return DatabaseHelper.executeQuery<User | null>('update user', async (database) => {
+    const db = await getDB();
+    return DatabaseHelper.executeQuery<User | null>('update user', db, async (database) => {
       const user = await this.updateUserLogic(database, id, updates);
       if (!user) {
         const error = new Error(`user with id '${id}' not found`);
@@ -172,24 +181,31 @@ export class UserService {
   }
 
   static async deleteUser(userId: number): Promise<DatabaseResult<BooleanOperationResult>> {
-    return DatabaseHelper.executeQuery<BooleanOperationResult>('delete user', async (database) => {
-      // First check if user exists
-      const userExists = await this.getUserByIdLogic(database, userId);
+    const db = await getDB();
+    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+      'delete user',
+      db,
+      async (database) => {
+        // First check if user exists
+        const userExists = await this.getUserByIdLogic(database, userId);
 
-      if (!userExists) {
-        return BooleanResultHelper.failure(`no user found with id ${userId}`);
-      }
+        if (!userExists) {
+          return BooleanResultHelper.failure(`no user found with id ${userId}`);
+        }
 
-      const sql = SQL`
+        const sql = SQL`
         DELETE FROM users WHERE id = ${userId}
       `;
-      const result = await database.run(sql.text, sql.values);
-      const deleted = (result.changes || 0) > 0;
+        const result = await database.run(sql.text, sql.values);
+        const deleted = (result.changes || 0) > 0;
 
-      if (deleted) {
-        return BooleanResultHelper.success(`User with id ${userId} has been successfully deleted`);
-      }
-      return BooleanResultHelper.failure(`No changes were made to user ${userId}`);
-    });
+        if (deleted) {
+          return BooleanResultHelper.success(
+            `User with id ${userId} has been successfully deleted`,
+          );
+        }
+        return BooleanResultHelper.failure(`No changes were made to user ${userId}`);
+      },
+    );
   }
 }

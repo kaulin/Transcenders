@@ -1,7 +1,6 @@
 import { DatabaseResult } from '@transcenders/contracts';
 import fs from 'fs';
 import { Database } from 'sqlite';
-import { getDB } from '../db/database';
 
 export class DatabaseHelper {
   static getSqlFromFile(filePath: string): string | null {
@@ -19,10 +18,10 @@ export class DatabaseHelper {
    */
   static async executeQuery<T>(
     operation: string,
+    database: Database,
     queryFn: (database: Database) => Promise<T>,
   ): Promise<DatabaseResult<T>> {
     try {
-      const database = await getDB();
       const data = await queryFn(database);
       return { success: true, data, operation };
     } catch (error: any) {
@@ -44,10 +43,10 @@ export class DatabaseHelper {
    */
   static async executeTransaction<T>(
     operation: string,
+    database: Database,
     transactionFn: (database: Database) => Promise<T>,
   ): Promise<DatabaseResult<T>> {
     try {
-      const database = await getDB();
       await database.run('BEGIN TRANSACTION');
 
       try {
