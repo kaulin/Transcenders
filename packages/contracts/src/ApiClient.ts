@@ -7,6 +7,7 @@ import {
   CreateUserRequest,
   GetUserRequest,
   GetUsersQuery,
+  UserSchema,
 } from './user.schemas.js';
 
 export interface ServiceConfig {
@@ -144,7 +145,9 @@ export class ApiClient {
 
   static async getUserExact(query: GetUserRequest) {
     const queryString = `?${new URLSearchParams(query).toString()}`;
-    return this.callUserService(`${USER_ROUTES.USERS_EXACT}${queryString}`);
+    return this.callUserService(`${USER_ROUTES.USERS_EXACT}${queryString}`, {
+      expectedDataSchema: UserSchema,
+    });
   }
 
   // Friendship methods
