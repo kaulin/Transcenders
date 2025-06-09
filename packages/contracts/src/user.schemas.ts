@@ -200,17 +200,12 @@ export const ApiResponse = Type.Intersect(
         operation: Type.String(),
         data: Type.Unknown(),
       }),
-      Type.Object({
-        success: Type.Literal(true),
-        operation: Type.String(),
-        data: Type.Object({}, { additionalProperties: true }),
-      }),
       Type.Object({ success: Type.Literal(false), operation: Type.String(), error: Type.String() }),
     ]),
   ],
   { $id: 'ApiResponse' },
 );
-export type ApiResponse = Static<typeof ApiResponse>;
+export type ApiResponseType = Static<typeof ApiResponse>;
 
 export const standardApiResponses = {
   200: { $ref: 'ApiResponse#' },
