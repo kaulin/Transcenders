@@ -1,10 +1,10 @@
+import { DatabaseHelper } from '@transcenders/contracts';
 import 'dotenv/config';
 import fs from 'fs/promises';
 import path from 'path';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { DatabaseConfig, DatabaseInitResult, DatabaseStatus } from '../types/database.types';
-import { DatabaseHelper } from '../utils/DatabaseHelper';
 
 console.log('Loading database.ts file...');
 let db: Database | null = null;
