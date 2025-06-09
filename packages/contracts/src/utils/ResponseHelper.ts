@@ -1,8 +1,13 @@
-import { ApiResponse, DatabaseResult } from '@transcenders/contracts';
+import { ApiResponseType, DatabaseResult } from '@transcenders/contracts';
 import { FastifyReply } from 'fastify';
 
 export class ResponseHelper {
-  static success(reply: FastifyReply, operation: string, data: any, statusCode = 200): ApiResponse {
+  static success(
+    reply: FastifyReply,
+    operation: string,
+    data: any,
+    statusCode = 200,
+  ): ApiResponseType {
     reply.code(statusCode);
     return { success: true, operation, data };
   }
@@ -12,7 +17,7 @@ export class ResponseHelper {
     operation: string,
     statusCode: number,
     message: string,
-  ): ApiResponse {
+  ): ApiResponseType {
     reply.code(statusCode);
     return { success: false, operation, error: message };
   }
@@ -26,7 +31,7 @@ export class ResponseHelper {
     result: DatabaseResult<T>,
     successStatusCode = 200,
     errorStatusCode = 500,
-  ): ApiResponse {
+  ): ApiResponseType {
     if (!result.success) {
       return this.error(
         reply,
