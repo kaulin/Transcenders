@@ -1,4 +1,4 @@
-import { ApiClient, User, USER_ROUTES, UserSchema } from '@transcenders/contracts';
+import { ApiClient, User } from '@transcenders/contracts';
 import jwt from 'jsonwebtoken';
 
 export interface JWTPayload {
@@ -11,10 +11,7 @@ export interface JWTPayload {
 export class AuthService {
   static async login(username: string, password: string) {
     // Get user from user-service with schema validation
-    const apiResponse = await ApiClient.callUserService(
-      `${USER_ROUTES.USERS_EXACT}?username=${username}`,
-      UserSchema,
-    );
+    const apiResponse = await ApiClient.getUserExact({ username: username });
     if (!apiResponse.success) {
       throw new Error(`Authentication failed: ${apiResponse.error}`);
     }
