@@ -1,10 +1,10 @@
 import { TSchema } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
-import { ApiResponse } from './user.schemas.js';
+import { ApiResponse, ApiResponseType } from './user.schemas.js';
 
 export class ApiClient {
-  private static errorResponse(error: string): ApiResponse {
-    const result: ApiResponse = {
+  private static errorResponse(error: string): ApiResponseType {
+    const result: ApiResponseType = {
       success: false,
       operation: 'api-call',
       error,
@@ -12,7 +12,7 @@ export class ApiClient {
     return result;
   }
 
-  static async call(url: string, expectedDataSchema?: TSchema): Promise<ApiResponse> {
+  static async call(url: string, expectedDataSchema?: TSchema): Promise<ApiResponseType> {
     try {
       const response = await fetch(url);
 
@@ -40,11 +40,12 @@ export class ApiClient {
   /**
    * Helper method specifically for user service calls
    * Makes it easy to call user service without hardcoding URLs everywhere
+   * more similar ones later, for other services.
    */
   static async callUserService(
     endpoint: string,
     expectedDataSchema?: TSchema,
-  ): Promise<ApiResponse> {
+  ): Promise<ApiResponseType> {
     const userServiceUrl = process.env.USER_SERVICE_URL || 'http://user-service:3001';
     return this.call(`${userServiceUrl}${endpoint}`, expectedDataSchema);
   }
