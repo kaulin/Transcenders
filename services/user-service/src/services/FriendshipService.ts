@@ -160,7 +160,7 @@ export class FriendshipService {
           return BooleanResultHelper.success(
             `Friend request ${friendRequestId} accepted successfully`,
           );
-        } catch (error) {
+        } catch (error: any) {
           return BooleanResultHelper.failure(
             `Cannot accept friend request ${friendRequestId}: ${error.message}`,
           );
