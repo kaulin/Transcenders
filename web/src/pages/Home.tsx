@@ -2,9 +2,6 @@ import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 
-// import sleepyCat from "/images/sleepyCat.avif"
-// import standingCat from "/images/standingCat.avif"
-
 function Home() {
     const { t } = useTranslation()
     const { user } = useUser()
@@ -19,17 +16,6 @@ function Home() {
 
 				<button className="play-button">{t('start_tournament')} </button>
 			</div>
-			{/* <img
-			src={sleepyCat}
-			alt="sleepyCat"
-			className="absolute left-0 bottom-0 w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none"
-			/>
-
-			<img
-			src={standingCat}
-			alt="standingCat"
-			className="absolute bottom-0 right-0 translate-y-[4%] -translate-x-[70%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none"
-			/> */}
 		</div>
 	)
 }
