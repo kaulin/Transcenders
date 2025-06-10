@@ -1,3 +1,4 @@
+import cors from '@fastify/cors';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
@@ -25,6 +26,12 @@ const fastify = Fastify({
     },
   },
 }).withTypeProvider<TypeBoxTypeProvider>();
+
+// register cors for all localhost: origins, also allow sending auth-headers
+await fastify.register(cors, {
+  origin: [/^http:\/\/localhost:\d+$/, /^http:\/\/127.0.0.1:\d+$/],
+  credentials: true,
+});
 
 if (process.env.NODE_ENV === 'development') {
   fastify.addHook('onSend', async (request, reply, payload) => {
@@ -64,15 +71,7 @@ const start = async () => {
         docExpansion: 'list',
         deepLinking: false,
       },
-      uiHooks: {
-        onRequest: function (request, reply, next) {
-          next();
-        },
-        preHandler: function (request, reply, next) {
-          next();
-        },
-      },
-      staticCSP: true,
+      staticCSP: false,
       transformStaticCSP: (header) => header,
       transformSpecification: (swaggerObject, request, reply) => {
         return swaggerObject;
