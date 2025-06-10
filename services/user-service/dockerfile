@@ -16,7 +16,7 @@ COPY package.json package-lock.json ./
 COPY packages/contracts/ ./packages/contracts/
 COPY services/user-service/package.json ./services/user-service/
 
-RUN npm ci --workspace=user-service
+RUN npm ci
 
 COPY services/user-service/ ./services/user-service/
 
@@ -38,7 +38,7 @@ COPY package.json package-lock.json ./
 COPY packages/contracts/ ./packages/contracts/
 COPY services/user-service/package.json ./services/user-service/
 
-RUN npm ci --workspace=user-service --omit=dev
+RUN npm ci --omit=dev
 
 COPY services/user-service/ ./services/user-service/
 RUN npm run build --workspace=user-service
