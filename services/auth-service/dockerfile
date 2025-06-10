@@ -16,7 +16,7 @@ COPY package.json package-lock.json ./
 COPY packages/contracts/ ./packages/contracts/
 COPY services/auth-service/package.json ./services/auth-service/
 
-RUN npm ci --workspace=auth-service
+RUN npm ci
 
 COPY services/auth-service/ ./services/auth-service/
 
@@ -38,7 +38,7 @@ COPY package.json package-lock.json ./
 COPY packages/contracts/ ./packages/contracts/
 COPY services/auth-service/package.json ./services/auth-service/
 
-RUN npm ci --workspace=auth-service --omit=dev
+RUN npm ci --omit=dev
 
 COPY services/auth-service/ ./services/auth-service/
 RUN npm run build --workspace=auth-service

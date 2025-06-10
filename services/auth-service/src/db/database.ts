@@ -49,6 +49,13 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     });
     console.log('Database connection opened');
 
+    try {
+      await fs.chmod(config.filename, 0o666);
+      console.log('Database file permissions set');
+    } catch (error: any) {
+      console.warn('Could not set database permissions:', error.message);
+    }
+
     if (config.verbose) {
       database.on('trace', (sql: string) => {
         console.log('SQL:', sql);
