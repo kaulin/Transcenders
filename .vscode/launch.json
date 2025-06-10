@@ -38,6 +38,18 @@
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
       "sourceMaps": true
+    },
+    {
+      "name": "Attach to Auth Service (Local)",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9227,
+      "localRoot": "${workspaceFolder}",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
     }
   ]
 }
