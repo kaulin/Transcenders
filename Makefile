@@ -33,7 +33,8 @@ dev:
 # Everything local (for developers who can't use containers)
 local: setup-check
 	@echo "Starting backend services locally..."
-	@echo "Backend at: http://localhost:3001"
+	@echo "User Service at: http://localhost:3001"
+	@echo "Auth Service at: http://localhost:3002"
 	@echo "Frontend at: http://localhost:5173"
 	npm run dev:all
 

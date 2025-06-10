@@ -13,6 +13,7 @@
     "@fastify/swagger-ui": "^5.2.3",
     "@fastify/type-provider-typebox": "^5.1.0",
     "@transcenders/contracts": "^1.0.0",
+    "@fastify/cors": "^11.0.1",
     "bcrypt": "6.0.0",
     "dotenv": "^16.5.0",
     "fastify": "^5.3.3",
