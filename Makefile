@@ -91,7 +91,7 @@ stop: stop-dev stop-prod
 	@echo "All containers stopped"
 
 # Rebuild dev environment clearly separated into build and start
-rebuild: stop
+rebuild: stop clean
 	@echo "Completely rebuilding development environment..."
 	docker compose build --no-cache
 	docker compose up -d
@@ -99,8 +99,7 @@ rebuild: stop
 # Clean everything (volumes, images)
 clean: stop
 	@echo "Cleaning all Docker resources..."
-	docker compose down -v
-	-docker rmi user-service:hive
+	docker compose down -v --remove-orphans --rmi all
 	-docker system prune -f
 
 ################################################################################
