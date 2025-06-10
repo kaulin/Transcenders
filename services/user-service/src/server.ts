@@ -7,6 +7,7 @@ import Fastify from 'fastify';
 import { registerAdminRoutes } from './routes/admin.routes.js';
 import { registerFriendshipRoutes } from './routes/friend.routes.js';
 import { registerUserRoutes } from './routes/user.routes.js';
+import cors from '@fastify/cors';
 
 const fastify = Fastify({
   logger: {
@@ -28,6 +29,12 @@ const fastify = Fastify({
     },
   },
 }).withTypeProvider<TypeBoxTypeProvider>();
+
+// register cors for all localhost: origins, also allow sending auth-headers
+await fastify.register(cors, {
+  origin: [/^http:\/\/localhost:\d+$/],
+  credentials: true,
+});
 
 if (process.env.NODE_ENV === 'development') {
   fastify.addHook('onSend', async (request, reply, payload) => {
