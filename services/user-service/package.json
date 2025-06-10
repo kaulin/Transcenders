@@ -18,7 +18,8 @@
     "fastify": "^5.3.3",
     "sql-template-strings": "^2.2.2",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "@fastify/cors": "^11.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",
