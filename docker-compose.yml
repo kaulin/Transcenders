@@ -13,7 +13,7 @@ services:
       - NODE_ENV=development
     volumes:
       - ./services/user-service:/workspace/services/user-service
-      - node_modules:/workspace/node_modules
-      - ./packages/contracts:/workspace/packages/contracts
+      - user_node_modules:/workspace/node_modules
+      - ./packages:/workspace/packages
 volumes:
-  node_modules:
+  user_node_modules:
