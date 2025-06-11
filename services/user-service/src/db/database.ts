@@ -52,6 +52,8 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     try {
       await fs.chmod(config.filename, 0o666);
       console.log('Database file permissions set');
+      await fs.chmod(config.fileDir, 0o777);
+      console.log('Database dir permissions set');
     } catch (error: any) {
       console.warn('Could not set database permissions:', error.message);
     }
