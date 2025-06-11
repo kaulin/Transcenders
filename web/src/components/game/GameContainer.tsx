@@ -155,10 +155,10 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 	
 	return (
 		<div className="flex flex-col items-center justify-center p-4">
-			<h1 className="text-3xl font-bold mb-4">Paw-Paw Pong</h1>
-			<div className="text-xl font-bold mb-2">
+			<h1 className="text-6xl text-[#ffffff] font-fascinate mb-14">Paw-Paw Pong</h1>
+			{/* <div className="text-xl font-bold mb-2">
 				Score: {gameState.leftScore} - {gameState.rightScore}
-			</div>
+			</div> */}
 			
 			{/* <div className="relative"> */}
 				<PongCanvas gameState={gameState} />
