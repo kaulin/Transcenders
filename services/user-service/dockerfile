@@ -12,12 +12,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy all package.json files first
 COPY package.json package-lock.json ./
-COPY packages/contracts/ ./packages/contracts/
 COPY services/user-service/package.json ./services/user-service/
+# Copy all the workspace-packages
+COPY packages/ ./packages/
 
 RUN npm ci
 
+#copy all source files
 COPY services/user-service/ ./services/user-service/
 
 WORKDIR /workspace/services/user-service
@@ -35,7 +38,7 @@ libsqlite3-dev \
 && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
-COPY packages/contracts/ ./packages/contracts/
+COPY packages/ ./packages/
 COPY services/user-service/package.json ./services/user-service/
 
 RUN npm ci --omit=dev
