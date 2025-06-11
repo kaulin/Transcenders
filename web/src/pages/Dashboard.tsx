@@ -7,27 +7,40 @@ import { useUser } from "../contexts/UserContext"
 import MatchHistory from "../components/MatchHistory"
 
 import curiousCat from "/images/curiousCat.avif"
-import avatarCat from "/images/avatarCat.avif"
+import avatarCat1 from "/images/avatarCat1.avif"
+import avatarCat2 from "/images/avatarCat2.avif"
+import avatarCat3 from "/images/avatarCat3.avif"
+import avatarCat4 from "/images/avatarCat4.avif"
+import avatarCat5 from "/images/avatarCat5.avif"
+
+const avatars = [avatarCat1, avatarCat2, avatarCat3, avatarCat4, avatarCat5]
 
 const Dashboard = () => {
 	const { t } = useTranslation()
 	const { user } = useUser()
 
-	const [avatar, setAvatar] = useState<File | null>(null)
-	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-	const fileInputRef = useRef<HTMLInputElement>(null)
+	const [avatarIdx, setAvatarIdx] = useState<number>(0)
+	const [selectedAvatar, setSelectedAvatar] = useState(avatars[0])
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			setAvatar(file);
-			setPreviewUrl(URL.createObjectURL(file));
-		}
-	};
-
-	const handleUploadClick = () => {
-		fileInputRef.current?.click()
+	const nextAvatar = () => {
+		setAvatarIdx((prev) => (prev + 1) % avatars.length)
 	}
+
+	const prevAvatar = () => {
+		setAvatarIdx((prev) => (prev - 1 + avatars.length) % avatars.length)
+	}
+
+	const selectAvatar = () => {
+		setSelectedAvatar(avatars[avatarIdx])
+	}
+
+	const avatarSizes = [
+		"max-w-[80%]",
+		"max-w-[95%]",
+		"max-w-[80%]",
+		"max-w-[80%]",
+		"max-w-[80%]",
+	]
 
 	const wins = 42
 	const losses = 13
@@ -37,28 +50,22 @@ const Dashboard = () => {
 			<div className="profile-box rounded-lg basis-1/5 justify-between p-6 py-16">
 				
 				<div className="flex flex-col items-center">
-					<img
-						src={previewUrl || avatarCat}
+					<div className="bubble bg-opacity-40 w-64 h-64 flex items-end justify-center overflow-hidden">
+						<img
+						src={avatars[avatarIdx]}
 						alt="Avatar preview"
-						className="bubble w-64 object-cover"
-					/>
+						className={`object-contain ${avatarSizes[avatarIdx]}`}
+						/>
+					</div>
 					
 					<h1 className="pt-6 text-5xl text-[#fff] font-fascinate">{user?.name}</h1>
 
-					<input
-						type="file"
-						accept="image/*"
-						onChange={handleFileChange}
-						ref={fileInputRef}
-						className="hidden"
-						/>
-
-					<button
-						onClick={handleUploadClick}
-						className="button-text py-2"
-						>
-						{t("avatar")}
-					</button>
+					<p className="pt-4">Select an avatar</p>
+					<div className="flex justify-center gap-4 pt-1">
+						<button onClick={prevAvatar}>⟨</button>
+						<button onClick={selectAvatar}>Select</button>
+						<button onClick={nextAvatar}>⟩</button>
+					</div>
 
 					<div className="flex flex-col pt-16">
 						<button className="play-button min-w-36 m-2">
