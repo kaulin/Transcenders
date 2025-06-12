@@ -9,6 +9,7 @@ import {
   GetUsersQuery,
   UserSchema,
 } from './user.schemas.js';
+import { toQueryString } from './utils/query.js';
 
 export interface ServiceConfig {
   baseUrl: string;
@@ -111,7 +112,7 @@ export class ApiClient {
    * Convenience methods using route constants
    */
   static async getUsers(query?: GetUsersQuery) {
-    const queryString = query ? `?${new URLSearchParams(query as any).toString()}` : '';
+    const queryString = query ? toQueryString(query) : '';
     return this.callUserService(`${USER_ROUTES.USERS}${queryString}`);
   }
 

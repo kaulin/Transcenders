@@ -6,4 +6,5 @@ export * from './user.schemas';
 export * from './utils/query';
 export * from './utils/BooleanResultHelper';
 export * from './utils/DatabaseHelper';
+export * from './utils/query';
 export * from './utils/ResponseHelper';
