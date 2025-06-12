@@ -2,10 +2,10 @@ import { ApiResponseType, DatabaseResult } from '@transcenders/contracts';
 import { FastifyReply } from 'fastify';
 
 export class ResponseHelper {
-  static success(
+  static success<T = unknown>(
     reply: FastifyReply,
     operation: string,
-    data: any,
+    data: T,
     statusCode = 200,
   ): ApiResponseType {
     reply.code(statusCode);
@@ -37,24 +37,10 @@ export class ResponseHelper {
         reply,
         result.operation,
         errorStatusCode,
-        result.error?.message || 'Operation failed',
+        result.error?.message ?? 'Operation failed',
       );
     }
 
     return this.success(reply, result.operation, result.data, successStatusCode);
-  }
-
-  static throwError(message: string, statusCode = 500) {
-    const error = new Error(message) as any;
-    error.statusCode = statusCode;
-    throw error;
-  }
-
-  static throwNotFound(message = 'Resource not found') {
-    this.throwError(message, 404);
-  }
-
-  static throwBadRequest(message: string) {
-    this.throwError(message, 400);
   }
 }
