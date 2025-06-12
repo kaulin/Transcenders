@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useUser } from "../contexts/UserContext"
@@ -12,8 +12,9 @@ import avatarCat2 from "/images/avatarCat2.avif"
 import avatarCat3 from "/images/avatarCat3.avif"
 import avatarCat4 from "/images/avatarCat4.avif"
 import avatarCat5 from "/images/avatarCat5.avif"
+import avatarCat6 from "/images/avatarCat6.avif"
 
-const avatars = [avatarCat1, avatarCat2, avatarCat3, avatarCat4, avatarCat5]
+const avatars = [avatarCat1, avatarCat2, avatarCat3, avatarCat4, avatarCat5, avatarCat6]
 
 const Dashboard = () => {
 	const { t } = useTranslation()
@@ -34,12 +35,21 @@ const Dashboard = () => {
 		setSelectedAvatar(avatars[avatarIdx])
 	}
 
+	useEffect(() => {
+		const imgs = avatars.map((src) => {
+			const img = new Image()
+			img.src = src
+			return img
+		})
+	}, [])
+
 	const avatarSizes = [
+		"max-w-[65%]",
+		"max-w-[85%]",
+		"max-w-[98%]",
 		"max-w-[80%]",
-		"max-w-[95%]",
 		"max-w-[80%]",
-		"max-w-[80%]",
-		"max-w-[80%]",
+		"max-w-[70%]",
 	]
 
 	const wins = 42
@@ -50,7 +60,7 @@ const Dashboard = () => {
 			<div className="profile-box rounded-lg basis-1/5 justify-between p-6 py-16">
 				
 				<div className="flex flex-col items-center">
-					<div className="bubble bg-opacity-40 w-64 h-64 flex items-end justify-center overflow-hidden">
+					<div className="bubble bg-opacity-50 w-64 h-64 flex items-end justify-center overflow-hidden">
 						<img
 						src={avatars[avatarIdx]}
 						alt="Avatar preview"
