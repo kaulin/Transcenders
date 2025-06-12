@@ -1,3 +1,8 @@
+export const SERVICE_URLS = {
+  USER: process.env.USER_SERVICE_URL ?? 'http://user-service:3001',
+  AUTH: process.env.AUTH_SERVICE_URL ?? 'http://user-service:3002',
+};
+
 export const USER_ROUTES = {
   // GET /users - List users (with optional query params: ?search=, ?limit=, ?offset=)
   // POST /users - Create new user
@@ -37,4 +42,9 @@ export const FRIENDSHIP_ROUTES = {
 
   // GET /friendships/:id1/:id2 - Check if friendship exists between two users
   FRIENDSHIP_EXISTS: '/friendships/:id1/:id2',
+} as const;
+
+export const AUTH_ROUTES = {
+  // GET /auth - auth inital idk #TODO fix and add more
+  AUTH: '/auth/:username/:password',
 } as const;

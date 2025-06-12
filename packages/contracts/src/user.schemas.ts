@@ -27,7 +27,7 @@ const FriendRequestStateField = Type.Union([Type.Literal('pending'), Type.Litera
 /**
  * ENTITY SCHEMAS
  */
-const UserSchema = Type.Object({
+export const UserSchema = Type.Object({
   id: UserIdField,
   username: UsernameField,
   email: EmailField,
