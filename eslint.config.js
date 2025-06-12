@@ -1,27 +1,34 @@
-import tseslint from "typescript-eslint";
-import globals from "globals";
-import { defineConfig } from "eslint/config";
-import prettier from 'eslint-plugin-prettier';
+import eslint from '@eslint/js';
+import prettierConfig from 'eslint-config-prettier';
+import prettierPlugin from 'eslint-plugin-prettier';
+import tseslint from 'typescript-eslint';
 
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended, //...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
 
-export default defineConfig([
   {
     files: ['**/*.ts', '**/*.tsx'],
 
-    plugins: {
-      '@typescript-eslint': tseslint.plugin,
-      prettier,
-    },
-
     languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: { sourceType: 'module' },
-      globals: globals.node,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
-    rules: {
-      ...tseslint.configs.recommended.rules,
 
-      'prettier/prettier': 'warn',
+    plugins: {
+      prettier: prettierPlugin,
+    },
+
+    rules: {
+      ...prettierConfig.rules,
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'no-console': 'warn',
+      'prettier/prettier': 'error',
+      'function-call-argument-newline': ['error', 'consistent'],
     },
   },
-]);
+);
