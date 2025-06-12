@@ -28,7 +28,8 @@ const SignUp = () => {
 		try {
 			const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}${USER_ROUTES.USERS}`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: { 'Content-Type': 'application/json',
+							'accept': 'application/json' },
 				body: JSON.stringify({
 					username: username,
 					email: email,
@@ -45,8 +46,8 @@ const SignUp = () => {
 			const data = await res.json()
 
 			setUser({
-				id: data.id,
-				name: data.username,
+				id: data.data.id,
+				name: data.data.username,
 			});
 			
 		} catch (err: any) {
