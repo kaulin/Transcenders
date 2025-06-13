@@ -14,7 +14,8 @@ import { Static, Type } from '@sinclair/typebox';
  */
 const UserIdField = Type.Number();
 const UsernameField = Type.String({ minLength: 3, maxLength: 20 });
-const EmailField = Type.String({ format: 'email' });
+//TODO fix email validation schema
+const EmailField = Type.String();
 const DisplayNameField = Type.String({ maxLength: 50 });
 const AvatarField = Type.String();
 const LangField = Type.String({ maxLength: 2 });
@@ -27,7 +28,7 @@ const FriendRequestStateField = Type.Union([Type.Literal('pending'), Type.Litera
 /**
  * ENTITY SCHEMAS
  */
-const UserSchema = Type.Object({
+export const UserSchema = Type.Object({
   id: UserIdField,
   username: UsernameField,
   email: EmailField,
@@ -38,6 +39,9 @@ const UserSchema = Type.Object({
   updated_at: TimestampField,
 });
 export type User = Static<typeof UserSchema>;
+
+export const UsersArraySchema = Type.Array(UserSchema);
+export type UsersArray = Static<typeof UsersArraySchema>;
 
 const userModifiableFields = Type.Object({
   username: UsernameField,
