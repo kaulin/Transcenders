@@ -10,6 +10,8 @@
     "create_account":  "Luo uusi käyttäjä",
     "delete_account": "Poista käyttäjä",
     "delete_friend": "Poista kavereista",
+    "display_name": "",
+    "email": "Sähköposti",
     "existing_user": "Onko sinulla jo käyttäjätili",
     "friends": "KAVERIT",
     "games_played": "Pelatut ottelut",
