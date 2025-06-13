@@ -44,6 +44,15 @@
 		@apply rounded-lg bg-[#d3bfb1c4] border flex flex-col items-center
 	}
     
+    .custom-scrollbar {
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: transparent transparent; /* Firefox */
+    }
+
+    .custom-scrollbar:hover {
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent; 
+    }
+
     .bubble {
         @apply bg-white bg-opacity-10 rounded-full aspect-square border;
     }
