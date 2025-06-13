@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
+// import { USER_ROUTES } from "@transcenders/contracts"
+import { ApiClient } from "@transcenders/api-client"
 
 function SignUp() {
     const { t } = useTranslation()
@@ -17,7 +19,45 @@ function SignUp() {
         })
     }
 
-    return (
+	async function handleSignUp(e: React.FormEvent) {
+		e.preventDefault()
+		setError(null)
+
+		if (password !== confirmPassword) {
+			setError(t('pw_no_match'))
+			return
+		}
+
+		try {
+			const response = await ApiClient.user.createUser({
+				username: username,
+				email: email,
+				display_name: username,
+				lang: 'en',
+			})
+			
+			if (!response.success) {
+				throw new Error(response.error || t('something_went_wrong'))
+			}
+			
+			// probably won't be needing this later
+			const user = response.data as { id: number; username: string; email: string; display_name: string; avatar: string | null; lang: string;  };
+			
+			setUser({
+				id: user.id,
+				username: user.username,
+				email: user.email,
+				display_name: user.username,
+				avatar: user.avatar,
+				lang: user.lang,
+			})
+			
+			} catch (err: any) {
+			setError(err.message || t('something_went_wrong'))
+		}
+	}
+
+	return (
 		<div className="flex h-full justify-center items-center pb-28">
 			<div className="bubble w-[min(90vw,90vh)] max-w-[500px] z-10 p-16 flex flex-col justify-center items-center">
 				<h1 className="text-2xl mb-3">{t('create_account')}</h1>
