@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
-import { USER_ROUTES } from "@transcenders/contracts"
+// import { USER_ROUTES } from "@transcenders/contracts"
+import { ApiClient } from "@transcenders/api-client"
 
 import playfulCat from "/images/playfulCat.avif"
 
@@ -26,31 +27,30 @@ const SignUp = () => {
 		}
 
 		try {
-			const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}${USER_ROUTES.USERS}`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json',
-							'accept': 'application/json' },
-				body: JSON.stringify({
-					username: username,
-					email: email,
-					display_name: username,
-					lang: "en",
-				}),
-			});
-
-			if (!res.ok) {
-				const message = await res.text()
-				throw new Error(message)
-			}
-
-			const data = await res.json()
-
-			setUser({
-				id: data.data.id,
-				name: data.data.username,
-			});
+			const response = await ApiClient.user.createUser({
+				username: username,
+				email: email,
+				display_name: username,
+				lang: 'en',
+			})
 			
-		} catch (err: any) {
+			if (!response.success) {
+				throw new Error(response.error || t('something_went_wrong'))
+			}
+			
+			// probably won't be needing this later
+			const user = response.data as { id: number; username: string; email: string; display_name: string; avatar: string | null; lang: string;  };
+			
+			setUser({
+				id: user.id,
+				username: user.username,
+				email: user.email,
+				display_name: user.username,
+				avatar: user.avatar,
+				lang: user.lang,
+			})
+			
+			} catch (err: any) {
 			setError(err.message || t('something_went_wrong'))
 		}
 	}
