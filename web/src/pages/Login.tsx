@@ -49,7 +49,7 @@ function Login() {
 
 		setUser({
 			id: 1,
-			name: username
+			username: username
 		})
 	}
 
