@@ -1,5 +1,5 @@
 import {
-  ApiResponse,
+  ApiResponseType,
   CreateUserRequest,
   FRIENDSHIP_ROUTES,
   GetUserRequest,
@@ -19,7 +19,7 @@ export class UserApiService {
   private static async callUserService(
     endpoint: string,
     options: ApiCallOptions = {},
-  ): Promise<ApiResponse> {
+  ): Promise<ApiResponseType> {
     const url = `${SERVICE_URLS.USER}${endpoint}`;
     return ApiClient.call(url, options);
   }
