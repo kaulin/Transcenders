@@ -53,6 +53,15 @@
 	}
     /* bg-gradient-to-t from-[#ffd3c4] to-[#ffe4d8] box for purple bg  */
     
+    .custom-scrollbar {
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: transparent transparent; /* Firefox */
+    }
+
+    .custom-scrollbar:hover {
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent; 
+    }
+
     .bubble {
         @apply bg-white bg-opacity-20 rounded-full aspect-square border border-white;
     }
