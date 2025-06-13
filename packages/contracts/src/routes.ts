@@ -1,7 +1,7 @@
 export const SERVICE_URLS = {
-  USER: process.env.USER_SERVICE_URL ?? 'http://localhost:3001',
-  AUTH: process.env.AUTH_SERVICE_URL ?? 'http://localhost:3002',
-} as const;
+  USER: (typeof process !== 'undefined' ? process.env.USER_SERVICE_URL : undefined) ?? 'http://localhost:3001',
+  AUTH: (typeof process !== 'undefined' ? process.env.AUTH_SERVICE_URL : undefined) ?? 'http://localhost:3002',
+};
 
 export const USER_ROUTES = {
   // GET /users - List users (with optional query params: ?search=, ?limit=, ?offset=)
