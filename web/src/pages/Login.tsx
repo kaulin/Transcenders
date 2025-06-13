@@ -10,12 +10,44 @@ function Login() {
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
 
-    const handleLogin = () => {
-        setUser({
-            id: 1,
-            name: username
-        })
-    }
+	// async function handleLogin(e: React.FormEvent) {
+	// 	e.preventDefault()
+	// 	setError(null)
+
+	// 	try {
+	// 		const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}${USER_ROUTES.USERS}`, {
+	// 			method: '',
+	// 			headers: {'Content-Type': 'application/json'},
+	// 			body: JSON.stringify({
+	// 				username,
+	// 				password
+	// 			})
+	// 		})
+
+	// 		if (!res.ok) {
+	// 			const message = await res.text()
+	// 			throw new Error(message)
+	// 		}
+
+	// 		const data = await res.json()
+		
+	// 		setUser({
+	// 			id: data.id,
+	// 			name: data.username
+	// 		})
+		
+	// 	} catch (err:any) {
+	// 		setError(err.message || t('something_went_wrong'))
+	// 	}
+    // }
+
+	async function handleLogin(e: React.FormEvent) {
+
+		setUser({
+			id: 1,
+			username: username
+		})
+	}
 
     return (
 		<div className="flex h-full justify-center items-center pb-28">

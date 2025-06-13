@@ -8,7 +8,7 @@ function Home() {
 
     return (
 		<div className="flex h-full flex-col justify-center items-center pb-28">
-			<h1 className="text-4xl">{t('hello')} {user?.name}</h1>
+			<h1 className="text-6xl font-fascinate">{t('hello')} {user?.username}</h1>
 			<p className="mb-10">{t('welcome')}!</p>
 
 			<div className="flex flex-col">
