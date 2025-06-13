@@ -1,9 +1,15 @@
 import type { ReactNode } from "react"
 import { createContext, useContext, useState } from "react"
 
-export type User = {
-    id: number
-    name: string
+export interface User {
+	id: number;
+	username: string;
+	email?: string;
+	display_name?: string;
+	avatar?: string | null;
+	lang?: string;
+	created_at?: string;
+	updated_at?: string;
 }
 
 type UserContextType = {
