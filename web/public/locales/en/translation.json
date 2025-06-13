@@ -13,6 +13,7 @@
     "create_account": "Create an account",
     "delete_account": "Delete account",
     "delete_friend": "Delete friend",
+    "display_name": "Display name",
     "email": "Email",
     "existing_user": "Already have an account",
     "friends": "Friends",
