@@ -15,7 +15,7 @@ import { Static, Type } from '@sinclair/typebox';
 const UserIdField = Type.Number();
 const UsernameField = Type.String({ minLength: 3, maxLength: 20 });
 const EmailField = Type.String({
-  pattern: `^[^@\s]+@[^@\s]+.[^@\s]+$`,
+  pattern: `^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$`,
 });
 const DisplayNameField = Type.String({ maxLength: 50 });
 const AvatarField = Type.String();

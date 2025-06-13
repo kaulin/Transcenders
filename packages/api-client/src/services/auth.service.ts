@@ -1,4 +1,4 @@
-import { ApiResponse, AUTH_ROUTES, SERVICE_URLS } from '@transcenders/contracts';
+import { ApiResponseType, AUTH_ROUTES, SERVICE_URLS } from '@transcenders/contracts';
 import { ApiClient } from '../api/ApiClient';
 import { ApiCallOptions } from '../types/client.options';
 
@@ -9,7 +9,7 @@ export class AuthApiService {
   private static async callAUthService(
     endpoint: string,
     options: ApiCallOptions = {},
-  ): Promise<ApiResponse> {
+  ): Promise<ApiResponseType> {
     const url = `${SERVICE_URLS.AUTH}${endpoint}`;
     return ApiClient.call(url, options);
   }
