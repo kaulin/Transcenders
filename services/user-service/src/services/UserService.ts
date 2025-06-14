@@ -30,8 +30,8 @@ export class UserService {
     const sql = SQL`
         INSERT INTO users (username, email, display_name, lang, avatar)
         VALUES (${userData.username}, ${userData.email}, ${
-      userData.display_name || userData.username
-    }, ${userData.lang || 'en'}, '')
+          userData.display_name ?? userData.username
+        }, ${userData.lang ?? 'en'}, '')
       `;
 
     const result = await database.run(sql.text, sql.values);
@@ -66,7 +66,7 @@ export class UserService {
 
     const result = await database.run(sql, values);
     // user does not exist
-    if ((result.changes || 0) === 0) {
+    if ((result.changes ?? 0) === 0) {
       return null;
     }
 
@@ -129,7 +129,7 @@ export class UserService {
   static async getAllUsers(query: GetUsersQuery): Promise<DatabaseResult<User[]>> {
     const db = await getDB();
     return DatabaseHelper.executeQuery<User[]>('get all users', db, async (database) => {
-      let sql = SQL`SELECT * FROM users`;
+      const sql = SQL`SELECT * FROM users`;
       if (query.search) {
         const searchTerm = `%${query.search}%`;
         sql.append(
@@ -197,7 +197,7 @@ export class UserService {
         DELETE FROM users WHERE id = ${userId}
       `;
         const result = await database.run(sql.text, sql.values);
-        const deleted = (result.changes || 0) > 0;
+        const deleted = (result.changes ?? 0) > 0;
 
         if (deleted) {
           return BooleanResultHelper.success(

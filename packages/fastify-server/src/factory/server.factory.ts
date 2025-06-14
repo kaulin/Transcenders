@@ -42,8 +42,8 @@ export async function createFastifyServer(
 export async function startServer(fastify: FastifyInstance, config: ServerConfig): Promise<void> {
   try {
     await fastify.listen({
-      port: config.port || 3000,
-      host: config.host || '0.0.0.0',
+      port: config.port ?? 3000,
+      host: config.host ?? '0.0.0.0',
     });
   } catch (err) {
     fastify.log.error(err);
