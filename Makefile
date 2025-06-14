@@ -14,7 +14,7 @@ setup:
 
 # Check if setup is needed
 setup-check:
-	@if [ ! -f ".setup-complete" ] || [ "package.json" -nt ".setup-complete" ] || [ "package-lock.json" -nt ".setup-complete" ]; then \
+	@if [ ! -d "./node_modules" ] || [ ! -f ".setup-complete" ] || [ "package.json" -nt ".setup-complete" ] || [ "package-lock.json" -nt ".setup-complete" ]; then \
 		echo "Running setup..."; \
 		$(MAKE) setup; \
 	else \
