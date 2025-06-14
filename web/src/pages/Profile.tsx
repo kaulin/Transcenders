@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
 import { ApiClient } from "@transcenders/api-client"
@@ -18,6 +19,8 @@ const Profile = () => {
 
 	const [avatarIdx, setAvatarIdx] = useState<number>(0)
 	const [selectedAvatar, setSelectedAvatar] = useState(avatars[0])
+	
+	const navigate = useNavigate()
 
 	const nextAvatar = () => {
 		setAvatarIdx((prev) => (prev + 1) % avatars.length)
@@ -52,12 +55,12 @@ const Profile = () => {
     const [displayName, setDisplayName] = useState(user?.display_name || "")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
-    const [passwordMatchError, setPasswordMatchError] = useState(false)
     const [language, setLanguage] = useState(user?.lang || "")
+	const [success, setSuccess] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
 
     const handleConfirm = async () => {
-        setError("")
+        setError(null)
         
         if (password !== confirmPassword) {
 			setError(t('pw_no_match'))
@@ -71,10 +74,37 @@ const Profile = () => {
         }
     }
 
+	const handleDelete = async () => {
+		console.log("handleDelete")
+		setError(null)
+
+		try {
+			if (user?.id == null) {
+				throw new Error("User ID is undefined")
+			}
+
+			console.log("Attempting to delete user with ID:", user.id)
+			const response = await ApiClient.user.deleteUser(user.id) // is this throwing?
+			console.log("Delete response:", response)
+
+			if (!response.success) {
+				throw new Error(response.error || t('something_went_wrong'))
+			}
+
+			setSuccess(true)
+			setTimeout(() => {
+				navigate('../pages/Login')
+			}, 2000)
+
+		} catch (err: any) {
+			setError(err.message || t('something_went_wrong'))
+		}
+	}
+
     return (
         <div className="w-full h-full flex flex-col justify-center">
             <div className="profile-box flex-row basis-3/5">
-                <div className="flex basis-2/6 items-center justify-center gap-10">
+                <div className="flex basis-2/6 items-center justify-center gap-10 p-4">
                     <div className="bubble bg-opacity-50 w-72 h-72 flex items-end justify-center overflow-hidden">
 						<img
                             src={avatars[avatarIdx]}
@@ -96,7 +126,7 @@ const Profile = () => {
 					
                 </div>
 
-                <div className="flex basis-3/6 h-full flex-col items-center justify-center gap-10 bg-[#605c4c13] px-6">
+                <div className="flex basis-3/6 h-full flex-col items-center justify-center gap-10 p-4 bg-[#605c4c13] px-6">
                     <div className="w-full max-w-sm">
                         <label className="block font-fascinate text-2xl uppercase mb-2">{t('username')}</label>
                         <input
@@ -123,8 +153,7 @@ const Profile = () => {
                             type="password"
                             value={password}
                             onChange={(e) => {
-                                setPassword(e.target.value);
-                                setPasswordMatchError(e.target.value !== confirmPassword);
+                                setPassword(e.target.value)
                             }}
                             placeholder={t('password')}
                             className="w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60"
@@ -133,8 +162,7 @@ const Profile = () => {
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => {
-                                setConfirmPassword(e.target.value);
-                                setPasswordMatchError(password !== e.target.value);
+                                setConfirmPassword(e.target.value)
                             }}
                             placeholder={t('confirm_password')}
                             className={`w-full bg-transparent border-b-2 mt-3 border-white focus:outline-none focus:border-white/70 ${
@@ -151,8 +179,8 @@ const Profile = () => {
                             className="w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg"
                         >
                             <option value="en" className="bg-[#2c2c2c] text-white">English</option>
-                            <option value="fr" className="bg-[#2c2c2c] text-white">Finnish</option>
-                            <option value="es" className="bg-[#2c2c2c] text-white">Estonian</option>
+                            <option value="fi" className="bg-[#2c2c2c] text-white">Finnish</option>
+                            <option value="est" className="bg-[#2c2c2c] text-white">Estonian</option>
                         </select>
                     </div>
 
@@ -164,8 +192,23 @@ const Profile = () => {
                     </button>
                 </div>
                 
-                <div className="flex h-full basis-1/6 justify-center items-center">
-                <div className="play-button min-w-48">{t('delete_account')}</div>
+                <div className="flex flex-col h-full basis-1/6 justify-center items-center p-4">
+                	<button 
+						onClick={handleDelete}
+						className="mt-8 bg-white/20 font-fascinate uppercase px-6 py-2 rounded-full hover:bg-opacity-80 transition"
+					>
+						{t('delete_account')}
+					</button>
+					{success && (
+						<p className="text-white mt-4 text-center">
+							Account deleted successfully
+						</p>
+					)}
+					{error && (
+						<p className="text-white mt-4 text-center">
+							{error}
+						</p>
+					)}
                 </div>
             </div>
         </div>
