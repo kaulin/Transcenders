@@ -53,8 +53,8 @@ function SignUp() {
 			})
 			
 			} catch (err: any) {
-			setError(err.message || t('something_went_wrong'))
-		}
+				setError(err.message || t('something_went_wrong'))
+			}
 	}
 
 	return (
