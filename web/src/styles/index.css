@@ -41,9 +41,21 @@
     }
     
     .profile-box  {
-		@apply rounded-lg bg-[#d3bfb1c4] border flex flex-col items-center
+        @apply relative rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1] flex flex-col items-center;
 	}
     
+	.profile-label {
+		@apply block font-fascinate text-2xl uppercase mb-2;
+	}
+
+	.profile-input-field {
+		@apply w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60;
+	}
+
+	.profile-button {
+		@apply mt-8 bg-white/20 font-fascinate uppercase px-6 py-2 rounded-full hover:bg-opacity-80 transition;
+	}
+
     .custom-scrollbar {
         scrollbar-width: thin; /* Firefox */
         scrollbar-color: transparent transparent; /* Firefox */
@@ -54,50 +66,18 @@
     }
 
     .bubble {
-        @apply bg-white bg-opacity-10 rounded-full aspect-square border;
+        @apply rounded-full aspect-square border bg-white/20 border-white;
     }
 
-    /* .bg-bubble {
-        @apply rounded-full aspect-square shadow-xl bg-gradient-to-t w-full z-0;
-    } */
+	.login-bubble {
+		@apply bubble shadow-[0_0_3px_3px_#fff] w-[min(90vw,90vh)] max-w-[500px] z-10 p-16 flex flex-col justify-center items-center;
+	}
 
-    /* .bg-bubble-1 {
-        @apply bg-bubble absolute max-w-[10%] shadow-[#734b58b1]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
+    .bg-bubble {
+        @apply absolute rounded-full aspect-square shadow-xl shadow-[#be7d8486] bg-gradient-to-t from-[#c5567580] via-[#ff7da463] to-[#fcefe11b] w-full z-0;
     }
 
-	.bg-bubble-2 {
-        @apply bg-bubble absolute max-w-[20%] shadow-[#734b598b]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
-    }
-
-	.bg-bubble-3 {
-        @apply bg-bubble absolute max-w-[30%] shadow-[#734b578a]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
-    }
-
-	.bg-bubble-4 {
-        @apply bg-bubble absolute max-w-[40%] shadow-[#734b5986]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe128];
-    }
-
-	.bg-bubble-5 {
-        @apply bg-bubble absolute max-w-[50%] shadow-[#734b5987]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe11e];
-    }
-
-	.bg-bubble-6 {
-        @apply bg-bubble absolute max-w-[60%] shadow-[#734b5e88]
-        bg-gradient-to-t from-[#933e56b5] via-[#ea8f719a] to-[#fcefe130];
-    }
-
-	.bg-bubble-7 {
-        @apply bg-bubble absolute max-w-[70%] shadow-[#734b5282]
-        bg-gradient-to-t from-[#96425ab2] via-[#ea8f719a] to-[#fcefe12b];
-    }
-
-	.bg-bubble-8 {
-        @apply bg-bubble absolute max-w-[80%] shadow-[#734b5083]
-        bg-gradient-to-t from-[#933e56a8] via-[#ea8f719a] to-[#fcefe11b];
-    } */
+	.login-cat-position {
+		@apply absolute bottom-0 left-1/2 -translate-x-[70%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none;
+	}
 }

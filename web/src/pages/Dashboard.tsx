@@ -12,8 +12,6 @@ const Dashboard = () => {
   const { t } = useTranslation()
   const { user } = useUser()
 
-	const [avatarIdx, setAvatarIdx] = useState<number>(0)
-
 	const avatarSizes = [
 		"max-w-[65%]",
 		"max-w-[85%]",
@@ -73,9 +71,9 @@ const Dashboard = () => {
 				<div className="flex basis-4/12 flex-col items-center">
 					<div className="bubble bg-opacity-50 w-64 h-64 flex items-end justify-center overflow-hidden">
 						<img
-						src={avatars[avatarIdx]}
-						alt="Avatar preview"
-						className="bubble w-64 object-cover"
+						src={avatars[0]}
+						alt="Avatar"
+						className={`object-contain ${avatarSizes[0]}`}
 						/>
 					) : (
 					<div className="bubble w-64 bg-white bg-opacity-25"></div>
@@ -131,18 +129,20 @@ const Dashboard = () => {
 					{t('games_played')}
 				</h1>
 				
-				<div className="flex basis-3/12 w-full justify-around items-center rounded-lg bg-[#f6dfd148] text-xl uppercase">
-					<div className="flex flex-col">
-						<div>{t('total')}</div>
-						<div className="text-center">{wins + losses}</div>
+				<div className="flex basis-1/5 w-full font-fascinate justify-around items-center text-lg uppercase">
+					<p className="text-4xl text-[#fff]">{t('games_played')} </p>
+				
+					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
+						<div className="text-[#fff]">{t('total')}</div>
+						<div className="text-center text-[#fff]">{wins + losses}</div>
 					</div>
-					<div className="flex flex-col">
-						<div>{t('wins')}</div>
-						<div className="text-center">{wins}</div>
+					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
+						<div className="text-[#fff]">{t('wins')}</div>
+						<div className="text-center text-[#fff]">{wins}</div>
 					</div>
-					<div className="flex flex-col">
-						<div>{t('losses')}</div>
-						<div className="text-center">{losses}</div>
+					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
+						<div className="text-[#fff]">{t('losses')}</div>
+						<div className="text-center text-[#fff]">{losses}</div>
 					</div>
 				</div>
 
