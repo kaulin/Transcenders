@@ -24,7 +24,10 @@ export const IdField = Type.Number();
 export const TimestampField = Type.String();
 export const IdParamField = Type.String({ pattern: '^[0-9]+$' });
 export const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
-export const FriendRequestStateField = Type.Union([Type.Literal('pending'), Type.Literal('declined')]);
+export const FriendRequestStateField = Type.Union([
+  Type.Literal('pending'),
+  Type.Literal('declined'),
+]);
 
 /**
  * ENTITY SCHEMAS
@@ -193,14 +196,17 @@ export type BooleanOperationResult = Static<typeof BooleanOperationResult>;
  */
 export const ApiResponse = Type.Intersect(
   [
-    Type.Object({ success: Type.Boolean(), operation: Type.String() }),
     Type.Union([
       Type.Object({
         success: Type.Literal(true),
         operation: Type.String(),
         data: Type.Unknown(),
       }),
-      Type.Object({ success: Type.Literal(false), operation: Type.String(), error: Type.String() }),
+      Type.Object({
+        success: Type.Literal(false),
+        operation: Type.String(),
+        error: Type.String(),
+      }),
     ]),
   ],
   { $id: 'ApiResponse' },
