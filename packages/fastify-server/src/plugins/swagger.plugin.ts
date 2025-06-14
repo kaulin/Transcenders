@@ -15,11 +15,11 @@ export async function registerSwagger(
       info: {
         title: config.title,
         description: config.description,
-        version: config.version || '1.0.0',
+        version: config.version ?? '1.0.0',
       },
       servers: [
         {
-          url: `http://localhost:${config.port || 3000}`,
+          url: `http://localhost:${config.port ?? 3000}`,
           description: 'Development server',
         },
       ],
@@ -28,7 +28,7 @@ export async function registerSwagger(
 
   // Register Swagger UI
   await fastify.register(fastifySwaggerUi, {
-    routePrefix: swaggerConfig?.routePrefix || '/docs',
+    routePrefix: swaggerConfig?.routePrefix ?? '/docs',
     uiConfig: {
       docExpansion: 'list',
       deepLinking: false,

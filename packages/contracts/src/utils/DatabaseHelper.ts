@@ -31,8 +31,8 @@ export class DatabaseHelper {
         success: false,
         operation,
         error: {
-          code: error.code || 'UNKNOWN_ERROR',
-          message: error.message || 'Unknown database error',
+          code: error.code ?? 'UNKNOWN_ERROR',
+          message: error.message ?? 'Unknown database error',
           isConstraintError: error.code === 'SQLITE_CONSTRAINT',
         },
       };
@@ -61,8 +61,8 @@ export class DatabaseHelper {
           success: false,
           operation,
           error: {
-            code: error.code || 'UNKNOWN_ERROR',
-            message: error.message || 'Unknown database error',
+            code: error.code ?? 'UNKNOWN_ERROR',
+            message: error.message ?? 'Unknown database error',
             isConstraintError: error.code === 'SQLITE_CONSTRAINT',
           },
         };
@@ -74,8 +74,8 @@ export class DatabaseHelper {
         success: false,
         operation,
         error: {
-          code: error.code || 'UNKNOWN_ERROR',
-          message: error.message || 'Unknown database error',
+          code: error.code ?? 'UNKNOWN_ERROR',
+          message: error.message ?? 'Unknown database error',
           isConstraintError: error.code === 'SQLITE_CONSTRAINT',
         },
       };

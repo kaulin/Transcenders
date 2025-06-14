@@ -1,4 +1,16 @@
-import { ApiClient, DatabaseHelper, DB_ERROR_CODES, User, RegisterUser, CreateUserRequest, BooleanOperationResult, DatabaseResult, UserCredentialsEntry, BooleanResultHelper, UserCredentials, AuthData } from '@transcenders/contracts';
+import {
+  ApiClient,
+  AuthData,
+  BooleanOperationResult,
+  BooleanResultHelper,
+  CreateUserRequest,
+  DatabaseHelper,
+  DatabaseResult,
+  RegisterUser,
+  User,
+  UserCredentials,
+  UserCredentialsEntry,
+} from '@transcenders/contracts';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import SQL from 'sql-template-strings';
@@ -13,42 +25,52 @@ export interface JWTPayload {
 }
 
 export class AuthService {
-  private static async insertCredentialsLogic(database: Database, userCreds: UserCredentialsEntry): Promise<Boolean>{
+  private static async insertCredentialsLogic(
+    database: Database,
+    userCreds: UserCredentialsEntry,
+  ): Promise<boolean> {
     const sql = SQL`
         INSERT INTO user_credentials (user_id, username, email, pw_hash)
         VALUES (${userCreds.user_id}, ${userCreds.username}, ${userCreds.email}, ${userCreds.pw_hash})
       `;
-        const result = await database.run(sql.text, sql.values);
-        if (!result.lastID) {
-          throw new Error('Failed to add user credentials');
-        }
-        return true;
-  };
-
-  static async register(registration: RegisterUser): Promise<DatabaseResult<BooleanOperationResult>> {
-    const userCreationInfo: CreateUserRequest = {
-         username: registration.username,
-         email: registration.email
+    const result = await database.run(sql.text, sql.values);
+    if (!result.lastID) {
+      throw new Error('Failed to add user credentials');
     }
+    return true;
+  }
+
+  static async register(
+    registration: RegisterUser,
+  ): Promise<DatabaseResult<BooleanOperationResult>> {
+    const userCreationInfo: CreateUserRequest = {
+      username: registration.username,
+      email: registration.email,
+    };
     const db = await getAuthDB();
-    return DatabaseHelper.executeTransaction<BooleanOperationResult>('regster user', db, async (database) => {
-      const userCreateResponse = await ApiClient.createUser(userCreationInfo);
-      if (!userCreateResponse.success) {
-        throw new Error(`auth-service: register: failed to create user`);
-      }
-      const newUser = userCreateResponse.data as User;
+    return DatabaseHelper.executeTransaction<BooleanOperationResult>(
+      'regster user',
+      db,
+      async (database) => {
+        const userCreateResponse = await ApiClient.createUser(userCreationInfo);
+        if (!userCreateResponse.success) {
+          throw new Error(`auth-service: register: failed to create user`);
+        }
+        const newUser = userCreateResponse.data as User;
 
-      const userCredentials: UserCredentialsEntry = {
-        user_id: newUser.id,
-        username: newUser.username,
-        email: newUser.email,
-        pw_hash: await bcrypt.hash(registration.password, 12)
-      }
-      await this.insertCredentialsLogic(database, userCredentials);
-      return BooleanResultHelper.success(`registration successful for ${userCredentials.username}`);
-
-    });
-  };
+        const userCredentials: UserCredentialsEntry = {
+          user_id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          pw_hash: await bcrypt.hash(registration.password, 12),
+        };
+        await this.insertCredentialsLogic(database, userCredentials);
+        return BooleanResultHelper.success(
+          `registration successful for ${userCredentials.username}`,
+        );
+      },
+    );
+  }
   static async login(username: string, password: string): Promise<AuthData> {
     // Get user from user-service with schema validation
     const apiResponse = await ApiClient.getUserExact({ username: username });
@@ -72,33 +94,31 @@ export class AuthService {
         return userCredentials as UserCredentials;
       },
     );
-    let result: AuthData = {
+    const result: AuthData = {
       success: false,
-      accessToken:'',
+      accessToken: '',
     };
 
     if (auth_data.success) {
-      const userCreds = auth_data.data as UserCredentials;
+      const userCreds = auth_data.data!;
       const isValidPassword = bcrypt.compare(password, userCreds.pw_hash);
 
+      if (!isValidPassword) {
+        throw new Error('Invalid password');
+      }
 
-    if (!isValidPassword) {
-      throw new Error('Invalid password');
+      // Generate JWT accessToken
+      result.accessToken = jwt.sign(
+        { userId: userData.id, username: userData.username },
+        process.env.JWT_SECRET!,
+        { expiresIn: '24h' },
+      );
+      result.success = true;
     }
-
-    // Generate JWT accessToken
-    result.accessToken = jwt.sign(
-      { userId: userData.id, username: userData.username },
-      process.env.JWT_SECRET!,
-      { expiresIn: '24h' },
-    );
-    result.success = true;
+    return result;
   }
-  return result;
-}
 
   static verifyToken(token: string): JWTPayload {
-
-  return jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
+    return jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
   }
 }

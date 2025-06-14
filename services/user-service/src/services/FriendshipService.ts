@@ -193,7 +193,7 @@ export class FriendshipService {
         `;
 
         const result = await database.run(sql.text, sql.values);
-        const declined = (result.changes || 0) > 0;
+        const declined = (result.changes ?? 0) > 0;
 
         if (declined) {
           return BooleanResultHelper.success(
@@ -227,7 +227,7 @@ export class FriendshipService {
       `;
         const result = await database.run(sql.text, sql.values);
 
-        const removed = (result.changes || 0) > 0;
+        const removed = (result.changes ?? 0) > 0;
 
         if (removed) {
           return BooleanResultHelper.success(
