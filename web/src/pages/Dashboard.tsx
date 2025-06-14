@@ -22,8 +22,6 @@ const Dashboard = () => {
 	const { t } = useTranslation()
 	const { user } = useUser()
 
-	const [avatarIdx, setAvatarIdx] = useState<number>(0)
-
 	const avatarSizes = [
 		"max-w-[65%]",
 		"max-w-[85%]",
@@ -83,9 +81,9 @@ const Dashboard = () => {
 				<div className="flex basis-4/12 flex-col items-center">
 					<div className="bubble bg-opacity-50 w-64 h-64 flex items-end justify-center overflow-hidden">
 						<img
-						src={avatars[avatarIdx]}
-						alt="Avatar preview"
-						className={`object-contain ${avatarSizes[avatarIdx]}`}
+						src={avatars[0]}
+						alt="Avatar"
+						className={`object-contain ${avatarSizes[0]}`}
 						/>
 					</div>
 					
@@ -139,15 +137,15 @@ const Dashboard = () => {
 				<div className="flex basis-1/5 w-full font-fascinate justify-around items-center text-lg uppercase">
 					<p className="text-4xl text-[#fff]">{t('games_played')} </p>
 				
-					<div className="bubble w-40 flex flex-col border border-white justify-center items-center">
+					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
 						<div className="text-[#fff]">{t('total')}</div>
 						<div className="text-center text-[#fff]">{wins + losses}</div>
 					</div>
-					<div className="bubble w-40  border border-white flex flex-col justify-center items-center">
+					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
 						<div className="text-[#fff]">{t('wins')}</div>
 						<div className="text-center text-[#fff]">{wins}</div>
 					</div>
-					<div className="bubble w-40  border border-white flex flex-col justify-center items-center">
+					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
 						<div className="text-[#fff]">{t('losses')}</div>
 						<div className="text-center text-[#fff]">{losses}</div>
 					</div>

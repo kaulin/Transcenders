@@ -2,11 +2,10 @@ import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
-import { USER_ROUTES } from "@transcenders/contracts"
 
 import playfulCat from "/images/playfulCat.avif"
 
-function Login() {
+const Login = () => {
     const { t } = useTranslation()
     const { setUser } = useUser()
 
@@ -14,50 +13,26 @@ function Login() {
     const [password, setPassword] = useState<string>("")
 	const [error, setError] = useState<string | null>(null)
 
-	// async function handleLogin(e: React.FormEvent) {
-	// 	e.preventDefault()
-	// 	setError(null)
-
-	// 	try {
-	// 		const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}${USER_ROUTES.USERS}`, {
-	// 			method: '',
-	// 			headers: {'Content-Type': 'application/json'},
-	// 			body: JSON.stringify({
-	// 				username,
-	// 				password
-	// 			})
-	// 		})
-
-	// 		if (!res.ok) {
-	// 			const message = await res.text()
-	// 			throw new Error(message)
-	// 		}
-
-	// 		const data = await res.json()
-		
-	// 		setUser({
-	// 			id: data.id,
-	// 			name: data.username
-	// 		})
-		
-	// 	} catch (err:any) {
-	// 		setError(err.message || t('something_went_wrong'))
-	// 	}
-    // }
-
 	async function handleLogin(e: React.FormEvent) {
+		e.preventDefault()
+		setError(null)
+	
+		try {
+			setUser({
+				id: 1,
+				username: username
+			})
 
-		setUser({
-			id: 1,
-			username: username
-		})
+		} catch (err: any) {
+			setError(err.message || t('something_went_wrong'))
+		}
 	}
 
     return (
 		<div className="flex h-full justify-center items-center pb-28">
 			<form
 				onSubmit={handleLogin}
-				className="bubble shadow-[0_0_3px_3px_#fff] w-[min(90vw,90vh)] max-w-[500px] z-10 p-16 flex flex-col justify-center items-center">
+				className="login-bubble">
 				
 				<h1 className="text-3xl font-fascinate py-3">{t('log_in')}</h1>
 
@@ -85,8 +60,7 @@ function Login() {
 					{t('log_in')}
 				</button>
 
-				<p className="pt-6">
-					{t('new_user')}?
+				<p className="mt-6">{t('new_user')}?
 					<Link to="/SignUp" className="button-text underline underline-offset-2"> {t('sign_up')} </Link>
 				</p>
 			</form>
@@ -94,8 +68,7 @@ function Login() {
 			<img
 				src={playfulCat}
 				alt="playful"
-				className="absolute bottom-0 left-1/2 -translate-x-[70%]
-				w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none"
+				className="login-cat-position"
 			/>
 		</div>
     )

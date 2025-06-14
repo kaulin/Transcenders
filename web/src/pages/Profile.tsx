@@ -75,7 +75,6 @@ const Profile = () => {
     }
 
 	const handleDelete = async () => {
-		console.log("handleDelete")
 		setError(null)
 
 		try {
@@ -83,9 +82,7 @@ const Profile = () => {
 				throw new Error("User ID is undefined")
 			}
 
-			console.log("Attempting to delete user with ID:", user.id)
 			const response = await ApiClient.user.deleteUser(user.id) // is this throwing?
-			console.log("Delete response:", response)
 
 			if (!response.success) {
 				throw new Error(response.error || t('something_went_wrong'))
@@ -128,27 +125,27 @@ const Profile = () => {
 
                 <div className="flex basis-3/6 h-full flex-col items-center justify-center gap-10 p-4 bg-[#605c4c13] px-6">
                     <div className="w-full max-w-sm">
-                        <label className="block font-fascinate text-2xl uppercase mb-2">{t('username')}</label>
+                        <label className="profile-label">{t('username')}</label>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60"
+                            className="profile-input-field"
                         />
                     </div>
 
                     <div className="w-full max-w-sm">
-                        <label className="block font-fascinate text-2xl uppercase mb-2">{t('display_name')}</label>
+                        <label className="profile-label">{t('display_name')}</label>
                         <input
                             type="text"
                             value={displayName}
                             onChange={(e) => setDisplayName(e.target.value)}
-                            className="w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60"
+                            className="profile-input-field"
                         />
                     </div>
 
                     <div className="w-full max-w-sm">
-                        <label className="block font-fascinate text-2xl uppercase mb-2">{t('password')}</label>
+                        <label className="profile-label">{t('password')}</label>
                         <input
                             type="password"
                             value={password}
@@ -156,7 +153,7 @@ const Profile = () => {
                                 setPassword(e.target.value)
                             }}
                             placeholder={t('password')}
-                            className="w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60"
+                            className="profile-input-field"
                         />
                         <input
                             type="password"
@@ -172,7 +169,7 @@ const Profile = () => {
                     </div>
 
                     <div className="w-full max-w-sm">
-                        <label className="block font-fascinate text-2xl uppercase mb-2">{t('language')}</label>
+                        <label className="profile-label">{t('language')}</label>
                         <select
                             value={language}
                             onChange={(e) => setLanguage(e.target.value)}
@@ -186,7 +183,7 @@ const Profile = () => {
 
                     <button
                         onClick={handleConfirm}
-                        className="mt-8 bg-white/20 font-fascinate uppercase px-6 py-2 rounded-full hover:bg-opacity-80 transition"
+                        className="profile-button"
                     >
                         {t('confirm')}
                     </button>
@@ -195,7 +192,7 @@ const Profile = () => {
                 <div className="flex flex-col h-full basis-1/6 justify-center items-center p-4">
                 	<button 
 						onClick={handleDelete}
-						className="mt-8 bg-white/20 font-fascinate uppercase px-6 py-2 rounded-full hover:bg-opacity-80 transition"
+						className="profile-button"
 					>
 						{t('delete_account')}
 					</button>

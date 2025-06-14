@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
-// import { USER_ROUTES } from "@transcenders/contracts"
 import { ApiClient } from "@transcenders/api-client"
 
 import playfulCat from "/images/playfulCat.avif"
@@ -59,7 +58,7 @@ const SignUp = () => {
 		<div className="flex h-full justify-center items-center pb-28">
 			<form
 				onSubmit={handleSignUp}
-				className="bubble shadow-[0_0_3px_3px_#fff] w-[min(90vw,90vh)] max-w-[500px] z-10 p-16 flex flex-col justify-center items-center">
+				className="login-bubble">
 
 				<h1 className="text-3xl font-fascinate mb-3">{t('sign_up')}</h1>
 
@@ -107,16 +106,14 @@ const SignUp = () => {
 
 				<p className="mt-6">{t('existing_user')}?</p>
 				<p>
-					<Link to="/" className="button-text underline underline-offset-2">
-						{t('log_in')}
-					</Link>
+					<Link to="/" className="button-text underline underline-offset-2"> {t('log_in')} </Link>
 				</p>
 			</form>
 
 			<img
 				src={playfulCat}
 				alt="playful"
-				className="absolute bottom-0 left-1/2 -translate-x-[70%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none"
+				className="login-cat-position"
 			/>
 		</div>
 	);

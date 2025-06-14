@@ -49,10 +49,22 @@
     }
     
     .profile-box  {
-        @apply relative rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1] flex flex-col items-center
+        @apply relative rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1] flex flex-col items-center;
 	}
     /* bg-gradient-to-t from-[#ffd3c4] to-[#ffe4d8] box for purple bg  */
     
+	.profile-label {
+		@apply block font-fascinate text-2xl uppercase mb-2;
+	}
+
+	.profile-input-field {
+		@apply w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60;
+	}
+
+	.profile-button {
+		@apply mt-8 bg-white/20 font-fascinate uppercase px-6 py-2 rounded-full hover:bg-opacity-80 transition;
+	}
+
     .custom-scrollbar {
         scrollbar-width: thin; /* Firefox */
         scrollbar-color: transparent transparent; /* Firefox */
@@ -63,10 +75,18 @@
     }
 
     .bubble {
-        @apply bg-white bg-opacity-20 rounded-full aspect-square border border-white;
+        @apply rounded-full aspect-square border bg-white/20 border-white;
     }
+
+	.login-bubble {
+		@apply bubble shadow-[0_0_3px_3px_#fff] w-[min(90vw,90vh)] max-w-[500px] z-10 p-16 flex flex-col justify-center items-center;
+	}
 
     .bg-bubble {
         @apply absolute rounded-full aspect-square shadow-xl shadow-[#be7d8486] bg-gradient-to-t from-[#c5567580] via-[#ff7da463] to-[#fcefe11b] w-full z-0;
     }
+
+	.login-cat-position {
+		@apply absolute bottom-0 left-1/2 -translate-x-[70%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none;
+	}
 }
