@@ -24,6 +24,7 @@ export class DatabaseHelper {
     try {
       const data = await queryFn(database);
       return { success: true, data, operation };
+      //#TODO fix all implicit error:any stuff
     } catch (error: any) {
       console.log(`failed to ${operation}:`, error.message);
 
