@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useTranslation } from "react-i18next";
 import PongCanvas from './canvas/PongCanvas';
+import { ApiClient } from '@transcenders/api-client';
+
 
 import { 
 	type GameState, 
@@ -15,21 +16,49 @@ import {
 	checkScore 
 } from './utils/CollisionDetection';
 
+interface User {
+	id: number;
+	username: string;
+	display_name: string;
+	avatar?: string;
+	email: string;
+	lang: string;
+}
+
 interface GameContainerProps {
 	width?: number;
 	height?: number;
+	currentUser?: User;
 }
 
 //react functional component
-const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600 }) => {
+const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600}) => {
 	const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
 	const [keysPressed, setKeysPressed] = useState<{ [key: string]: boolean }>({});
+	const [currentUser, setCurrentUser] = useState<User | null>(null);
+	const [userLoading, setUserLoading] = useState(true);
 	
 	// Ref for game loop to prevent stale closures
 	const gameStateRef = useRef(gameState);
 	const animationFrameRef = useRef<number>(0);
 
-	const { t } = useTranslation();
+	// Fetch current user when component mounts
+	useEffect(() => {
+		const fetchCurrentUser = async () => {
+			setUserLoading(true);
+			try {
+				const result = await ApiClient.user.getCurrentUser();
+				if (result.success) {
+					setCurrentUser(result.data as User);
+				}
+			} catch (error) {
+				// Handle error silently or set currentUser to null
+			} finally {
+				setUserLoading(false);
+			}
+		};
+		fetchCurrentUser();
+	}, []);
 	
 	// Keep ref in sync with state
 	useEffect(() => {
@@ -169,9 +198,18 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 	return (
 		<div className="flex flex-col items-center justify-center p-4">
 		<h1 className="text-3xl font-bold mb-4">Paw-Paw Pong</h1>
-		<div className="text-xl font-bold mb-2">
-			Score: {gameState.leftScore} - {gameState.rightScore}
-		</div>
+
+		<div className="relative mb-2" style={{ width: `${width}px`, height: '20px' }}>
+				<div className="absolute top-0" style={{ left: `${width / 4}px`, transform: 'translateX(-50%)' }}>
+					<span className="text-xl font-bold text-white">
+						{userLoading ? "Loading..." : (currentUser?.username || "Player 1")}
+					</span>
+				</div>
+				
+				<div className="absolute top-0" style={{ left: `${(width / 4) * 3}px`, transform: 'translateX(-50%)' }}>
+					<span className="text-xl font-bold text-white">Player 2</span>
+				</div>
+			</div>
 		
 		<PongCanvas gameState={gameState} />
 		

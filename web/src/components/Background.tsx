@@ -15,7 +15,7 @@ type BackgroundProps = {
 
 const Background: React.FC<BackgroundProps> = ({ bubbles }) => {
   return (
-    <div className="absolute inset-0 grid grid-cols-12 grid-rows-8 w-full h-full pointer-events-none">
+    <div className="absolute inset-0 grid grid-cols-12 grid-rows-6 w-full h-full pointer-events-none">
       {bubbles.map((bubble) => (
         <div
           key={bubble.id}

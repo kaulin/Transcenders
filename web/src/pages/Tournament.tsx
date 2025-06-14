@@ -1,11 +1,11 @@
-import React from "react"
 import { useTranslation } from "react-i18next"
 
-export default function Tournament() {
+const Tournament = () => {
     const { t } = useTranslation()
 
     return (
-        <main>
-        </main>
+        <div></div>
     )
 }
+
+export default Tournament

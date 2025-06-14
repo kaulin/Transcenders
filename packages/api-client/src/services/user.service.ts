@@ -35,6 +35,16 @@ export class UserApiService {
   }
 
   /**
+   * Gets current authenticated user
+   */
+  static async getCurrentUser(): Promise<ApiResponse> {
+    return ApiClient.call('/api/users/me', {
+      method: 'GET',
+      expectedDataSchema: UserSchema
+    });
+  }
+
+  /**
    * Creates a new user
    */
   static async createUser(userData: CreateUserRequest) {
