@@ -77,7 +77,7 @@ async function createFriendships(users: User[]): Promise<void> {
   ];
 
   for (const [idx1, idx2] of friendshipPairs) {
-    if (!users[idx1] || !users[idx2]) continue;
+    if (!users[idx1] ?? !users[idx2]) continue;
 
     const user1 = users[idx1];
     const user2 = users[idx2];
@@ -102,7 +102,7 @@ async function createFriendships(users: User[]): Promise<void> {
       // Get incoming requests to find the request ID
       const incomingRequest = FRIENDSHIP_ROUTES.USER_FRIEND_REQUESTS.replace(':id', `${user2.id}`);
       const incomingResponse = await apiCall<any[]>('GET', incomingRequest);
-      if (!incomingResponse.success || !incomingResponse.data) {
+      if (!incomingResponse.success ?? !incomingResponse.data) {
         console.log(
           `Failed to get incoming requests for ${user2.username} | error:`,
           incomingResponse.error,
@@ -148,7 +148,7 @@ async function createPendingRequests(users: User[]): Promise<void> {
   ];
 
   for (const [initiatorIdx, recipientIdx] of pendingRequests) {
-    if (!users[initiatorIdx] || !users[recipientIdx]) continue;
+    if (!users[initiatorIdx] ?? !users[recipientIdx]) continue;
 
     const initiator = users[initiatorIdx];
     const recipient = users[recipientIdx];
@@ -188,7 +188,7 @@ async function testEndpoints(users: User[]): Promise<void> {
   try {
     // Test get all users
     const allUsersResponse = await apiCall<User[]>('GET', USER_ROUTES.USERS);
-    console.log(`Total users in database: ${allUsersResponse.data?.length || 0}`);
+    console.log(`Total users in database: ${allUsersResponse.data?.length ?? 0}`);
 
     // Test get friends for first user
     const aliceId = users[0].id;
@@ -196,14 +196,14 @@ async function testEndpoints(users: User[]): Promise<void> {
       'GET',
       FRIENDSHIP_ROUTES.USER_FRIENDSHIPS.replace(':id', aliceId.toString()),
     );
-    console.log(`Alice has ${friendsResponse.data?.length || 0} friends`);
+    console.log(`Alice has ${friendsResponse.data?.length ?? 0} friends`);
 
     // Test get incoming requests for first user
     const requestsResponse = await apiCall<any[]>(
       'GET',
       FRIENDSHIP_ROUTES.USER_FRIEND_REQUESTS.replace(':id', aliceId.toString()),
     );
-    console.log(`Alice has ${requestsResponse.data?.length || 0} incoming friend requests`);
+    console.log(`Alice has ${requestsResponse.data?.length ?? 0} incoming friend requests`);
   } catch (error) {
     console.log('Error testing endpoints:', error);
   }

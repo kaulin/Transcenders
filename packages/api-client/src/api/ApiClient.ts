@@ -1,5 +1,6 @@
 import { Value } from '@sinclair/typebox/value';
-import { ApiResponse } from '@transcenders/contracts';
+import { ApiResponse, ApiResponseType } from '@transcenders/contracts';
+import { AuthApiService } from '../services/auth.service';
 import { UserApiService } from '../services/user.service';
 import { ApiCallOptions } from '../types/client.options';
 
@@ -7,7 +8,7 @@ export class ApiClient {
   /**
    * Enhanced main call function
    */
-  static async call(url: string, options: ApiCallOptions = {}): Promise<ApiResponse> {
+  static async call(url: string, options: ApiCallOptions = {}): Promise<ApiResponseType> {
     const { method = 'GET', body, headers = {}, timeout = 5000, expectedDataSchema } = options;
 
     try {
@@ -68,7 +69,7 @@ export class ApiClient {
     }
   }
 
-  private static errorResponse(error: string): ApiResponse {
+  private static errorResponse(error: string): ApiResponseType {
     return {
       success: false,
       operation: 'api-call',
@@ -77,4 +78,5 @@ export class ApiClient {
   }
 
   static user = UserApiService;
+  static auth = AuthApiService;
 }

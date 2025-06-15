@@ -12,18 +12,22 @@ import { Static, Type } from '@sinclair/typebox';
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
  * FIELD DEFINITIONS
  */
-const UserIdField = Type.Number();
-const UsernameField = Type.String({ minLength: 3, maxLength: 20 });
-//TODO fix email validation schema
-const EmailField = Type.String();
-const DisplayNameField = Type.String({ maxLength: 50 });
-const AvatarField = Type.String();
-const LangField = Type.String({ maxLength: 2 });
-const IdField = Type.Number();
-const TimestampField = Type.String();
-const IdParamField = Type.String({ pattern: '^[0-9]+$' });
-const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
-const FriendRequestStateField = Type.Union([Type.Literal('pending'), Type.Literal('declined')]);
+export const UserIdField = Type.Number();
+export const UsernameField = Type.String({ minLength: 3, maxLength: 20 });
+export const EmailField = Type.String({
+  pattern: `^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$`,
+});
+export const DisplayNameField = Type.String({ maxLength: 50 });
+export const AvatarField = Type.String();
+export const LangField = Type.String({ maxLength: 2 });
+export const IdField = Type.Number();
+export const TimestampField = Type.String();
+export const IdParamField = Type.String({ pattern: '^[0-9]+$' });
+export const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
+export const FriendRequestStateField = Type.Union([
+  Type.Literal('pending'),
+  Type.Literal('declined'),
+]);
 
 /**
  * ENTITY SCHEMAS
@@ -91,21 +95,16 @@ export const getUsersSchema = {
 export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
 
 export const getUserSchema = {
-  querystring: Type.Union([
-    // username only
-    Type.Object({
-      username: Type.String(),
-    }),
-    // email only
-    Type.Object({
-      email: Type.String(),
-    }),
-    // both username and email
-    Type.Object({
-      username: Type.String(),
-      email: Type.String(),
-    }),
-  ]),
+  querystring: Type.Object(
+    {
+      username: Type.Optional(Type.String()),
+      email: Type.Optional(Type.String()),
+    },
+    {
+      minProperties: 1,
+      additionalProperties: false,
+    },
+  ),
 };
 export type GetUserRequest = Static<typeof getUserSchema.querystring>;
 
@@ -197,7 +196,6 @@ export type BooleanOperationResult = Static<typeof BooleanOperationResult>;
  */
 export const ApiResponse = Type.Intersect(
   [
-    Type.Object({ success: Type.Boolean(), operation: Type.String() }),
     Type.Union([
       Type.Object({
         success: Type.Literal(true),
@@ -205,16 +203,15 @@ export const ApiResponse = Type.Intersect(
         data: Type.Unknown(),
       }),
       Type.Object({
-        success: Type.Literal(true),
+        success: Type.Literal(false),
         operation: Type.String(),
-        data: Type.Object({}, { additionalProperties: true }),
+        error: Type.String(),
       }),
-      Type.Object({ success: Type.Literal(false), operation: Type.String(), error: Type.String() }),
     ]),
   ],
   { $id: 'ApiResponse' },
 );
-export type ApiResponse = Static<typeof ApiResponse>;
+export type ApiResponseType = Static<typeof ApiResponse>;
 
 export const standardApiResponses = {
   200: { $ref: 'ApiResponse#' },

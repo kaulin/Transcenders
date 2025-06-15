@@ -1,7 +1,6 @@
 import { DatabaseResult } from '@transcenders/contracts';
 import fs from 'fs';
 import { Database } from 'sqlite';
-import { getDB } from '../db/database';
 
 export class DatabaseHelper {
   static getSqlFromFile(filePath: string): string | null {
@@ -19,12 +18,13 @@ export class DatabaseHelper {
    */
   static async executeQuery<T>(
     operation: string,
+    database: Database,
     queryFn: (database: Database) => Promise<T>,
   ): Promise<DatabaseResult<T>> {
     try {
-      const database = await getDB();
       const data = await queryFn(database);
       return { success: true, data, operation };
+      //#TODO fix all implicit error:any stuff
     } catch (error: any) {
       console.log(`failed to ${operation}:`, error.message);
 
@@ -32,8 +32,8 @@ export class DatabaseHelper {
         success: false,
         operation,
         error: {
-          code: error.code || 'UNKNOWN_ERROR',
-          message: error.message || 'Unknown database error',
+          code: error.code ?? 'UNKNOWN_ERROR',
+          message: error.message ?? 'Unknown database error',
           isConstraintError: error.code === 'SQLITE_CONSTRAINT',
         },
       };
@@ -44,10 +44,10 @@ export class DatabaseHelper {
    */
   static async executeTransaction<T>(
     operation: string,
+    database: Database,
     transactionFn: (database: Database) => Promise<T>,
   ): Promise<DatabaseResult<T>> {
     try {
-      const database = await getDB();
       await database.run('BEGIN TRANSACTION');
 
       try {
@@ -62,8 +62,8 @@ export class DatabaseHelper {
           success: false,
           operation,
           error: {
-            code: error.code || 'UNKNOWN_ERROR',
-            message: error.message || 'Unknown database error',
+            code: error.code ?? 'UNKNOWN_ERROR',
+            message: error.message ?? 'Unknown database error',
             isConstraintError: error.code === 'SQLITE_CONSTRAINT',
           },
         };
@@ -75,8 +75,8 @@ export class DatabaseHelper {
         success: false,
         operation,
         error: {
-          code: error.code || 'UNKNOWN_ERROR',
-          message: error.message || 'Unknown database error',
+          code: error.code ?? 'UNKNOWN_ERROR',
+          message: error.message ?? 'Unknown database error',
           isConstraintError: error.code === 'SQLITE_CONSTRAINT',
         },
       };

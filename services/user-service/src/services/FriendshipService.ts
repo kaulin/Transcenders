@@ -1,17 +1,19 @@
 import {
   BooleanOperationResult,
+  BooleanResultHelper,
+  DatabaseHelper,
   DatabaseResult,
   FriendRequestsData,
   User,
 } from '@transcenders/contracts';
 import SQL from 'sql-template-strings';
 import { Database } from 'sqlite';
-import { BooleanResultHelper } from '../utils/BooleanResultHelper';
-import { DatabaseHelper } from '../utils/DatabaseHelper';
+import { getDB } from '../db/database';
 
 export class FriendshipService {
   static async getUserFriends(userId: number): Promise<DatabaseResult<User[]>> {
-    return DatabaseHelper.executeQuery<User[]>(`get friends`, async (database) => {
+    const db = await getDB();
+    return DatabaseHelper.executeQuery<User[]>(`get friends`, db, async (database) => {
       const sql = SQL`
         SELECT users.* FROM users
         JOIN friendships f ON (
@@ -45,8 +47,10 @@ export class FriendshipService {
     user1_id: number,
     user2_id: number,
   ): Promise<DatabaseResult<BooleanOperationResult>> {
+    const db = await getDB();
     return DatabaseHelper.executeQuery<BooleanOperationResult>(
       'check friendship',
+      db,
       async (database) => {
         const exists = await this.checkFriendshipExistsLogic(database, user1_id, user2_id);
         if (exists) {
@@ -62,8 +66,10 @@ export class FriendshipService {
     initiator: number,
     recipient: number,
   ): Promise<DatabaseResult<BooleanOperationResult>> {
+    const db = await getDB();
     return DatabaseHelper.executeTransaction<BooleanOperationResult>(
       'send friend request',
+      db,
       async (database) => {
         if (await this.checkFriendshipExistsLogic(database, initiator, recipient)) {
           throw new Error(`${initiator} and ${recipient} are already friends`);
@@ -104,8 +110,10 @@ export class FriendshipService {
   static async getIncomingFriendRequests(
     userId: number,
   ): Promise<DatabaseResult<FriendRequestsData[]>> {
+    const db = await getDB();
     return DatabaseHelper.executeQuery<FriendRequestsData[]>(
       'get incoming requests',
+      db,
       async (database) => {
         const sql = SQL`
           SELECT * FROM friend_requests
@@ -152,15 +160,17 @@ export class FriendshipService {
   static async acceptFriend(
     friendRequestId: number,
   ): Promise<DatabaseResult<BooleanOperationResult>> {
+    const db = await getDB();
     return DatabaseHelper.executeTransaction<BooleanOperationResult>(
       'accept friend request',
+      db,
       async (database) => {
         try {
           await this.acceptFriendLogic(database, friendRequestId);
           return BooleanResultHelper.success(
             `Friend request ${friendRequestId} accepted successfully`,
           );
-        } catch (error) {
+        } catch (error: any) {
           return BooleanResultHelper.failure(
             `Cannot accept friend request ${friendRequestId}: ${error.message}`,
           );
@@ -172,8 +182,10 @@ export class FriendshipService {
   static async declineFriend(
     friendRequestId: number,
   ): Promise<DatabaseResult<BooleanOperationResult>> {
+    const db = await getDB();
     return DatabaseHelper.executeQuery<BooleanOperationResult>(
       'decline friend request',
+      db,
       async (database) => {
         const sql = SQL`
           DELETE FROM friend_requests
@@ -181,7 +193,7 @@ export class FriendshipService {
         `;
 
         const result = await database.run(sql.text, sql.values);
-        const declined = (result.changes || 0) > 0;
+        const declined = (result.changes ?? 0) > 0;
 
         if (declined) {
           return BooleanResultHelper.success(
@@ -200,8 +212,10 @@ export class FriendshipService {
     userId1: number,
     userId2: number,
   ): Promise<DatabaseResult<BooleanOperationResult>> {
+    const db = await getDB();
     return DatabaseHelper.executeQuery<BooleanOperationResult>(
       'remove friend',
+      db,
       async (database) => {
         // Database requires user1_id to be lower
         const user1_id = Math.min(userId1, userId2);
@@ -213,7 +227,7 @@ export class FriendshipService {
       `;
         const result = await database.run(sql.text, sql.values);
 
-        const removed = (result.changes || 0) > 0;
+        const removed = (result.changes ?? 0) > 0;
 
         if (removed) {
           return BooleanResultHelper.success(
