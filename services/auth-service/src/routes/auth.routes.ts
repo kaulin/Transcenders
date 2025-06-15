@@ -3,6 +3,8 @@ import {
   loginUserSchema,
   registerUserSchema,
   standardApiResponses,
+  updateUserSchema,
+  userByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
 import { AuthController } from '../controllers/auth.controller';
@@ -32,5 +34,29 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.login,
+  );
+  app.patch(
+    AUTH_ROUTES.UPDATE,
+    {
+      schema: {
+        description: 'update user credentials',
+        tags: ['Auth'],
+        params: updateUserSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.update,
+  );
+  app.delete(
+    AUTH_ROUTES.DELETE,
+    {
+      schema: {
+        description: 'remove user credentials',
+        tags: ['Auth'],
+        params: userByIdSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.delete,
   );
 }

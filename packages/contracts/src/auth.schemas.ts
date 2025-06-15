@@ -1,5 +1,12 @@
 import { Static, Type } from '@sinclair/typebox';
-import { EmailField, IdField, TimestampField, UserIdField, UsernameField } from './user.schemas';
+import {
+  EmailField,
+  IdField,
+  IdParamField,
+  TimestampField,
+  UserIdField,
+  UsernameField,
+} from './user.schemas';
 export const PasswordField = Type.String();
 export const PwHashField = Type.String();
 
@@ -47,3 +54,16 @@ export const JWTPayloadSchema = Type.Object({
   exp: Type.Number(),
 });
 export type JWTPayload = Static<typeof JWTPayloadSchema>;
+
+const authModifiableFields = Type.Object({
+  username: UsernameField,
+  email: EmailField,
+});
+
+export const updateUserSchema = {
+  params: Type.Object({
+    id: IdParamField,
+  }),
+  body: Type.Partial(authModifiableFields, { additionalProperties: false }),
+};
+export type UpdateUserCredentials = Static<typeof updateUserSchema.body>;

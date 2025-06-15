@@ -53,4 +53,8 @@ export const AUTH_ROUTES = {
   REGISTER: '/auth/register',
   // POST /auth/login, body as LoginUser
   LOGIN: '/auth/login',
+  // PATCH /auth/credentials/:id
+  UPDATE: '/auth/credentials/:id',
+  // DELETE /auth/credentials/:id
+  DELETE: '/auth/credentials/:id',
 } as const;
