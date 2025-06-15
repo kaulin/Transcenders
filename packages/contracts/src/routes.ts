@@ -1,7 +1,7 @@
 export const SERVICE_URLS = {
   USER: process.env.USER_SERVICE_URL ?? 'http://localhost:3001',
   AUTH: process.env.AUTH_SERVICE_URL ?? 'http://localhost:3002',
-};
+} as const;
 
 export const USER_ROUTES = {
   // GET /users - List users (with optional query params: ?search=, ?limit=, ?offset=)
@@ -46,5 +46,6 @@ export const FRIENDSHIP_ROUTES = {
 
 export const AUTH_ROUTES = {
   // GET /auth - auth inital idk #TODO fix and add more
-  AUTH: '/auth/:username/:password',
+  REGISTER: '/auth/register',
+  LOGIN: '/auth/login',
 } as const;

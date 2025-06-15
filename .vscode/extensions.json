@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "rvest.vs-code-prettier-eslint",
+    "gruntfuggly.todo-tree",
+    "dbaeumer.vscode-eslint"
+  ]
+}
