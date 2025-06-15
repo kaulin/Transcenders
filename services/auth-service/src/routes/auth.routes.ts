@@ -3,7 +3,7 @@ import {
   loginUserSchema,
   registerUserSchema,
   standardApiResponses,
-  updateUserSchema,
+  updateUserCredentialsSchema,
   userByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
@@ -41,7 +41,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       schema: {
         description: 'update user credentials',
         tags: ['Auth'],
-        params: updateUserSchema,
+        params: updateUserCredentialsSchema,
         response: standardApiResponses,
       },
     },
