@@ -52,8 +52,9 @@ export const FRIENDSHIP_ROUTES = {
 } as const;
 
 export const AUTH_ROUTES = {
-  // GET /auth - auth inital idk #TODO fix and add more
+  // POST /auth/register, body as RegisterUser
   REGISTER: '/auth/register',
+  // POST /auth/login, body as LoginUser
   LOGIN: '/auth/login',
 } as const;
 
