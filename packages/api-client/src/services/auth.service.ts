@@ -12,7 +12,7 @@ export class AuthApiService {
   /**
    * Internal method to call the auth service
    */
-  private static async callAUthService(
+  private static async callAuthService(
     endpoint: string,
     options: ApiCallOptions = {},
   ): Promise<ApiResponseType> {
@@ -31,7 +31,7 @@ export class AuthApiService {
       method: 'POST',
       body: registration,
     };
-    return this.callAUthService(endpoint, options);
+    return this.callAuthService(endpoint, options);
   }
 
   static async login(login: LoginUser) {
@@ -40,6 +40,6 @@ export class AuthApiService {
       method: 'POST',
       body: login,
     };
-    return this.callAUthService(endpoint, options);
+    return this.callAuthService(endpoint, options);
   }
 }
