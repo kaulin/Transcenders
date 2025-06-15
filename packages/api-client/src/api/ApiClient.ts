@@ -1,5 +1,6 @@
 import { Value } from '@sinclair/typebox/value';
 import { ApiResponse, ApiResponseType } from '@transcenders/contracts';
+import { AuthApiService } from '../services/auth.service';
 import { UserApiService } from '../services/user.service';
 import { ApiCallOptions } from '../types/client.options';
 
@@ -77,4 +78,5 @@ export class ApiClient {
   }
 
   static user = UserApiService;
+  static auth = AuthApiService;
 }
