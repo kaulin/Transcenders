@@ -1,4 +1,4 @@
-export * from './ApiClient';
+export * from './auth.schemas';
 export * from './errors';
 export * from './interfaces';
 export * from './routes';
