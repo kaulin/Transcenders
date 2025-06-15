@@ -163,7 +163,7 @@ export class UserService {
       },
     );
   }
-
+  //#TODO need some kind of 3rd party that will sync user and auth databases
   static async updateUser(
     id: number,
     updates: Partial<UpdateUserRequest>,
@@ -179,10 +179,10 @@ export class UserService {
       return user;
     });
   }
-
+  //#TODO need some kind of 3rd party that will sync user and auth databases
   static async deleteUser(userId: number): Promise<DatabaseResult<BooleanOperationResult>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+    return DatabaseHelper.executeTransaction<BooleanOperationResult>(
       'delete user',
       db,
       async (database) => {
