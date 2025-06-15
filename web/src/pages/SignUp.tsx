@@ -4,9 +4,7 @@ import { Link } from 'react-router-dom'
 import { useState } from "react"
 import { ApiClient } from "@transcenders/api-client"
 
-function SignUp() {
-    const { t } = useTranslation()
-    const { setUser } = useUser()
+import playfulCat from "/images/playfulKitten.avif"
 
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
