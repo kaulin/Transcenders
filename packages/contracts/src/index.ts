@@ -6,6 +6,5 @@ export * from './user.schemas';
 export * from './utils/BooleanResultHelper';
 export * from './utils/DatabaseHelper';
 export { decodeToken } from './utils/decodeToken';
-export * from './utils/query';
 export { toQueryString } from './utils/query';
 export * from './utils/ResponseHelper';
