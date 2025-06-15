@@ -5,7 +5,7 @@ import { useUser } from "../contexts/UserContext"
 import type { User} from "../contexts/UserContext"
 import { ApiClient } from "@transcenders/api-client"
 // import PieCharts from "../components/PieCharts"
-// import AreaCharts from "../components/AreaCharts"
+import AreaCharts from "../components/AreaCharts"
 import MatchHistory from "../components/MatchHistory"
 
 import curiousCat from "/images/curiousCat.avif"
@@ -79,7 +79,7 @@ const Dashboard = () => {
 			<div className="profile-box rounded-lg basis-1/5 px-24 py-16">
 				
 				<div className="flex basis-4/12 flex-col items-center">
-					<div className="bubble bg-opacity-50 w-64 h-64 flex items-end justify-center overflow-hidden">
+					<div className="bubble bg-white/50 w-64 h-64 flex items-end justify-center overflow-hidden">
 						<img
 						src={avatars[0]}
 						alt="Avatar"
@@ -93,15 +93,15 @@ const Dashboard = () => {
 					{user?.id === viewedUser?.id ? (
 						<>
 						<div className="flex basis-7/12 w-full flex-col items-center justify-center">
-							<div className="w-full h-[85%] bg-white/20 rounded-full border border-white p-10 custom-scrollbar">
-								<p className="pb-2 text-white text-center font-fascinate uppercase text-xl mb-4">Friends</p>
+							<div className="w-full h-[85%] bg-[#605c4c13] rounded-full border border-white p-10 custom-scrollbar">
+								<p className="pb-2 text-[#fff] text-center font-fascinate uppercase text-xl mb-4">Friends</p>
 								<div className="relative h-[80%] p-2 overflow-y-auto">
 									{friends.map((friend) => (
-										<div key={friend.id} className="flex items-center justify-between text-white py-1">
+										<div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
 											<span>{friend.name}</span>
 											<span
-												className={`w-3 h-3 rounded-full ${
-													friend.online ? 'bg-green-300' : 'bg-gray-200'
+												className={`w-3 h-3 rounded-full border ${
+													friend.online ? 'bg-[#ceff5d]' : 'bg-[#d7d4cd00]'
 												}`}
 											></span>
 										</div>
@@ -137,15 +137,15 @@ const Dashboard = () => {
 				<div className="flex basis-1/5 w-full font-fascinate justify-around items-center text-lg uppercase">
 					<p className="text-4xl text-[#fff]">{t('games_played')} </p>
 				
-					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
+					<div className="bubble w-40 bg-[#605c4c13] border border-white flex flex-col justify-center items-center">
 						<div className="text-[#fff]">{t('total')}</div>
 						<div className="text-center text-[#fff]">{wins + losses}</div>
 					</div>
-					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
+					<div className="bubble w-40 bg-[#605c4c13] border border-white flex flex-col justify-center items-center">
 						<div className="text-[#fff]">{t('wins')}</div>
 						<div className="text-center text-[#fff]">{wins}</div>
 					</div>
-					<div className="bubble w-40 border border-white flex flex-col justify-center items-center">
+					<div className="bubble w-40 bg-[#605c4c13] border border-white flex flex-col justify-center items-center">
 						<div className="text-[#fff]">{t('losses')}</div>
 						<div className="text-center text-[#fff]">{losses}</div>
 					</div>
@@ -156,17 +156,13 @@ const Dashboard = () => {
 				</div>
 
 				<div className="flex basis-2/5 items-end w-full">
-					{/* <AreaCharts /> */}
+					<AreaCharts />
 				</div>
 				
-				<img
-					src={curiousCat}
-					alt="curiousCat"
-					className="absolute left-0 bottom-0 translate-y-[41%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none"
-				/>
+
 			</div>
 
-			<div className="profile-box basis-1/5 p-6 pt-16">
+			<div className="profile-box basis-1/5 p-6 pt-28">
 				<h1 className="flex text-4xl text-[#fff] font-fascinate uppercase mb-16">
 					{t('history')}
 				</h1>

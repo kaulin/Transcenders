@@ -100,9 +100,9 @@ const Profile = () => {
 
     return (
         <div className="w-full h-full flex flex-col justify-center">
-            <div className="profile-box flex-row basis-3/5">
+            <div className="profile-box flex-row basis-4/5">
                 <div className="flex basis-2/6 items-center justify-center gap-10 p-4">
-                    <div className="bubble bg-opacity-50 w-72 h-72 flex items-end justify-center overflow-hidden">
+                    <div className="bubble bg-white/50 w-72 h-72 flex items-end justify-center overflow-hidden">
 						<img
                             src={avatars[avatarIdx]}
                             alt="Avatar preview"
