@@ -60,10 +60,10 @@ const authModifiableFields = Type.Object({
   email: EmailField,
 });
 
-export const updateUserSchema = {
+export const updateUserCredentialsSchema = {
   params: Type.Object({
     id: IdParamField,
   }),
   body: Type.Partial(authModifiableFields, { additionalProperties: false }),
 };
-export type UpdateUserCredentials = Static<typeof updateUserSchema.body>;
+export type UpdateUserCredentials = Static<typeof updateUserCredentialsSchema.body>;
