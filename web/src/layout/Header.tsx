@@ -19,15 +19,15 @@ const Header = () => {
         { user? (
             <>
                 <nav className="flex items-center py-9 px-10">
-					<div className="flex basis-1/3 justify-start">
+					<div className="flex basis-1/2 justify-start gap-10">
                     	<LanguageSwitch />
-					</div>
-                    <div className="flex basis-1/3 justify-center gap-4 uppercase">
-                        <Link to="/" className="button-text text-lg">{t('home')}</Link>
-                        <Link to="/dashboard" className="button-text text-lg">dashboard</Link>
-                        <Link to="/profile" className="button-text text-lg">{t('profile')}</Link>
+                        <div className="flex justify-center gap-4 uppercase">
+                            <Link to="/" className="button-text text-lg">{t('home')}</Link>
+                            <Link to="/dashboard" className="button-text text-lg">dashboard</Link>
+                            <Link to="/profile" className="button-text text-lg">{t('profile')}</Link>
+                        </div>
                     </div>
-					<div className="flex basis-1/3 justify-end">
+					<div className="flex basis-1/2 justify-end text-lg">
                     	<button onClick={handleLogout}>{t('log_out')}</button>
 					</div>
                 </nav>
