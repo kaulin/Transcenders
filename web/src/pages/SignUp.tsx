@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useState } from "react"
 import { ApiClient } from "@transcenders/api-client"
 
-import playfulCat from "/images/playfulCat.avif"
+import playfulCat from "/images/playfulKitten.avif"
 
 const SignUp = () => {
 	const { t } = useTranslation()

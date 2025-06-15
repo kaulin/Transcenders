@@ -3,7 +3,7 @@ import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
 
-import playfulCat from "/images/playfulCat.avif"
+import playfulCat from "/images/playfulKitten.avif"
 
 const Login = () => {
     const { t } = useTranslation()
