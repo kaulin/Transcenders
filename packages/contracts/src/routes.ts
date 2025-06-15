@@ -46,5 +46,6 @@ export const FRIENDSHIP_ROUTES = {
 
 export const AUTH_ROUTES = {
   // GET /auth - auth inital idk #TODO fix and add more
-  AUTH: '/auth/:username/:password',
+  REGISTER: '/auth/register',
+  LOGIN: '/auth/login',
 } as const;

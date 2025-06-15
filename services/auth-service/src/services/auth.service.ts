@@ -1,14 +1,15 @@
+import { ApiClient } from '@transcenders/api-client';
 import {
-  ApiClient,
   AuthData,
   BooleanOperationResult,
   BooleanResultHelper,
   CreateUserRequest,
   DatabaseHelper,
   DatabaseResult,
+  JWTPayload,
+  LoginUser,
   RegisterUser,
   User,
-  UserCredentials,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
 import * as bcrypt from 'bcrypt';
@@ -16,13 +17,6 @@ import jwt from 'jsonwebtoken';
 import SQL from 'sql-template-strings';
 import { Database } from 'sqlite';
 import { getAuthDB } from '../db/database';
-
-export interface JWTPayload {
-  userId: number;
-  username: string;
-  iat: number;
-  exp: number;
-}
 
 export class AuthService {
   private static async insertCredentialsLogic(
@@ -52,9 +46,9 @@ export class AuthService {
       'regster user',
       db,
       async (database) => {
-        const userCreateResponse = await ApiClient.createUser(userCreationInfo);
+        const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
         if (!userCreateResponse.success) {
-          throw new Error(`auth-service: register: failed to create user`);
+          throw new Error(userCreateResponse.error);
         }
         const newUser = userCreateResponse.data as User;
 
@@ -71,54 +65,50 @@ export class AuthService {
       },
     );
   }
-  static async login(username: string, password: string): Promise<AuthData> {
-    // Get user from user-service with schema validation
-    const apiResponse = await ApiClient.getUserExact({ username: username });
-    if (!apiResponse.success) {
-      throw new Error(`Authentication failed: ${apiResponse.error}`);
-    }
-    const userData = apiResponse.data as User;
 
+  static async login(login: LoginUser): Promise<DatabaseResult<AuthData>> {
     const db: Database = await getAuthDB();
-    const auth_data = await DatabaseHelper.executeQuery<UserCredentials>(
+    return await DatabaseHelper.executeQuery<AuthData>(
       'auth: get user by username',
       db,
       async (database) => {
+        // Get user from user-service with schema validation
+        const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
+        if (!apiResponse.success) {
+          throw new Error(`Authentication failed: ${apiResponse.error}`);
+        }
+        const userData = apiResponse.data as User;
+
+        // get the matching user credentials entry
         const sql = SQL`
-        SELECT * FROM user_credentials WHERE username = ${username}
+        SELECT * FROM user_credentials WHERE username = ${login.username}
       `;
         const userCredentials = await database.get(sql.text, sql.values);
         if (!userCredentials) {
-          throw new Error(`user '${username}' not found`);
+          throw new Error(`user '${login.username}' not found`);
         }
-        return userCredentials as UserCredentials;
+
+        const userCreds = userCredentials as UserCredentialsEntry;
+        const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
+        if (!isValidPassword) {
+          throw new Error('Invalid password');
+        }
+
+        // Generate JWT accessToken
+        const accessToken = jwt.sign(
+          { userId: userData.id, username: userData.username },
+          // #TODO fix all env stuff
+          process.env.JWT_SECRET ?? 'testing',
+          { expiresIn: '24h' },
+        );
+        this.verifyToken(accessToken);
+        return { accessToken };
       },
     );
-    const result: AuthData = {
-      success: false,
-      accessToken: '',
-    };
-
-    if (auth_data.success) {
-      const userCreds = auth_data.data!;
-      const isValidPassword = bcrypt.compare(password, userCreds.pw_hash);
-
-      if (!isValidPassword) {
-        throw new Error('Invalid password');
-      }
-
-      // Generate JWT accessToken
-      result.accessToken = jwt.sign(
-        { userId: userData.id, username: userData.username },
-        process.env.JWT_SECRET!,
-        { expiresIn: '24h' },
-      );
-      result.success = true;
-    }
-    return result;
   }
 
   static verifyToken(token: string): JWTPayload {
-    return jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
+    // #TODO fix all env stuff
+    return jwt.verify(token, process.env.JWT_SECRET ?? 'testing') as JWTPayload;
   }
 }
