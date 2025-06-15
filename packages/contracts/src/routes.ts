@@ -1,6 +1,10 @@
 export const SERVICE_URLS = {
-  USER: process.env.USER_SERVICE_URL ?? 'http://localhost:3001',
-  AUTH: process.env.AUTH_SERVICE_URL ?? 'http://localhost:3002',
+  USER:
+    (typeof process !== 'undefined' ? process.env.USER_SERVICE_URL : undefined) ??
+    'http://localhost:3001',
+  AUTH:
+    (typeof process !== 'undefined' ? process.env.AUTH_SERVICE_URL : undefined) ??
+    'http://localhost:3002',
 } as const;
 
 export const USER_ROUTES = {
