@@ -8,7 +8,7 @@ export const SERVICE_URLS = {
   SCORE:
     (typeof process !== 'undefined' ? process.env.SCORE_SERVICE_URL : undefined) ??
     'http://localhost:3003',
-};
+} as const;
 
 export const USER_ROUTES = {
   // GET /users - List users (with optional query params: ?search=, ?limit=, ?offset=)
