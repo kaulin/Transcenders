@@ -53,7 +53,7 @@
 	}
 
 	.profile-button {
-		@apply mt-8 bg-white/20 font-fascinate uppercase px-6 py-2 rounded-full hover:bg-opacity-80 transition;
+		@apply mt-8 bg-white/20 font-fascinate uppercase text-center px-6 py-2 rounded-full hover:text-[#786647] transition;
 	}
 
     .custom-scrollbar {
@@ -66,7 +66,7 @@
     }
 
     .bubble {
-        @apply rounded-full aspect-square border bg-white/20 border-white;
+        @apply rounded-full aspect-square border border-white;
     }
 
 	.login-bubble {
@@ -78,6 +78,6 @@
     }
 
 	.login-cat-position {
-		@apply absolute bottom-0 left-1/2 -translate-x-[70%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none;
+		@apply absolute bottom-0 left-1/2 -translate-x-[10%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none;
 	}
 }
