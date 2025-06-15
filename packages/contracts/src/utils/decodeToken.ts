@@ -3,6 +3,9 @@ import { JWTPayload, JWTPayloadSchema } from '../auth.schemas';
 
 export function decodeToken(token: string): JWTPayload {
   const tokenSplit = token.split('.');
+  if (tokenSplit.length < 2) {
+    throw new Error('Malformed JWT token, missing payload');
+  }
 
   //index one after split by . is the actual payloaded object
   const decoded = Buffer.from(tokenSplit[1], 'base64');
