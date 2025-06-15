@@ -15,7 +15,8 @@
     "dev:backend": "npm run dev --workspace=user-service",
     "dev:frontend": "npm run dev --workspace=web",
     "test": "tsx scripts/tests.ts",
-    "api-client-test": "tsx scripts/api-client-test.ts"
+    "api-client-test": "tsx scripts/api-client-test.ts",
+    "reglogin": "tsx scripts/reglogin.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.34.0",
