@@ -5,6 +5,9 @@ export const SERVICE_URLS = {
   AUTH:
     (typeof process !== 'undefined' ? process.env.AUTH_SERVICE_URL : undefined) ??
     'http://localhost:3002',
+  SCORE:
+    (typeof process !== 'undefined' ? process.env.SCORE_SERVICE_URL : undefined) ??
+    'http://localhost:3003',
 };
 
 export const USER_ROUTES = {
@@ -52,4 +55,13 @@ export const AUTH_ROUTES = {
   // GET /auth - auth inital idk #TODO fix and add more
   REGISTER: '/auth/register',
   LOGIN: '/auth/login',
+} as const;
+
+export const SCORE_ROUTES = {
+  // GET /scores - List scores (with optional query params: ?search=, ?limit=, ?offset=)
+  SCORES: '/score/',
+  // POST /score - Create a new score entry after a game
+  SCORE: '/score/',
+  // GET /score/:id - Get a users game history and statistics
+  SCORES_BY_ID: '/score/:id',
 } as const;
