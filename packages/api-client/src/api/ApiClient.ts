@@ -10,19 +10,22 @@ export class ApiClient {
    * Enhanced main call function
    */
   static async call(url: string, options: ApiCallOptions = {}): Promise<ApiResponseType> {
-    const { method = 'GET', body, headers = {}, timeout = 5000, expectedDataSchema } = options;
+    const { method = 'GET', body, headers = {}, timeout = 20000, expectedDataSchema } = options;
 
     try {
       const requestInit: RequestInit = {
         method,
         headers: {
-          'Content-Type': 'application/json',
           ...headers,
         },
         signal: AbortSignal.timeout(timeout),
       };
 
       if (body && method !== 'GET') {
+        requestInit.headers = {
+          'Content-Type': 'application/json',
+          ...requestInit.headers,
+        };
         requestInit.body = typeof body === 'string' ? body : JSON.stringify(body);
       }
 
