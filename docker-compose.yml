@@ -35,6 +35,23 @@ services:
       - ./services/auth-service:/workspace/services/auth-service
       - auth_node_modules:/workspace/node_modules
       - ./packages/contracts:/workspace/packages/contracts
+  score-serice:
+    container_name: score-service
+    image: score-serice:hive
+    build:
+      context: .
+      dockerfile: services/score-serice/dockerfile
+      target: development
+    ports:
+      - '3003:3003'
+      - '9229:9229'
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./services/score-service:/workspace/services/score-service
+      - score_node_modules:/workspace/node_modules
+      - ./packages/contracts:/workspace/packages/contracts
 volumes:
   user_node_modules:
   auth_node_modules:
+  score_node_modules:

@@ -1,0 +1,45 @@
+# Base image
+FROM node:22-alpine AS base
+WORKDIR /workspace
+USER root
+
+RUN apk add --no-cache sqlite
+
+# Development stage
+FROM base AS development
+
+# Copy all package.json files first
+COPY package.json package-lock.json ./
+COPY services/score-service/package.json ./services/score-service/
+# Copy all the workspace-packages
+COPY packages/ ./packages/
+
+RUN npm ci
+
+#copy all source files
+COPY services/score-service/ ./services/score-service/
+
+WORKDIR /workspace/services/score-service
+
+ENV NODE_ENV=development
+EXPOSE 3000 9228
+CMD ["npm", "run", "dev"]
+
+# Production stage
+FROM base AS production
+
+COPY package.json package-lock.json ./
+COPY packages/ ./packages/
+COPY services/score-service/package.json ./services/score-service/
+
+RUN npm ci --omit=dev
+
+COPY services/score-service/ ./services/score-service/
+RUN npm run build --workspace=score-service
+
+WORKDIR /workspace/services/score-service
+
+VOLUME ["/workspace/services/score-service/data"]
+EXPOSE 3000
+ENV NODE_ENV=production
+CMD ["node", "dist/server.js"]
