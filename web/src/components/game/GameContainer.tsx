@@ -73,6 +73,13 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 		const { newState: stateAfterScoring, scored } = checkScore(newState);
 		
 		if (scored) {
+			if (stateAfterScoring.rightScore >= 11 || stateAfterScoring.leftScore >= 11) {
+				setGameState(stateAfterScoring => ({
+				...stateAfterScoring,  // using state with updated scores
+				status: GameStatus.ENDED
+				}));
+				return;
+			}
 			newState = resetBall(stateAfterScoring);
 		} else {
 			newState = stateAfterScoring;
@@ -115,6 +122,12 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 						return resetBall({
 							...prevState,
 							status: GameStatus.RUNNING
+						});
+					} else if (prevState.status === GameStatus.ENDED) {
+						// Restart from ended game - completely reset
+						return resetBall({
+						...createInitialGameState(width, height),
+						status: GameStatus.RUNNING
 						});
 					} else if (prevState.status === GameStatus.RUNNING) {
 						// Pause the game
@@ -160,42 +173,64 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 				Score: {gameState.leftScore} - {gameState.rightScore}
 			</div>
 			
-			{/* <div className="relative"> */}
-				<PongCanvas gameState={gameState} />
-			{/* </div> */}
-			
-			<div className="flex w-full justify-center gap-6">
+			<PongCanvas gameState={gameState} />
+		
+		<div className="flex w-full justify-center gap-10">
+			{gameState.status === GameStatus.ENDED ? (
 				<button
 					className="play-button"
 					onClick={() => {
-						setGameState(prevState => {
-							if (prevState.status === GameStatus.WAITING || 
-								prevState.status === GameStatus.PAUSED) {
-								return resetBall({
-									...prevState,
-									status: GameStatus.RUNNING
-								});
-							} else if (prevState.status === GameStatus.RUNNING) {
-								return {
-									...prevState,
-									status: GameStatus.PAUSED
-								};
-							}
-							return prevState;
-						});
+						setGameState(resetBall({
+						...createInitialGameState(width, height),
+						rightScore: 0,
+						leftScore: 0,
+						status: GameStatus.RUNNING
+						}));
+					//manually restart the game loop
+					animationFrameRef.current = requestAnimationFrame(updateGame);
 					}}
 				>
-					{gameState.status === GameStatus.RUNNING ? t('pause') : t('play')}
+					Start New Game
 				</button>
-				
-				<button
-					className="play-button"
-					onClick={() => {
-						setGameState(createInitialGameState(width, height));
-					}}
-				>
-					{t('reset')}
-				</button>
+			) : (
+				//normal buttons when game is not ended
+				<>
+					<button
+						className="play-button"
+						onClick={() => {
+							setGameState(prevState => {
+								if (prevState.status === GameStatus.WAITING) {
+									return resetBall({
+										...prevState,
+										status: GameStatus.RUNNING
+									});
+								} else if (prevState.status === GameStatus.RUNNING) {
+									return {
+										...prevState,
+										status: GameStatus.PAUSED
+									};
+								} else if (prevState.status === GameStatus.PAUSED) {
+									return {
+										...prevState,
+										status: GameStatus.RUNNING
+									};
+								}
+								return prevState;
+							});
+						}}
+					>
+						{gameState.status === GameStatus.RUNNING ? 'Pause' : 'Start/Resume'}
+					</button>
+					
+					<button
+						className="play-button"
+						onClick={() => {
+							setGameState(createInitialGameState(width, height));
+						}}
+					>
+						Reset Game
+					</button>
+					</>)}
 			</div>
 		</div>
 	);
