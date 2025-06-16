@@ -1,3 +1,4 @@
+import { ApiClient } from '@transcenders/api-client';
 import {
   BooleanOperationResult,
   BooleanResultHelper,
@@ -163,7 +164,7 @@ export class UserService {
       },
     );
   }
-  //#TODO need some kind of 3rd party that will sync user and auth databases
+
   static async updateUser(
     id: number,
     updates: Partial<UpdateUserRequest>,
@@ -179,7 +180,7 @@ export class UserService {
       return user;
     });
   }
-  //#TODO need some kind of 3rd party that will sync user and auth databases
+
   static async deleteUser(userId: number): Promise<DatabaseResult<BooleanOperationResult>> {
     const db = await getDB();
     return DatabaseHelper.executeTransaction<BooleanOperationResult>(
@@ -188,10 +189,12 @@ export class UserService {
       async (database) => {
         // First check if user exists
         const userExists = await this.getUserByIdLogic(database, userId);
-
         if (!userExists) {
           return BooleanResultHelper.failure(`no user found with id ${userId}`);
         }
+
+        // Delete user from auth, Success or not, dont care, clean later
+        const credentialsDeleted = await ApiClient.auth.privateDelete(userId);
 
         const sql = SQL`
         DELETE FROM users WHERE id = ${userId}

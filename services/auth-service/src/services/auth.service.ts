@@ -35,9 +35,6 @@ export class AuthService {
     return true;
   }
 
-  //#TODO fix order of actions
-  //should be first auth's own db schema, then the external, and revert on failure
-  // or just figure out that 3rd part system that syncs all databases
   static async register(
     registration: RegisterUser,
   ): Promise<DatabaseResult<BooleanOperationResult>> {
@@ -106,7 +103,7 @@ export class AuthService {
       },
     );
   }
-  //#TODO need some kind of 3rd party that will sync user and auth databases
+
   static async updateCredentials(
     userId: number,
     updates: UpdateUserCredentials,
@@ -138,6 +135,11 @@ export class AuthService {
     );
   }
 
+  //TODO finish
+  static async changePassword(oldpassword: string, newPassword: string) {
+    return true;
+  }
+
   private static async deleteCredentialsLogic(
     database: Database,
     userId: number,
@@ -164,12 +166,13 @@ export class AuthService {
         const checkUserSql = SQL`
         SELECT 1 FROM user_credentials WHERE user_id = ${userId}
         `;
-        const userExists = await database.run(checkUserSql.text, checkUserSql.values);
-        if ((userExists.changes ?? 0) == 0)
+        const userExists = await database.get(checkUserSql.text, checkUserSql.values);
+        if (!userExists) {
           return BooleanResultHelper.failure(
             `user credentials with userid '${userId}' do not exist`,
           );
-        const deleted = this.deleteCredentialsLogic(db, userId);
+        }
+        const deleted = await this.deleteCredentialsLogic(db, userId);
         if (!deleted) {
           return BooleanResultHelper.failure(`No changes were made to user credentials: ${userId}`);
         }
