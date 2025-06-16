@@ -42,4 +42,12 @@ export class AuthApiService {
     };
     return this.callAuthService(endpoint, options);
   }
+
+  static async privateDelete(id: number) {
+    const endpoint = `${AUTH_ROUTES.DELETE.replace(':id', id.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'DELETE',
+    };
+    return this.callAuthService(endpoint, options);
+  }
 }
