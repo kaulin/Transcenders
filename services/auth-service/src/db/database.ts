@@ -80,11 +80,7 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     return {
       success: true,
       databasePath: config.filename,
-      indexesCreated: [
-        'idx_user_credentials_user_id',
-        'idx_user_credentials_username',
-        'idx_user_credentials_email',
-      ],
+      indexesCreated: ['idx_user_credentials_user_id'],
       tablesCreated: ['user_credentials'],
       triggersCreated: ['user_credentials_updated_at'],
     };
