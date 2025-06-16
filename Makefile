@@ -108,6 +108,11 @@ cleandb:
 	rm -rf ./services/user-service/data
 	rm -rf ./services/auth-service/data
 
+cleandb:
+	@echo cleaning all databases
+	rm -rf ./services/user-service/data
+	rm -rf ./services/auth-service/data
+
 ################################################################################
 # HELP
 ################################################################################
@@ -135,6 +140,7 @@ help:
 	@echo "  make stop              Stop all containers"
 	@echo "  make rebuild           Rebuild dev environment (no cache)"
 	@echo "  make clean             Remove all containers and images"
+	@echo "  make cleandb           remove all databases"
 	@echo "  make help              Show this help message"
 	@echo ""
 	@echo "==========================================="
