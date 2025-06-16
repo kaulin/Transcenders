@@ -8,8 +8,8 @@ export function decodeToken(token: string): JWTPayload {
   }
 
   //index one after split by . is the actual payloaded object
-  const decoded = Buffer.from(tokenSplit[1], 'base64');
-  const payload = JSON.parse(decoded.toString());
+  const decoded = atob(tokenSplit[1]);
+  const payload = JSON.parse(decoded);
   if (!Value.Check(JWTPayloadSchema, payload)) {
     throw new Error('Invalid JWT payload format');
   }
