@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
-import { ApiClientType } from "@transcenders/api-client"
+import { ApiClient } from "@transcenders/api-client"
 
 import avatarCat1 from "/images/avatarCat1.avif"
 import avatarCat2 from "/images/avatarCat2.avif"
@@ -82,7 +82,7 @@ const Profile = () => {
 				throw new Error("User ID is undefined")
 			}
 
-			const response = await ApiClient.user.deleteUser(user.id) // is this throwing?
+			const response = await ApiClient.user.deleteUser(user.id)
 
 			if (!response.success) {
 				throw new Error(response.error || t('something_went_wrong'))
