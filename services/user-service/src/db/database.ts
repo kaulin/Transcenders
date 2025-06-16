@@ -125,6 +125,8 @@ export async function getDB(): Promise<Database> {
       filename: config.filename,
       driver: sqlite3.Database,
     });
+    // enable foreign key constraints
+    await db.run('PRAGMA foreign_keys = ON');
     console.log('Database ready:', initResult.databasePath);
   }
   return db;
