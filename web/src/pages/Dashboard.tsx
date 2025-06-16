@@ -8,9 +8,18 @@ import { ApiClient } from "@transcenders/api-client"
 import AreaCharts from "../components/AreaCharts"
 import MatchHistory from "../components/MatchHistory"
 
+import avatarCat1 from "/images/avatarCat1.avif"
+import avatarCat2 from "/images/avatarCat2.avif"
+import avatarCat3 from "/images/avatarCat3.avif"
+import avatarCat4 from "/images/avatarCat4.avif"
+import avatarCat5 from "/images/avatarCat5.avif"
+import avatarCat6 from "/images/avatarCat6.avif"
+
+const avatars = [avatarCat1, avatarCat2, avatarCat3, avatarCat4, avatarCat5, avatarCat6]
+
 const Dashboard = () => {
-  const { t } = useTranslation()
-  const { user } = useUser()
+	const { t } = useTranslation()
+	const { user } = useUser()
 
 	const avatarSizes = [
 		"max-w-[65%]",
@@ -75,9 +84,7 @@ const Dashboard = () => {
 						alt="Avatar"
 						className={`object-contain ${avatarSizes[0]}`}
 						/>
-					) : (
-					<div className="bubble w-64 bg-white bg-opacity-25"></div>
-					)}
+					</div>
 					
 					<h1 className="pt-6 text-5xl text-[#fff] font-fascinate">{viewedUser?.username}</h1>
 				</div>
@@ -124,10 +131,7 @@ const Dashboard = () => {
 				</div>
 			</div>
 			
-			<div className="profile-box basis-3/5 gap-6 p-6 pt-16">
-				<h1 className="flex w-full basis-1/12 justify-center text-3xl uppercase">
-					{t('games_played')}
-				</h1>
+			<div className="profile-box basis-3/5 gap-6 p-6">
 				
 				<div className="flex basis-1/5 w-full font-fascinate justify-around items-center text-lg uppercase">
 					<p className="text-4xl text-[#fff]">{t('games_played')} </p>
@@ -146,8 +150,8 @@ const Dashboard = () => {
 					</div>
 				</div>
 
-				<div className="flex basis-4/12 items-center w-full rounded-lg bg-[#f6dfd148]">
-					<PieCharts />
+				<div className="flex basis-2/5 items-center w-full">
+					{/* <PieCharts /> */}
 				</div>
 
 				<div className="flex basis-2/5 items-end w-full">

@@ -1,41 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caramel&family=Fascinate&family=Lobster&family=Molle&family=Satisfy&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-    
+
     html {
         @apply min-h-screen bg-gradient-to-t from-[#e0cec2] via-[#e0cec2] to-[#e0cec2];
     }
     
 	div {
-		@apply text-white;
+        @apply text-white;
 	}
-
+    
 	p {
-		@apply text-white;
+        @apply text-white;
 	}
-
+    
     h1 {
         @apply text-white font-bold;
     }
-
+    
     button {
         @apply text-white hover:text-[#6a5373c6];
     }
-
+    
 }
 
 @layer components {
-
+    
     .button-text {
         @apply text-white hover:text-[#6a5373c6];
     }
-
+    
 	.play-button {
-		@apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text text-center mt-4 min-w-24;
+        @apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text text-center mt-4 min-w-24;
 	}
-
+    
     .login-input-field {
         @apply rounded-lg bg-white bg-opacity-20 p-1 text-white placeholder-white;
     }
@@ -43,6 +45,7 @@
     .profile-box  {
         @apply relative rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1] flex flex-col items-center;
 	}
+    /* bg-gradient-to-t from-[#ffd3c4] to-[#ffe4d8] box for purple bg  */
     
 	.profile-label {
 		@apply block font-fascinate text-2xl uppercase mb-2;

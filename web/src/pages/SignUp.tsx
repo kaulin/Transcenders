@@ -4,17 +4,17 @@ import { Link } from 'react-router-dom'
 import { useState } from "react"
 import { ApiClient } from "@transcenders/api-client"
 
-import playfulCat from "/images/playfulKitten.avif"
+// import playfulCat from "/images/playfulCat.avif"
 
-    const [username, setUsername] = useState<string>("")
-    const [password, setPassword] = useState<string>("")
+const SignUp = () => {
+	const { t } = useTranslation()
+	const { setUser } = useUser()
 
-    const handleSignUp = () => {
-        setUser({
-            id: 1,
-            name: username
-        })
-    }
+	const [username, setUsername] = useState('')
+	const [email, setEmail] = useState('')
+	const [password, setPassword] = useState('')
+	const [confirmPassword, setConfirmPassword] = useState('')
+	const [error, setError] = useState<string | null>(null)
 
 	async function handleSignUp(e: React.FormEvent) {
 		e.preventDefault()
@@ -63,26 +63,46 @@ import playfulCat from "/images/playfulKitten.avif"
 				<h1 className="text-3xl font-fascinate mb-3">{t('sign_up')}</h1>
 
 				<input
-					type="text" value={username}
+					type="text"
+					required
+					value={username}
 					placeholder={t('username')}
 					className="login-input-field mt-2"
 					onChange={(e) => setUsername(e.target.value)}
 				/>
 
 				<input
-					type="password"
-					placeholder={t('password')}
+					type="email"
+					required
+					value={email}
+					placeholder={t('email')}
 					className="login-input-field mt-2"
+					onChange={(e) => setEmail(e.target.value)}
 				/>
 
 				<input
-					type="password" value={password}
-					placeholder={t('confirm_password')}
+					type="password"
+					required
+					value={password}
+					placeholder={t('password')}
 					className="login-input-field mt-2"
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 
-				<button className="mt-2 button-text" onClick={handleSignUp}>{t('sign_up')}</button>
+				<input
+					type="password"
+					required
+					value={confirmPassword}
+					placeholder={t('confirm_password')}
+					className="login-input-field mt-2"
+					onChange={(e) => setConfirmPassword(e.target.value)}
+				/>
+
+				{error && <p className="text-[#901c1c] mt-2 text-sm">{error}</p>}
+
+				<button type="submit" className="mt-4 button-text">
+					{t('sign_up')}
+				</button>
 
 				<p className="mt-6">{t('existing_user')}?</p>
 				<p>
@@ -90,13 +110,13 @@ import playfulCat from "/images/playfulKitten.avif"
 				</p>
 			</form>
 
-			<img
+			{/* <img
 				src={playfulCat}
-				alt="playful"
+				alt="playful cat"
 				className="login-cat-position"
-			/>
+			/> */}
 		</div>
-    )
-}
+	);
+};
 
 export default SignUp

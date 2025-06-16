@@ -59,14 +59,6 @@ import {
               fill="url(#scored)"
               name="Goals Scored"
             />
-            <Area
-              type="monotone"
-              dataKey="goalsConceded"
-              stroke="#ff4b46"
-              fillOpacity={1}
-              fill="url(#conceded)"
-              name="Goals Conceded"
-            />
           </AreaChart>
         </ResponsiveContainer>
       </div>
