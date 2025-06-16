@@ -1,6 +1,7 @@
 import {
   ApiResponseType,
   AUTH_ROUTES,
+  authDataSchema,
   BooleanOperationResultSchema,
   LoginUser,
   RegisterUser,
@@ -41,6 +42,7 @@ export class AuthApiService {
     const options: ApiCallOptions = {
       method: 'POST',
       body: login,
+      expectedDataSchema: authDataSchema,
     };
     return this.callAuthService(endpoint, options);
   }
@@ -54,3 +56,4 @@ export class AuthApiService {
     return this.callAuthService(endpoint, options);
   }
 }
+//#TODO need a change password
