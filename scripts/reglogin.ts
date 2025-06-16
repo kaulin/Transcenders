@@ -21,9 +21,15 @@ async function main() {
     const authData = myBrandNewToken.data as AuthData;
     console.log(`got the token: ${authData.accessToken}`);
     console.log(`decoding token for user info...`);
-    console.log(decodeToken(authData.accessToken));
+    const userData = decodeToken(authData.accessToken);
+    console.log(userData);
+
+    const userDeleted = await ApiClient.user.deleteUser(userData.userId);
+    if (userDeleted.success) {
+      console.log(`${userData.userId} deleted successfully`);
+    } else {
+      console.log(`${userDeleted.error}`);
+    }
   }
-  const test = 'test';
-  test.split('');
 }
 main();
