@@ -34,7 +34,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
     {
       schema: {
         description: 'Create new user',
-        tags: ['User'],
+        tags: ['Internal ONLY'],
         body: createUserSchema.body,
         response: standardApiResponses,
       },

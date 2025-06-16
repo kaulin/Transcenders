@@ -52,7 +52,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     {
       schema: {
         description: 'remove user credentials',
-        tags: ['Auth'],
+        tags: ['Internal ONLY'],
         params: userByIdSchema.params,
         response: standardApiResponses,
       },
