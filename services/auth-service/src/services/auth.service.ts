@@ -25,8 +25,8 @@ export class AuthService {
     userCreds: UserCredentialsEntry,
   ): Promise<boolean> {
     const sql = SQL`
-        INSERT INTO user_credentials (user_id, username, email, pw_hash)
-        VALUES (${userCreds.user_id}, ${userCreds.username}, ${userCreds.email}, ${userCreds.pw_hash})
+        INSERT INTO user_credentials (user_id, pw_hash)
+        VALUES (${userCreds.user_id}, ${userCreds.pw_hash})
       `;
     const result = await database.run(sql.text, sql.values);
     if (!result.lastID) {
@@ -58,14 +58,10 @@ export class AuthService {
 
         const userCredentials: UserCredentialsEntry = {
           user_id: newUser.id,
-          username: newUser.username,
-          email: newUser.email,
           pw_hash: await bcrypt.hash(registration.password, 12),
         };
         await this.insertCredentialsLogic(database, userCredentials);
-        return BooleanResultHelper.success(
-          `registration successful for ${userCredentials.username}`,
-        );
+        return BooleanResultHelper.success(`registration successful for ${newUser.username}`);
       },
     );
   }
@@ -85,7 +81,7 @@ export class AuthService {
 
         // get the matching user credentials entry
         const sql = SQL`
-        SELECT * FROM user_credentials WHERE username = ${login.username}
+        SELECT * FROM user_credentials WHERE user_id = ${userData.id}
       `;
         const userCredentials = await database.get(sql.text, sql.values);
         if (!userCredentials) {
@@ -100,8 +96,8 @@ export class AuthService {
 
         // Generate JWT accessToken
         const accessToken = jwt.sign(
-          { userId: userData.id, username: userData.username },
-          // #TODO fix all env stuff
+          { userId: userData.id },
+          // TODO fix all env stuff
           process.env.JWT_SECRET ?? 'testing',
           { expiresIn: '24h' },
         );

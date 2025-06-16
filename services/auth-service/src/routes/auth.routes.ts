@@ -41,7 +41,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       schema: {
         description: 'update user credentials',
         tags: ['Auth'],
-        params: updateUserCredentialsSchema,
+        params: updateUserCredentialsSchema.params,
         response: standardApiResponses,
       },
     },
@@ -53,7 +53,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       schema: {
         description: 'remove user credentials',
         tags: ['Auth'],
-        params: userByIdSchema,
+        params: userByIdSchema.params,
         response: standardApiResponses,
       },
     },
