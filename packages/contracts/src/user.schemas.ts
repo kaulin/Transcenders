@@ -184,12 +184,12 @@ export const FriendRequestsDataSchema = Type.Object({
 });
 export type FriendRequestsData = Static<typeof FriendRequestsDataSchema>;
 
-export const BooleanOperationResult = Type.Object({
+export const BooleanOperationResultSchema = Type.Object({
   success: Type.Boolean(),
   message: Type.String(),
 });
 
-export type BooleanOperationResult = Static<typeof BooleanOperationResult>;
+export type BooleanOperationResult = Static<typeof BooleanOperationResultSchema>;
 
 /**
  * RESPONSE SCHEMAS
