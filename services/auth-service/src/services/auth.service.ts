@@ -47,7 +47,7 @@ export class AuthService {
     };
     const db = await getAuthDB();
     return DatabaseHelper.executeTransaction<BooleanOperationResult>(
-      'regster user',
+      'register user',
       db,
       async (database) => {
         const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
@@ -138,35 +138,44 @@ export class AuthService {
     );
   }
 
-  //#TODO need some kind of 3rd party that will sync user and auth databases
+  private static async deleteCredentialsLogic(
+    database: Database,
+    userId: number,
+  ): Promise<boolean> {
+    // delete logic
+    const sql = SQL`
+      DELETE FROM user_credentials WHERE user_id = ${userId}
+    `;
+    const result = await database.run(sql.text, sql.values);
+    const deleted = (result.changes ?? 0) > 0;
+    if (deleted) {
+      return true;
+    }
+    return false;
+  }
+
   static async deleteCredentials(userId: number): Promise<DatabaseResult<BooleanOperationResult>> {
     const db = await getAuthDB();
     return DatabaseHelper.executeQuery<BooleanOperationResult>(
       'auth: delete user credentials',
       db,
       async (database) => {
-        // First check if user exists
+        // Check if user exists
         const checkUserSql = SQL`
         SELECT 1 FROM user_credentials WHERE user_id = ${userId}
         `;
-        const userExists = database.run(checkUserSql.text, checkUserSql.values);
-        if (!userExists)
+        const userExists = await database.run(checkUserSql.text, checkUserSql.values);
+        if ((userExists.changes ?? 0) == 0)
           return BooleanResultHelper.failure(
             `user credentials with userid '${userId}' do not exist`,
           );
-        // delete logic
-        const sql = SQL`
-        DELETE FROM user_credentials WHERE user_id = ${userId}
-      `;
-        const result = await database.run(sql.text, sql.values);
-        const deleted = (result.changes ?? 0) > 0;
-
-        if (deleted) {
-          return BooleanResultHelper.success(
-            `User credentials for user_id ${userId} have been successfully deleted`,
-          );
+        const deleted = this.deleteCredentialsLogic(db, userId);
+        if (!deleted) {
+          return BooleanResultHelper.failure(`No changes were made to user credentials: ${userId}`);
         }
-        return BooleanResultHelper.failure(`No changes were made to user credentials: ${userId}`);
+        return BooleanResultHelper.success(
+          `User credentials for user_id ${userId} have been successfully deleted`,
+        );
       },
     );
   }

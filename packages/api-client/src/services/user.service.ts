@@ -65,7 +65,7 @@ export class UserApiService {
   /**
    * Deletes a user
    */
-  static async deleteUser(id: number) {
+  static async privateDelete(id: number) {
     return this.callUserService(USER_ROUTES.USER_BY_ID.replace(':id', id.toString()), {
       method: 'DELETE',
     });
