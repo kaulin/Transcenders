@@ -12,6 +12,21 @@ const Home = () => {
     const { user } = useUser()
 
 	const [gameMode, setGameMode] = useState<"match" | "tournament" | null>(null)
+	const [playerReady, setPlayerReady] = useState<{ [key:number]: boolean }>({})
+
+	const handlePlayerReady = (playerNumber: number) => {
+		setPlayerReady(prev => ({
+			...prev,
+			[playerNumber]: true,
+		}))
+	}
+
+	const handlePlayerUnReady = (playerNumber: number) => {
+		setPlayerReady(prev => ({
+			...prev,
+			[playerNumber]: false,
+		}))
+	}
 
     return (
 		<div className="w-full h-full profile-box flex-row">
@@ -36,28 +51,46 @@ const Home = () => {
 				</div>
 
 			</div>
-			<div className="h-full flex flex-col basis-1/2 p-10 bg-[#605c4c13] items-center justify-center">
+			<div className="h-full flex flex-col basis-1/2 px-10 py-14 bg-[#605c4c13] items-center justify-center">
 				{gameMode === 'match' && (
-					<div className="w-full max-w-sm flex flex-col">
-						<h2 className="profile-label">Player 1</h2>
-						<p className="mb-6 border-b-2 border-white pb-1 text-lg">{user?.username}</p>
-						<PlayerLoginForm playerNumber={2} />
-
-						<Link to="/LocalGame" className="profile-button">start</Link>
+					<div className="w-full h-full max-w-sm flex flex-col">
+						<div className="flex basis-1/4 flex-col"></div>
+						<div className="flex basis-1/4 flex-col justify-end pb-8">
+							<h2 className="profile-label">Player 1</h2>
+							<p className="mb-6 border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
+						</div>
+						<div className="flex basis-1/4 flex-col justify-start">
+							<PlayerLoginForm playerNumber={2} onContinue={handlePlayerReady} onGoBack={handlePlayerUnReady} isReady={playerReady[2]} />
+						</div>
+						<div className="flex basis-1/4 items-center justify-center">
+							{gameMode === "match" && playerReady[2] && (
+								<Link to="/LocalGame" className="profile-button">start</Link>
+							)}
+						</div>
 					</div>
 				)}
 
 				{gameMode === 'tournament' && (
-					<div className="w-full max-w-sm overflow-y-auto">
-						<h2 className="profile-label">Player 1</h2>
-						<p className="mb-6 border-b-2 border-white pb-1 text-lg">{user?.username}</p>
-						<PlayerLoginForm playerNumber={2} />
-						<PlayerLoginForm playerNumber={3} />
-						<PlayerLoginForm playerNumber={4} />
-
-						<button className="profile-button">
-							start
-						</button>
+					<div className="w-full h-full max-w-sm flex flex-col">
+						<div className="flex basis-1/6"></div>
+						<div className="flex basis-1/6 flex-col justify-center">
+							<h2 className="profile-label">Player 1</h2>
+							<p className="mb-6 border-b-2 border-white pb-1 text-lg">{user?.username}</p>
+						</div>
+						<div className="flex basis-1/6 flex-col justify-start">
+							<PlayerLoginForm playerNumber={2} onContinue={handlePlayerReady} onGoBack={handlePlayerUnReady} isReady={playerReady[2]}/>
+						</div>
+						<div className="flex basis-1/6 flex-col justify-start">
+							<PlayerLoginForm playerNumber={3} onContinue={handlePlayerReady} onGoBack={handlePlayerUnReady} isReady={playerReady[3]}/>
+						</div>
+						<div className="flex basis-1/6 flex-col justify-start">
+							<PlayerLoginForm playerNumber={4} onContinue={handlePlayerReady} onGoBack={handlePlayerUnReady} isReady={playerReady[4]}/>
+						</div>
+						<div className="flex basis-1/6 items-center justify-center">
+							{gameMode === "tournament" && playerReady[2] && playerReady[3] && playerReady[4] && (
+								<Link to="/LocalGame" className="profile-button mt-0">start</Link>
+							)}
+						</div>
 					</div>
 				)}
 			</div>
