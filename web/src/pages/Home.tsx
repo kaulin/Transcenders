@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
+import type { Player } from "../types/types.ts"
 
 import PlayerLoginForm from "../components/PlayerLoginForm"
 
@@ -11,22 +12,8 @@ const Home = () => {
     const { t } = useTranslation()
     const { user } = useUser()
 
+	const [players, setPlayers] = useState<Record<number, Player>>({})
 	const [gameMode, setGameMode] = useState<"match" | "tournament" | null>(null)
-	const [playerReady, setPlayerReady] = useState<{ [key:number]: boolean }>({})
-
-	const handlePlayerReady = (playerNumber: number) => {
-		setPlayerReady(prev => ({
-			...prev,
-			[playerNumber]: true,
-		}))
-	}
-
-	const handlePlayerUnReady = (playerNumber: number) => {
-		setPlayerReady(prev => ({
-			...prev,
-			[playerNumber]: false,
-		}))
-	}
 
     return (
 		<div className="w-full h-full profile-box flex-row">
@@ -52,7 +39,7 @@ const Home = () => {
 
 			</div>
 			<div className="h-full flex flex-col basis-1/2 px-10 py-14 bg-[#605c4c13] items-center justify-center">
-				{gameMode === 'match' && (
+				{gameMode === "match" && (
 					<div className="w-full h-full max-w-sm flex flex-col">
 						<div className="flex basis-1/4 flex-col"></div>
 						<div className="flex basis-1/4 flex-col justify-end pb-8">
@@ -60,17 +47,23 @@ const Home = () => {
 							<p className="mb-6 border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
 						</div>
 						<div className="flex basis-1/4 flex-col justify-start">
-							<PlayerLoginForm playerNumber={2} onContinue={handlePlayerReady} onGoBack={handlePlayerUnReady} isReady={playerReady[2]} />
+							<PlayerLoginForm
+								playerNumber={2}
+								player={players[2]}
+								setPlayer={(playerData: Player) =>
+									setPlayers((prev) => ({ ...prev, [2]: playerData}))
+								}	
+							/>
 						</div>
 						<div className="flex basis-1/4 items-center justify-center">
-							{gameMode === "match" && playerReady[2] && (
+							{gameMode === "match" && players[2]?.ready && (
 								<Link to="/LocalGame" className="profile-button">start</Link>
 							)}
 						</div>
 					</div>
 				)}
 
-				{gameMode === 'tournament' && (
+				{gameMode === "tournament" && (
 					<div className="w-full h-full max-w-sm flex flex-col">
 						<div className="flex basis-1/6"></div>
 						<div className="flex basis-1/6 flex-col justify-center">
@@ -78,17 +71,38 @@ const Home = () => {
 							<p className="mb-6 border-b-2 border-white pb-1 text-lg">{user?.username}</p>
 						</div>
 						<div className="flex basis-1/6 flex-col justify-start">
-							<PlayerLoginForm playerNumber={2} onContinue={handlePlayerReady} onGoBack={handlePlayerUnReady} isReady={playerReady[2]}/>
+							<PlayerLoginForm
+								playerNumber={2}
+								player={players[2]}
+								setPlayer={(playerData: Player) =>
+									setPlayers((prev) => ({ ...prev, [2]: playerData}))
+								}
+							/>
 						</div>
 						<div className="flex basis-1/6 flex-col justify-start">
-							<PlayerLoginForm playerNumber={3} onContinue={handlePlayerReady} onGoBack={handlePlayerUnReady} isReady={playerReady[3]}/>
+							<PlayerLoginForm
+								playerNumber={3}
+								player={players[3]}
+								setPlayer={(playerData: Player) =>
+									setPlayers((prev) => ({ ...prev, [3]: playerData}))
+								}
+							/>
 						</div>
 						<div className="flex basis-1/6 flex-col justify-start">
-							<PlayerLoginForm playerNumber={4} onContinue={handlePlayerReady} onGoBack={handlePlayerUnReady} isReady={playerReady[4]}/>
+							<PlayerLoginForm
+								playerNumber={4}
+								player={players[4]}
+								setPlayer={(playerData: Player) =>
+									setPlayers((prev) => ({ ...prev, [4]: playerData}))
+								}
+							/>
 						</div>
 						<div className="flex basis-1/6 items-center justify-center">
-							{gameMode === "tournament" && playerReady[2] && playerReady[3] && playerReady[4] && (
-								<Link to="/LocalGame" className="profile-button mt-0">start</Link>
+							{gameMode === "tournament" &&
+								players[2]?.ready &&
+								players[3]?.ready &&
+								players[4]?.ready && (
+									<Link to="/LocalGame" className="profile-button mt-0">start</Link>
 							)}
 						</div>
 					</div>
