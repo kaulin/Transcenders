@@ -1,42 +1,82 @@
 import { useState } from "react"
+import useVerifyLogin from "../hooks/useVerifyLogin.ts"
+import type { Player } from "../types/types.ts"
 
-const PlayerLoginForm = ({
-	playerNumber,
-	onContinue,
-	onGoBack,
-	isReady
-}: {
-	playerNumber: number,
-	onContinue: (playerNumber: number) => void,
-	onGoBack: (playerNumber: number) => void,
-	isReady?: boolean
-}) => {
-	const [playerMode, setPlayerMode] = useState<"guest" | "login" | null>(null)
-	const [username, setUsername] = useState<string | null>(null)
-	const [password, setPassword] = useState<string | null>(null)
-	const [continued, setContinued] = useState<boolean>(false)
+type Props = {
+  playerNumber: number;
+  player?: Player;
+  setPlayer: (playerData: Player) => void;
+}
 
-	const handleContinue = () => {
-		setContinued(true)
-		onContinue(playerNumber)
+const PlayerLoginForm = ({ playerNumber, player, setPlayer }: Props) => {
+	const { login } = useVerifyLogin()
+
+	const [playerMode, setPlayerMode] = useState<Player["mode"] | null>(null)
+	const [displayName, setDisplayName] = useState<string>("")
+	const [username, setUsername] = useState<string>("")
+	const [password, setPassword] = useState<string>("")
+	const [error, setError] = useState<string | null>(null)
+
+	const handleGuestContinue = () => {
+		if (!displayName?.trim()) {
+			setError("Please input username")
+			return
+		}
+
+		setPlayer({
+			id: undefined,
+			username: displayName?.trim(),
+			mode: "guest",
+			ready: true
+		})
 	}
 
-	const handleBack = () => {
-		setContinued(false)
+	const handleLoginContinue = async () => {
+		if (!username?.trim() || !password) {
+			setError("Please input username and password")
+			return
+		}
+
+		try {
+			const verifiedUser = await login(username?.trim(), password)
+			if (!verifiedUser) {
+				return
+			}
+			
+			setPlayer({
+				id: verifiedUser.id,
+				username: verifiedUser.username,
+				avatar: verifiedUser.avatar,
+				mode: "login",
+				ready: true
+			})
+
+		} catch (err: any) {
+			setError(err.message)
+		}
+	}
+
+	const handleGoBack = () => {
 		setPlayerMode(null)
-		onGoBack(playerNumber)
+		setDisplayName("")
+		setUsername("")
+		setPassword("")
+		
+		setPlayer({
+			id: undefined,
+			username: "",
+			mode: null,
+			ready: false,
+		} as Player)
 	}
 
-	if (isReady) {
+	if (player?.ready) {
 		return (
 			<>
 				<h2 className="profile-label">Player {playerNumber}</h2>
-				<p className="border-b-2 border-white text-lg">Username</p>
+				<p className="border-b-2 border-white text-lg">{player.username}</p>
 				<div className="flex justify-between">
-					<button
-						className="mt-2 p-2"
-						onClick={handleBack}
-					>
+					<button className="mt-2 p-2" onClick={handleGoBack}>
 						← Go back
 					</button>
 
@@ -52,16 +92,11 @@ const PlayerLoginForm = ({
 			
 			{playerMode === null && (
 				<div className="flex gap-2 items-start text-sm">
-					<button
-						className="profile-button mt-0"
-						onClick={() => setPlayerMode("guest")}
-					>
+					<button className="profile-button mt-0" onClick={() => setPlayerMode("guest")}>
 						Play as Guest
 					</button>
-					<button
-						className="profile-button mt-0"
-						onClick={() => setPlayerMode("login")}
-					>
+
+					<button className="profile-button mt-0" onClick={() => setPlayerMode("login")}>
 						Log in
 					</button>
 				</div>
@@ -73,30 +108,26 @@ const PlayerLoginForm = ({
 						type="text"
 						placeholder="Username"
 						className="profile-input-field"
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
 					/>
+
 					<input
 						type="password"
 						placeholder="Password"
 						className="profile-input-field"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
 					/>
+
 					<div className="flex justify-between">
-						<button
-							className="mt-2 p-2"
-							onClick={handleBack}
-						>
+						<button className="mt-2 p-2" onClick={handleGoBack}>
 							← Go back
 						</button>
 
-					{continued ? (
-						<p className="text-lg pt-4">✓</p>
-					) : (
-						<button
-							className="mt-2 p-2"
-							onClick={handleContinue}
-						>
+						<button className="mt-2 p-2" onClick={handleLoginContinue}>
 							Continue ➜
 						</button>
-					)}
 					</div>
 				</>
 			)}
@@ -107,25 +138,17 @@ const PlayerLoginForm = ({
 						type="text"
 						placeholder="Display name"
 						className="profile-input-field"
+						value={displayName}
+						onChange={(e) => setDisplayName(e.target.value)}
 					/>
 					<div className="flex justify-between">
-						<button
-							className="mt-2 p-2"
-							onClick={handleBack}
-						>
+						<button className="mt-2 p-2" onClick={handleGoBack}>
 							← Go back
 						</button>
 
-					{continued ? (
-						<p className="text-lg pt-4">✓</p>
-					) : (
-						<button
-							className="mt-2 p-2"
-							onClick={handleContinue}
-						>
+						<button className="mt-2 p-2" onClick={handleGuestContinue}>
 							Continue ➜
 						</button>
-					)}
 					</div>
 				</>
 			)}
