@@ -32,7 +32,7 @@ export class UserController {
     const result = await UserService.getUserById(userId);
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
-
+  //#TODO maybe password protect the Update and Delete for anti drive-by deletes for users
   static async updateUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as userByIdRequest;
     const userId = parseInt(id);
