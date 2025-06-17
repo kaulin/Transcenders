@@ -15,6 +15,7 @@
     "@fastify/type-provider-typebox": "^5.1.0",
     "@transcenders/api-client": "^1.0.0",
     "@transcenders/contracts": "^1.0.0",
+    "@transcenders/fastify-server": "^1.0.0",
     "bcrypt": "6.0.0",
     "dotenv": "^16.5.0",
     "fastify": "^5.4.0",

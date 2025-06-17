@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@transcenders/api-client": "^1.0.0",
+    "@transcenders/contracts": "^1.0.0",
     "i18next": "^25.1.1",
     "i18next-browser-languagedetector": "^8.1.0",
     "i18next-http-backend": "^3.0.2",
