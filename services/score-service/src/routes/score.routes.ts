@@ -12,7 +12,7 @@ import { ScoreController } from '../controllers/ScoreController';
  * SWAGGER
  * localhost:3003/docs
  */
-export async function registerUserRoutes(app: FastifyInstance) {
+export async function registerScoreRoutes(app: FastifyInstance) {
   app.get(
     SCORE_ROUTES.SCORES,
     {
@@ -23,7 +23,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
         response: standardApiResponses,
       },
     },
-    ScoreController.getUsers,
+    ScoreController.getScores,
   );
 
   app.post(
@@ -49,6 +49,6 @@ export async function registerUserRoutes(app: FastifyInstance) {
         response: standardApiResponses,
       },
     },
-    ScoreController.getUserById,
+    ScoreController.getScoresById,
   );
 }

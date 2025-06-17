@@ -4,9 +4,10 @@ export const LoserIdField = Type.Number();
 export const WinnerScoreField = Type.Number();
 export const LoserScoreField = Type.Number();
 export const TournamentLevelField = Type.Number();
-export const TimestampField = Type.Number();
-export const GameLengthField = Type.Number();
-export const UserIdField = Type.Number();
+export const GameDurationField = Type.Number();
+export const GameStartTimeField = Type.Number();
+export const GameEndTimeField = Type.Number();
+export const ScoresByIdField = Type.Number();
 
 /**
  * ENTITY SCHEMAS
@@ -17,13 +18,14 @@ export const ScoreSchema = Type.Object({
   winner_score: WinnerScoreField,
   loser_score: LoserScoreField,
   tournament_level: TournamentLevelField,
-  game_end: TimestampField,
-  game_length: GameLengthField,
+  game_duration: GameDurationField,
+  game_start: GameStartTimeField,
+  game_end: GameEndTimeField,
 });
 export type Score = Static<typeof ScoreSchema>;
 
 export const ScoresArraySchema = Type.Array(ScoreSchema);
-export type UsersArray = Static<typeof ScoresArraySchema>;
+export type ScoresArray = Static<typeof ScoresArraySchema>;
 
 /**
  * REQUEST SCHEMAS
@@ -35,11 +37,12 @@ export const createScoreSchema = {
     winner_score: WinnerScoreField,
     loser_score: LoserScoreField,
     tournament_level: TournamentLevelField,
-    game_end: TimestampField,
-    game_length: GameLengthField,
+    game_duration: GameDurationField,
+    game_start: GameStartTimeField,
+    game_end: GameEndTimeField,
   }),
 };
-export type CreateUserRequest = Static<typeof createScoreSchema.body>;
+export type CreateScoreRequest = Static<typeof createScoreSchema.body>;
 
 export const getScoresSchema = {
   querystring: Type.Object({
@@ -62,11 +65,11 @@ export const getScoreSchema = {
     },
   ),
 };
-export type GetUserRequest = Static<typeof getScoreSchema.querystring>;
+export type GetScoreRequest = Static<typeof getScoreSchema.querystring>;
 
 export const scoresByIdSchema = {
   params: Type.Object({
-	id: UserIdField,
+	id: ScoresByIdField,
   }),
 };
-export type userByIdRequest = Static<typeof scoresByIdSchema.params>;
+export type scoresByIdRequest = Static<typeof scoresByIdSchema.params>;

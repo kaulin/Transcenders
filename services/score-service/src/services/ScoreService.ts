@@ -29,9 +29,10 @@ export class ScoreService {
     scoreData: CreateScoreRequest,
   ): Promise<Score> {
     const sql = SQL`
-        INSERT INTO scores (winner_id, loser_id, winner_score, loser_score, tournament_level)
+        INSERT INTO scores (winner_id, loser_id, winner_score, loser_score, tournament_level, game_duration, game_start, game_end)
         VALUES (${scoreData.winner_id}, ${scoreData.loser_id}, 
-        ${scoreData.winnner_score}, ${scoreData.loser_score}, ${scoreData.tournament_level})
+        ${scoreData.winnner_score}, ${scoreData.loser_score}, ${scoreData.tournament_level}, ${scoreData.game_duration}, 
+        ${scoreData.game_start}, ${scoreData.game_end})
       `;
 
     const score = await database.run(sql.text, sql.values);
