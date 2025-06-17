@@ -59,7 +59,7 @@ export class UserService {
       throw new Error('No fields to update');
     }
 
-    const setFields = fields.map((field) => `${field} = ?`).join(', database, ');
+    const setFields = fields.map((field) => `${field} = ?`).join(', ');
     const values = Object.values(updates);
     values.push(id.toString());
 
