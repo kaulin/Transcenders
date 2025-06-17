@@ -15,7 +15,7 @@ function getDatabaseConfig(): DatabaseConfig {
   const fileDir = path.resolve(moduleRoot, './data/');
   const verbose = process.env.NODE_ENV === 'development';
 
-  console.log(`User-module path: ${moduleRoot}`);
+  console.log(`Score-module path: ${moduleRoot}`);
   console.log(`Database path: ${filename}`);
   console.log(`Database directory: ${fileDir}`);
   console.log(`Verbose mode: ${verbose}`);
@@ -80,15 +80,9 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     return {
       success: true,
       databasePath: config.filename,
-      indexesCreated: [
-        'idx_users_username',
-        'idx_users_email',
-        'idx_users_created_at',
-        'idx_friendships_user2',
-        'idx_friend_requests_recipient',
-      ],
-      tablesCreated: ['users', 'friend_requests', 'friendships'],
-      triggersCreated: ['friend_requests_updated_at', 'users_updated_at'],
+      indexesCreated: [],
+      tablesCreated: ['scores'],
+      triggersCreated: [],
     };
   } catch (error) {
     console.error('Database init failed:', error);
