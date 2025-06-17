@@ -2,10 +2,12 @@ import React, { useRef, useEffect, useState } from 'react';
 import { type GameState, GameStatus } from '../models/GameState';
 
 interface PongCanvasProps {
-  gameState: GameState;
+	gameState: GameState;
+	player1Name?: string;
+	player2Name?: string;
 }
 
-const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
+const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Player 1', player2Name = 'Player 2' }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	
 	// State to track if images are loaded
@@ -91,6 +93,12 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 		context.stroke();
 		context.setLineDash([]);
 	
+		//player names
+		context.font = '48px Arial';
+		context.textAlign = 'center';
+		context.fillText(player1Name, canvasWidth / 4, 30);
+		context.fillText(player2Name, (canvasWidth / 4) * 3, 30);
+		
 		// score
 		context.font = '48px Arial';
 		context.textAlign = 'center';

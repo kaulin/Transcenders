@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PongCanvas from './canvas/PongCanvas';
+import { useOneVOne } from '../../contexts/OneVOneContext';
 
 import { 
 	type GameState, 
@@ -23,15 +24,20 @@ interface GameContainerProps {
 const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600 }) => {
 	const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
 	const [keysPressed, setKeysPressed] = useState<{ [key: string]: boolean }>({});
+	const { oneVOneData } = useOneVOne();
+	const player1 = oneVOneData?.player1;
+	const player2 = oneVOneData?.player2;
 	
 	// Ref for game loop to prevent stale closures
 	const gameStateRef = useRef(gameState);
 	const animationFrameRef = useRef<number>(0);
 	
+
 	// Keep ref in sync with state
 	useEffect(() => {
 		gameStateRef.current = gameState;
 	}, [gameState]);
+
 
 	const updateGame = useCallback(() => {
 		// Read from ref (always current)
@@ -170,7 +176,10 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 				Score: {gameState.leftScore} - {gameState.rightScore}
 			</div>
 			
-			<PongCanvas gameState={gameState} />
+			<PongCanvas gameState={gameState} 
+			 player1Name={player1?.username || 'Player 1'}
+			 player2Name={player2?.username || 'Player 2'}
+			 />
 		
 		<div className="flex w-full justify-center gap-10">
 			{gameState.status === GameStatus.ENDED ? (
