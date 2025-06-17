@@ -103,15 +103,12 @@ clean: stop
 	@echo "Cleaning all Docker resources..."
 	docker compose down -v --remove-orphans --rmi all
 	-docker system prune -f
-	
-cleandb:
-	rm -rf ./services/user-service/data
-	rm -rf ./services/auth-service/data
 
 cleandb:
 	@echo cleaning all databases
 	rm -rf ./services/user-service/data
 	rm -rf ./services/auth-service/data
+	rm -rf ./services/score-service/data
 
 ################################################################################
 # HELP
