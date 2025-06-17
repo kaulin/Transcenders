@@ -26,29 +26,36 @@ const SignUp = () => {
 		}
 
 		try {
-			const response = await ApiClient.user.createUser({
-				username: username,
-				email: email,
-				display_name: username,
-				lang: 'en',
-			})
-			
-			if (!response.success) {
-				throw new Error(response.error || t('something_went_wrong'))
-			}
-			
-			// probably won't be needing this later
-			const user = response.data as { id: number; username: string; email: string; display_name: string; avatar: string | null; lang: string;  };
-			
-			setUser({
-				id: user.id,
-				username: user.username,
-				email: user.email,
-				display_name: user.username,
-				avatar: user.avatar,
-				lang: user.lang,
-			})
-			
+const registrationInfo: RegisterUser = {
+        username: username,
+        email: email,
+        password: password,
+      };
+      // this returns just true or false for now, could change to returning a full user object I guess
+      const response = await ApiClient.auth.register(registrationInfo);
+      if (!response.success) {
+        throw new Error(response.error || t('something_went_wrong'));
+      }
+
+      const loginInfo: LoginUser = {
+        username: username,
+        password: password,
+      };
+
+      const userLogin = await ApiClient.auth.login(loginInfo);
+      if (!userLogin.success) {
+        throw new Error(t('something_went_wrong'));
+      }
+      const authData = userLogin.data as AuthData;
+      const newUserId = JSON.parse(atob(authData.accessToken.split('.')[1])) as JWTPayload;
+      const userReq = await ApiClient.user.getUserById(newUserId.userId);
+      if (!userReq.success) {
+        throw new Error(t('something_went_wrong'));
+      }
+      const user = userReq.data as User;
+
+      setUser(user);
+      ```
 			} catch (err: any) {
 				setError(err.message || t('something_went_wrong'))
 			}
