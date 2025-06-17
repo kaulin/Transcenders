@@ -11,7 +11,7 @@ let db: Database | null = null;
 
 function getDatabaseConfig(): DatabaseConfig {
   const moduleRoot = path.resolve(import.meta.dirname, '../..');
-  const filename = path.resolve(moduleRoot, './data/users.db');
+  const filename = path.resolve(moduleRoot, './data/scores.db');
   const fileDir = path.resolve(moduleRoot, './data/');
   const verbose = process.env.NODE_ENV === 'development';
 
