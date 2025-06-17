@@ -22,7 +22,7 @@ COPY services/user-service/ ./services/user-service/
 WORKDIR /workspace/services/user-service
 
 ENV NODE_ENV=development
-EXPOSE 3000 9228
+EXPOSE 3001 9228
 CMD ["npm", "run", "dev"]
 
 # Production stage

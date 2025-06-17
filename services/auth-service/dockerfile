@@ -10,8 +10,9 @@ RUN apk add --no-cache sqlite
 FROM base AS development
 
 COPY package.json package-lock.json ./
-COPY packages/contracts/ ./packages/contracts/
 COPY services/auth-service/package.json ./services/auth-service/
+# Copy all the workspace-packages
+COPY packages/ ./packages/
 
 RUN npm ci
 
