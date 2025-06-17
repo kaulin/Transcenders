@@ -110,24 +110,24 @@ export const createInitialGameState = (
 	  },
 	  initialSpeed: DEFAULT_GAME_SETTINGS.ballInitialSpeed
 	}
-  };
+	};
 };
 
 //resets ball to the center with random direction
 export const resetBall = (gameState: GameState): GameState => {
 	// shallow cloning the current state
 	const newState: GameState = { ...gameState };
-  
+
 	// reset ball position to center
 	newState.ball.position = {
 		x: gameState.canvasWidth / 2,
 		y: gameState.canvasHeight / 2
 	};
-  
+
 	//set a random direction for the ball
 	const angle = (Math.random() * Math.PI / 4) - Math.PI / 8; // random playable angle between -22.5° and 22.5°
 	const direction = Math.random() < 0.5 ? 1 : -1; // randomly choose left or right direction
-  
+
 	// set ball velocity with the initial speed
 	newState.ball.velocity = {
 		dx: Math.cos(angle) * direction * gameState.ball.initialSpeed,
@@ -135,3 +135,50 @@ export const resetBall = (gameState: GameState): GameState => {
 	};
 	return newState;
 };
+
+// GAME RESULT for individual games
+export interface GameResult {
+	gameId: string;
+	player1Id: number;
+	player2Id: number;
+	player1Score: number;
+	player2Score: number;
+	durationMs: number;
+	isTournament: boolean;
+	tournamentId?: string;
+	tournamentRound?: 1 | 2 | 3;
+	timestamp: Date;
+	status: 'completed' | 'abandoned';
+	winnerId?: number;
+}
+
+//array to store multiple game results
+export type GameStatsTable = GameResult[];
+  
+export const createGameResult = (
+	player1Id: number,
+	player2Id: number,
+	player1Score: number,
+	player2Score: number,
+	durationMs: number,
+	isTournament: boolean = false,
+	tournamentId?: string,
+	tournamentRound?: 1 | 2
+): GameResult => {
+	const winnerId = player1Score > player2Score ? player1Id : player2Id;
+	
+	return {
+		gameId: `game-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+		player1Id,
+		player2Id,
+		player1Score,
+		player2Score,
+		durationMs,
+		isTournament,
+		tournamentId,
+		tournamentRound,
+		timestamp: new Date(),
+		status: 'completed',
+		winnerId
+	};
+  };
