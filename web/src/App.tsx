@@ -20,7 +20,7 @@ const App = () => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
-		{/* <Background bubbles={bubbles} /> */}
+		  {/* <Background bubbles={bubbles} /> */}
 
 		<div className="relative z-10 flex flex-col h-full">
 			<Header />

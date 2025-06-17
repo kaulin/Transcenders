@@ -1,94 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caramel&family=Fascinate&family=Lobster&family=Molle&family=Satisfy&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-    
+
     html {
         @apply min-h-screen bg-gradient-to-t from-[#e0cec2] via-[#e0cec2] to-[#e0cec2];
     }
     
 	div {
-		@apply text-white;
+        @apply text-white;
 	}
-
+    
 	p {
-		@apply text-white;
+        @apply text-white;
 	}
-
+    
     h1 {
         @apply text-white font-bold;
     }
-
+    
     button {
         @apply text-white hover:text-[#6a5373c6];
     }
-
+    
 }
 
 @layer components {
-
+    
     .button-text {
         @apply text-white hover:text-[#6a5373c6];
     }
-
+    
 	.play-button {
-		@apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text text-center mt-4 min-w-24;
+        @apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text text-center mt-4 min-w-24;
 	}
-
+    
     .login-input-field {
         @apply rounded-lg bg-white bg-opacity-20 p-1 text-white placeholder-white;
     }
     
     .profile-box  {
-		@apply rounded-lg bg-[#d3bfb1c4] border flex flex-col items-center
+        @apply relative rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1] flex flex-col items-center;
 	}
+    /* bg-gradient-to-t from-[#ffd3c4] to-[#ffe4d8] box for purple bg  */
     
+	.profile-label {
+		@apply block font-fascinate text-2xl uppercase mb-2;
+	}
+
+	.profile-input-field {
+		@apply w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60;
+	}
+
+	.profile-button {
+		@apply mt-8 bg-white/20 font-fascinate uppercase text-center px-6 py-2 rounded-full hover:text-[#786647] transition;
+	}
+
+    .custom-scrollbar {
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: transparent transparent; /* Firefox */
+    }
+
+    .custom-scrollbar:hover {
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent; 
+    }
+
     .bubble {
-        @apply bg-white bg-opacity-10 rounded-full aspect-square border;
+        @apply rounded-full aspect-square border border-white;
     }
 
-    /* .bg-bubble {
-        @apply rounded-full aspect-square shadow-xl bg-gradient-to-t w-full z-0;
-    } */
+	.login-bubble {
+		@apply bubble shadow-[0_0_3px_3px_#fff] w-[min(90vw,90vh)] max-w-[500px] z-10 p-16 flex flex-col justify-center items-center;
+	}
 
-    /* .bg-bubble-1 {
-        @apply bg-bubble absolute max-w-[10%] shadow-[#734b58b1]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
+    .bg-bubble {
+        @apply absolute rounded-full aspect-square shadow-xl shadow-[#be7d8486] bg-gradient-to-t from-[#c5567580] via-[#ff7da463] to-[#fcefe11b] w-full z-0;
     }
 
-	.bg-bubble-2 {
-        @apply bg-bubble absolute max-w-[20%] shadow-[#734b598b]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
-    }
-
-	.bg-bubble-3 {
-        @apply bg-bubble absolute max-w-[30%] shadow-[#734b578a]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe142];
-    }
-
-	.bg-bubble-4 {
-        @apply bg-bubble absolute max-w-[40%] shadow-[#734b5986]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe128];
-    }
-
-	.bg-bubble-5 {
-        @apply bg-bubble absolute max-w-[50%] shadow-[#734b5987]
-        bg-gradient-to-t from-[#933e56a3] via-[#ea8f719a] to-[#fcefe11e];
-    }
-
-	.bg-bubble-6 {
-        @apply bg-bubble absolute max-w-[60%] shadow-[#734b5e88]
-        bg-gradient-to-t from-[#933e56b5] via-[#ea8f719a] to-[#fcefe130];
-    }
-
-	.bg-bubble-7 {
-        @apply bg-bubble absolute max-w-[70%] shadow-[#734b5282]
-        bg-gradient-to-t from-[#96425ab2] via-[#ea8f719a] to-[#fcefe12b];
-    }
-
-	.bg-bubble-8 {
-        @apply bg-bubble absolute max-w-[80%] shadow-[#734b5083]
-        bg-gradient-to-t from-[#933e56a8] via-[#ea8f719a] to-[#fcefe11b];
-    } */
+	.login-cat-position {
+		@apply absolute bottom-0 left-1/2 -translate-x-[10%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none;
+	}
 }

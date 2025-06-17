@@ -14,10 +14,10 @@ const MatchHistory = () => {
 		{ outcome: "-", p1: "-", p2: "-", date: "-" },
 		{ outcome: "-", p1: "-", p2: "-", date: "-" },
 	  ].map(({ outcome, p1, p2, date }) => (
-		<div className="flex bg-[#f6dfd148] rounded-full p-4 justify-around items-center">
-			<div>{outcome}</div>
-			<div>{p1} - {p2}</div>
-			<div>{date}</div>
+		<div className="flex bg-[#605c4c13] border rounded-full p-4 justify-around items-center">
+			<div className="text-[#fff]">{outcome}</div>
+			<div className="text-[#fff]">{p1} - {p2}</div>
+			<div className="text-[#fff]">{date}</div>
 		</div>
 	  ))}
 	</div>

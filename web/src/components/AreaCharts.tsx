@@ -20,16 +20,16 @@ import {
   
     return (
       <div className="flex w-full justify-center h-64">
-        <ResponsiveContainer width="80%" height="100%">
+        <ResponsiveContainer width="90%" height="100%">
           <AreaChart data={goalData}>
             <defs>
               <linearGradient id="scored" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ffdfa2" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#fea636" stopOpacity={0} />
+                <stop offset="5%" stopColor="#def569" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#9fb52f" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="conceded" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ff5317" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#f0411e" stopOpacity={0} />
+                <stop offset="5%" stopColor="#e8d4c1" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#919191" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff33" />
@@ -45,19 +45,19 @@ import {
             />
             <Area
               type="monotone"
-              dataKey="goalsScored"
-              stroke="#fff6ad"
-              fillOpacity={1}
-              fill="url(#scored)"
-              name="Goals Scored"
-            />
-            <Area
-              type="monotone"
               dataKey="goalsConceded"
-              stroke="#ff4b46"
+              stroke="#b3a394"
               fillOpacity={1}
               fill="url(#conceded)"
               name="Goals Conceded"
+            />
+            <Area
+              type="monotone"
+              dataKey="goalsScored"
+              stroke="#effcae"
+              fillOpacity={1}
+              fill="url(#scored)"
+              name="Goals Scored"
             />
           </AreaChart>
         </ResponsiveContainer>
