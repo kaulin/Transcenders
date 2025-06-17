@@ -1,5 +1,8 @@
 import {
   ApiResponseType,
+  CreateScoreRequest,
+  GetScoresQuery,
+  toQueryString,
   SCORE_ROUTES,
   SERVICE_URLS,
 } from '@transcenders/contracts';
@@ -19,34 +22,28 @@ export class ScoreApiService {
   }
   
   /**
-   * Gets a list of users based on optional query parameters
+   * Gets a list of scores based on optional query parameters
    */
-  static async getUsers(query?: GetUsersQuery) {
+  static async getScores(query?: GetScoresQuery) {
     const queryString = query ? toQueryString(query) : '';
-    return this.callUserService(`${USER_ROUTES.USERS}${queryString}`);
+    return this.callScoreService(`${SCORE_ROUTES.SCORES}${queryString}`);
   }
-
-
+  
   /**
-   * Gets a list of users based on optional query parameters
-   * TODO register() input/request type
+   * Creates a new score
    */
-
-  static async register(registration: RegisterUser) {
-    const endpoint = `${AUTH_ROUTES.REGISTER}`;
-    const options: ApiCallOptions = {
-      method: 'POST',
-      body: registration,
-    };
-    return this.callAuthService(endpoint, options);
+  static async createScore(scoreData: CreateScoreRequest) {
+    return this.callScoreService(SCORE_ROUTES.SCORES, {
+    method: 'POST',
+    body: scoreData,
+    });
+  }
+  
+  /**
+   * Gets scores by user by their ID
+   */
+  static async getScoresById(id: number) {
+    return this.callScoreService(SCORE_ROUTES.SCORES_BY_ID.replace(':id', id.toString()));
   }
 
-  static async login(login: LoginUser) {
-    const endpoint = `${AUTH_ROUTES.LOGIN}`;
-    const options: ApiCallOptions = {
-      method: 'POST',
-      body: login,
-    };
-    return this.callAuthService(endpoint, options);
-  }
 }
