@@ -11,6 +11,8 @@ services:
       - '9228:9228'
     environment:
       - NODE_ENV=development
+      - USER_SERVICE_URL=http://user-service:3001
+      - AUTH_SERVICE_URL=http://auth-service:3002
     volumes:
       - ./services/user-service:/workspace/services/user-service
       - user_node_modules:/workspace/node_modules
@@ -27,6 +29,8 @@ services:
       - '9227:9227'
     environment:
       - NODE_ENV=development
+      - USER_SERVICE_URL=http://user-service:3001
+      - AUTH_SERVICE_URL=http://auth-service:3002
     volumes:
       - ./services/auth-service:/workspace/services/auth-service
       - auth_node_modules:/workspace/node_modules
