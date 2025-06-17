@@ -75,8 +75,8 @@ const PlayerLoginForm = ({
 						className="profile-input-field"
 					/>
 					<input
-						type="Password"
-						placeholder="password"
+						type="password"
+						placeholder="Password"
 						className="profile-input-field"
 					/>
 					<div className="flex justify-between">
