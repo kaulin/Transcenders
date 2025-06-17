@@ -163,7 +163,7 @@ export const createGameResult = (
 	durationMs: number,
 	isTournament: boolean = false,
 	tournamentId?: string,
-	tournamentRound?: 1 | 2
+	tournamentRound?: 1 | 2 | 3
 ): GameResult => {
 	const winnerId = player1Score > player2Score ? player1Id : player2Id;
 	
