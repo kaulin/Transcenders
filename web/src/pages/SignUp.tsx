@@ -3,7 +3,13 @@ import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
 import { ApiClient } from "@transcenders/api-client"
-
+import {
+  type AuthData,
+  type JWTPayload,
+  type LoginUser,
+  type RegisterUser,
+  type User,
+} from '@transcenders/contracts';
 // import playfulCat from "/images/playfulCat.avif"
 
 const SignUp = () => {
