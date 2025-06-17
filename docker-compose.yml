@@ -35,7 +35,7 @@ services:
       - ./services/auth-service:/workspace/services/auth-service
       - auth_node_modules:/workspace/node_modules
       - ./packages/contracts:/workspace/packages/contracts
-  score-serice:
+  score-service:
     container_name: score-service
     image: score-service:hive
     build:
