@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useTranslation } from "react-i18next";
 import PongCanvas from './canvas/PongCanvas';
 
 import { 
@@ -28,15 +27,13 @@ const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600
 	// Ref for game loop to prevent stale closures
 	const gameStateRef = useRef(gameState);
 	const animationFrameRef = useRef<number>(0);
-
-	const { t } = useTranslation();
 	
 	// Keep ref in sync with state
 	useEffect(() => {
 		gameStateRef.current = gameState;
 	}, [gameState]);
 
-	const updateGame = useCallback((timestamp: number) => {
+	const updateGame = useCallback(() => {
 		// Read from ref (always current)
 		const currentState = gameStateRef.current;
 		
