@@ -72,4 +72,4 @@ export const scoresByIdSchema = {
 	id: ScoresByIdField,
   }),
 };
-export type scoresByIdRequest = Static<typeof scoresByIdSchema.params>;
+export type ScoresByIdRequest = Static<typeof scoresByIdSchema.params>;
