@@ -90,7 +90,7 @@ const Profile = () => {
 
 			setSuccess(true)
 			setTimeout(() => {
-				navigate('../pages/Login')
+				navigate('/login')
 			}, 2000)
 
 		} catch (err: any) {
