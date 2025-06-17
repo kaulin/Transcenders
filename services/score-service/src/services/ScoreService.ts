@@ -16,7 +16,15 @@ export class ScoreService {
 
   // Private logic methods for internal use
   
-  private static async getScoresByIdLogic(database: Database, id: number): Promise<Score | null> {
+  private static async getScoreByIdLogic(database: Database, id: number): Promise<Score | null> {
+    const sql = SQL`
+      SELECT * FROM score WHERE id = ${id}
+    `;
+    const score = await database.get(sql.text, sql.values);
+    return score ? (score as Score) : null;
+  }
+
+  private static async getScoresByIdLogic(database: Database, id: number): Promise<Score[] | null> {
     const sql = SQL`
       SELECT * FROM scores WHERE winner_id = ${id} OR loser_id = ${id}
     `;
@@ -24,20 +32,22 @@ export class ScoreService {
     return userScores as Score[];
   }
 
-  private static async createScoreLogic(
-    database: Database,
-    scoreData: CreateScoreRequest,
-  ): Promise<Score> {
+  private static async createScoreLogic(database: Database, scoreData: CreateScoreRequest, ): Promise<Score> {
     const sql = SQL`
         INSERT INTO scores (winner_id, loser_id, winner_score, loser_score, tournament_level, game_duration, game_start, game_end)
         VALUES (${scoreData.winner_id}, ${scoreData.loser_id}, 
-        ${scoreData.winnner_score}, ${scoreData.loser_score}, ${scoreData.tournament_level}, ${scoreData.game_duration}, 
+        ${scoreData.winner_score}, ${scoreData.loser_score}, ${scoreData.tournament_level}, ${scoreData.game_duration}, 
         ${scoreData.game_start}, ${scoreData.game_end})
       `;
 
-    const score = await database.run(sql.text, sql.values);
-    if (!score.lastID) {
+    const result = await database.run(sql.text, sql.values);
+    if (!result.lastID) {
       throw new Error('Failed to create score');
+    }
+
+    const score = await this.getScoreByIdLogic(database, result.lastID);
+    if (!score) {
+      throw new Error('User created but not found');
     }
 
     return score;
@@ -71,7 +81,7 @@ export class ScoreService {
 
   static async getScoresById(id: number): Promise<DatabaseResult<Score[]>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<Score>('get user', db, async (database) => {
+    return DatabaseHelper.executeQuery<Score[]>('get user', db, async (database) => {
       const scores = await this.getScoresByIdLogic(database, id);
       if (!scores) {
         const error = new Error(`no games found for user id '${id}'`);
