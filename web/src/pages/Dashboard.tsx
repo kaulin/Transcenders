@@ -57,7 +57,7 @@ const Dashboard = () => {
 		const id = parseInt(searchId)
 
 		try {
-			const response = await ApiClient.user.getUserById(id)
+      const response = await ApiClient.user.getUserExact({ username: searchId });
 			
 			if (response?.success && response?.data) {
 				setViewedUser(response.data as User)
