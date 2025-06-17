@@ -15,7 +15,7 @@ const avatars = [avatarCat1, avatarCat2, avatarCat3, avatarCat4, avatarCat5, ava
 
 const Profile = () => {
     const { t } = useTranslation()
-    const { user } = useUser()
+    const { setUser, user } = useUser()
 
 	const [avatarIdx, setAvatarIdx] = useState<number>(0)
 	const [selectedAvatar, setSelectedAvatar] = useState(avatars[0])
@@ -89,7 +89,9 @@ const Profile = () => {
 			}
 
 			setSuccess(true)
+            
 			setTimeout(() => {
+                setUser(null)
 				navigate('/login')
 			}, 2000)
 
@@ -177,7 +179,7 @@ const Profile = () => {
                         >
                             <option value="en" className="bg-[#2c2c2c] text-white">English</option>
                             <option value="fi" className="bg-[#2c2c2c] text-white">Finnish</option>
-                            <option value="est" className="bg-[#2c2c2c] text-white">Estonian</option>
+                            <option value="et" className="bg-[#2c2c2c] text-white">Estonian</option>
                         </select>
                     </div>
 
@@ -189,7 +191,7 @@ const Profile = () => {
                     </button>
                 </div>
                 
-                <div className="flex flex-col h-full basis-1/6 justify-center items-center p-4">
+                <div className="flex flex-col basis-1/6 justify-center items-center p-4">
                 	<button 
 						onClick={handleDelete}
 						className="profile-button"
