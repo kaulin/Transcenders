@@ -37,10 +37,10 @@ services:
       - ./packages/contracts:/workspace/packages/contracts
   score-serice:
     container_name: score-service
-    image: score-serice:hive
+    image: score-service:hive
     build:
       context: .
-      dockerfile: services/score-serice/dockerfile
+      dockerfile: services/score-service/dockerfile
       target: development
     ports:
       - '3003:3003'
