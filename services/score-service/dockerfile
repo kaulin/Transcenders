@@ -22,7 +22,7 @@ COPY services/score-service/ ./services/score-service/
 WORKDIR /workspace/services/score-service
 
 ENV NODE_ENV=development
-EXPOSE 3000 9228
+EXPOSE 3003 9229
 CMD ["npm", "run", "dev"]
 
 # Production stage
