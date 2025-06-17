@@ -51,14 +51,13 @@ export const JWTPayloadSchema = Type.Object({
 });
 export type JWTPayload = Static<typeof JWTPayloadSchema>;
 
-const authModifiableFields = Type.Object({
-  pw_hash: PwHashField,
-});
-
-export const updateUserCredentialsSchema = {
+export const changePasswordSchema = {
   params: Type.Object({
     id: IdParamField,
   }),
-  body: Type.Partial(authModifiableFields, { additionalProperties: false }),
+  body: Type.Object({
+    oldPassword: PasswordField,
+    newPassword: PasswordField,
+  }),
 };
-export type UpdateUserCredentials = Static<typeof updateUserCredentialsSchema.body>;
+export type ChangePasswordRequest = Static<typeof changePasswordSchema.body>;

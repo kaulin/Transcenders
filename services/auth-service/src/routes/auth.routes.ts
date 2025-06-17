@@ -1,9 +1,9 @@
 import {
   AUTH_ROUTES,
+  changePasswordSchema,
   loginUserSchema,
   registerUserSchema,
   standardApiResponses,
-  updateUserCredentialsSchema,
   userByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
@@ -35,18 +35,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     },
     AuthController.login,
   );
-  app.patch(
-    AUTH_ROUTES.UPDATE,
-    {
-      schema: {
-        description: 'update user credentials',
-        tags: ['Auth'],
-        params: updateUserCredentialsSchema.params,
-        response: standardApiResponses,
-      },
-    },
-    AuthController.update,
-  );
+
   app.delete(
     AUTH_ROUTES.DELETE,
     {
@@ -58,5 +47,19 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.delete,
+  );
+
+  app.patch(
+    AUTH_ROUTES.CHANGE_PASSWORD,
+    {
+      schema: {
+        description: 'change user password',
+        tags: ['Auth'],
+        params: changePasswordSchema.params,
+        body: changePasswordSchema.body,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.changePassword,
   );
 }
