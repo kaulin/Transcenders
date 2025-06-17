@@ -1,6 +1,4 @@
 import {
-  BooleanOperationResult,
-  BooleanResultHelper,
   CreateScoreRequest,
   DatabaseHelper,
   DatabaseResult,
@@ -28,6 +26,7 @@ export class ScoreService {
     const sql = SQL`
       SELECT * FROM scores WHERE winner_id = ${id} OR loser_id = ${id}
     `;
+    sql.append(SQL` ORDER BY created_at DESC`);
     const userScores = await database.all(sql.text, sql.values);
     return userScores as Score[];
   }
