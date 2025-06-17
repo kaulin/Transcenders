@@ -25,8 +25,6 @@ export class UserApiService {
     return ApiClient.call(url, options);
   }
 
-  // #TODO schema validate all the data
-
   /**
    * Gets a list of users based on optional query parameters
    */

@@ -55,5 +55,14 @@ export class AuthApiService {
     };
     return this.callAuthService(endpoint, options);
   }
+
+  static async changePassword(userId: number, oldPassword: string, newPassword: string) {
+    const endpoint = `${AUTH_ROUTES.CHANGE_PASSWORD.replace(':id', userId.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'PATCH',
+      body: { oldPassword, newPassword },
+      expectedDataSchema: BooleanOperationResultSchema,
+    };
+    return this.callAuthService(endpoint, options);
+  }
 }
-//#TODO need a change password

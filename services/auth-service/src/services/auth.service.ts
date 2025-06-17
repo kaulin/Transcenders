@@ -9,7 +9,6 @@ import {
   JWTPayload,
   LoginUser,
   RegisterUser,
-  UpdateUserCredentials,
   User,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
@@ -104,40 +103,47 @@ export class AuthService {
     );
   }
 
-  static async updateCredentials(
+  static async changePassword(
     userId: number,
-    updates: UpdateUserCredentials,
+    oldPassword: string,
+    newPassword: string,
   ): Promise<DatabaseResult<BooleanOperationResult>> {
     const db = await getAuthDB();
     return await DatabaseHelper.executeQuery<BooleanOperationResult>(
-      'auth: update user',
+      'auth: change password',
       db,
       async (database) => {
-        // credentials update logic starts here
-        const fields = Object.keys(updates);
-        if (fields.length === 0) {
-          throw new Error('No fields to update');
+        // Get current credentials
+        const sql = SQL`
+          SELECT * FROM user_credentials WHERE user_id = ${userId}
+        `;
+        const userCredentials = await database.get(sql.text, sql.values);
+        if (!userCredentials) {
+          throw new Error(`User credentials not found for user ${userId}`);
         }
 
-        const setFields = fields.map((field) => `${field} = ?`).join(', database, ');
-        const values = Object.values(updates);
-        values.push(userId.toString());
+        const userCreds = userCredentials as UserCredentialsEntry;
 
-        const sql = `UPDATE user_credentials SET ${setFields} WHERE user_id = ?`;
+        // Verify old password
+        const isValidPassword = await bcrypt.compare(oldPassword, userCreds.pw_hash);
+        if (!isValidPassword) {
+          throw new Error('Current password is incorrect');
+        }
 
-        const result = await database.run(sql, values);
-        // user does not exist
+        // Hash new password and update
+        const newHashedPassword = await bcrypt.hash(newPassword, 12);
+        const updateSql = SQL`
+          UPDATE user_credentials SET pw_hash = ${newHashedPassword} WHERE user_id = ${userId}
+        `;
+
+        const result = await database.run(updateSql.text, updateSql.values);
         if ((result.changes ?? 0) === 0) {
-          return BooleanResultHelper.failure(`failed to update user ${userId}`);
+          return BooleanResultHelper.failure(`Failed to update password for user ${userId}`);
         }
-        return BooleanResultHelper.success(`user id: ${userId} updated`);
+
+        return BooleanResultHelper.success(`Password successfully changed for user ${userId}`);
       },
     );
-  }
-
-  //TODO finish
-  static async changePassword(oldpassword: string, newPassword: string) {
-    return true;
   }
 
   private static async deleteCredentialsLogic(
