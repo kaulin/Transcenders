@@ -1,6 +1,5 @@
 import {
   CreateScoreRequest,
-  GetScoresRequest,
   GetScoresQuery,
   ResponseHelper,
   ScoresByIdRequest,

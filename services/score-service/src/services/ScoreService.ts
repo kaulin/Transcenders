@@ -18,7 +18,7 @@ export class ScoreService {
   
   private static async getScoreByIdLogic(database: Database, id: number): Promise<Score | null> {
     const sql = SQL`
-      SELECT * FROM score WHERE id = ${id}
+      SELECT * FROM scores WHERE id = ${id}
     `;
     const score = await database.get(sql.text, sql.values);
     return score ? (score as Score) : null;
@@ -28,7 +28,7 @@ export class ScoreService {
     const sql = SQL`
       SELECT * FROM scores WHERE winner_id = ${id} OR loser_id = ${id}
     `;
-    const userScores = await database.get(sql.text, sql.values);
+    const userScores = await database.all(sql.text, sql.values);
     return userScores as Score[];
   }
 
