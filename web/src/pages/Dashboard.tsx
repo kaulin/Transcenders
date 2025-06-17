@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useUser } from "../contexts/UserContext"
-import type { User} from "../contexts/UserContext"
+import type { User} from "@transcenders/contracts"
 import { ApiClient } from "@transcenders/api-client"
 // import PieCharts from "../components/PieCharts"
 import AreaCharts from "../components/AreaCharts"
@@ -50,14 +50,13 @@ const Dashboard = () => {
 
 	const [viewedUser, setViewedUser] = useState<User | null>(user)
 	const [searchId, setSearchId] = useState("")
-	const [error, setError] = useState("")
+	const [error, setError] = useState<string | null>(null)
 
 	const handleSearch = async () => {
-		setError("")
-		const id = parseInt(searchId)
+		setError(null)
 
 		try {
-      const response = await ApiClient.user.getUserExact({ username: searchId });
+      		const response = await ApiClient.user.getUserExact({ username: searchId })
 			
 			if (response?.success && response?.data) {
 				setViewedUser(response.data as User)
@@ -118,21 +117,27 @@ const Dashboard = () => {
 							</div>
 						</div>
 					)}
-	
-				<div className="flex basis-1/12 w-full justify-center items-end">
-					<input
-						type="text"
-						value={searchId}
-						placeholder={t('username')}
-						onChange={(e) => setSearchId(e.target.value)}
-						className="login-input-field min-w-24 p-2"
-					/>
-					<button onClick={handleSearch} className="ml-4 p-2">Search</button>
+				
+				<div className="flex basis-1/12 w-full flex-col items-start">
+					<div className="flex justify-center items-start">
+						<input
+							type="text"
+							value={searchId}
+							placeholder={t('username')}
+							onChange={(e) => setSearchId(e.target.value)}
+							className="login-input-field min-w-24 p-2"
+							/>
+
+						<button onClick={handleSearch} className="ml-4 p-2">Search</button>
+					</div>
+
+					{error && (
+						<p className="text-[#901c1c] text-center pt-2">{error}</p>
+					)}
 				</div>
 			</div>
 			
 			<div className="profile-box basis-3/5 gap-6 p-6">
-				
 				<div className="flex basis-1/5 w-full font-fascinate justify-around items-center text-lg uppercase">
 					<p className="text-4xl text-[#fff]">{t('games_played')} </p>
 				
@@ -157,8 +162,6 @@ const Dashboard = () => {
 				<div className="flex basis-2/5 items-end w-full">
 					<AreaCharts />
 				</div>
-				
-
 			</div>
 
 			<div className="profile-box basis-1/5 p-6 pt-28">
@@ -168,7 +171,7 @@ const Dashboard = () => {
 				<MatchHistory />
 			</div>
 		</div>
-  );
+  )
 }
 
 export default Dashboard

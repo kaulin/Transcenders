@@ -9,7 +9,8 @@ import {
   type LoginUser,
   type RegisterUser,
   type User,
-} from '@transcenders/contracts';
+} from '@transcenders/contracts'
+
 // import playfulCat from "/images/playfulCat.avif"
 
 const SignUp = () => {
@@ -32,36 +33,39 @@ const SignUp = () => {
 		}
 
 		try {
-const registrationInfo: RegisterUser = {
-        username: username,
-        email: email,
-        password: password,
-      };
-      // this returns just true or false for now, could change to returning a full user object I guess
-      const response = await ApiClient.auth.register(registrationInfo);
-      if (!response.success) {
-        throw new Error(response.error || t('something_went_wrong'));
-      }
+			const registrationInfo: RegisterUser = {
+					username: username,
+					email: email,
+					password: password,
+				}
+				// this returns just true or false for now, could change to returning a full user object I guess
+				const response = await ApiClient.auth.register(registrationInfo)
 
-      const loginInfo: LoginUser = {
-        username: username,
-        password: password,
-      };
+				if (!response.success) {
+					throw new Error(response.error || t('something_went_wrong'))
+				}
 
-      const userLogin = await ApiClient.auth.login(loginInfo);
-      if (!userLogin.success) {
-        throw new Error(t('something_went_wrong'));
-      }
-      const authData = userLogin.data as AuthData;
-      const newUserId = JSON.parse(atob(authData.accessToken.split('.')[1])) as JWTPayload;
-      const userReq = await ApiClient.user.getUserById(newUserId.userId);
-      if (!userReq.success) {
-        throw new Error(t('something_went_wrong'));
-      }
-      const user = userReq.data as User;
+				const loginInfo: LoginUser = {
+					username: username,
+					password: password,
+				}
 
-      setUser(user);
-      ```
+				const userLogin = await ApiClient.auth.login(loginInfo)
+				if (!userLogin.success) {
+					throw new Error(userLogin.error || t('something_went_wrong'))
+				}
+				
+				const authData = userLogin.data as AuthData
+				const newUserId = JSON.parse(atob(authData.accessToken.split('.')[1])) as JWTPayload
+				const userReq = await ApiClient.user.getUserById(newUserId.userId)
+
+				if (!userReq.success) {
+					throw new Error(userReq.error || t('something_went_wrong'))
+				}
+
+				const user = userReq.data as User
+				setUser(user)
+
 			} catch (err: any) {
 				setError(err.message || t('something_went_wrong'))
 			}
@@ -129,7 +133,7 @@ const registrationInfo: RegisterUser = {
 				className="login-cat-position"
 			/> */}
 		</div>
-	);
-};
+	)
+}
 
 export default SignUp

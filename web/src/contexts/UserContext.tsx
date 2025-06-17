@@ -1,16 +1,6 @@
 import type { ReactNode } from "react"
 import { createContext, useContext, useState } from "react"
-
-export interface User {
-	id: number;
-	username: string;
-	email?: string;
-	display_name?: string;
-	avatar?: string | null;
-	lang?: string;
-	created_at?: string;
-	updated_at?: string;
-}
+import type { User } from "@transcenders/contracts"
 
 type UserContextType = {
     user: User | null
