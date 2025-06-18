@@ -72,3 +72,11 @@ export const SCORE_ROUTES = {
   // GET /score/:id/stats - Get a user's statistics
   STATS_BY_ID: '/score/:id/stats',
 } as const;
+
+export const AVATAR_ROUTES = {
+  // POST /avatar - Upload avatar, multipart/formdata
+  UPLOAD: '/avatar',
+  // GET /avatar/default - Get list of default avatars
+  GET_DEFAULTS: '/avatar/default',
+  // POST /avatar/default/:userId - Set one of the default avatars as user avatar
+} as const;
