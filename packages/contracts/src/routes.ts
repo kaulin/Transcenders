@@ -64,9 +64,11 @@ export const AUTH_ROUTES = {
 
 export const SCORE_ROUTES = {
   // GET /scores - List scores (with optional query params: ?search=, ?limit=, ?offset=)
-  SCORES: '/score/',
+  SCORES: '/score',
   // POST /score - Create a new score entry after a game
-  SCORE: '/score/',
-  // GET /score/:id - Get a users game history and statistics
+  SCORE: '/score',
+  // GET /score/:id/matches - Get a user's match history
   SCORES_BY_ID: '/score/:id',
+  // GET /score/:id/stats - Get a user's statistics
+  STATS_BY_ID: '/score/:id/stats',
 } as const;

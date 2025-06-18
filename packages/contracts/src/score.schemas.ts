@@ -8,6 +8,20 @@ export const GameDurationField = Type.Number();
 export const GameStartTimeField = Type.Number();
 export const GameEndTimeField = Type.Number();
 export const ScoresByIdField = Type.Number();
+export const TotalGamesField = Type.Number();
+export const TotalWinsField = Type.Number();
+export const TotalWinPercentageField = Type.Number();
+export const RegularGamesField = Type.Number();
+export const RegularGameWinsField = Type.Number();
+export const RegularGameWinPercentageField = Type.Number();
+export const TournamentGamesField = Type.Number();
+export const TournamentGameWinsField = Type.Number();
+export const TournamentGameWinPercentageField = Type.Number();
+export const TournamentWinsField = Type.Number();
+export const TotalScoreField = Type.Number();
+export const AverageScoreField = Type.Number();
+export const TotalDurationField = Type.Number();
+export const AverageDurationField = Type.Number();
 
 /**
  * ENTITY SCHEMAS
@@ -26,6 +40,24 @@ export type Score = Static<typeof ScoreSchema>;
 
 export const ScoresArraySchema = Type.Array(ScoreSchema);
 export type ScoresArray = Static<typeof ScoresArraySchema>;
+
+export const StatsSchema = Type.Object({
+  total_games: TotalGamesField,
+  total_wins: TotalWinsField,
+  total_win_percentage: TotalWinPercentageField,
+  regular_games: RegularGamesField,
+  regular_game_wins: RegularGameWinsField,
+  regular_game_win_percentage: RegularGameWinPercentageField,
+  tournament_games: TournamentGamesField,
+  tourament_game_wins: TournamentWinsField,
+  tournament_game_win_percentage: TournamentGameWinPercentageField,
+  tournament_wins: TournamentWinsField,
+  total_score: TotalScoreField,
+  average_score: AverageScoreField,
+  total_duration: TotalDurationField,
+  average_duration: AverageDurationField
+});
+export type Stats = Static<typeof StatsSchema>;
 
 /**
  * REQUEST SCHEMAS
@@ -69,7 +101,14 @@ export type GetScoreRequest = Static<typeof getScoreSchema.querystring>;
 
 export const scoresByIdSchema = {
   params: Type.Object({
-	id: ScoresByIdField,
+    id: ScoresByIdField,
   }),
 };
 export type ScoresByIdRequest = Static<typeof scoresByIdSchema.params>;
+
+export const statsByIdSchema = {
+  params: Type.Object({
+    id: ScoresByIdField,
+  }),
+};
+export type StatsByIdRequest = Static<typeof statsByIdSchema.params>;
