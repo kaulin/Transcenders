@@ -14,6 +14,60 @@ export class DatabaseHelper {
   }
 
   /**
+   * Create a successful DatabaseResult
+   */
+  static success<T>(data: T, operation?: string): DatabaseResult<T> {
+    return {
+      success: true,
+      data,
+      operation: operation ?? 'operation',
+    };
+  }
+
+  /**
+   * Create an error DatabaseResult
+   */
+  static error<T = any>(
+    message: string,
+    operation?: string,
+    code?: string,
+    isConstraintError?: boolean,
+  ): DatabaseResult<T> {
+    return {
+      success: false,
+      operation: operation ?? 'operation',
+      error: {
+        code: code ?? 'UNKNOWN_ERROR',
+        message,
+        isConstraintError: isConstraintError ?? false,
+      },
+    };
+  }
+
+  /**
+   * Create an error DatabaseResult from a caught error
+   */
+  static errorFromException<T = any>(
+    error: any,
+    operation?: string,
+    customMessage?: string,
+  ): DatabaseResult<T> {
+    const message = customMessage ?? error.message ?? 'Unknown database error';
+    const code = error.code ?? 'UNKNOWN_ERROR';
+    const isConstraintError = error.code === 'SQLITE_CONSTRAINT';
+
+    return {
+      success: false,
+      operation: operation ?? 'operation',
+      error: {
+        code,
+        message,
+        isConstraintError,
+      },
+    };
+  }
+
+  /**
    * execute a single database operation
    */
   static async executeQuery<T>(
@@ -23,22 +77,13 @@ export class DatabaseHelper {
   ): Promise<DatabaseResult<T>> {
     try {
       const data = await queryFn(database);
-      return { success: true, data, operation };
-      //#TODO fix all implicit error:any stuff
+      return this.success(data, operation);
     } catch (error: any) {
       console.log(`failed to ${operation}:`, error.message);
-
-      return {
-        success: false,
-        operation,
-        error: {
-          code: error.code ?? 'UNKNOWN_ERROR',
-          message: error.message ?? 'Unknown database error',
-          isConstraintError: error.code === 'SQLITE_CONSTRAINT',
-        },
-      };
+      return this.errorFromException(error, operation);
     }
   }
+
   /**
    * Execute multiple database operations in a transaction
    */
@@ -53,33 +98,15 @@ export class DatabaseHelper {
       try {
         const data = await transactionFn(database);
         await database.run('COMMIT');
-        return { success: true, data, operation };
+        return this.success(data, operation);
       } catch (error: any) {
         await database.run('ROLLBACK');
         console.log(`transaction failed for ${operation}:`, error.message);
-
-        return {
-          success: false,
-          operation,
-          error: {
-            code: error.code ?? 'UNKNOWN_ERROR',
-            message: error.message ?? 'Unknown database error',
-            isConstraintError: error.code === 'SQLITE_CONSTRAINT',
-          },
-        };
+        return this.errorFromException(error, operation);
       }
     } catch (error: any) {
       console.log(`failed to ${operation}:`, error.message);
-
-      return {
-        success: false,
-        operation,
-        error: {
-          code: error.code ?? 'UNKNOWN_ERROR',
-          message: error.message ?? 'Unknown database error',
-          isConstraintError: error.code === 'SQLITE_CONSTRAINT',
-        },
-      };
+      return this.errorFromException(error, operation);
     }
   }
 }
