@@ -4,6 +4,7 @@ import {
   standardApiResponses,
   SCORE_ROUTES,
   scoresByIdSchema,
+  statsByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
 import { ScoreController } from '../controllers/ScoreController';
@@ -17,7 +18,7 @@ export async function registerScoreRoutes(app: FastifyInstance) {
     SCORE_ROUTES.SCORES,
     {
       schema: {
-        description: 'List scores (with optional query params: ?search=, ?limit=, ?offset=)',
+        description: 'List scores (with optional query params: ?id=, ?limit=, ?offset=)',
         tags: ['Score'],
         querystring: getScoresSchema.querystring,
         response: standardApiResponses,
@@ -50,5 +51,18 @@ export async function registerScoreRoutes(app: FastifyInstance) {
       },
     },
     ScoreController.getScoresById,
+  );
+
+  app.get(
+    SCORE_ROUTES.STATS_BY_ID,
+    {
+      schema: {
+        description: 'Get user stats by user ID',
+        tags: ['Score'],
+        params: statsByIdSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    ScoreController.getStatsById,
   );
 }

@@ -2,6 +2,7 @@ import {
   GetScoresQuery,
   CreateScoreRequest,
   ScoresByIdRequest,
+  StatsByIdRequest,
   ResponseHelper,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -28,6 +29,14 @@ export class ScoreController {
     const userId = id;
 
     const result = await ScoreService.getScoresById(userId);
+    return ResponseHelper.handleDatabaseResult(reply, result);
+  }
+
+  static async getStatsById(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as StatsByIdRequest;
+    const userId = id;
+
+    const result = await ScoreService.getStatsById(userId);
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }
