@@ -139,3 +139,4 @@ dist
 .pnp.*
 .vscode/settings.json
 .setup-complete
+uploads/
