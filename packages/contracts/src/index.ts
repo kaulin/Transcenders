@@ -1,9 +1,10 @@
 export * from './auth.schemas';
+export * from './avatar.schemas';
 export * from './errors';
 export * from './interfaces';
 export * from './routes';
-export * from './user.schemas';
 export * from './score.schemas';
+export * from './user.schemas';
 export * from './utils/BooleanResultHelper';
 export * from './utils/DatabaseHelper';
 export { decodeToken } from './utils/decodeToken';
