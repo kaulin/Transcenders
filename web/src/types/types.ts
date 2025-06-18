@@ -1,8 +1,8 @@
 
 export interface Player {
 	id?: number,
-	username: string,
+	username?: string,
 	avatar?: string,
-	mode: "guest" | "login" | null,
-	ready: boolean,
+	mode?: "guest" | "login" | null,
+	ready?: boolean,
 }
