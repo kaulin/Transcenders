@@ -1,8 +1,13 @@
 import { MultipartFile } from '@fastify/multipart';
-import { ResponseHelper, UploadAvatarRequestParams } from '@transcenders/contracts';
+import {
+  ResponseHelper,
+  SetDefaultAvatarParams,
+  SetDefaultAvatarRequest,
+  UploadAvatarRequestParams,
+} from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AvatarService } from '../services/AvatarService';
-export class Avatarcontroller {
+export class AvatarController {
   static async uploadAvatar(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { userId } = request.params as UploadAvatarRequestParams;
@@ -17,5 +22,17 @@ export class Avatarcontroller {
       console.error('Avatar upload controller error:', error);
       return ResponseHelper.error(reply, 'upload-avatar', 500, 'Upload failed');
     }
+  }
+  static async getDefaultAvatars(request: FastifyRequest, reply: FastifyReply) {
+    const result = await AvatarService.getDefaultAvatars();
+    return ResponseHelper.handleDatabaseResult(reply, result);
+  }
+
+  static async setDefaultAvatar(request: FastifyRequest, reply: FastifyReply) {
+    const { userId } = request.params as SetDefaultAvatarParams;
+    const { avatarName } = request.body as SetDefaultAvatarRequest;
+
+    const result = await AvatarService.setDefaultAvatar(userId, avatarName);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }
