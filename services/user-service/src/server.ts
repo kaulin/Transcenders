@@ -1,6 +1,8 @@
 import multipart from '@fastify/multipart';
+import staticFiles from '@fastify/static';
 import { ApiResponse } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
+import path from 'path';
 import { registerAdminRoutes } from './routes/admin.routes';
 import { registerAvatarRoutes } from './routes/avatar.routes';
 import { registerFriendshipRoutes } from './routes/friend.routes';
@@ -21,6 +23,13 @@ async function start() {
       files: 1,
     },
   });
+
+  fastify.register(staticFiles, {
+    root: path.join(import.meta.dirname, '../uploads'),
+    prefix: '/uploads/',
+    decorateReply: false, // Don't decorate reply object
+  });
+
   await AvatarService.initializeAvatarDirectories();
 
   fastify.addSchema(ApiResponse);
