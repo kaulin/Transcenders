@@ -2,14 +2,17 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { useUser } from '../contexts/UserContext'
+import { usePlayers } from '../contexts/PlayersContext'
 
 import LanguageSwitch from '../components/LanguageSwitch'
 
 const Header = () => {
     const { t } = useTranslation()
     const { user, setUser } = useUser()
+	const { resetAll } = usePlayers()
 
     const handleLogout = () => {
+		resetAll()
         setUser(null)
     }
 
