@@ -132,7 +132,7 @@ const Dashboard = () => {
 					</div>
 
 					{error && (
-						<p className="text-[#901c1c] text-center pt-2">{error}</p>
+						<p className="text-[#513838] text-center pt-2">{error}</p>
 					)}
 				</div>
 			</div>
