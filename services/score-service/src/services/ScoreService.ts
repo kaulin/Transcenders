@@ -46,7 +46,7 @@ export class ScoreService {
 
     const score = await this.getScoreByIdLogic(database, result.lastID);
     if (!score) {
-      throw new Error('User created but not found');
+      throw new Error('Score created but not found');
     }
 
     return score;
@@ -56,7 +56,7 @@ export class ScoreService {
 
   static async getAllScores(query: GetScoresQuery): Promise<DatabaseResult<Score[]>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<Score[]>('get all users', db, async (database) => {
+    return DatabaseHelper.executeQuery<Score[]>('get all scores', db, async (database) => {
       const sql = SQL`SELECT * FROM scores`;
       if (query.search) {
         const searchTerm = `%${query.search}%`;
@@ -80,7 +80,7 @@ export class ScoreService {
 
   static async getScoresById(id: number): Promise<DatabaseResult<Score[]>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<Score[]>('get user', db, async (database) => {
+    return DatabaseHelper.executeQuery<Score[]>('get scores by id', db, async (database) => {
       const scores = await this.getScoresByIdLogic(database, id);
       if (!scores) {
         const error = new Error(`no games found for user id '${id}'`);
