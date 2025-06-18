@@ -75,8 +75,9 @@ export const SCORE_ROUTES = {
 
 export const AVATAR_ROUTES = {
   // POST /avatar - Upload avatar, multipart/formdata
-  UPLOAD: '/avatar',
+  UPLOAD: '/avatar/:userId',
   // GET /avatar/default - Get list of default avatars
   GET_DEFAULTS: '/avatar/default',
   // POST /avatar/default/:userId - Set one of the default avatars as user avatar
+  SET_DEFAULT: '/avatar/default/:userId',
 } as const;
