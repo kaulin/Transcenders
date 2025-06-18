@@ -4,12 +4,12 @@ import React, { createContext, useContext, useState } from 'react';
 export type OneVOne = {
 	player1: {
 		id: number;
-		username: string;
+		name: string;
 		avatar: string;
 	};
 	player2: {
 		id: number;
-		username: string;
+		name: string;
 		avatar: string;
 	};
 }
@@ -29,13 +29,13 @@ export const OneVOneProvider: React.FC<{ children: ReactNode }> = ({ children })
 	const setPlayer1 = (player: OneVOne['player1']) => {
 		setOneVOneData(prev => ({
 		player1: player,
-		player2: prev?.player2 || { id: -1, username: 'Guest', avatar: '' }
+		player2: prev?.player2 || { id: -1, name: 'Guest', avatar: '' }
 		}));
 	};
 
 	const setPlayer2 = (player: OneVOne['player2']) => {
 		setOneVOneData(prev => ({
-		player1: prev?.player1 || { id: -1, username: 'Guest', avatar: '' },
+		player1: prev?.player1 || { id: -1, name: 'Guest', avatar: '' },
 		player2: player
 		}));
 	};
