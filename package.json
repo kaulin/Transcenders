@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "dev:all": "concurrently --names 'USER,AUTH,SCORE,FRONTEND' --prefix-colors 'auto' 'npm run dev --workspace=user-service' 'npm run dev --workspace=auth-service' 'npm run dev --workspace=score-service' 'npm run dev --workspace=web'",
+    "dev:all": "concurrently --names 'GATEWAY,USER,AUTH,SCORE,FRONTEND' --prefix-colors 'auto' 'npm run dev --workspace=gateway-service' 'npm run dev --workspace=user-service' 'npm run dev --workspace=auth-service' 'npm run dev --workspace=score-service' 'npm run dev --workspace=web'",
     "dev:backend": "npm run dev --workspace=user-service",
     "dev:frontend": "npm run dev --workspace=web",
     "test": "tsx scripts/tests.ts",

@@ -1,4 +1,20 @@
 services:
+  gateway-service:
+    container_name: gateway-service
+    image: gateway-service:hive
+    build:
+      context: .
+      dockerfile: services/gateway-service/dockerfile
+      target: development
+    ports:
+      - '4000:4000'
+      - '9230:9230'
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./services/gateway-service:/workspace/services/gateway-service
+      - gateway_node_modules:/workspace/node_modules
+      - ./packages/contracts:/workspace/packages/contracts
   user-service:
     container_name: user-service
     image: user-service:hive
@@ -52,6 +68,7 @@ services:
       - score_node_modules:/workspace/node_modules
       - ./packages/contracts:/workspace/packages/contracts
 volumes:
+  gateway_node_modules:
   user_node_modules:
   auth_node_modules:
   score_node_modules:
