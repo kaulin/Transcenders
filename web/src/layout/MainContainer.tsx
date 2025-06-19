@@ -7,8 +7,8 @@ import SignUp from '../pages/SignUp'
 import Home from '../pages/Home'
 import Dashboard from '../pages/Dashboard'
 import Profile from '../pages/Profile'
-import Tournament from '../pages/Tournament'
-import LocalGame from '../pages/LocalGame'
+import MatchPage from '../pages/MatchPage'
+import TournamentPage from '../pages/TournamentPage'
 
 const MainContainer = () => {
   const { user } = useUser()
@@ -18,8 +18,8 @@ const MainContainer = () => {
       {user ? (
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/localgame" element={<LocalGame />} />
-            <Route path="/tournament" element={<Tournament />} />
+            <Route path="/matchpage" element={<MatchPage />} />
+            <Route path="/tournamentpage" element={<TournamentPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Navigate to="/" />} />

@@ -37,18 +37,13 @@ function MatchPage() {
 			if (!response.success) {
 				throw new Error(response.error || 'Failed to save game result');
 			}
+
+			console.log('SUCCESS: sent score data to backend');
+
 		} catch (error) {
-			console.error('Failed to send match result:', error);
+			console.error('Failed to send score data:', error);
 		}
 	};
-
-	if (!players[1] || !players[2]) {
-		return (
-			<div className="flex h-full justify-center items-center">
-				<div className="text-2xl">Loading match...</div>
-			</div>
-		);
-	}
 
 	return (
 		<div className="h-full pt-8">

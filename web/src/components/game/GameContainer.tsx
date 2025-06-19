@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PongCanvas from './canvas/PongCanvas';
 import { usePlayers } from '../../contexts/PlayersContext';
 import { type GameResult } from './models/GameState';
-import { type CreateScoreRequest } from '@transcenders/contracts';
-import { ApiClient } from '@transcenders/api-client';
 
 import { 
 	type GameState, 
@@ -24,13 +23,19 @@ interface GameContainerProps {
 	height?: number;
 	gameMode?: 'match' | 'tournament';
 	onGameComplete?: (result: GameResult) => void;
+	isRoundComplete?: boolean;
+	onContinueToNextRound?: () => void;
+	isFinalRound?: boolean;
 }
 
 const GameContainer: React.FC<GameContainerProps> = ({ 
 	width = 800, 
 	height = 600, 
 	gameMode = 'match',
-	onGameComplete
+	onGameComplete,
+	isRoundComplete = false,
+	onContinueToNextRound,
+	isFinalRound = false
 }) => {
 	const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
 	const [keysPressed, setKeysPressed] = useState<{ [key: string]: boolean }>({});
@@ -43,6 +48,8 @@ const GameContainer: React.FC<GameContainerProps> = ({
 	// Ref for game loop to prevent stale closures
 	const gameStateRef = useRef(gameState);
 	const animationFrameRef = useRef<number>(0);
+
+	const navigate = useNavigate();
 
 	// Keep ref in sync with state
 	useEffect(() => {
@@ -178,7 +185,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
 			if (e.key === ' ') {
 				setGameState(prevState => {
 					if (prevState.status === GameStatus.WAITING) {
-						// Start the game and record start time
 						const startTime = Date.now();
 						setGameStartTime(startTime);
 						return resetBall({
@@ -186,18 +192,17 @@ const GameContainer: React.FC<GameContainerProps> = ({
 							status: GameStatus.RUNNING,
 						});
 					} else if (prevState.status === GameStatus.ENDED) {
-						// Restart from ended game
+						if (gameMode === 'tournament') {
+							return prevState;
+						}
 						const startTime = Date.now();
 						setGameStartTime(startTime);
+						setIsProcessingGameEnd(false);
+	
+						const freshGameState = createInitialGameState(width, height);
 						return resetBall({
-							...createInitialGameState(width, height),
+							...freshGameState,
 							status: GameStatus.RUNNING,
-						});
-					} else if (prevState.status === GameStatus.ENDED) {
-						// Restart from ended game - completely reset
-						return resetBall({
-						...createInitialGameState(width, height),
-						status: GameStatus.RUNNING
 						});
 					} else if (prevState.status === GameStatus.RUNNING) {
 						return { ...prevState, status: GameStatus.PAUSED };
@@ -234,25 +239,12 @@ const GameContainer: React.FC<GameContainerProps> = ({
 	};
 
 	const { player1Name, player2Name } = getDisplayNames();
-
-	// Show loading if no players are set
-	if (!players[1] || !players[2]) {
-		return (
-			<div className="flex flex-col items-center justify-center p-4">
-				<h2 className="text-2xl font-bold mb-4">Waiting for players...</h2>
-			</div>
-		);
-	}
 	
 	return (
 		<div className="flex flex-col items-center justify-center p-4">
 			<h1 className="text-3xl font-bold mb-4">
 				{gameMode === 'tournament' ? 'Paw-Paw Pong Tournament' : 'Paw-Paw Pong'}
 			</h1>
-		
-			<div className="text-xl font-bold mb-2">
-				Score: {gameState.leftScore} - {gameState.rightScore}
-			</div>
 		
 			<PongCanvas 
 				gameState={gameState} 
@@ -266,23 +258,42 @@ const GameContainer: React.FC<GameContainerProps> = ({
 						{isProcessingGameEnd && (
 						  <div className="text-lg text-blue-600">Saving game results...</div>
 						)}
-						<button
-							className="play-button"
-							disabled={isProcessingGameEnd}
-							onClick={() => {
-								const startTime = Date.now();
-								setGameStartTime(startTime);
-								setGameState(resetBall({
-									...createInitialGameState(width, height),
-									rightScore: 0,
-									leftScore: 0,
-									status: GameStatus.RUNNING,
-								}));
-								animationFrameRef.current = requestAnimationFrame(updateGame);
-							}}
-						>
-							Start New Game
-						</button>
+						{gameMode === 'tournament' && isRoundComplete ? (
+							<button
+								className="play-button"
+								disabled={isProcessingGameEnd}
+								onClick={() => {
+									if (isFinalRound) {
+										navigate('/');
+									} else {
+										onContinueToNextRound?.();
+									}
+								}}
+							>
+								{isFinalRound ? 'Return Home' : 'Continue to Next Round...'}
+							</button>
+						) : gameMode === 'match' ? (
+							<button
+								className="play-button"
+								disabled={isProcessingGameEnd}
+								onClick={() => {
+									const startTime = Date.now();
+									setGameStartTime(startTime);
+									setIsProcessingGameEnd(false);
+									
+									const freshGameState = createInitialGameState(width, height);
+									const gameWithBall = resetBall({
+										...freshGameState,
+										status: GameStatus.RUNNING,
+									});
+									
+									setGameState(gameWithBall);
+									animationFrameRef.current = requestAnimationFrame(updateGame);
+								}}
+							>
+								Start New Game
+							</button>
+						) : null}
 					</div>
 				) : (
 					<>

@@ -27,7 +27,7 @@ export interface GameResult {
 	loser_id: number;
 	winner_score: number;
 	loser_score: number;
-	tournament_level: number; // 0 for 1v1, round number for tournaments
+	tournament_level: number; // 0 for 1v1
 	game_duration: number;
 	game_start: number;
 	game_end: number;
@@ -73,7 +73,7 @@ export const DEFAULT_GAME_SETTINGS = {
 	paddleHeight: 100,
 	paddleSpeed: 10,
 	ballRadius: 20,
-	ballInitialSpeed: 5,
+	ballInitialSpeed: 10,
 	maxScore: 10
 };
 
@@ -131,6 +131,8 @@ export const resetBall = (gameState: GameState): GameState => {
 	// shallow cloning the current state
 	const newState: GameState = { ...gameState };
 
+	newState.ball.initialSpeed = DEFAULT_GAME_SETTINGS.ballInitialSpeed;
+	
 	// reset ball position to center
 	newState.ball.position = {
 		x: gameState.canvasWidth / 2,
@@ -143,9 +145,11 @@ export const resetBall = (gameState: GameState): GameState => {
 
 	// set ball velocity with the initial speed
 	newState.ball.velocity = {
-		dx: Math.cos(angle) * direction * gameState.ball.initialSpeed,
-		dy: Math.sin(angle) * gameState.ball.initialSpeed
+		dx: Math.cos(angle) * direction * newState.ball.initialSpeed,
+		dy: Math.sin(angle) * newState.ball.initialSpeed
 	};
+	console.log('Ball reset - velocity:', newState.ball.velocity, 'initialSpeed:', newState.ball.initialSpeed);
+
 	return newState;
 };
 

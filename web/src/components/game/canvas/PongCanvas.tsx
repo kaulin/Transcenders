@@ -96,14 +96,14 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Playe
 		//player names
 		context.font = '48px Arial';
 		context.textAlign = 'center';
-		context.fillText(player1Name, canvasWidth / 4, 30);
-		context.fillText(player2Name, (canvasWidth / 4) * 3, 30);
+		context.fillText(player1Name, canvasWidth / 4, 45);
+		context.fillText(player2Name, (canvasWidth / 4) * 3, 45);
 		
 		// score
 		context.font = '48px Arial';
 		context.textAlign = 'center';
-		context.fillText(leftScore.toString(), canvasWidth / 4, 60);
-		context.fillText(rightScore.toString(), (canvasWidth / 4) * 3, 60);
+		context.fillText(leftScore.toString(), canvasWidth / 4, 95);
+		context.fillText(rightScore.toString(), (canvasWidth / 4) * 3, 95);
 	
 		// draw paddles and ball
 		if (imagesLoaded && images.leftPaddle && images.rightPaddle && images.ball) {
@@ -202,7 +202,6 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Playe
 			
 			context.font = '18px Arial';
 			context.fillText('What a Claw-some victory!', canvasWidth / 2, canvasHeight / 2 + 40);
-			context.fillText(`Final Score: ${leftScore} - ${rightScore}`, canvasWidth / 2, canvasHeight / 2 + 65);
 		}
 	};
   
