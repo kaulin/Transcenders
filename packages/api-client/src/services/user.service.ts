@@ -4,7 +4,6 @@ import {
   FRIENDSHIP_ROUTES,
   GetUserRequest,
   GetUsersQuery,
-  SERVICE_URLS,
   toQueryString,
   UpdateUserRequest,
   USER_ROUTES,
@@ -21,8 +20,7 @@ export class UserApiService {
     endpoint: string,
     options: ApiCallOptions = {},
   ): Promise<ApiResponseType> {
-    const url = `${SERVICE_URLS.USER}${endpoint}`;
-    return ApiClient.call(url, options);
+    return ApiClient.call(endpoint, options);
   }
 
   /**

@@ -4,8 +4,7 @@ import {
   authDataSchema,
   BooleanOperationResultSchema,
   LoginUser,
-  RegisterUser,
-  SERVICE_URLS,
+  RegisterUser
 } from '@transcenders/contracts';
 import { ApiClient } from '../api/ApiClient';
 import { ApiCallOptions } from '../types/client.options';
@@ -18,8 +17,7 @@ export class AuthApiService {
     endpoint: string,
     options: ApiCallOptions = {},
   ): Promise<ApiResponseType> {
-    const url = `${SERVICE_URLS.AUTH}${endpoint}`;
-    return ApiClient.call(url, options);
+    return ApiClient.call(endpoint, options);
   }
 
   /**
