@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+    // ===== BACKEND NODE.JS DEBUGGING =====
     {
       "name": "Attach to User Service (Docker)",
       "type": "node",
@@ -75,6 +76,81 @@
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
       "sourceMaps": true
+    },
+
+    // ===== FRONTEND BROWSER DEBUGGING =====
+    {
+      "name": "Debug Frontend (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "webRoot": "${workspaceFolder}/web/src",
+      "sourceMaps": true,
+      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile",
+      "runtimeArgs": [
+        "--disable-features=VizDisplayCompositor",
+        "--new-window",
+        "http://localhost:5173",
+        "http://localhost:3001/docs",
+        "http://localhost:3002/docs",
+        "http://localhost:3003/docs"
+      ]
+    }
+  ],
+  "compounds": [
+    // ===== FULL STACK DEBUGGING COMPOUNDS =====
+    {
+      "name": "🚀 Debug Full Stack (Docker + Chrome)",
+      "configurations": [
+        "Debug Frontend (Chrome)",
+        "Attach to User Service (Docker)",
+        "Attach to Auth Service (Docker)",
+        "Attach to Score Service (Docker)"
+      ],
+      "stopAll": true,
+      "presentation": {
+        "group": "fullstack",
+        "order": 1
+      }
+    },
+    {
+      "name": "🚀 Debug Full Stack (Local + Chrome)",
+      "configurations": [
+        "Debug Frontend (Chrome)",
+        "Attach to User Service (Local)",
+        "Attach to Auth Service (Local)",
+        "Attach to Score Service (Local)"
+      ],
+      "stopAll": true,
+      "presentation": {
+        "group": "fullstack",
+        "order": 2
+      }
+    },
+    {
+      "name": "🔧 Backend Services Only (Docker)",
+      "configurations": [
+        "Attach to User Service (Docker)",
+        "Attach to Auth Service (Docker)",
+        "Attach to Score Service (Docker)"
+      ],
+      "stopAll": true,
+      "presentation": {
+        "group": "fullstack",
+        "order": 3
+      }
+    },
+    {
+      "name": "🔧 Backend Services Only (Local)",
+      "configurations": [
+        "Attach to User Service (Local)",
+        "Attach to Auth Service (Local)",
+        "Attach to Score Service (Local)"
+      ],
+      "stopAll": true,
+      "presentation": {
+        "group": "fullstack",
+        "order": 4
+      }
     }
   ]
 }
