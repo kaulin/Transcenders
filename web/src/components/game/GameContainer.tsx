@@ -193,6 +193,12 @@ const GameContainer: React.FC<GameContainerProps> = ({
 							...createInitialGameState(width, height),
 							status: GameStatus.RUNNING,
 						});
+					} else if (prevState.status === GameStatus.ENDED) {
+						// Restart from ended game - completely reset
+						return resetBall({
+						...createInitialGameState(width, height),
+						status: GameStatus.RUNNING
+						});
 					} else if (prevState.status === GameStatus.RUNNING) {
 						return { ...prevState, status: GameStatus.PAUSED };
 					} else if (prevState.status === GameStatus.PAUSED) {
