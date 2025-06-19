@@ -1,17 +1,18 @@
-import { useUser } from "../contexts/UserContext"
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
+
+import { useUser } from "../contexts/UserContext"
 import { ApiClient } from "@transcenders/api-client"
 import {
+	decodeToken,
 	type AuthData,
-	type JWTPayload,
 	type LoginUser,
 	type User,
 } from "@transcenders/contracts"
 
 const useAuthLogin = () => {
-	const { setUser } = useUser()
 	const { t } = useTranslation()
+	const { setUser } = useUser()
 	const [loginError, setLoginError] = useState<string | null>(null)
 
 	async function login(username: string, password: string) {
@@ -26,7 +27,7 @@ const useAuthLogin = () => {
 			}
 
 			const authData = userLogin.data as AuthData
-			const payload = JSON.parse(atob(authData.accessToken.split('.')[1])) as JWTPayload
+			const payload = decodeToken(authData.accessToken)
 
 			const userReq = await ApiClient.user.getUserById(payload.userId)
 
