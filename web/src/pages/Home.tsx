@@ -24,7 +24,7 @@ const Home = () => {
 				ready: true
 			})
 		}
-	}, [user?.id])
+	}, [user?.id, user?.username, user?.avatar])
 
     return (
 		<div className="w-full h-full profile-box flex-row">

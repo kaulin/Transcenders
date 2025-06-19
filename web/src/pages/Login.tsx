@@ -1,20 +1,13 @@
 import { useTranslation } from "react-i18next"
-import { useUser } from "../contexts/UserContext"
 import { Link } from 'react-router-dom'
 import { useState } from "react"
-import { ApiClient } from "@transcenders/api-client"
-import {
-	type AuthData,
-	type JWTPayload,
-	type LoginUser,
-	type User,
-  } from '@transcenders/contracts'
+import useAuthLogin from "../hooks/useAuthLogin.ts"
 
 // import playfulCat from "/images/playfulCat.avif"
 
 const Login = () => {
     const { t } = useTranslation()
-    const { setUser } = useUser()
+	const { login } = useAuthLogin()
 
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
@@ -25,28 +18,7 @@ const Login = () => {
 		setError(null)
 	
 		try {
-			const loginInfo: LoginUser = {
-				username: username,
-				password: password,
-			}
-
-			const userLogin = await ApiClient.auth.login(loginInfo)
-
-			if (!userLogin.success) {
-				throw new Error(userLogin.error || t('something_went_wrong'))
-			}
-
-			const authData = userLogin.data as AuthData
-			const newUserId = JSON.parse(atob(authData.accessToken.split('.')[1])) as JWTPayload
-			const userReq = await ApiClient.user.getUserById(newUserId.userId)
-
-			if (!userReq.success) {
-				throw new Error(userReq.error || t('something_went_wrong'))
-			}
-
-			const user = userReq.data as User
-			setUser(user)
-
+			await login(username, password)
 		} catch (err: any) {
 			setError(err.message || t('something_went_wrong'))
 		}
