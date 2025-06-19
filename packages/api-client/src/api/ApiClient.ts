@@ -1,8 +1,8 @@
 import { Value } from '@sinclair/typebox/value';
 import { ApiResponse, ApiResponseType } from '@transcenders/contracts';
 import { AuthApiService } from '../services/auth.service';
-import { UserApiService } from '../services/user.service';
 import { ScoreApiService } from '../services/score.service';
+import { UserApiService } from '../services/user.service';
 import { ApiCallOptions } from '../types/client.options';
 
 export class ApiClient {
@@ -22,11 +22,15 @@ export class ApiClient {
       };
 
       if (body && method !== 'GET') {
-        requestInit.headers = {
-          'Content-Type': 'application/json',
-          ...requestInit.headers,
-        };
-        requestInit.body = typeof body === 'string' ? body : JSON.stringify(body);
+        if (body instanceof FormData) {
+          requestInit.body = body;
+        } else {
+          requestInit.headers = {
+            'Content-Type': 'application/json',
+            ...requestInit.headers,
+          };
+          requestInit.body = typeof body === 'string' ? body : JSON.stringify(body);
+        }
       }
 
       console.log(`API Call: ${method} ${url}`);

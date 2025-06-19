@@ -1,5 +1,6 @@
 import {
   ApiResponseType,
+  AVATAR_ROUTES,
   CreateUserRequest,
   FRIENDSHIP_ROUTES,
   GetUserRequest,
@@ -130,6 +131,48 @@ export class UserApiService {
         friendId.toString(),
       ),
       { method: 'DELETE' },
+    );
+  }
+
+  /**
+   * Get list of available default avatars
+   */
+  static async getDefaultAvatars() {
+    return this.callUserService(AVATAR_ROUTES.GET_DEFAULTS);
+  }
+
+  /**
+   * Set a default avatar for a user
+   */
+  static async setDefaultAvatar(userId: number, avatarName: string) {
+    return this.callUserService(AVATAR_ROUTES.SET_DEFAULT.replace(':userId', userId.toString()), {
+      method: 'POST',
+      body: { avatarName },
+    });
+  }
+
+  /**
+   * Get the full URL for an avatar path
+   */
+  static getAvatarUrl(avatarPath: string): string {
+    if (avatarPath.startsWith('http')) {
+      return avatarPath;
+    }
+    return `${SERVICE_URLS.USER}${avatarPath}`;
+  }
+
+  /**
+   * Upload an avatar for a user
+   */
+  static async uploadAvatar(userId: number, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return await this.callUserService(
+      `${AVATAR_ROUTES.UPLOAD.replace(':userId', userId.toString())}`,
+      {
+        method: 'POST',
+        body: formData,
+      },
     );
   }
 }
