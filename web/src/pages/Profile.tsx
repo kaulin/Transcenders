@@ -204,7 +204,7 @@ const Profile = () => {
 						</p>
 					)}
 					{error && (
-						<p className="text-white mt-4 text-center">
+						<p className="text-[#513838] mt-4 text-center">
 							{error}
 						</p>
 					)}
