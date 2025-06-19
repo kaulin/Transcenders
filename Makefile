@@ -35,6 +35,7 @@ local: setup-check
 	@echo "Starting backend services locally..."
 	@echo "User Service at: http://localhost:3001"
 	@echo "Auth Service at: http://localhost:3002"
+	@echo "Score Service at: http://localhost:3003"
 	@echo "Frontend at: http://localhost:5173"
 	npm run dev:all
 
@@ -103,6 +104,12 @@ clean: stop
 	docker compose down -v --remove-orphans --rmi all
 	-docker system prune -f
 
+cleandb:
+	@echo cleaning all databases
+	rm -rf ./services/user-service/data
+	rm -rf ./services/auth-service/data
+	rm -rf ./services/score-service/data
+
 ################################################################################
 # HELP
 ################################################################################
@@ -130,6 +137,7 @@ help:
 	@echo "  make stop              Stop all containers"
 	@echo "  make rebuild           Rebuild dev environment (no cache)"
 	@echo "  make clean             Remove all containers and images"
+	@echo "  make cleandb           remove all databases"
 	@echo "  make help              Show this help message"
 	@echo ""
 	@echo "==========================================="

@@ -10,19 +10,19 @@ FROM base AS development
 
 # Copy all package.json files first
 COPY package.json package-lock.json ./
-COPY services/user-service/package.json ./services/user-service/
+COPY services/score-service/package.json ./services/score-service/
 # Copy all the workspace-packages
 COPY packages/ ./packages/
 
 RUN npm ci
 
 #copy all source files
-COPY services/user-service/ ./services/user-service/
+COPY services/score-service/ ./services/score-service/
 
-WORKDIR /workspace/services/user-service
+WORKDIR /workspace/services/score-service
 
 ENV NODE_ENV=development
-EXPOSE 3001 9228
+EXPOSE 3003 9229
 CMD ["npm", "run", "dev"]
 
 # Production stage
@@ -30,16 +30,16 @@ FROM base AS production
 
 COPY package.json package-lock.json ./
 COPY packages/ ./packages/
-COPY services/user-service/package.json ./services/user-service/
+COPY services/score-service/package.json ./services/score-service/
 
 RUN npm ci --omit=dev
 
-COPY services/user-service/ ./services/user-service/
-RUN npm run build --workspace=user-service
+COPY services/score-service/ ./services/score-service/
+RUN npm run build --workspace=score-service
 
-WORKDIR /workspace/services/user-service
+WORKDIR /workspace/services/score-service
 
-VOLUME ["/workspace/services/user-service/data"]
+VOLUME ["/workspace/services/score-service/data"]
 EXPOSE 3000
 ENV NODE_ENV=production
 CMD ["node", "dist/server.js"]

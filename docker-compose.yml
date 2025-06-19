@@ -11,6 +11,8 @@ services:
       - '9228:9228'
     environment:
       - NODE_ENV=development
+      - USER_SERVICE_URL=http://user-service:3001
+      - AUTH_SERVICE_URL=http://auth-service:3002
     volumes:
       - ./services/user-service:/workspace/services/user-service
       - user_node_modules:/workspace/node_modules
@@ -27,10 +29,29 @@ services:
       - '9227:9227'
     environment:
       - NODE_ENV=development
+      - USER_SERVICE_URL=http://user-service:3001
+      - AUTH_SERVICE_URL=http://auth-service:3002
     volumes:
       - ./services/auth-service:/workspace/services/auth-service
       - auth_node_modules:/workspace/node_modules
       - ./packages/contracts:/workspace/packages/contracts
+  score-service:
+    container_name: score-service
+    image: score-service:hive
+    build:
+      context: .
+      dockerfile: services/score-service/dockerfile
+      target: development
+    ports:
+      - '3003:3003'
+      - '9229:9229'
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./services/score-service:/workspace/services/score-service
+      - score_node_modules:/workspace/node_modules
+      - ./packages/contracts:/workspace/packages/contracts
 volumes:
   user_node_modules:
   auth_node_modules:
+  score_node_modules:

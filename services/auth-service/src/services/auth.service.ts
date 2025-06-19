@@ -24,8 +24,8 @@ export class AuthService {
     userCreds: UserCredentialsEntry,
   ): Promise<boolean> {
     const sql = SQL`
-        INSERT INTO user_credentials (user_id, username, email, pw_hash)
-        VALUES (${userCreds.user_id}, ${userCreds.username}, ${userCreds.email}, ${userCreds.pw_hash})
+        INSERT INTO user_credentials (user_id, pw_hash)
+        VALUES (${userCreds.user_id}, ${userCreds.pw_hash})
       `;
     const result = await database.run(sql.text, sql.values);
     if (!result.lastID) {
@@ -43,7 +43,7 @@ export class AuthService {
     };
     const db = await getAuthDB();
     return DatabaseHelper.executeTransaction<BooleanOperationResult>(
-      'regster user',
+      'register user',
       db,
       async (database) => {
         const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
@@ -54,14 +54,10 @@ export class AuthService {
 
         const userCredentials: UserCredentialsEntry = {
           user_id: newUser.id,
-          username: newUser.username,
-          email: newUser.email,
           pw_hash: await bcrypt.hash(registration.password, 12),
         };
         await this.insertCredentialsLogic(database, userCredentials);
-        return BooleanResultHelper.success(
-          `registration successful for ${userCredentials.username}`,
-        );
+        return BooleanResultHelper.success(`registration successful for ${newUser.username}`);
       },
     );
   }
@@ -81,7 +77,7 @@ export class AuthService {
 
         // get the matching user credentials entry
         const sql = SQL`
-        SELECT * FROM user_credentials WHERE username = ${login.username}
+        SELECT * FROM user_credentials WHERE user_id = ${userData.id}
       `;
         const userCredentials = await database.get(sql.text, sql.values);
         if (!userCredentials) {
@@ -96,8 +92,8 @@ export class AuthService {
 
         // Generate JWT accessToken
         const accessToken = jwt.sign(
-          { userId: userData.id, username: userData.username },
-          // #TODO fix all env stuff
+          { userId: userData.id },
+          // TODO fix all env stuff
           process.env.JWT_SECRET ?? 'testing',
           { expiresIn: '24h' },
         );
@@ -107,6 +103,91 @@ export class AuthService {
     );
   }
 
+  static async changePassword(
+    userId: number,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<DatabaseResult<BooleanOperationResult>> {
+    const db = await getAuthDB();
+    return await DatabaseHelper.executeQuery<BooleanOperationResult>(
+      'auth: change password',
+      db,
+      async (database) => {
+        // Get current credentials
+        const sql = SQL`
+          SELECT * FROM user_credentials WHERE user_id = ${userId}
+        `;
+        const userCredentials = await database.get(sql.text, sql.values);
+        if (!userCredentials) {
+          throw new Error(`User credentials not found for user ${userId}`);
+        }
+
+        const userCreds = userCredentials as UserCredentialsEntry;
+
+        // Verify old password
+        const isValidPassword = await bcrypt.compare(oldPassword, userCreds.pw_hash);
+        if (!isValidPassword) {
+          throw new Error('Current password is incorrect');
+        }
+
+        // Hash new password and update
+        const newHashedPassword = await bcrypt.hash(newPassword, 12);
+        const updateSql = SQL`
+          UPDATE user_credentials SET pw_hash = ${newHashedPassword} WHERE user_id = ${userId}
+        `;
+
+        const result = await database.run(updateSql.text, updateSql.values);
+        if ((result.changes ?? 0) === 0) {
+          return BooleanResultHelper.failure(`Failed to update password for user ${userId}`);
+        }
+
+        return BooleanResultHelper.success(`Password successfully changed for user ${userId}`);
+      },
+    );
+  }
+
+  private static async deleteCredentialsLogic(
+    database: Database,
+    userId: number,
+  ): Promise<boolean> {
+    // delete logic
+    const sql = SQL`
+      DELETE FROM user_credentials WHERE user_id = ${userId}
+    `;
+    const result = await database.run(sql.text, sql.values);
+    const deleted = (result.changes ?? 0) > 0;
+    if (deleted) {
+      return true;
+    }
+    return false;
+  }
+
+  static async deleteCredentials(userId: number): Promise<DatabaseResult<BooleanOperationResult>> {
+    const db = await getAuthDB();
+    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+      'auth: delete user credentials',
+      db,
+      async (database) => {
+        // Check if user exists
+        const checkUserSql = SQL`
+        SELECT 1 FROM user_credentials WHERE user_id = ${userId}
+        `;
+        const userExists = await database.get(checkUserSql.text, checkUserSql.values);
+        if (!userExists) {
+          return BooleanResultHelper.failure(
+            `user credentials with userid '${userId}' do not exist`,
+          );
+        }
+        const deleted = await this.deleteCredentialsLogic(db, userId);
+        if (!deleted) {
+          return BooleanResultHelper.failure(`No changes were made to user credentials: ${userId}`);
+        }
+        return BooleanResultHelper.success(
+          `User credentials for user_id ${userId} have been successfully deleted`,
+        );
+      },
+    );
+  }
   static verifyToken(token: string): JWTPayload {
     // #TODO fix all env stuff
     return jwt.verify(token, process.env.JWT_SECRET ?? 'testing') as JWTPayload;

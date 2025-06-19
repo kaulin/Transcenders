@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS scores (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  winner_id INTEGER NOT NULL,
+  loser_id INTEGER NOT NULL,
+  winner_score INTEGER NOT NULL,
+  loser_score INTEGER NOT NULL,
+  tournament_level INTEGER NOT NULL,
+  game_duration INTEGER NOT NULL,
+  game_start TIMESTAMP NOT NULL,
+  game_end TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

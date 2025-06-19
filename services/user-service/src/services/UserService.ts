@@ -1,3 +1,4 @@
+import { ApiClient } from '@transcenders/api-client';
 import {
   BooleanOperationResult,
   BooleanResultHelper,
@@ -58,7 +59,7 @@ export class UserService {
       throw new Error('No fields to update');
     }
 
-    const setFields = fields.map((field) => `${field} = ?`).join(', database, ');
+    const setFields = fields.map((field) => `${field} = ?`).join(', ');
     const values = Object.values(updates);
     values.push(id.toString());
 
@@ -182,16 +183,18 @@ export class UserService {
 
   static async deleteUser(userId: number): Promise<DatabaseResult<BooleanOperationResult>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+    return DatabaseHelper.executeTransaction<BooleanOperationResult>(
       'delete user',
       db,
       async (database) => {
         // First check if user exists
         const userExists = await this.getUserByIdLogic(database, userId);
-
         if (!userExists) {
           return BooleanResultHelper.failure(`no user found with id ${userId}`);
         }
+
+        // Delete user from auth, Success or not, dont care, clean later
+        const credentialsDeleted = await ApiClient.auth.privateDelete(userId);
 
         const sql = SQL`
         DELETE FROM users WHERE id = ${userId}

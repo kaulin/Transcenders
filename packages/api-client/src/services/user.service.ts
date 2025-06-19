@@ -6,6 +6,7 @@ import {
   GetUsersQuery,
   SERVICE_URLS,
   toQueryString,
+  UpdateUserRequest,
   USER_ROUTES,
   UserSchema,
 } from '@transcenders/contracts';
@@ -23,8 +24,6 @@ export class UserApiService {
     const url = `${SERVICE_URLS.USER}${endpoint}`;
     return ApiClient.call(url, options);
   }
-
-  // #TODO schema validate all the data
 
   /**
    * Gets a list of users based on optional query parameters
@@ -54,7 +53,7 @@ export class UserApiService {
   /**
    * Updates a user's information
    */
-  static async updateUser(id: number, userData: object) {
+  static async updateUser(id: number, userData: UpdateUserRequest) {
     return this.callUserService(USER_ROUTES.USER_BY_ID.replace(':id', id.toString()), {
       method: 'PATCH',
       body: userData,

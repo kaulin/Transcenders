@@ -1,4 +1,4 @@
-import { BooleanOperationResult } from '@transcenders/contracts';
+import { BooleanOperationResult } from '../user.schemas';
 
 export class BooleanResultHelper {
   static success(message: string): BooleanOperationResult {

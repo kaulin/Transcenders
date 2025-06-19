@@ -1,5 +1,6 @@
-import { CreateUserRequest, FRIENDSHIP_ROUTES, User, USER_ROUTES } from '@transcenders/contracts';
+import { CreateUserRequest, FRIENDSHIP_ROUTES, User } from '@transcenders/contracts';
 import 'dotenv/config';
+import { ApiClient } from '../packages/api-client/src/api/ApiClient';
 
 const API_BASE = 'http://localhost:3001';
 
@@ -9,7 +10,7 @@ interface ApiResponse<T> {
   error?: string;
 }
 
-// Simple HTTP client
+// Simple HTTP client for non-auth operations
 async function apiCall<T>(method: string, endpoint: string, data?: any): Promise<ApiResponse<T>> {
   try {
     const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -26,34 +27,67 @@ async function apiCall<T>(method: string, endpoint: string, data?: any): Promise
   }
 }
 
-const SAMPLE_USERS: CreateUserRequest[] = [
-  { username: 'alice', email: 'alice@test.com', display_name: 'Alice Johnson' },
-  { username: 'bob', email: 'bob@test.com', display_name: 'Bob Smith' },
-  { username: 'charlie', email: 'charlie@test.com', display_name: 'Charlie Brown' },
-  { username: 'diana', email: 'diana@test.com', display_name: 'Diana Prince' },
-  { username: 'eve', email: 'eve@test.com', display_name: 'Eve Adams' },
-  { username: 'frank', email: 'frank@test.com', display_name: 'Frank Castle' },
-  { username: 'grace', email: 'grace@test.com', display_name: 'Grace Hopper' },
-  { username: 'henry', email: 'henry@test.com', display_name: 'Henry Ford' },
+const SAMPLE_USERS: (CreateUserRequest & { password: string })[] = [
+  {
+    username: 'alice',
+    email: 'alice@test.com',
+    password: '123',
+  },
+  { username: 'bob', email: 'bob@test.com', password: '123' },
+  {
+    username: 'charlie',
+    email: 'charlie@test.com',
+    password: '123',
+  },
+  {
+    username: 'diana',
+    email: 'diana@test.com',
+    password: '123',
+  },
+  { username: 'eve', email: 'eve@test.com', display_name: 'Eve Adams', password: '123' },
+  {
+    username: 'frank',
+    email: 'frank@test.com',
+    password: '123',
+  },
+  {
+    username: 'grace',
+    email: 'grace@test.com',
+    password: '123',
+  },
+  {
+    username: 'henry',
+    email: 'henry@test.com',
+    password: '123',
+  },
 ];
 
 async function createUsers(): Promise<User[]> {
-  console.log('Creating users...');
+  console.log('Creating users through auth service...');
   const users: User[] = [];
 
   for (const userData of SAMPLE_USERS) {
     try {
-      const response = await apiCall<User>('POST', USER_ROUTES.USERS, userData);
+      const response = await ApiClient.auth.register({
+        username: userData.username,
+        email: userData.email,
+        password: userData.password,
+      });
+
       if (response.success) {
-        users.push(response.data);
-        console.log(`Created user: ${userData.username} (ID: ${response.data.id})`);
+        const userResponse = await ApiClient.user.getUserExact({ username: userData.username });
+        if (userResponse.success) {
+          users.push(userResponse.data as User);
+          console.log(`Created user: ${userData.username} (ID: ${(userResponse.data as User).id})`);
+        }
       } else {
-        const existing_user = await apiCall<User>(
-          'GET',
-          `${USER_ROUTES.USERS_EXACT}?username=${userData.username}`,
-        );
         console.log(`Failed to create user: ${userData.username} | error: ${response.error}`);
-        if (existing_user) users.push(existing_user.data);
+        // Try to get existing user
+        const existing_user = await ApiClient.user.getUserExact({ username: userData.username });
+        if (existing_user.success) {
+          users.push(existing_user.data as User);
+          console.log(`User already exists: ${userData.username}`);
+        }
       }
     } catch (error) {
       console.log(`Error creating user ${userData.username}:`, error);
@@ -77,7 +111,7 @@ async function createFriendships(users: User[]): Promise<void> {
   ];
 
   for (const [idx1, idx2] of friendshipPairs) {
-    if (!users[idx1] ?? !users[idx2]) continue;
+    if (!users[idx1]) continue;
 
     const user1 = users[idx1];
     const user2 = users[idx2];
@@ -88,8 +122,6 @@ async function createFriendships(users: User[]): Promise<void> {
         `:id`,
         `${user1.id}`,
       ).replace(`:recipientId`, `${user2.id}`);
-
-      // console.log(`sendrequest path: ${requestPath}`);
 
       const requestResponse = await apiCall('POST', requestPath);
       if (!requestResponse.success) {
@@ -102,7 +134,7 @@ async function createFriendships(users: User[]): Promise<void> {
       // Get incoming requests to find the request ID
       const incomingRequest = FRIENDSHIP_ROUTES.USER_FRIEND_REQUESTS.replace(':id', `${user2.id}`);
       const incomingResponse = await apiCall<any[]>('GET', incomingRequest);
-      if (!incomingResponse.success ?? !incomingResponse.data) {
+      if (!incomingResponse.success) {
         console.log(
           `Failed to get incoming requests for ${user2.username} | error:`,
           incomingResponse.error,
@@ -148,7 +180,7 @@ async function createPendingRequests(users: User[]): Promise<void> {
   ];
 
   for (const [initiatorIdx, recipientIdx] of pendingRequests) {
-    if (!users[initiatorIdx] ?? !users[recipientIdx]) continue;
+    if (!users[initiatorIdx]) continue;
 
     const initiator = users[initiatorIdx];
     const recipient = users[recipientIdx];
@@ -186,9 +218,11 @@ async function testEndpoints(users: User[]): Promise<void> {
   }
 
   try {
-    // Test get all users
-    const allUsersResponse = await apiCall<User[]>('GET', USER_ROUTES.USERS);
-    console.log(`Total users in database: ${allUsersResponse.data?.length ?? 0}`);
+    // Use ApiClient for user operations
+    const allUsersResponse = await ApiClient.user.getUsers();
+    console.log(
+      `Total users in database: ${allUsersResponse.success ? ((allUsersResponse.data as User[])?.length ?? 0) : 0}`,
+    );
 
     // Test get friends for first user
     const aliceId = users[0].id;

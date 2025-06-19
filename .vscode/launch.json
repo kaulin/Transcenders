@@ -28,6 +28,19 @@
       "sourceMaps": true
     },
     {
+      "name": "Attach to Score Service (Docker)",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9229,
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/workspace",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
+    },
+    {
       "name": "Attach to User Service (Local)",
       "type": "node",
       "request": "attach",
@@ -45,6 +58,18 @@
       "request": "attach",
       "address": "localhost",
       "port": 9227,
+      "localRoot": "${workspaceFolder}",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
+    },
+    {
+      "name": "Attach to Score Service (Local)",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9229,
       "localRoot": "${workspaceFolder}",
       "restart": true,
       "autoAttachChildProcesses": true,

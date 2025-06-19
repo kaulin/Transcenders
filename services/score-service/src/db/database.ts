@@ -11,11 +11,11 @@ let db: Database | null = null;
 
 function getDatabaseConfig(): DatabaseConfig {
   const moduleRoot = path.resolve(import.meta.dirname, '../..');
-  const filename = path.resolve(moduleRoot, './data/auth.db');
+  const filename = path.resolve(moduleRoot, './data/scores.db');
   const fileDir = path.resolve(moduleRoot, './data/');
   const verbose = process.env.NODE_ENV === 'development';
 
-  console.log(`User-module path: ${moduleRoot}`);
+  console.log(`Score-module path: ${moduleRoot}`);
   console.log(`Database path: ${filename}`);
   console.log(`Database directory: ${fileDir}`);
   console.log(`Verbose mode: ${verbose}`);
@@ -80,9 +80,9 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     return {
       success: true,
       databasePath: config.filename,
-      indexesCreated: ['idx_user_credentials_user_id'],
-      tablesCreated: ['user_credentials'],
-      triggersCreated: ['user_credentials_updated_at'],
+      indexesCreated: [],
+      tablesCreated: ['scores'],
+      triggersCreated: [],
     };
   } catch (error) {
     console.error('Database init failed:', error);
@@ -101,7 +101,7 @@ async function databaseFileExists(filepath: string): Promise<boolean> {
   }
 }
 
-export async function getAuthDB(): Promise<Database> {
+export async function getDB(): Promise<Database> {
   const config: DatabaseConfig = getDatabaseConfig();
   const fileExists = await databaseFileExists(config.filename);
   if (!fileExists && db) {

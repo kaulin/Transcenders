@@ -1,7 +1,14 @@
 export const SERVICE_URLS = {
-  USER: (typeof process !== 'undefined' ? process.env.USER_SERVICE_URL : undefined) ?? 'http://localhost:3001',
-  AUTH: (typeof process !== 'undefined' ? process.env.AUTH_SERVICE_URL : undefined) ?? 'http://localhost:3002',
-};
+  USER:
+    (typeof process !== 'undefined' ? process.env.USER_SERVICE_URL : undefined) ??
+    'http://localhost:3001',
+  AUTH:
+    (typeof process !== 'undefined' ? process.env.AUTH_SERVICE_URL : undefined) ??
+    'http://localhost:3002',
+  SCORE:
+    (typeof process !== 'undefined' ? process.env.SCORE_SERVICE_URL : undefined) ??
+    'http://localhost:3003',
+} as const;
 
 export const USER_ROUTES = {
   // GET /users - List users (with optional query params: ?search=, ?limit=, ?offset=)
@@ -45,7 +52,23 @@ export const FRIENDSHIP_ROUTES = {
 } as const;
 
 export const AUTH_ROUTES = {
-  // GET /auth - auth inital idk #TODO fix and add more
+  // POST /auth/register, body as RegisterUser
   REGISTER: '/auth/register',
+  // POST /auth/login, body as LoginUser
   LOGIN: '/auth/login',
+  // PATCH /auth/change-password/:id
+  CHANGE_PASSWORD: '/auth/change-password/:id',
+  // DELETE /auth/credentials/:id
+  DELETE: '/auth/credentials/:id',
+} as const;
+
+export const SCORE_ROUTES = {
+  // GET /scores - List scores (with optional query params: ?search=, ?limit=, ?offset=)
+  SCORES: '/score',
+  // POST /score - Create a new score entry after a game
+  SCORE: '/score',
+  // GET /score/:id/matches - Get a user's match history
+  SCORES_BY_ID: '/score/:id',
+  // GET /score/:id/stats - Get a user's statistics
+  STATS_BY_ID: '/score/:id/stats',
 } as const;
