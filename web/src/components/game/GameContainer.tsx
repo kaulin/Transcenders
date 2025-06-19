@@ -26,6 +26,7 @@ interface GameContainerProps {
 	isRoundComplete?: boolean;
 	onContinueToNextRound?: () => void;
 	isFinalRound?: boolean;
+	onNewGame?: () => void; 
 }
 
 const GameContainer: React.FC<GameContainerProps> = ({ 
@@ -35,7 +36,8 @@ const GameContainer: React.FC<GameContainerProps> = ({
 	onGameComplete,
 	isRoundComplete = false,
 	onContinueToNextRound,
-	isFinalRound = false
+	isFinalRound = false,
+	onNewGame
 }) => {
 	const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
 	const [keysPressed, setKeysPressed] = useState<{ [key: string]: boolean }>({});
@@ -195,15 +197,8 @@ const GameContainer: React.FC<GameContainerProps> = ({
 						if (gameMode === 'tournament') {
 							return prevState;
 						}
-						const startTime = Date.now();
-						setGameStartTime(startTime);
-						setIsProcessingGameEnd(false);
-	
-						const freshGameState = createInitialGameState(width, height);
-						return resetBall({
-							...freshGameState,
-							status: GameStatus.RUNNING,
-						});
+						onNewGame?.();
+						return prevState;
 					} else if (prevState.status === GameStatus.RUNNING) {
 						return { ...prevState, status: GameStatus.PAUSED };
 					} else if (prevState.status === GameStatus.PAUSED) {
@@ -276,22 +271,9 @@ const GameContainer: React.FC<GameContainerProps> = ({
 							<button
 								className="play-button"
 								disabled={isProcessingGameEnd}
-								onClick={() => {
-									const startTime = Date.now();
-									setGameStartTime(startTime);
-									setIsProcessingGameEnd(false);
-									
-									const freshGameState = createInitialGameState(width, height);
-									const gameWithBall = resetBall({
-										...freshGameState,
-										status: GameStatus.RUNNING,
-									});
-									
-									setGameState(gameWithBall);
-									animationFrameRef.current = requestAnimationFrame(updateGame);
-								}}
-							>
-								Start New Game
+								onClick={() => onNewGame?.()}
+								>
+									Start New Game
 							</button>
 						) : null}
 					</div>

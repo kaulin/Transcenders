@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlayers } from '../contexts/PlayersContext';
 import GameContainer from '../components/game/GameContainer';
@@ -9,6 +9,7 @@ import { type GameResult } from '../components/game/models/GameState';
 function MatchPage() {
 	const { players } = usePlayers();
 	const navigate = useNavigate();
+	const [gameKey, setGameKey] = useState(0);
 
 	// Redirect if players aren't set up
 	useEffect(() => {
@@ -19,7 +20,6 @@ function MatchPage() {
 
 	const handleGameComplete = async (result: GameResult) => {
 		try {
-			// Convert GameResult to CreateScoreRequest format
 			const scoreData: CreateScoreRequest = {
 				winner_id: result.winner_id,
 				loser_id: result.loser_id,
@@ -45,15 +45,21 @@ function MatchPage() {
 		}
 	};
 
+	const handleNewGame = () => {
+		setGameKey(prev => prev + 1);
+	};
+
 	return (
 		<div className="h-full pt-8">
 			<div className="container mx-auto px-4">
 				<div className="flex justify-center">
 				<GameContainer 
+					key ={gameKey}
 					width={1000} 
 					height={800} 
 					gameMode="match"
 					onGameComplete={handleGameComplete}
+					onNewGame={handleNewGame}
 				/>
 				</div>
 	  		</div>
