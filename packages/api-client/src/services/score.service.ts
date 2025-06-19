@@ -3,8 +3,7 @@ import {
   CreateScoreRequest,
   GetScoresQuery,
   toQueryString,
-  SCORE_ROUTES,
-  SERVICE_URLS,
+  SCORE_ROUTES
 } from '@transcenders/contracts';
 import { ApiClient } from '../api/ApiClient';
 import { ApiCallOptions } from '../types/client.options';
@@ -17,8 +16,7 @@ export class ScoreApiService {
     endpoint: string,
     options: ApiCallOptions = {},
   ): Promise<ApiResponseType> {
-    const url = `${SERVICE_URLS.SCORE}${endpoint}`;
-    return ApiClient.call(url, options);
+    return ApiClient.call(endpoint, options);
   }
   
   /**

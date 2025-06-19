@@ -5,11 +5,15 @@ import { UserApiService } from '../services/user.service';
 import { ScoreApiService } from '../services/score.service';
 import { ApiCallOptions } from '../types/client.options';
 
+// TODO Replace with VITE_GATEWAY_URL set in .env
+export const GATEWAY_URL = 'http://localhost:4000';
+
 export class ApiClient {
   /**
    * Enhanced main call function
    */
-  static async call(url: string, options: ApiCallOptions = {}): Promise<ApiResponseType> {
+  static async call(path: string, options: ApiCallOptions = {}): Promise<ApiResponseType> {
+    const url = `${GATEWAY_URL}${path}`;
     const { method = 'GET', body, headers = {}, timeout = 20000, expectedDataSchema } = options;
 
     try {
