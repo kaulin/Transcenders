@@ -71,14 +71,11 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 
 		try {
 			const verifiedUser = await login(username?.trim(), password)
-			if (!verifiedUser) {
-				return
-			}
-			
+
 			setPlayer(playerNumber, {
-				id: verifiedUser.id,
-				username: verifiedUser.username,
-				avatar: verifiedUser.avatar,
+				id: verifiedUser?.id,
+				username: verifiedUser?.username,
+				avatar: verifiedUser?.avatar,
 				ready: true
 			})
 
