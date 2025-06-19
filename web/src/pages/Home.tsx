@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 
 import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
-import { usePlayers } from "../contexts/PlayersContext.tsx"
+import { usePlayers } from "../contexts/PlayersContext"
 import PlayerLoginForm from "../components/PlayerLoginForm"
 import curiousCat from "/images/curiousCat.avif"
 
