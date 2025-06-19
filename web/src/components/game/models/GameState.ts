@@ -33,9 +33,6 @@ export interface GameResult {
 	game_end: number;
 }
 
-//array to store multiple game results
-export type GameStatsTable = GameResult[];
-
 // type named GameStatus declared- any variable of type GameStatus 
 // can only have one of these four specific string values 
 export type GameStatus = 'waiting' | 'running' | 'paused' | 'ended';

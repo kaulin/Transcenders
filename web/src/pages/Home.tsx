@@ -66,7 +66,7 @@ const Home = () => {
 						</div>
 						<div className="flex basis-1/4 items-center justify-center">
 							{players[2]?.ready && (
-								<Link to="/LocalGame" className="profile-button">start</Link>
+								<Link to="/MatchGame" className="profile-button">start</Link>
 							)}
 						</div>
 					</div>
@@ -99,7 +99,7 @@ const Home = () => {
 						</div>
 						<div className="flex basis-1/6 items-center justify-center">
 							{players[2]?.ready && players[3]?.ready && players[4]?.ready && (
-								<Link to="/LocalGame" className="profile-button mt-0">start</Link>
+								<Link to="/TournamentGame" className="profile-button mt-0">start</Link>
 							)}
 						</div>
 					</div>
