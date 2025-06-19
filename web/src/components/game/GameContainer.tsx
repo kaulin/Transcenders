@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PongCanvas from './canvas/PongCanvas';
-import { useOneVOne } from '../../contexts/OneVOneContext';
+import { usePlayers } from '../../contexts/PlayersContext';
 
 import { 
 	type GameState, 
@@ -24,9 +24,9 @@ interface GameContainerProps {
 const GameContainer: React.FC<GameContainerProps> = ({ width = 800, height = 600 }) => {
 	const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
 	const [keysPressed, setKeysPressed] = useState<{ [key: string]: boolean }>({});
-	const { oneVOneData } = useOneVOne();
-	const player1 = oneVOneData?.player1;
-	const player2 = oneVOneData?.player2;
+	const { players } = usePlayers();
+	const player1 = players[1];
+	const player2 = players[2];
 	
 	// Ref for game loop to prevent stale closures
 	const gameStateRef = useRef(gameState);
