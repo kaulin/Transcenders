@@ -36,6 +36,7 @@ local: setup-check
 	@echo "User Service at: http://localhost:3001"
 	@echo "Auth Service at: http://localhost:3002"
 	@echo "Score Service at: http://localhost:3003"
+	@echo "Gateway Service at: http://localhost:3004"
 	@echo "Frontend at: http://localhost:5173"
 	npm run dev:all
 
@@ -106,6 +107,7 @@ clean: stop
 
 cleandb:
 	@echo cleaning all databases
+	rm -rf ./services/gateway-service/data
 	rm -rf ./services/user-service/data
 	rm -rf ./services/auth-service/data
 	rm -rf ./services/score-service/data
