@@ -80,4 +80,6 @@ export const AVATAR_ROUTES = {
   GET_DEFAULTS: '/avatar/default',
   // POST /avatar/default/:userId - Set one of the default avatars as user avatar
   SET_DEFAULT: '/avatar/default/:userId',
+  // POST /avatar/random/:userId - Set a random avatar as default from TheCatApi
+  SET_RANDOM: '/avatar/random/:userId',
 } as const;
