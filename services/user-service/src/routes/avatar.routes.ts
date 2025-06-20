@@ -16,8 +16,10 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
         tags: ['Avatar'],
         consumes: ['multipart/form-data'],
         params: uploadAvatarSchema.params,
+        body: uploadAvatarSchema.body,
         response: standardApiResponses,
       },
+      attachValidation: true,
     },
     AvatarController.uploadAvatar,
   );

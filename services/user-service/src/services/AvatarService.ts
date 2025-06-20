@@ -57,7 +57,7 @@ export class AvatarService {
         await this.removeOldAvatar(uploadDir, userId);
 
         // filename: userId + extension
-        const ext = path.extname(file.filename) ?? '.42';
+        const ext = path.extname(file.filename);
         const filename = `${userId}${ext}`;
         const filePath = path.join(uploadDir, filename);
 
