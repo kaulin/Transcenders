@@ -13,6 +13,8 @@ services:
       - NODE_ENV=development
       - USER_SERVICE_URL=http://user-service:3001
       - AUTH_SERVICE_URL=http://auth-service:3002
+    env_file:
+      - .env
     volumes:
       - ./services/user-service:/workspace/services/user-service
       - user_node_modules:/workspace/node_modules
