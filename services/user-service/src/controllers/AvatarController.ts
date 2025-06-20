@@ -1,4 +1,3 @@
-import { MultipartFile } from '@fastify/multipart';
 import {
   ResponseHelper,
   SetDefaultAvatarParams,
@@ -7,11 +6,17 @@ import {
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AvatarService } from '../services/AvatarService';
+
 export class AvatarController {
   static async uploadAvatar(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { userId } = request.params as UploadAvatarRequestParams;
-      const data = (await request.file()) as MultipartFile;
+      if (request.validationError) {
+        // ignore validation for multipart, but have a schema for swagger
+      }
+
+      // Get the uploaded file
+      const data = (await request.file())!;
       if (!data) {
         return ResponseHelper.error(reply, 'upload-avatar', 400, 'No file provided');
       }
@@ -23,6 +28,7 @@ export class AvatarController {
       return ResponseHelper.error(reply, 'upload-avatar', 500, 'Upload failed');
     }
   }
+
   static async getDefaultAvatars(request: FastifyRequest, reply: FastifyReply) {
     const result = await AvatarService.getDefaultAvatars();
     return ResponseHelper.handleDatabaseResult(reply, result);
