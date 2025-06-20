@@ -1,5 +1,5 @@
 export interface ServerConfig {
-  port?: number;
+  port: number;
   host?: string;
   title: string;
   description: string;
