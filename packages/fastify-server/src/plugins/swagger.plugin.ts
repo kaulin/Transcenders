@@ -19,7 +19,7 @@ export async function registerSwagger(
       },
       servers: [
         {
-          url: `http://localhost:${config.port ?? 3000}`,
+          url: `http://localhost:${config.port}`,
           description: 'Development server',
         },
       ],
