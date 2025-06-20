@@ -152,6 +152,15 @@ export class UserApiService {
   }
 
   /**
+   * Set a random avatar for a user
+   */
+  static async setRandomAvatar(userId: number) {
+    return this.callUserService(AVATAR_ROUTES.SET_RANDOM.replace(':userId', userId.toString()), {
+      method: 'POST',
+    });
+  }
+
+  /**
    * Get the full URL for an avatar path
    */
   static getAvatarUrl(avatarPath: string): string {

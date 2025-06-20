@@ -1,6 +1,7 @@
 import {
   AVATAR_ROUTES,
   setDefaultAvatarSchema,
+  setRandomAvatarSchema,
   standardApiResponses,
   uploadAvatarSchema,
 } from '@transcenders/contracts';
@@ -50,5 +51,19 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
       },
     },
     AvatarController.setDefaultAvatar,
+  );
+
+  // Set random avatar
+  app.post(
+    AVATAR_ROUTES.SET_RANDOM,
+    {
+      schema: {
+        description: 'Set a random avatar for user',
+        tags: ['Avatar'],
+        params: setRandomAvatarSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    AvatarController.setRandomAvatar,
   );
 }

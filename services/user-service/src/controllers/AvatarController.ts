@@ -12,9 +12,8 @@ export class AvatarController {
     try {
       const { userId } = request.params as UploadAvatarRequestParams;
       if (request.validationError) {
-        // ignore validation for multipart, but have a schema for swagger
+        // ignore validation for multipart, but set a schema for swagger
       }
-
       // Get the uploaded file
       const data = (await request.file())!;
       if (!data) {
@@ -39,6 +38,13 @@ export class AvatarController {
     const { avatarName } = request.body as SetDefaultAvatarRequest;
 
     const result = await AvatarService.setDefaultAvatar(userId, avatarName);
+    return ResponseHelper.handleDatabaseResult(reply, result);
+  }
+
+  static async setRandomAvatar(request: FastifyRequest, reply: FastifyReply) {
+    const { userId } = request.params as SetDefaultAvatarParams;
+
+    const result = await AvatarService.setRandomAvatar(userId);
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }

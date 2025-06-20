@@ -10,7 +10,8 @@ import {
 import fs from 'fs';
 import path from 'path';
 import SQL from 'sql-template-strings';
-import { pipeline } from 'stream';
+import { Database } from 'sqlite';
+import { pipeline, Readable } from 'stream';
 import { promisify } from 'util';
 import { getDB } from '../db/database';
 
@@ -52,25 +53,78 @@ export class AvatarService {
           throw new Error('Invalid file type. Only images are allowed.');
         }
 
-        const uploadDir = this.getUploadDir();
-        // Remove old avatar if exists
-        await this.removeOldAvatar(uploadDir, userId);
-
-        // filename: userId + extension
+        // Save file and get the avatar path
         const ext = path.extname(file.filename);
-        const filename = `${userId}${ext}`;
-        const filePath = path.join(uploadDir, filename);
+        const avatarPath = await this.saveFileToUploads(userId, ext, file.file);
 
-        // Save the file
-        await pump(file.file, fs.createWriteStream(filePath));
+        // Update database
+        await this.updateUserAvatar(database, userId, avatarPath);
 
-        const avatarPath = `/uploads/avatars/${filename}`;
-
-        const sql = SQL`
-        UPDATE users SET avatar = ${avatarPath}, updated_at = CURRENT_TIMESTAMP WHERE id = ${userId}
-        `;
-        await database.run(sql.text, sql.values);
         return BooleanResultHelper.success(`user '${userId}' avatar changed`);
+      },
+    );
+  }
+
+  static async setRandomAvatar(userId: string): Promise<DatabaseResult<SetAvatarResult>> {
+    return DatabaseHelper.executeQuery<SetAvatarResult>(
+      'set random avatar',
+      await getDB(),
+      async (database) => {
+        const headers = new Headers({
+          'Content-Type': 'application/json',
+          'x-api-key': `${process.env.CAT_API_KEY}`,
+        });
+
+        const requestOptions: RequestInit = {
+          method: 'GET',
+          headers: headers,
+          redirect: 'follow',
+        };
+
+        // get a random cat object
+        const response = await fetch(
+          'https://api.thecatapi.com/v1/images/search?&mime_types=jpg,png,avif&size=any&format=json&order=RANDOM&page=0&limit=1',
+          requestOptions,
+        );
+
+        if (!response.ok) {
+          throw new Error(`Cat API error: ${response.status}`);
+        }
+
+        // Parse the JSON
+        const catData = await response.json();
+
+        if (!catData || catData.length === 0) {
+          throw new Error('No cat image found');
+        }
+
+        const imageUrl = catData[0].url;
+
+        // Download the actual image
+        const imageResponse = await fetch(imageUrl);
+
+        if (!imageResponse.ok) {
+          throw new Error(`Failed to download image: ${imageResponse.status}`);
+        }
+
+        // save image
+        const extension = path.extname(imageUrl);
+        const body = imageResponse.body;
+        if (!body) {
+          throw new Error('No response body');
+        }
+        const nodeStream = Readable.fromWeb(body as any);
+        const avatarPath = await this.saveFileToUploads(userId, extension, nodeStream);
+
+        // Update database
+        await this.updateUserAvatar(database, userId, avatarPath);
+
+        const result: SetAvatarResult = {
+          success: true,
+          url: avatarPath,
+        };
+
+        return result;
       },
     );
   }
@@ -113,10 +167,7 @@ export class AvatarService {
         // Update user's avatar in database
         const avatarUrl = `/uploads/default-avatars/${avatarName}`;
 
-        const sql = SQL`
-          UPDATE users SET avatar = ${avatarUrl}, updated_at = CURRENT_TIMESTAMP WHERE id = ${userId}
-        `;
-        await database.run(sql.text, sql.values);
+        await this.updateUserAvatar(database, userId, avatarUrl);
 
         const result: SetAvatarResult = {
           success: true,
@@ -126,6 +177,38 @@ export class AvatarService {
         return result;
       },
     );
+  }
+
+  private static async saveFileToUploads(
+    userId: string,
+    extension: string,
+    fileStream: NodeJS.ReadableStream,
+  ): Promise<string> {
+    const uploadDir = this.getUploadDir();
+
+    // Remove old avatar if exists
+    await this.removeOldAvatar(uploadDir, userId);
+
+    // Create new filename and path
+    const filename = `${userId}${extension}`;
+    const filePath = path.join(uploadDir, filename);
+
+    // Save the file
+    await pump(fileStream, fs.createWriteStream(filePath));
+
+    // Return the avatar path for database
+    return `/uploads/avatars/${filename}`;
+  }
+
+  private static async updateUserAvatar(
+    database: Database,
+    userId: string,
+    avatarPath: string,
+  ): Promise<void> {
+    const sql = SQL`
+      UPDATE users SET avatar = ${avatarPath}, updated_at = CURRENT_TIMESTAMP WHERE id = ${userId}
+    `;
+    await database.run(sql.text, sql.values);
   }
 
   private static async copyDefaultAvatars(defaultAvatarsDir: string): Promise<void> {

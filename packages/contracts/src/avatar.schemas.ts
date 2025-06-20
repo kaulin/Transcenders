@@ -42,3 +42,10 @@ export const SetAvatarResultSchema = Type.Object({
   url: Type.String(),
 });
 export type SetAvatarResult = Static<typeof SetAvatarResultSchema>;
+
+export const setRandomAvatarSchema = {
+  params: Type.Object({
+    userId: IdParamField,
+  }),
+};
+export type SetRandomAvatarParams = Static<typeof setRandomAvatarSchema.params>;
