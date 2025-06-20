@@ -5,6 +5,13 @@ export const uploadAvatarSchema = {
   params: Type.Object({
     userId: IdParamField,
   }),
+  body: Type.Object({
+    file: Type.String({
+      format: 'binary',
+      description: 'Avatar image file (JPEG, PNG, GIF, WebP, AVIF)',
+      contentMediaType: 'image/*',
+    }),
+  }),
 };
 export type UploadAvatarRequestParams = Static<typeof uploadAvatarSchema.params>;
 
