@@ -14,7 +14,7 @@ const MainContainer = () => {
   const { user } = useUser()
 
   return (
-    <div className="mt-24 h-[calc(100%-5rem)] overflow-y-auto px-10 pb-8 pt-2">
+    <div className="flex-1 min-h-0 overflow-hidden p-10 pt-24">
       {user ? (
           <Routes>
             <Route path="/" element={<Home />} />
