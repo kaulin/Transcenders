@@ -1,5 +1,13 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import {
+	HeartPlus,
+	HeartMinus,
+	HeartOff,
+	Heart,
+	HeartCrack,
+	MailQuestionMark,
+} from 'lucide-react'
 
 import { useUser } from "../contexts/UserContext"
 import type { User} from "@transcenders/contracts"
@@ -73,9 +81,9 @@ const Dashboard = () => {
 	const losses = 13
 
   	return (
-		<div className="profile-box">
+		<div className="profile-box lg:flex-wrap">
 			{/* profile */}
-			<div className="flex lg:basis-1/4 w-full h-full flex-col flex-shrink-0 bg-[#605c4c13] items-center px-8 py-16">
+			<div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink bg-[#605c4c13] items-center gap-14 px-8 py-16">
 				<div className="flex basis-4/12 flex-col items-center">
 					<div className="bubble bg-white/50 w-64 h-64 flex items-end justify-center overflow-hidden">
 						<img
@@ -88,38 +96,36 @@ const Dashboard = () => {
 					<h1 className="pt-6 text-5xl text-[#fff] font-fascinate">{viewedUser?.username}</h1>
 				</div>
 
-	 			{user?.id === viewedUser?.id ? (
-					<>
-						<div className="flex basis-7/12 w-full flex-col items-center justify-center">
-							<div className="w-80 h-[85%] bg-[#605c4c13] rounded-full border border-white p-10 custom-scrollbar">
-								<p className="pb-2 text-[#fff] text-center font-fascinate uppercase text-xl mb-4">Friends</p>
-								<div className="relative h-[80%] p-2 overflow-y-auto">
-									{friends.map((friend) => (
-										<div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
-											<span>{friend.name}</span>
-											<span
-												className={`w-3 h-3 rounded-full border ${
-													friend.online ? 'bg-[#ceff5d]' : 'bg-[#d7d4cd00]'
-												}`}
-											></span>
-										</div>
-									))}
+				<div className="flex basis-7/12 w-full flex-col items-center justify-center">
+					{user?.id === viewedUser?.id ? (
+						<>
+								<div className="w-80 h-[535px] bg-[#605c4c13] rounded-full border border-white p-10 custom-scrollbar">
+									<p className="pb-2 text-[#fff] text-center font-fascinate uppercase text-xl mb-4">Friends</p>
+									<div className="relative h-[80%] p-2 overflow-y-auto">
+										{friends.map((friend) => (
+											<div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
+												<span>{friend.name}</span>
+												<span
+													className={`w-3 h-3 rounded-full border ${
+														friend.online ? 'bg-[#ceff5d]' : 'bg-[#d7d4cd00]'
+													}`}
+												></span>
+											</div>
+										))}
+									</div>
 								</div>
-							</div>
+						</>
+					) : (
+						<div className="flex flex-col">
+							<button className="play-button flex gap-3 min-w-48 justify-start m-2"><HeartPlus className="text-[#b15789c5]"/>{t('add_friend')}</button>
+							<button className="play-button flex gap-3 min-w-48 justify-start m-2"><HeartMinus className="text-[#b15789c5]"/>{t('remove_friend')}</button>
+							<button className="play-button flex gap-3 min-w-48 justify-start m-2"><HeartOff className="text-[#b15789c5]"/>{t('block_user')}</button>
 						</div>
-					</>
-				) : (
-					<div className="flex basis-7/12 w-full flex-col items-center">
-						<div className="flex flex-col pt-16">
-							<button className="play-button min-w-36 m-2">{t('add_friend')}</button>
-							<button className="play-button min-w-36 m-2">{t('remove_friend')}</button>
-							<button className="play-button min-w-36 m-2">{t('block_user')}</button>
-						</div>
-					</div>
-				)}
+					)}
+				</div>
 
-				<div className="flex basis-1/12 w-full flex-col">
-					<div className="flex justify-center">
+				<div className="flex basis-1/12 w-full flex-col justify-start items-center">
+					<div className="flex">
 						<input
 							type="text"
 							value={searchId}
@@ -130,14 +136,13 @@ const Dashboard = () => {
 						<button onClick={handleSearch} className="ml-4 p-2">Search</button>
 					</div>
 					{error && (
-						<p className="text-[#513838] text-center pt-2">{error}</p>
+						<p className="text-[#513838] pt-2">{error}</p>
 					)}
 				</div>
-
 			</div>
 
 			{/* stats */}
-			<div className="flex lg:flex-1 w-full min-h-full flex-col gap-28 flex-shrink-0 px-8 py-16">
+			<div className="flex lg:flex-1 w-full min-h-full flex-col gap-28 flex-shrink-0 lg:flex-shrink px-8 py-16">
 		 		<div className="flex w-full justify-center text-center items-center text-lg font-fascinate uppercase">
 		 			<p className="text-4xl text-[#fff]">{t('games_played')} </p>
 
@@ -165,7 +170,7 @@ const Dashboard = () => {
 			</div>
 
 			{/* match history */}
-			<div className="flex lg:flex-1 flex-col flex-shrink-0 w-full h-full bg-[#605c4c13] px-8 py-16">
+			<div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink bg-[#605c4c13] px-8 py-16">
 				<h1 className="flex justify-center text-center text-4xl text-[#fff] font-fascinate uppercase mb-16">
 					{t('history')}
 				</h1>
