@@ -6,8 +6,12 @@
 
 @layer base {
 
+    html, body, #root {
+        @apply h-screen overflow-hidden;
+    }
+
     html {
-        @apply min-h-screen bg-gradient-to-t from-[#e0cec2] via-[#e0cec2] to-[#e0cec2];
+        @apply bg-gradient-to-t from-[#e0cec2] via-[#e0cec2] to-[#e0cec2];
     }
     
 	div {
@@ -43,9 +47,9 @@
     }
     
     .profile-box  {
-        @apply relative rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1] flex flex-col items-center;
+        @apply flex lg:flex-row flex-col h-full overflow-y-auto  overflow-x-hidden custom-scrollbar
+        items-center rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1];
 	}
-    /* bg-gradient-to-t from-[#ffd3c4] to-[#ffe4d8] box for purple bg  */
     
 	.profile-label {
 		@apply block font-fascinate text-2xl uppercase mb-2;
