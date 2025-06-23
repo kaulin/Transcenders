@@ -11,7 +11,7 @@
     }
 
     html {
-        @apply bg-gradient-to-t from-[#e0cec2] via-[#e0cec2] to-[#e0cec2];
+        @apply bg-[#e0cec2];
     }
     
 	div {
@@ -27,7 +27,7 @@
     }
     
     button {
-        @apply text-white hover:text-[#6a5373c6];
+        @apply text-white hover:text-[#786647];
     }
     
 }
@@ -47,7 +47,7 @@
     }
     
     .profile-box  {
-        @apply flex lg:flex-row flex-col h-full overflow-y-auto  overflow-x-hidden custom-scrollbar
+        @apply flex flex-col lg:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
         items-center rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1];
 	}
     

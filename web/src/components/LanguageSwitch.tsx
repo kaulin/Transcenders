@@ -8,7 +8,7 @@ function LanguageSwitch () {
     }
 
     return (
-        <div className="flex gap-2 text-lg">
+        <div className="flex h-[36px] gap-2 text-xl items-center">
             <button onClick={() => handleLanguageChange('en')}>EN</button>
             |
             <button onClick={() => handleLanguageChange('fi')}>FI</button>

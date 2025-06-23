@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import { Home, LayoutDashboard, Cat, LogOut } from 'lucide-react'
 
 import { useUser } from '../contexts/UserContext'
 import { usePlayers } from '../contexts/PlayersContext'
@@ -7,7 +7,6 @@ import { usePlayers } from '../contexts/PlayersContext'
 import LanguageSwitch from '../components/LanguageSwitch'
 
 const Header = () => {
-    const { t } = useTranslation()
     const { user, setUser } = useUser()
 	const { resetAll } = usePlayers()
 
@@ -17,27 +16,33 @@ const Header = () => {
     }
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 h-24">
-            <nav className="flex items-center py-9 px-10 gap-10">
+        <header className="fixed top-0 left-0 w-full z-50 h-24 py-6 px-10 flex">
             { user? (
                 <>
-                    <div className="flex basis-1/2 justify-start gap-10">
+                    <div className="flex basis-1/2 justify-start items-center text-center gap-10">
                         <LanguageSwitch />
-                        <div className="flex justify-center gap-4 uppercase">
-                            <Link to="/" className="button-text text-lg">{t('home')}</Link>
-                            <Link to="/dashboard" className="button-text text-lg">dashboard</Link>
-                            <Link to="/profile" className="button-text text-lg">{t('profile')}</Link>
+                        <div className="flex justify-center items-center gap-4 uppercase">
+                            <div className="w-[36px] flex justify-center">
+							    <Link to="/home"><Home className="h-6 w-6 hover:h-9 hover:w-9 text-white hover:text-[#786647]" /></Link>
+                            </div>
+                            <div className="w-[36px] flex justify-center">
+							    <Link to="/dashboard"><LayoutDashboard className="h-6 w-6 hover:h-9 hover:w-9 text-white hover:text-[#786647]" /></Link>
+                            </div>
+                            <div className="w-[36px] flex justify-center">
+							    <Link to="/profile"><Cat className="h-6 w-6 hover:h-9 hover:w-9 text-white hover:text-[#786647]" /></Link>
+                            </div>
                         </div>
                     </div>
                     
-                    <div className="flex flex-nowrap basis-1/2 justify-end text-lg">
-                        <button onClick={handleLogout}>{t('log_out')}</button>
+                    <div className="flex basis-1/2 justify-end items-center">
+						<button onClick={handleLogout}><LogOut className="h-6 w-6"/></button>
                     </div>
                 </>
             ) : (
-                <LanguageSwitch />
+                <div className="flex items-end">
+                    <LanguageSwitch />
+                </div>
             )}
-            </nav>
         </header>
     )
 }
