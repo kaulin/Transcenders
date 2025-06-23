@@ -19,10 +19,10 @@ import MainContainer from './layout/MainContainer'
 const App = () => {
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden">
+    <div className="w-screen h-screen overflow-hidden">
 		  {/* <Background bubbles={bubbles} /> */}
 
-		<div className="relative z-10 flex flex-col h-full">
+		<div className="flex flex-col h-full">
 			<Header />
 			<MainContainer />	
 		</div>
