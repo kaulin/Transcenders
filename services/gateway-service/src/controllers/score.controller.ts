@@ -3,26 +3,22 @@ import { GatewayService } from '../services/GatewayService';
 
 const SCORE_URL = process.env.SCORE_SERVICE_URL ?? 'http://localhost:3003';
 
-export class AuthController {
-  static async register(request: FastifyRequest, reply: FastifyReply) {
-    const result = await GatewayService.forward(SCORE_URL, request, '/auth/register');
-    reply.status(result.status).type(result.contentType ?? 'application/json').send(result.body);
+export class ScoreController {
+  static async getScores(req: FastifyRequest, reply: FastifyReply) {
+    return GatewayService.forwardAndReply(SCORE_URL, req, reply, '/score');
   }
 
-  static async login(request: FastifyRequest, reply: FastifyReply) {
-    const result = await GatewayService.forward(SCORE_URL, request, '/auth/login');
-    reply.status(result.status).type(result.contentType ?? 'application/json').send(result.body);
+  static async addScore(req: FastifyRequest, reply: FastifyReply) {
+    return GatewayService.forwardAndReply(SCORE_URL, req, reply, '/score');
   }
 
-  static async changePassword(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-    const path = `/auth/change-password/${request.params.id}`;
-    const result = await GatewayService.forward(SCORE_URL, request, path);
-    reply.status(result.status).type(result.contentType ?? 'application/json').send(result.body);
+  static async getScoresById(req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+    const path = `/score/${req.params.id}`;
+    return GatewayService.forwardAndReply(SCORE_URL, req, reply, path);
   }
 
-  static async deleteCredentials(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-    const path = `/auth/credentials/${request.params.id}`;
-    const result = await GatewayService.forward(SCORE_URL, request, path);
-    reply.status(result.status).type(result.contentType ?? 'application/json').send(result.body);
+  static async getStatsById(req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+    const path = `/score/${req.params.id}/stats`;
+    return GatewayService.forwardAndReply(SCORE_URL, req, reply, path);
   }
 }
