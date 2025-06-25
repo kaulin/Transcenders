@@ -43,5 +43,12 @@ export class ScoreApiService {
   static async getScoresById(id: number) {
     return this.callScoreService(SCORE_ROUTES.SCORES_BY_ID.replace(':id', id.toString()));
   }
+  
+  /**
+   * Gets scores by user by their ID
+   */
+  static async getStatsById(id: number) {
+    return this.callScoreService(SCORE_ROUTES.STATS_BY_ID.replace(':id', id.toString()));
+  }
 
 }
