@@ -148,8 +148,6 @@ export const resetBall = (gameState: GameState): GameState => {
 		dx: Math.cos(angle) * direction * newState.ball.initialSpeed,
 		dy: Math.sin(angle) * newState.ball.initialSpeed
 	};
-	console.log('Ball reset - velocity:', newState.ball.velocity, 'initialSpeed:', newState.ball.initialSpeed);
-
 	return newState;
 };
 

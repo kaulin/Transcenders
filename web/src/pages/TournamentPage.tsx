@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 import { usePlayers } from '../contexts/PlayersContext';
 import GameContainer from '../components/game/GameContainer';
 import { ApiClient } from '@transcenders/api-client';
@@ -19,7 +18,6 @@ interface TournamentState {
 
 function TournamentPage() {
 	const { players, setPlayer } = usePlayers();
-	const navigate = useNavigate();
 
 	const [tournamentState, setTournamentState] = useState<TournamentState>({
 		allPlayers: [],
@@ -42,31 +40,37 @@ function TournamentPage() {
 		return shuffled;
 	};
 
-	// Initialize tournament on mount
+	const fixedPlayersRef = useRef<any[]>([]);
+
+	// Initialize tournament ONCE and store fixed player order
 	useEffect(() => {
-		if (!players[1] || !players[2] || !players[3] || !players[4]) {
-			navigate('/');
+		// if we already have fixed players, don't re-initialize
+		if (fixedPlayersRef.current.length > 0) {
 			return;
 		}
 
 		const allPlayersArray = [players[1], players[2], players[3], players[4]];
 		const shuffledPlayers = shuffleArray(allPlayersArray);
-		
+
+		// IMPORTANT: Store in ref so it never changes
+		fixedPlayersRef.current = shuffledPlayers;
+
+		// Update state with fixed players
 		setTournamentState(prev => ({
 			...prev,
-			allPlayers: shuffledPlayers	//updates allPlayers with shuffed array
+			allPlayers: fixedPlayersRef.current
 		}));
 
-		// Set up first match with shuffledPlayers so we don't need to wait for the allPlayers update
-		setPlayer(1, shuffledPlayers[0]);
-		setPlayer(2, shuffledPlayers[1]);
+		// set up first match
+		setPlayer(1, fixedPlayersRef.current[0]);
+		setPlayer(2, fixedPlayersRef.current[1]);
 
-	}, []);
+	}, []); // Empty dependencies means it only runs on mount
 
 	
-	const handleTGameComplete = (result: GameResult) => {
-		const { currentMatch, allPlayers, winners, gameResults } = tournamentState;
-		
+	const handleTGameComplete = (result: GameResult, winnerName?: string) => {
+		const { currentMatch, winners, gameResults } = tournamentState;
+
 		// backend tournament_level logged as: Final=1, Semi=2,3
 		let tournamentLevel: number;
 		if (currentMatch === 1) {
@@ -82,12 +86,22 @@ function TournamentPage() {
 			tournament_level: tournamentLevel
 		};
 		
-		const winner = allPlayers.find(p => p.id === result.winner_id);
+		const currentPlayer1 = players[1];
+		const currentPlayer2 = players[2];
 		
+		let winner;
+		if (winnerName === currentPlayer1?.username) {
+		winner = currentPlayer1;
+		} else if (winnerName === currentPlayer2?.username) {
+			winner = currentPlayer2;
+		} else {
+			winner = currentPlayer1; // Fallback
+		}
+			
 		const newWinners = [...winners, winner];
 		const newResults = [...gameResults, updatedResult];
 
-		// Mark round as complete and store the result, but don't advance yet
+		// mark round as complete and store the result, but don't advance yet
 		setTournamentState(prev => ({
 			...prev,
 			roundComplete: true,
@@ -138,16 +152,16 @@ function TournamentPage() {
 
 	const sendTournamentResults = async (allResults: GameResult[]) => {
 		try {
-		  	for (const result of allResults) {
+			for (const result of allResults) {
 				const scoreData: CreateScoreRequest = {
-		  			winner_id: result.winner_id,
-		  			loser_id: result.loser_id,
-		  			winner_score: result.winner_score,
-		  			loser_score: result.loser_score,
-		  			tournament_level: result.tournament_level,
-		  			game_duration: result.game_duration,
-		  			game_start: result.game_start.toString(),
-		  			game_end: result.game_end.toString(),
+					winner_id: result.winner_id,
+					loser_id: result.loser_id,
+					winner_score: result.winner_score,
+					loser_score: result.loser_score,
+					tournament_level: result.tournament_level,
+					game_duration: result.game_duration,
+					game_start: result.game_start.toString(),
+					game_end: result.game_end.toString(),
 				};
 
 				const response = await ApiClient.score.createScore(scoreData);
@@ -155,7 +169,7 @@ function TournamentPage() {
 				if (!response.success) {
 					throw new Error(response.error || 'Failed to save tournament result');
 				}
-	  		}
+			}
 		} catch (error) {
 			console.error('Failed to send tournament results:', error);
 		}

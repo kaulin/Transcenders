@@ -22,7 +22,7 @@ interface GameContainerProps {
 	width?: number;
 	height?: number;
 	gameMode?: 'match' | 'tournament';
-	onGameComplete?: (result: GameResult) => void;
+	onGameComplete?: (result: GameResult, winnerName?: string) => void;
 	isRoundComplete?: boolean;
 	onContinueToNextRound?: () => void;
 	isFinalRound?: boolean;
@@ -65,12 +65,12 @@ const GameContainer: React.FC<GameContainerProps> = ({
 		if (players[1] && players[2]) {
 			return {
 				player1: {
-				id: players[1].id || 1,
+				id: players[1].id ?? 1,	// ?? only uses the fallback if the value is null or undefined
 				name: players[1].username || 'Player 1',
 				avatar: players[1].avatar || ''
 				},
 				player2: {
-				id: players[2].id || 2, 
+				id: players[2].id ?? 2, 
 				name: players[2].username || 'Player 2',
 				avatar: players[2].avatar || ''
 				}
@@ -86,6 +86,9 @@ const GameContainer: React.FC<GameContainerProps> = ({
 		if (isProcessingGameEnd || !gameStartTime || !currentPlayers) return;
 		
 		setIsProcessingGameEnd(true);
+
+		const leftPlayerWon = finalGameState.leftScore > finalGameState.rightScore;
+		const actualWinner = leftPlayerWon ? currentPlayers.player1 : currentPlayers.player2;
 		
 		const gameResult = createGameResult(
 			currentPlayers.player1.id,
@@ -99,7 +102,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
 	  
 		try {
 			// Let parent page handle game completion (Match or Tournament)
-			onGameComplete?.(gameResult);
+			onGameComplete?.(gameResult, actualWinner.name);
 		} catch (error) {
 			console.error('Failed to save game result:', error);
 		} finally {

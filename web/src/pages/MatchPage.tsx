@@ -1,24 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { usePlayers } from '../contexts/PlayersContext';
+import { useState } from 'react';
 import GameContainer from '../components/game/GameContainer';
 import { ApiClient } from '@transcenders/api-client';
 import { type CreateScoreRequest } from '@transcenders/contracts';
 import { type GameResult } from '../components/game/models/GameState';
 
 function MatchPage() {
-	const { players } = usePlayers();
-	const navigate = useNavigate();
 	const [gameKey, setGameKey] = useState(0);
 
-	// Redirect if players aren't set up
-	useEffect(() => {
-		if (!players[1] || !players[2]) {
-			navigate('/');
-		}
-	}, [players, navigate]);
 
-	const handleGameComplete = async (result: GameResult) => {
+	const handleGameComplete = async (result: GameResult, winnerName?: string) => {
 		try {
 			const scoreData: CreateScoreRequest = {
 				winner_id: result.winner_id,
