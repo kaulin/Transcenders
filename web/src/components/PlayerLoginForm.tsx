@@ -47,6 +47,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 		
 		try {
 			const response = await ApiClient.user.getUserExact({ username: username })
+			
 			if (response?.success) {
 				setError(t('username_taken'))
 				return
@@ -70,15 +71,16 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 			return
 
 		try {
-			const verifiedUser = await login(username?.trim(), password)
+			// const verifiedUser = await login(username?.trim(), password)
 
-			setPlayer(playerNumber, {
-				id: verifiedUser?.id,
-				username: verifiedUser?.username,
-				avatar: verifiedUser?.avatar,
-				ready: true
-			})
+			// setPlayer(playerNumber, {
+			// 	id: verifiedUser?.id,
+			// 	username: verifiedUser?.username,
+			// 	avatar: verifiedUser?.avatar,
+			// 	ready: true
+			// })
 
+			await login(username?.trim(), password, playerNumber)
 		} catch (err: any) {
 			setError(t('incorrect_username_pw'))
 		}
