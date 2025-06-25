@@ -1,4 +1,4 @@
-import { FastifyRequest } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 
 export class GatewayService {
   static async forward(
@@ -26,5 +26,15 @@ export class GatewayService {
       body: data,
       contentType,
     };
+  }
+
+  static async forwardAndReply(
+    targetBaseUrl: string,
+    req: FastifyRequest,
+    reply: FastifyReply,
+    path: string
+  ) {
+    const result = await this.forward(targetBaseUrl, req, path);
+    reply.status(result.status).type(result.contentType).send(result.body);
   }
 }
