@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { UserController } from '../controllers/user.controller';
+import { UserController } from '../controllers/user-gateway.controller';
 
 export default async function userRoutes(fastify: FastifyInstance) {
 

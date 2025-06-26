@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { ScoreController } from '../controllers/score.controller';
+import { ScoreController } from '../controllers/score-gateway.controller';
 
 export default async function scoreRoutes(fastify: FastifyInstance) {
   fastify.get('/score', ScoreController.getScores);
