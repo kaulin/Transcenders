@@ -33,10 +33,10 @@ dev:
 # Everything local (for developers who can't use containers)
 local: setup-check
 	@echo "Starting backend services locally..."
+	@echo "Gateway Service at: http://localhost:4000"
 	@echo "User Service at: http://localhost:3001"
 	@echo "Auth Service at: http://localhost:3002"
 	@echo "Score Service at: http://localhost:3003"
-	@echo "Gateway Service at: http://localhost:3004"
 	@echo "Frontend at: http://localhost:5173"
 	npm run dev:all
 
