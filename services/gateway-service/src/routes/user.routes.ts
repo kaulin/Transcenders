@@ -10,7 +10,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.patch('/users/:id', UserController.updateUser);
   fastify.delete('/users/:id', UserController.deleteUser);
   fastify.get('/users/:id/exists', UserController.checkUserExists);
-  fastify.get('users/exact', UserController.getUserExact);
+  fastify.get('/users/exact', UserController.getUserExact);
   
   // Friendship routes
   fastify.get('/users/:id/friendships', UserController.getFriends);
