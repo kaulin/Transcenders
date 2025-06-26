@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { GatewayService } from '../services/GatewayService';
+import { GatewayService } from '../services/gateway.service';
 
 const SCORE_URL = process.env.SCORE_SERVICE_URL ?? 'http://localhost:3003';
 

@@ -7,7 +7,7 @@ import {
   userByIdRequest,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { UserService } from '../services/UserService';
+import { UserService } from '../services/user.service';
 
 export class UserController {
   // UserController

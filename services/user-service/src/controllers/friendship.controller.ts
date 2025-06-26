@@ -9,7 +9,7 @@ import {
   SendFriendRequestRequest,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { FriendshipService } from '../services/FriendshipService';
+import { FriendshipService } from '../services/friendship.service';
 
 export class FriendshipController {
   static async getFriends(request: FastifyRequest, reply: FastifyReply) {

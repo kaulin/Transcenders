@@ -1,6 +1,6 @@
 import { getDB } from '../db/database.js';
 import { DatabaseTestResponse } from '../types/database.types.js';
-import { UserService } from './UserService.js';
+import { UserService } from './user.service.js';
 
 export class DatabaseTestService {
   public static async runTests(): Promise<DatabaseTestResponse> {

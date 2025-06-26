@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { ApiResponseType } from '@transcenders/contracts';
 
 export class GatewayService {
+
   static async forward(
     req: FastifyRequest,
     serviceUrl: string,
@@ -38,4 +39,5 @@ export class GatewayService {
       } satisfies ApiResponseType);
     }
   }
+  
 }

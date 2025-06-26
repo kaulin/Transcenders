@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { HealthResponse } from '../types/api.types';
-import { DatabaseTestService } from '../services/DatabaseTestService';
+import { DatabaseTestService } from '../services/databaseTest.service';
 
 export class AdminController {
   /**

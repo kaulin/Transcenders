@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { GatewayService } from '../services/GatewayService';
+import { GatewayService } from '../services/gateway.service';
 
 const USER_URL = process.env.USER_SERVICE_URL ?? 'http://localhost:3001';
 
@@ -47,7 +47,7 @@ export class UserController {
   }
 
   static async removeFriend(req: FastifyRequest<{ Params: { id: string, friendId: string } }>, reply: FastifyReply) {
-    const path = `/friends/${req.params.id}/${req.params.friendId}`;
+    const path = `/friends/${req.params.id}/${req.params.friendId}`;  
     await GatewayService.forwardAndReply(req, reply, USER_URL, path);
   }
 

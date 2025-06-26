@@ -7,7 +7,7 @@ import {
   statsByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
-import { ScoreController } from '../controllers/ScoreController';
+import { ScoreController } from '../controllers/score.controller';
 
 /**
  * SWAGGER
