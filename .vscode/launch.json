@@ -2,6 +2,19 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach to Gateway Service (Docker)",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9230,
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/workspace",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
+    },
+    {
       "name": "Attach to User Service (Docker)",
       "type": "node",
       "request": "attach",
@@ -35,6 +48,18 @@
       "port": 9229,
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "/workspace",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
+    },
+    {
+      "name": "Attach to Gateway Service (Local)",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9230,
+      "localRoot": "${workspaceFolder}",
       "restart": true,
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
