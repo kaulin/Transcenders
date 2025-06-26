@@ -6,7 +6,7 @@ import { ScoreApiService } from '../services/score.service';
 import { ApiCallOptions } from '../types/client.options';
 
 // TODO Replace with VITE_GATEWAY_URL set in .env
-export const GATEWAY_URL = 'http://localhost:4000';
+export const GATEWAY_URL = process.env.GATEWAY_SERVICE_URL ?? 'http://localhost:4000';
 
 export class ApiClient {
   /**
