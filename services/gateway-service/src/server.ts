@@ -1,8 +1,8 @@
 import { ApiResponse } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
-import authRoutes from 'routes/auth.routes';
-import userRoutes from 'routes/user.routes';
-import scoreRoutes from 'routes/score.routes';
+import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
+import scoreRoutes from './routes/score.routes';
 
 const config: ServerConfig = {
   port: 3004,
