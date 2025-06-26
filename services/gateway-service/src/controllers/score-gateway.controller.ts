@@ -5,11 +5,14 @@ const SCORE_URL = process.env.SCORE_SERVICE_URL ?? 'http://localhost:3003';
 
 export class ScoreController {
   static async getScores(req: FastifyRequest, reply: FastifyReply) {
-    return GatewayService.forwardAndReply(req, reply, SCORE_URL, '/score');
+    const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
+    const path = queryString ? `/score?${queryString}` : '/score';
+    return GatewayService.forwardAndReply(req, reply, SCORE_URL, path);
   }
 
   static async addScore(req: FastifyRequest, reply: FastifyReply) {
-    return GatewayService.forwardAndReply(req, reply, SCORE_URL, '/score');
+    const path = `/score`
+    return GatewayService.forwardAndReply(req, reply, SCORE_URL, path);
   }
 
   static async getScoresById(req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
