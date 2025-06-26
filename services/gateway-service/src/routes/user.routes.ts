@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { UserController } from '../controllers/user.controller';
 
 export default async function userRoutes(fastify: FastifyInstance) {
+
   // User routes
   fastify.get('/users', UserController.getUsers);
   fastify.post('/users', UserController.addUser);
@@ -10,6 +11,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.delete('/users/:id', UserController.deleteUser);
   fastify.get('/users/:id/exists', UserController.checkUserExists);
   fastify.get('users/exact', UserController.getUserExact);
+  
   // Friendship routes
   fastify.get('/users/:id/friendships', UserController.getFriends);
   fastify.delete('/users/:id/friendships/:friendId', UserController.removeFriend);
