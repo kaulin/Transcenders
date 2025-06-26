@@ -8,6 +8,8 @@ export class UserController {
   // User routes
 
   static async getUsers(req: FastifyRequest, reply: FastifyReply) {
+    const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
+    const path = queryString ? `/users?${queryString}` : '/users';
     await GatewayService.forwardAndReply(req, reply, USER_URL, '/users');
   }
 
