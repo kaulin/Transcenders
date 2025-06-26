@@ -1,40 +1,41 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { ApiResponseType } from '@transcenders/contracts';
 
 export class GatewayService {
   static async forward(
-    targetServiceUrl: string,
-    request: FastifyRequest,
+    req: FastifyRequest,
+    serviceUrl: string,
     path: string
-  ) {
-    const targetUrl = `${targetServiceUrl}${path}`;
-    const method = request.method;
-    const headers = { ...request.headers } as Record<string, string>;
-
-    const body = method === 'GET' || method === 'HEAD' ? undefined : JSON.stringify(request.body);
-
-    const res = await fetch(targetUrl, {
+  ): Promise<{ status: number; body: ApiResponseType }> {
+    const url = `${serviceUrl}${path}`;
+    const method = req.method;
+    const res = await fetch(url, {
       method,
-      headers,
-      body,
+      headers: req.headers as Record<string, string>,
+      body: ['GET', 'HEAD'].includes(method) ? undefined : JSON.stringify(req.body),
     });
-
-    const data = await res.text();
-    const contentType = res.headers.get('content-type');
-
+    const body: ApiResponseType = await res.json();
     return {
       status: res.status,
-      body: data,
-      contentType,
+      body,
     };
   }
 
   static async forwardAndReply(
-    targetBaseUrl: string,
     req: FastifyRequest,
     reply: FastifyReply,
+    serviceUrl: string,
     path: string
   ) {
-    const result = await this.forward(targetBaseUrl, req, path);
-    reply.status(result.status).type(result.contentType).send(result.body);
+    try {
+      const { status, body } = await this.forward(req, serviceUrl, path);
+      reply.status(status).send(body);
+    } catch (error: any) {
+      reply.status(500).send({
+        success: false,
+        operation: path,
+        error: error?.message ?? 'Unexpected gateway error',
+      } satisfies ApiResponseType);
+    }
   }
 }
