@@ -5,7 +5,7 @@ import userRoutes from './routes/user-gateway.routes';
 import scoreRoutes from './routes/score-gateway.routes';
 
 const config: ServerConfig = {
-  port: 3004,
+  port: 4000,
   title: 'Gateway Service API',
   description: 'Service to route traffic between web and backend services',
 };
