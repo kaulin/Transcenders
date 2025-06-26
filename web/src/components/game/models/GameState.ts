@@ -22,6 +22,17 @@ export interface Ball {
 	initialSpeed: number;
 }
 
+export interface GameResult {
+	winner_id: number;
+	loser_id: number;
+	winner_score: number;
+	loser_score: number;
+	tournament_level: number; // 0 for 1v1
+	game_duration: number;
+	game_start: number;
+	game_end: number;
+}
+
 // type named GameStatus declared- any variable of type GameStatus 
 // can only have one of these four specific string values 
 export type GameStatus = 'waiting' | 'running' | 'paused' | 'ended';
@@ -43,6 +54,7 @@ export interface GameState {
 	rightScore: number;
 	canvasWidth: number;
 	canvasHeight: number;
+	gameStartTime: number;
 }
 
 export const Controls = {
@@ -61,7 +73,7 @@ export const DEFAULT_GAME_SETTINGS = {
 	paddleHeight: 100,
 	paddleSpeed: 10,
 	ballRadius: 20,
-	ballInitialSpeed: 5,
+	ballInitialSpeed: 10,
 	maxScore: 10
 };
 
@@ -109,7 +121,8 @@ export const createInitialGameState = (
 		dy: 0
 	  },
 	  initialSpeed: DEFAULT_GAME_SETTINGS.ballInitialSpeed
-	}
+	},
+	gameStartTime: 0
 	};
 };
 
@@ -118,6 +131,8 @@ export const resetBall = (gameState: GameState): GameState => {
 	// shallow cloning the current state
 	const newState: GameState = { ...gameState };
 
+	newState.ball.initialSpeed = DEFAULT_GAME_SETTINGS.ballInitialSpeed;
+	
 	// reset ball position to center
 	newState.ball.position = {
 		x: gameState.canvasWidth / 2,
@@ -130,55 +145,31 @@ export const resetBall = (gameState: GameState): GameState => {
 
 	// set ball velocity with the initial speed
 	newState.ball.velocity = {
-		dx: Math.cos(angle) * direction * gameState.ball.initialSpeed,
-		dy: Math.sin(angle) * gameState.ball.initialSpeed
+		dx: Math.cos(angle) * direction * newState.ball.initialSpeed,
+		dy: Math.sin(angle) * newState.ball.initialSpeed
 	};
 	return newState;
 };
 
-// GAME RESULT for individual games
-export interface GameResult {
-	gameId: string;
-	player1Id: number;
-	player2Id: number;
-	player1Score: number;
-	player2Score: number;
-	durationMs: number;
-	isTournament: boolean;
-	tournamentId?: string;
-	tournamentRound?: 1 | 2 | 3;
-	timestamp: Date;
-	status: 'completed' | 'abandoned';
-	winnerId?: number;
-}
-
-//array to store multiple game results
-export type GameStatsTable = GameResult[];
-  
 export const createGameResult = (
 	player1Id: number,
 	player2Id: number,
 	player1Score: number,
 	player2Score: number,
-	durationMs: number,
-	isTournament: boolean = false,
-	tournamentId?: string,
-	tournamentRound?: 1 | 2
+	gameStartTime: number,
+	gameEndTime: number,
+	tournamentLevel: number = 0
 ): GameResult => {
-	const winnerId = player1Score > player2Score ? player1Id : player2Id;
+	const isPlayer1Winner = player1Score > player2Score;
 	
 	return {
-		gameId: `game-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-		player1Id,
-		player2Id,
-		player1Score,
-		player2Score,
-		durationMs,
-		isTournament,
-		tournamentId,
-		tournamentRound,
-		timestamp: new Date(),
-		status: 'completed',
-		winnerId
+		winner_id: isPlayer1Winner ? player1Id : player2Id,
+		loser_id: isPlayer1Winner ? player2Id : player1Id,
+		winner_score: Math.max(player1Score, player2Score),
+		loser_score: Math.min(player1Score, player2Score),
+		tournament_level: tournamentLevel,
+		game_duration: gameEndTime - gameStartTime,
+		game_start: gameStartTime,
+		game_end: gameEndTime
 	};
-  };
+};

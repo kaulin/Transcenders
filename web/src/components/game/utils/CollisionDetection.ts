@@ -82,7 +82,6 @@ export const checkScore = (gameState: GameState): { newState: GameState, scored:
 	// if ball passes left edge, right player scores
 	if (ball.position.x - ball.radius <= 0) {
 		newState.rightScore = rightScore + 1;
-		newState.rightScore = rightScore + 1;
 		scored = true;
 	}
 
