@@ -6,6 +6,10 @@ services:
       context: .
       dockerfile: services/gateway-service/dockerfile
       target: development
+    depends_on:
+      - user-service
+      - auth-service
+      - score-service
     ports:
       - '4000:4000'
       - '9230:9230'
