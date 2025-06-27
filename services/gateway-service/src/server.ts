@@ -1,5 +1,6 @@
 import { ApiResponse } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
+import { setupGatewaySwagger } from './swagger';
 import authRoutes from './routes/auth-gateway.routes';
 import userRoutes from './routes/user-gateway.routes';
 import scoreRoutes from './routes/score-gateway.routes';
@@ -17,7 +18,7 @@ async function start() {
   await fastify.register(authRoutes);
   await fastify.register(userRoutes);
   await fastify.register(scoreRoutes);
-
+  await setupGatewaySwagger(fastify);
   await startServer(fastify, config);
 }
 
