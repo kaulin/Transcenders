@@ -20,15 +20,16 @@ const Login = () => {
 		try {
 			await login(username, password)
 		} catch (err: any) {
-			setError(err.message || t('something_went_wrong'))
+			setError(t('incorrect_username_pw'))
 		}
 	}
 
     return (
-		<div className="flex h-full justify-center items-center pb-28">
+		<div className="relative w-full h-full">
+		<div className="profile-box justify-center items-center pb-28 bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat]">
 			<form
 				onSubmit={handleLogin}
-				className="login-bubble">
+				className="login-bubble bg-[#6e5d41]/10">
 				
 				<h1 className="text-3xl font-fascinate py-3">{t('log_in')}</h1>
 
@@ -39,7 +40,7 @@ const Login = () => {
 					placeholder={t("username")}
 					className="login-input-field mt-2"
 					onChange={(e) => setUsername(e.target.value)}
-				/>
+					/>
 
 				<input
 					type="password"
@@ -48,9 +49,9 @@ const Login = () => {
 					placeholder={t("password")}
 					className="login-input-field mt-2"
 					onChange={(e) => setPassword(e.target.value)}
-				/>
+					/>
 
-				{error && <p className="text-[#901c1c] mt-2 text-sm">{error}</p>}
+				{error && <p className="text-[#513838] mt-2 text-sm">{error}</p>}
 
 				<button type="submit" className="mt-4 button-text">
 					{t('log_in')}
@@ -66,6 +67,7 @@ const Login = () => {
 				alt="playful"
 				className="login-cat-position"
 			/> */}
+		</div>
 		</div>
     )
 }

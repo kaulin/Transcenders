@@ -72,66 +72,68 @@ const SignUp = () => {
 	}
 
 	return (
-		<div className="flex h-full justify-center items-center pb-28">
-			<form
-				onSubmit={handleSignUp}
-				className="login-bubble">
+		<div className="relative w-full h-full">
+			<div className="profile-box justify-center items-center pb-28 bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat]">
+				<form
+					onSubmit={handleSignUp}
+					className="login-bubble bg-[#6e5d41]/10">
 
-				<h1 className="text-3xl font-fascinate mb-3">{t('sign_up')}</h1>
+					<h1 className="text-3xl font-fascinate mb-3">{t('sign_up')}</h1>
 
-				<input
-					type="text"
-					required
-					value={username}
-					placeholder={t('username')}
-					className="login-input-field mt-2"
-					onChange={(e) => setUsername(e.target.value)}
-				/>
+					<input
+						type="text"
+						required
+						value={username}
+						placeholder={t('username')}
+						className="login-input-field mt-2"
+						onChange={(e) => setUsername(e.target.value)}
+					/>
 
-				<input
-					type="email"
-					required
-					value={email}
-					placeholder={t('email')}
-					className="login-input-field mt-2"
-					onChange={(e) => setEmail(e.target.value)}
-				/>
+					<input
+						type="email"
+						required
+						value={email}
+						placeholder={t('email')}
+						className="login-input-field mt-2"
+						onChange={(e) => setEmail(e.target.value)}
+					/>
 
-				<input
-					type="password"
-					required
-					value={password}
-					placeholder={t('password')}
-					className="login-input-field mt-2"
-					onChange={(e) => setPassword(e.target.value)}
-				/>
+					<input
+						type="password"
+						required
+						value={password}
+						placeholder={t('password')}
+						className="login-input-field mt-2"
+						onChange={(e) => setPassword(e.target.value)}
+					/>
 
-				<input
-					type="password"
-					required
-					value={confirmPassword}
-					placeholder={t('confirm_password')}
-					className="login-input-field mt-2"
-					onChange={(e) => setConfirmPassword(e.target.value)}
-				/>
+					<input
+						type="password"
+						required
+						value={confirmPassword}
+						placeholder={t('confirm_password')}
+						className="login-input-field mt-2"
+						onChange={(e) => setConfirmPassword(e.target.value)}
+					/>
 
-				{error && <p className="text-[#901c1c] mt-2 text-sm">{error}</p>}
+					{error && <p className="text-[#901c1c] mt-2 text-sm">{error}</p>}
 
-				<button type="submit" className="mt-4 button-text">
-					{t('sign_up')}
-				</button>
+					<button type="submit" className="mt-4 button-text">
+						{t('sign_up')}
+					</button>
 
-				<p className="mt-6">{t('existing_user')}?</p>
-				<p>
-					<Link to="/" className="button-text underline underline-offset-2"> {t('log_in')} </Link>
-				</p>
-			</form>
+					<p className="mt-6">{t('existing_user')}?</p>
+					<p>
+						<Link to="/" className="button-text underline underline-offset-2"> {t('log_in')} </Link>
+					</p>
+				</form>
 
-			{/* <img
-				src={playfulCat}
-				alt="playful cat"
-				className="login-cat-position"
-			/> */}
+				{/* <img
+					src={playfulCat}
+					alt="playful cat"
+					className="login-cat-position"
+				/> */}
+			</div>
 		</div>
 	)
 }
