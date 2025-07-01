@@ -65,7 +65,7 @@ const Home = () => {
 
 				<div className="relative flex flex-col lg:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full px-10 items-center justify-center gap-2">
 					{gameMode === "match" && (
-						<div className="w-full h-full max-w-[826px] bg-[#6e5d41]/20 flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0">
+						<div className="w-full h-full max-w-[826px] bg-[#6e5d41]/15 border border-white flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0">
 								<div className="w-full max-w-[384px] h-[174px] p-4">
 									<h2 className="profile-label mb-3">{t('player')} 1</h2>
 									<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
@@ -81,7 +81,7 @@ const Home = () => {
 					)}
 
 					{gameMode === "tournament" && (
-						<div className="w-full h-full max-w-[826px] bg-[#6e5d41]/20 flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0">
+						<div className="w-full h-full max-w-[826px] bg-[#6e5d41]/15 border border-white flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0">
 							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<h2 className="profile-label mb-3">{t('player')} 1</h2>
 								<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
