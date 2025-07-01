@@ -7,6 +7,7 @@ import {
 	Heart,
 	HeartCrack,
 	MailQuestionMark,
+	ChevronRight,
 } from 'lucide-react'
 
 import { useUser } from "../contexts/UserContext"
@@ -81,11 +82,11 @@ const Dashboard = () => {
 	const losses = 13
 
   	return (
-		<div className="profile-box lg:flex-wrap">
+		<div className="profile-box bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat lg:flex-wrap">
 			{/* profile */}
-			<div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink bg-[#605c4c13] items-center gap-14 px-8 py-16">
+			<div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink items-center gap-14 px-8 py-16">
 				<div className="flex basis-4/12 flex-col items-center">
-					<div className="bubble bg-white/50 w-64 h-64 flex items-end justify-center overflow-hidden">
+					<div className="bubble bg-[#6e5d41]/20 w-64 h-64 flex items-end justify-center overflow-hidden">
 						<img
 						src={avatars[0]}
 						alt="Avatar"
@@ -99,14 +100,14 @@ const Dashboard = () => {
 				<div className="flex basis-7/12 w-full flex-col items-center justify-center">
 					{user?.id === viewedUser?.id ? (
 						<>
-								<div className="w-80 h-[535px] bg-[#605c4c13] rounded-full border border-white p-10 custom-scrollbar">
+								<div className="w-80 h-[535px] bg-[#6e5d41]/20 rounded-full border border-white p-10 custom-scrollbar">
 									<p className="pb-2 text-[#fff] text-center font-fascinate uppercase text-xl mb-4">Friends</p>
 									<div className="relative h-[80%] p-2 overflow-y-auto">
 										{friends.map((friend) => (
 											<div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
 												<span>{friend.name}</span>
 												<span
-													className={`w-3 h-3 rounded-full border ${
+													className={`w-3 h-3 rounded-full border border-white ${
 														friend.online ? 'bg-[#ceff5d]' : 'bg-[#d7d4cd00]'
 													}`}
 												></span>
@@ -129,11 +130,11 @@ const Dashboard = () => {
 						<input
 							type="text"
 							value={searchId}
-							placeholder={t('username')}
+							placeholder={t('search_user')}
 							onChange={(e) => setSearchId(e.target.value)}
-							className="login-input-field min-w-24 p-2"
+							className="login-input-field min-w-24 p-2 bg-[#6e5d41]/20 border border-white"
 							/>
-						<button onClick={handleSearch} className="ml-4 p-2">Search</button>
+						<button onClick={handleSearch} className="ml-4 p-2 rounded-full border border-white hover:border-[#786647] bg-[#6e5d41]/20 text-white"><ChevronRight /></button>
 					</div>
 					{error && (
 						<p className="text-[#513838] pt-2">{error}</p>
@@ -148,15 +149,15 @@ const Dashboard = () => {
 
 		 		</div>		
 		 		<div className="flex flex-col md:flex-row items-center justify-center gap-12 text-xl uppercase font-fascinate">
-		 			<div className="bubble min-w-40 bg-[#605c4c13] border border-white flex flex-col justify-center items-center">
+		 			<div className="bubble min-w-40 bg-[#6e5d41]/20 border border-white flex flex-col justify-center items-center">
 		 				<div className="text-[#fff]">{t('total')}</div>
 		 				<div className="text-center text-[#fff]">{wins + losses}</div>
 		 			</div>
-		 			<div className="bubble min-w-40 bg-[#605c4c13] border border-white flex flex-col justify-center items-center">
+		 			<div className="bubble min-w-40 bg-[#6e5d41]/20 border border-white flex flex-col justify-center items-center">
 		 				<div className="text-[#fff]">{t('wins')}</div>
 		 				<div className="text-center text-[#fff]">{wins}</div>
 		 			</div>
-		 			<div className="bubble min-w-40 bg-[#605c4c13] border border-white flex flex-col justify-center items-center">
+		 			<div className="bubble min-w-40 bg-[#6e5d41]/20 border border-white flex flex-col justify-center items-center">
 		 				<div className="text-[#fff]">{t('losses')}</div>
 		 				<div className="text-center text-[#fff]">{losses}</div>
 		 			</div>
@@ -170,7 +171,7 @@ const Dashboard = () => {
 			</div>
 
 			{/* match history */}
-			<div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink bg-[#605c4c13] px-8 py-16">
+			<div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink px-8 py-16">
 				<h1 className="flex justify-center text-center text-4xl text-[#fff] font-fascinate uppercase mb-16">
 					{t('history')}
 				</h1>

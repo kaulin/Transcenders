@@ -101,7 +101,7 @@ const Profile = () => {
 	}
 
     return (
-        <div className="profile-box lg:flex-wrap">
+        <div className="profile-box lg:flex-wrap bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat]">
             <div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink items-center justify-center gap-10 px-8 py-16">
                 <div className="bubble bg-white/50 w-72 h-72 flex items-end justify-center overflow-hidden">
                     <img
@@ -127,7 +127,7 @@ const Profile = () => {
                 
             </div>
 
-            <div className="flex lg:flex-1 w-full min-h-full flex-col gap-10 flex-shrink-0 lg:flex-shrink items-center justify-center bg-[#605c4c13] px-8 py-16">
+            <div className="flex lg:flex-1 w-full min-h-full flex-col gap-10 flex-shrink-0 lg:flex-shrink items-center justify-center bg-[#6e5d41]/20 px-8 py-16">
                 <div className="w-full max-w-sm">
                     <label className="profile-label">{t('username')}</label>
                     <input
