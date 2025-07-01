@@ -10,10 +10,14 @@
         @apply h-screen overflow-hidden;
     }
 
-    html {
+    /* html {
         @apply bg-[#e0cec2];
-    }
+    } */
     
+    html {
+        @apply bg-[#e7cfbf];
+    }
+
 	div {
         @apply text-white;
 	}
@@ -35,11 +39,11 @@
 @layer components {
     
     .button-text {
-        @apply text-white hover:text-[#6a5373c6];
+        @apply text-white hover:text-[#786647];
     }
     
 	.play-button {
-        @apply rounded-full bg-white bg-opacity-10 border hover:border-[#6a5373c6] p-4 button-text text-center mt-4 min-w-24;
+        @apply rounded-full bg-white bg-opacity-10 border hover:border-[#786647] p-4 button-text text-center mt-4 min-w-24;
 	}
     
     .login-input-field {

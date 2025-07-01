@@ -85,7 +85,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 			</button>
 
 			<button className="mt-2 p-2" onClick={onContinue}>
-				{t('continue')} ➜
+				{t('continue')} →
 			</button>
 		</div>
 	)

@@ -127,7 +127,7 @@ const Profile = () => {
                 
             </div>
 
-            <div className="flex lg:flex-1 w-full min-h-full flex-col gap-10 flex-shrink-0 lg:flex-shrink items-center justify-center bg-[#6e5d41]/20 px-8 py-16">
+            <div className="flex lg:flex-1 w-full min-h-full flex-col gap-10 flex-shrink-0 lg:flex-shrink items-center justify-center bg-[#6e5d41]/20 border border-white px-8 py-16">
                 <div className="w-full max-w-sm">
                     <label className="profile-label">{t('username')}</label>
                     <input
