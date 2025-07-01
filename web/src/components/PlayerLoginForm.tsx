@@ -5,6 +5,7 @@ import useVerifyLogin from "../hooks/useVerifyLogin.ts"
 import { usePlayers } from "../contexts/PlayersContext.tsx"
 import { ApiClient } from "@transcenders/api-client"
 import type { Player } from "../types/types.ts"
+import { ChevronRight } from "lucide-react"
 
 type Props = {
   playerNumber: number;
@@ -92,13 +93,13 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 	if (!player?.mode) {
 		return (
 			<>
-				<h2 className="profile-label">{t('player')} {playerNumber}</h2>
-				<div className="flex gap-2 items-start text-sm">
-					<button className="profile-button mt-0" onClick={() => setPlayer(playerNumber, {mode: "guest"})}>
+				<h2 className="profile-label mb-3">{t('player')} {playerNumber}</h2>
+				<div className="flex flex-col gap-2 items-start text-sm">
+					<button className="flex items-center text-lg gap-1" onClick={() => setPlayer(playerNumber, {mode: "guest"})}>
 						{t('play_as_guest')}
 					</button>
 
-					<button className="profile-button mt-0" onClick={() => setPlayer(playerNumber, {mode: "login"})}>
+					<button className="flex items-center text-lg gap-1" onClick={() => setPlayer(playerNumber, {mode: "login"})}>
 						{t('log_in')}
 					</button>
 				</div>

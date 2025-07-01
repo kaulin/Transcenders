@@ -40,7 +40,7 @@ const Home = () => {
 
     return (
 		<div className="relative w-full h-full">
-			<div ref={boxRef} className="profile-box relative">
+			<div ref={boxRef} className="profile-box bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat relative">
 				<div className="flex flex-col lg:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center">
 					<h1 className="text-6xl font-fascinate">{t('hello')} {user?.username}</h1>
 					<p className="mb-10 text-xl">{t('welcome')}!</p>
@@ -63,60 +63,59 @@ const Home = () => {
 
 				</div>
 
-				<div className="flex flex-col lg:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full px-10 items-center justify-center gap-2 bg-[#605c4c13]">
+				<div className="relative flex flex-col lg:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full px-10 items-center justify-center gap-2">
 					{gameMode === "match" && (
-						<div className="w-full h-full max-w-sm flex flex-col overflow-y-auto min-h-0">
-							<div className="flex basis-1/4 flex-col"></div>
-							<div className="flex basis-1/4 flex-col justify-end pb-8">
-								<h2 className="profile-label">{t('player')} 1</h2>
-								<p className="mb-6 border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
-							</div>
-							<div className="flex basis-1/4 flex-col justify-start px-1">
+						<div className="w-full h-full max-w-[826px] bg-[#6e5d41]/20 flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0">
+								<div className="w-full max-w-[384px] h-[174px] p-4">
+									<h2 className="profile-label mb-3">{t('player')} 1</h2>
+									<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
+									<p className="flex justify-end text-lg mt-2 p-2">✓</p>
+								</div>
+							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<PlayerLoginForm
 									playerNumber={2}
 									player={players[2]}
 								/>
-							</div>
-							<div className="flex basis-1/4 items-start justify-center">
-								{players[2]?.ready && (
-									<Link to="/MatchPage" className="profile-button">start</Link>
-								)}
 							</div>
 						</div>
 					)}
 
 					{gameMode === "tournament" && (
-						<div className="w-full h-full max-w-sm flex flex-col overflow-y-auto min-h-0">
-							<div className="flex basis-1/6"></div>
-							<div className="flex basis-1/6 flex-col justify-center">
-								<h2 className="profile-label">{t('player')} 1</h2>
-								<p className="mb-6 border-b-2 border-white pb-1 text-lg">{user?.username}</p>
+						<div className="w-full h-full max-w-[826px] bg-[#6e5d41]/20 flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0">
+							<div className="w-full max-w-[384px] h-[174px] p-4">
+								<h2 className="profile-label mb-3">{t('player')} 1</h2>
+								<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
+								<p className="flex justify-end text-lg mt-2 p-2">✓</p>
 							</div>
-							<div className="flex basis-1/6 flex-col justify-start px-1">
+							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<PlayerLoginForm
 									playerNumber={2}
 									player={players[2]}
 								/>
 							</div>
-							<div className="flex basis-1/6 flex-col justify-start px-1">
+							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<PlayerLoginForm
 									playerNumber={3}
 									player={players[3]}
 								/>
 							</div>
-							<div className="flex basis-1/6 flex-col justify-start px-1">
+							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<PlayerLoginForm
 									playerNumber={4}
 									player={players[4]}
 								/>
 							</div>
-							<div className="flex basis-1/6 items-start justify-center">
-								{players[2]?.ready && players[3]?.ready && players[4]?.ready && (
-									<Link to="/TournamentPage" className="profile-button mt-0">start</Link>
-								)}
-							</div>
 						</div>
 					)}
+					<div className="absolute bottom-[160px]">
+						{gameMode === "tournament" && players[2]?.ready && players[3]?.ready && players[4]?.ready && (
+							<Link to="/TournamentPage" className="profile-button mt-0 w-[400px]">start</Link>
+						)}
+
+						{gameMode === "match" && players[2]?.ready &&(
+							<Link to="/MatchPage" className="profile-button">start</Link>
+						)}
+					</div>
 				</div>
 
 			</div>
