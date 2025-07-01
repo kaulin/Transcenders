@@ -60,7 +60,7 @@
 	}
 
 	.profile-button {
-		@apply mt-8 bg-white/20 font-fascinate uppercase text-center px-6 py-2 rounded-full hover:text-[#786647] transition;
+		@apply mt-8 bg-[#6e5d41]/20 font-fascinate uppercase text-center px-6 py-2 rounded-full hover:text-[#786647] border border-white hover:border-[#786647] transition;
 	}
 
     .custom-scrollbar {
