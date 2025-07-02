@@ -127,7 +127,7 @@ const Profile = () => {
                 
             </div>
 
-            <div className="flex lg:flex-1 w-full min-h-full flex-col gap-10 flex-shrink-0 lg:flex-shrink items-center justify-center bg-[#6e5d41]/20 border border-white px-8 py-16">
+            <div className="flex lg:flex-1 w-full min-h-full flex-col gap-10 flex-shrink-0 lg:flex-shrink items-center justify-center bg-[#6e5d41]/20 border-x border-white px-8 py-16">
                 <div className="w-full max-w-sm">
                     <label className="profile-label">{t('username')}</label>
                     <input
@@ -156,7 +156,7 @@ const Profile = () => {
                         onChange={(e) => {
                             setPassword(e.target.value)
                         }}
-                        placeholder={t('password')}
+                        placeholder={t('new_pw')}
                         className="profile-input-field"
                     />
                     <input
@@ -165,7 +165,7 @@ const Profile = () => {
                         onChange={(e) => {
                             setConfirmPassword(e.target.value)
                         }}
-                        placeholder={t('confirm_password')}
+                        placeholder={t('confirm_new_pw')}
                         className={`w-full bg-transparent border-b-2 mt-3 border-white focus:outline-none focus:border-white/70 ${
                             password === confirmPassword ? 'text-white' : 'text-white/40'
                         } text-lg placeholder-white/60`}
