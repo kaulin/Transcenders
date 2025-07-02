@@ -111,7 +111,7 @@ const SignUp = () => {
 						type="password"
 						required
 						value={confirmPassword}
-						placeholder={t('confirm_password')}
+						placeholder={t('confirm_pw')}
 						className="login-input-field mt-2"
 						onChange={(e) => setConfirmPassword(e.target.value)}
 					/>
