@@ -1,10 +1,6 @@
 import {
-  checkExistsSchema,
-  createUserSchema,
-  getUserSchema,
-  getUsersSchema,
+  userRouteSchemas,
   standardApiResponses,
-  updateUserSchema,
   USER_ROUTES,
   userByIdSchema,
 } from '@transcenders/contracts';
@@ -15,95 +11,59 @@ import { UserController } from '../controllers/user.controller';
  * SWAGGER
  * localhost:3001/docs
  */
-export async function registerUserRoutes(app: FastifyInstance) {
-  app.get(
+export default async function userRoutes(fastify: FastifyInstance) {
+  fastify.get(
     USER_ROUTES.USERS,
     {
-      schema: {
-        description: 'List users (with optional query params: ?search=, ?limit=, ?offset=)',
-        tags: ['User'],
-        querystring: getUsersSchema.querystring,
-        response: standardApiResponses,
-      },
+      schema: userRouteSchemas.getUsers,
     },
     UserController.getUsers,
   );
 
-  app.post(
+  fastify.post(
     USER_ROUTES.USERS,
     {
-      schema: {
-        description: 'Create new user',
-        tags: ['Internal ONLY'],
-        body: createUserSchema.body,
-        response: standardApiResponses,
-      },
+      schema: userRouteSchemas.addUser,
     },
     UserController.addUser,
   );
 
-  app.get(
+  fastify.get(
     USER_ROUTES.USER_BY_ID,
     {
-      schema: {
-        description: 'Get specific user by ID',
-        tags: ['User'],
-        params: userByIdSchema.params,
-        response: standardApiResponses,
-      },
+      schema: userRouteSchemas.getUserById,
     },
     UserController.getUserById,
   );
 
-  app.patch(
+  fastify.patch(
     USER_ROUTES.USER_BY_ID,
     {
-      schema: {
-        description: 'Update user by ID',
-        tags: ['User'],
-        params: updateUserSchema.params,
-        body: updateUserSchema.body,
-        response: standardApiResponses,
-      },
+      schema: userRouteSchemas.updateUser,
     },
     UserController.updateUser,
   );
 
-  app.delete(
+  fastify.delete(
     USER_ROUTES.USER_BY_ID,
     {
-      schema: {
-        description: 'Delete user by ID',
-        tags: ['User'],
-        params: userByIdSchema.params,
-        response: standardApiResponses,
-      },
+      schema: userRouteSchemas.deleteUser,
     },
     UserController.deleteUser,
   );
 
-  app.get(
+  fastify.get(
     USER_ROUTES.USER_EXISTS,
     {
-      schema: {
-        description: 'Check if username/email exists',
-        tags: ['User'],
-        params: checkExistsSchema.params,
-        response: standardApiResponses,
-      },
+      schema: userRouteSchemas.checkUserExists,
     },
     UserController.checkUserExists,
   );
 
-  app.get(
+  fastify.get(
     USER_ROUTES.USERS_EXACT,
     {
-      schema: {
-        description: 'find user by name or email (query params: ?username=, ?email=)',
-        tags: ['User'],
-        querystring: getUserSchema.querystring,
-        response: standardApiResponses,
-      },
+      schema: userRouteSchemas.getUserExact,
     },
     UserController.getUserExact,
   );

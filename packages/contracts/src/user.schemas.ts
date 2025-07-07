@@ -1,4 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
+import { standardApiResponses } from './api.schemas';
 
 /**
  *
@@ -29,9 +30,7 @@ export const FriendRequestStateField = Type.Union([
   Type.Literal('declined'),
 ]);
 
-/**
- * ENTITY SCHEMAS
- */
+// ENTITY SCHEMAS
 export const UserSchema = Type.Object({
   id: UserIdField,
   username: UsernameField,
@@ -55,120 +54,181 @@ const userModifiableFields = Type.Object({
   lang: LangField,
 });
 
-/**
- * REQUEST SCHEMAS
- */
-export const createUserSchema = {
-  body: Type.Object({
-    username: UsernameField,
-    email: EmailField,
-    display_name: Type.Optional(DisplayNameField),
-    lang: Type.Optional(LangField),
-  }),
-};
-export type CreateUserRequest = Static<typeof createUserSchema.body>;
+// ROUTE SCHEMAS
 
-export const updateUserSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-  body: Type.Partial(userModifiableFields, { additionalProperties: false }),
-};
-export type UpdateUserRequest = Static<typeof updateUserSchema.body>;
-
-export const checkExistsSchema = {
-  params: Type.Object(
-    {
-      identifier: IdentifierField,
-    },
-    { additionalProperties: false },
-  ),
-};
-
-export const getUsersSchema = {
-  querystring: Type.Object({
-    search: Type.Optional(Type.String()),
-    limit: Type.Optional(Type.Number({ minimum: 1, maximum: 100 })),
-    offset: Type.Optional(Type.Number({ minimum: 0 })),
-  }),
-};
-export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
-
-export const getUserSchema = {
-  querystring: Type.Object(
-    {
-      username: Type.Optional(Type.String()),
-      email: Type.Optional(Type.String()),
-    },
-    {
-      minProperties: 1,
-      additionalProperties: false,
-    },
-  ),
-};
-export type GetUserRequest = Static<typeof getUserSchema.querystring>;
-
+// TODO Used in several places, need to kill dependency/refactor
 export const userByIdSchema = {
   params: Type.Object({
     id: IdParamField,
   }),
 };
-export type userByIdRequest = Static<typeof userByIdSchema.params>;
 
-export const acceptFriendSchema = {
-  params: Type.Object({
-    id: IdParamField,
-    requestId: IdParamField,
-  }),
-};
-export type AcceptFriendRequest = Static<typeof acceptFriendSchema.params>;
+export const userRouteSchemas = {
+  getUsers: {
+    description: 'List users (with optional query params: ?search=, ?limit=, ?offset=)',
+    tags: ['User'],
+    querystring: Type.Object({
+      search: Type.Optional(Type.String()),
+      limit: Type.Optional(Type.Number({ minimum: 1, maximum: 100 })),
+      offset: Type.Optional(Type.Number({ minimum: 0 })),
+    }),
+    response: standardApiResponses,
+  },
 
-export const declineFriendSchema = {
-  params: Type.Object({
-    id: IdParamField,
-    requestId: IdParamField,
-  }),
-};
-export type DeclineFriendRequest = Static<typeof declineFriendSchema.params>;
+  addUser: {
+    description: 'Create new user',
+    tags: ['Internal ONLY'],
+    body: Type.Object({
+      username: UsernameField,
+      email: EmailField,
+      display_name: Type.Optional(DisplayNameField),
+      lang: Type.Optional(LangField),
+    }),
+    response: standardApiResponses,
+  },
 
-export const getFriendsSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-};
-export type GetFriendsRequest = Static<typeof getFriendsSchema.params>;
+  getUserById: {
+    description: 'Get specific user by ID',
+    tags: ['User'],
+    params: Type.Object({
+      id: IdParamField,
+    }),
+    response: standardApiResponses,
+  },
 
-export const getRequestsSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-};
-export type GetsRequestsRequest = Static<typeof getRequestsSchema.params>;
+  updateUser: {
+    description: 'Update user by ID',
+    tags: ['User'],
+    params: Type.Object({
+      id: IdParamField,
+    }),
+    body: Type.Partial(userModifiableFields, { additionalProperties: false }),
+    response: standardApiResponses,
+  },
 
-// Add this to your user.schemas.ts
-export const sendFriendRequestSchema = {
-  params: Type.Object({
-    id: IdParamField,
-    recipientId: IdParamField,
-  }),
-};
-export type SendFriendRequestRequest = Static<typeof sendFriendRequestSchema.params>;
+  deleteUser: {
+    description: 'Delete user by ID',
+    tags: ['User'],
+    params: userByIdSchema.params,
+    response: standardApiResponses,
+  },
 
-export const removeFriendSchema = {
-  params: Type.Object({
-    id: IdParamField,
-    friendId: IdParamField,
-  }),
-};
-export type RemoveFriendRequest = Static<typeof removeFriendSchema.params>;
+  checkUserExists: {
+    description: 'Check if username/email exists',
+    tags: ['User'],
+    params: Type.Object(
+      {
+        identifier: IdentifierField,
+      },
+      { additionalProperties: false },
+    ),
+    response: standardApiResponses,
+  },
 
-export const checkFriendshipExistsSchema = {
-  params: Type.Object({
-    id1: IdParamField,
-    id2: IdParamField,
-  }),
+  getUserExact: {
+    description: 'find user by name or email (query params: ?username=, ?email=)',
+    tags: ['User'],
+    querystring: Type.Object(
+      {
+        username: Type.Optional(Type.String()),
+        email: Type.Optional(Type.String()),
+      },
+      {
+        minProperties: 1,
+        additionalProperties: false,
+      },
+    ),
+    response: standardApiResponses,
+  },
+} as const;
+
+export const friendshipRouteSchemas = {
+  getFriends: {
+    description: 'Get all friends for a user',
+    tags: ['Friendship'],
+    params: Type.Object({
+      id: IdParamField,
+    }),
+    response: standardApiResponses,
+  },
+
+  removeFriend: {
+    description: 'Remove a friendship',
+    tags: ['Friendship'],
+    params: Type.Object({
+      id1: IdParamField,
+      id2: IdParamField,
+    }),
+    response: standardApiResponses,
+  },
+
+  getRequests: {
+    description: 'Get incoming friend requests for a user',
+    tags: ['Friendship'],
+    params: Type.Object({
+      id: IdParamField,
+    }),
+    response: standardApiResponses,
+  },
+
+  sendRequest: {
+    description: 'Send friend request to specific user',
+    tags: ['Friendship'],
+    params: Type.Object({
+      id: IdParamField,
+      recipientId: IdParamField,
+    }),
+    response: standardApiResponses,
+  },
+
+  acceptFriend: {
+    description: 'Accept a friend request',
+    tags: ['Friendship'],
+    params: Type.Object({
+      id: IdParamField,
+      requestId: IdParamField,
+    }),
+    response: standardApiResponses,
+  },
+
+  declineFriend: {
+    description: 'Decline/cancel a friend request',
+    tags: ['Friendship'],
+    params: Type.Object({
+      id: IdParamField,
+      requestId: IdParamField,
+    }),
+    response: standardApiResponses,
+  },
+
+  checkFriendshipExists: {
+    description: 'Check if friendship exists between two users',
+    tags: ['Friendship'],
+    params: Type.Object({
+      id1: IdParamField,
+      id2: IdParamField,
+    }),
+    response: standardApiResponses,
+  },
 };
-export type CheckFriendshipExistsRequest = Static<typeof checkFriendshipExistsSchema.params>;
+
+// REQUEST TYPES
+export type CreateUserRequest = Static<typeof userRouteSchemas.addUser.body>;
+export type UpdateUserRequest = Static<typeof userRouteSchemas.updateUser.body>;
+export type GetUsersQuery = Static<typeof userRouteSchemas.getUsers.querystring>;
+export type GetUserRequest = Static<typeof userRouteSchemas.getUserExact.querystring>;
+export type CheckUserExists = Static<typeof userRouteSchemas.checkUserExists.params>;
+export type UserByIdRequest = Static<typeof userRouteSchemas.getUserById.params>;
+
+export type AcceptFriendRequest = Static<typeof friendshipRouteSchemas.acceptFriend.params>;
+export type DeclineFriendRequest = Static<typeof friendshipRouteSchemas.declineFriend.params>;
+export type GetFriendsRequest = Static<typeof friendshipRouteSchemas.getFriends.params>;
+export type GetRequestsRequest = Static<typeof friendshipRouteSchemas.getRequests.params>;
+export type SendFriendRequestRequest = Static<typeof friendshipRouteSchemas.sendRequest.params>;
+export type RemoveFriendRequest = Static<typeof friendshipRouteSchemas.removeFriend.params>;
+export type CheckFriendshipExistsRequest = Static<
+  typeof friendshipRouteSchemas.checkFriendshipExists.params
+>;
 
 /**
  * RESPONSE DATA SCHEMAS

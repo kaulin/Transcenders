@@ -3,7 +3,7 @@ import {
   CheckFriendshipExistsRequest,
   DeclineFriendRequest,
   GetFriendsRequest,
-  GetsRequestsRequest as GetRequests,
+  GetRequestsRequest,
   RemoveFriendRequest,
   ResponseHelper,
   SendFriendRequestRequest,
@@ -30,7 +30,7 @@ export class FriendshipController {
   }
 
   static async getRequests(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as GetRequests;
+    const { id } = request.params as GetRequestsRequest;
     const userId = parseInt(id);
 
     const result = await FriendshipService.getIncomingFriendRequests(userId);
