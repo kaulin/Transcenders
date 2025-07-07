@@ -2,11 +2,10 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { ApiResponseType } from '@transcenders/contracts';
 
 export class GatewayService {
-
   static async forward(
     req: FastifyRequest,
     serviceUrl: string,
-    path: string
+    path: string,
   ): Promise<{ status: number; body: ApiResponseType }> {
     const url = `${serviceUrl}${path}`;
     const method = req.method;
@@ -26,7 +25,7 @@ export class GatewayService {
     req: FastifyRequest,
     reply: FastifyReply,
     serviceUrl: string,
-    path: string
+    path: string,
   ) {
     try {
       const { status, body } = await this.forward(req, serviceUrl, path);
@@ -39,5 +38,4 @@ export class GatewayService {
       } satisfies ApiResponseType);
     }
   }
-  
 }

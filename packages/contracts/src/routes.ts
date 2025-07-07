@@ -1,5 +1,4 @@
-export const GATEWAY_ROUTES = {
-} as const;
+export const GATEWAY_ROUTES = {} as const;
 
 export const USER_ROUTES = {
   // GET /users - List users (with optional query params: ?search=, ?limit=, ?offset=)

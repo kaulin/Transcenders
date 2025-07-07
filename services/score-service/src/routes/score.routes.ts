@@ -1,67 +1,37 @@
-import {
-  getScoresSchema,
-  createScoreSchema,
-  standardApiResponses,
-  SCORE_ROUTES,
-  scoresByIdSchema,
-  statsByIdSchema,
-} from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
+import { SCORE_ROUTES, scoreRouteSchemas } from '@transcenders/contracts';
 import { ScoreController } from '../controllers/score.controller';
 
 /**
  * SWAGGER
  * localhost:3003/docs
  */
-export async function registerScoreRoutes(app: FastifyInstance) {
-  app.get(
+export default async function scoreRoutes(fastify: FastifyInstance) {
+  fastify.get(
     SCORE_ROUTES.SCORES,
     {
-      schema: {
-        description: 'List scores (with optional query params: ?id=, ?limit=, ?offset=)',
-        tags: ['Score'],
-        querystring: getScoresSchema.querystring,
-        response: standardApiResponses,
-      },
+      schema: scoreRouteSchemas.getScores,
     },
     ScoreController.getScores,
   );
-
-  app.post(
+  fastify.post(
     SCORE_ROUTES.SCORE,
     {
-      schema: {
-        description: 'Add new score entry',
-        tags: ['Score'],
-        body: createScoreSchema.body,
-        response: standardApiResponses,
-      },
+      schema: scoreRouteSchemas.addScore,
     },
     ScoreController.addScore,
   );
-
-  app.get(
+  fastify.get(
     SCORE_ROUTES.SCORES_BY_ID,
     {
-      schema: {
-        description: 'Get score data by user ID',
-        tags: ['Score'],
-        params: scoresByIdSchema.params,
-        response: standardApiResponses,
-      },
+      schema: scoreRouteSchemas.getScoresById,
     },
     ScoreController.getScoresById,
   );
-
-  app.get(
+  fastify.get(
     SCORE_ROUTES.STATS_BY_ID,
     {
-      schema: {
-        description: 'Get user stats by user ID',
-        tags: ['Score'],
-        params: statsByIdSchema.params,
-        response: standardApiResponses,
-      },
+      schema: scoreRouteSchemas.getStatsById,
     },
     ScoreController.getStatsById,
   );

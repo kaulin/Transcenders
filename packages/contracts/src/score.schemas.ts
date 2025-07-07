@@ -1,9 +1,8 @@
 import { Static, Type } from '@sinclair/typebox';
+import { standardApiResponses } from './api.schemas';
 import { TimestampField, UserIdField } from './user.schemas';
 
-/**
- * ENTITY SCHEMAS
- */
+// ENTITY SCHEMAS
 export const ScoreSchema = Type.Object({
   winner_id: UserIdField,
   loser_id: UserIdField,
@@ -37,56 +36,56 @@ export const StatsSchema = Type.Object({
 });
 export type Stats = Static<typeof StatsSchema>;
 
-/**
- * REQUEST SCHEMAS
- */
-export const createScoreSchema = {
-  body: Type.Object({
-    winner_id: UserIdField,
-    loser_id: UserIdField,
-    winner_score: Type.Number(),
-    loser_score: Type.Number(),
-    tournament_level: Type.Number(),
-    game_duration: Type.Number(),
-    game_start: TimestampField,
-    game_end: TimestampField,
-  }),
-};
-export type CreateScoreRequest = Static<typeof createScoreSchema.body>;
+// ROUTE SCHEMAS
+export const scoreRouteSchemas = {
+  getScores: {
+    description: 'List scores (with optional query params: ?search=, ?limit=, ?offset=)',
+    tags: ['Score'],
+    querystring: Type.Object({
+      search: Type.Optional(Type.String()),
+      limit: Type.Optional(Type.Number({ minimum: 1, maximum: 100 })),
+      offset: Type.Optional(Type.Number({ minimum: 0 })),
+    }),
+    response: standardApiResponses,
+  },
 
-export const getScoresSchema = {
-  querystring: Type.Object({
-    search: Type.Optional(Type.String()),
-    limit: Type.Optional(Type.Number({ minimum: 1, maximum: 100 })),
-    offset: Type.Optional(Type.Number({ minimum: 0 })),
-  }),
-};
-export type GetScoresQuery = Static<typeof getScoresSchema.querystring>;
+  addScore: {
+    description: 'Add new score entry',
+    tags: ['Score'],
+    body: Type.Object({
+      winner_id: UserIdField,
+      loser_id: UserIdField,
+      winner_score: Type.Number(),
+      loser_score: Type.Number(),
+      tournament_level: Type.Number(),
+      game_duration: Type.Number(),
+      game_start: TimestampField,
+      game_end: TimestampField,
+    }),
+    response: standardApiResponses,
+  },
 
-export const getScoreSchema = {
-  querystring: Type.Object(
-    {
-      winner_id: Type.Optional(Type.Number()),
-      loser_id: Type.Optional(Type.Number()),
-    },
-    {
-      minProperties: 1,
-      additionalProperties: false,
-    },
-  ),
-};
-export type GetScoreRequest = Static<typeof getScoreSchema.querystring>;
+  getScoresById: {
+    description: 'Get score data by user ID',
+    tags: ['Score'],
+    params: Type.Object({
+      id: UserIdField,
+    }),
+    response: standardApiResponses,
+  },
 
-export const scoresByIdSchema = {
-  params: Type.Object({
-    id: UserIdField,
-  }),
-};
-export type ScoresByIdRequest = Static<typeof scoresByIdSchema.params>;
+  getStatsById: {
+    description: 'Get user stats by user ID',
+    tags: ['Score'],
+    params: Type.Object({
+      id: UserIdField,
+    }),
+    response: standardApiResponses,
+  },
+} as const;
 
-export const statsByIdSchema = {
-  params: Type.Object({
-    id: UserIdField,
-  }),
-};
-export type StatsByIdRequest = Static<typeof statsByIdSchema.params>;
+// REQUEST TYPES
+export type GetScoresQuery = Static<typeof scoreRouteSchemas.getScores.querystring>;
+export type CreateScoreRequest = Static<typeof scoreRouteSchemas.addScore.body>;
+export type ScoresByIdRequest = Static<typeof scoreRouteSchemas.getScoresById.params>;
+export type StatsByIdRequest = Static<typeof scoreRouteSchemas.getStatsById.params>;

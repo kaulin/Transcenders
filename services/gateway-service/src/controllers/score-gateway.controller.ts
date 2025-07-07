@@ -10,7 +10,7 @@ export class ScoreController {
   }
 
   static async addScore(req: FastifyRequest, reply: FastifyReply) {
-    const path = `/score`
+    const path = `/score`;
     return GatewayService.forwardAndReply(req, reply, SERVICE_URLS.SCORE, path);
   }
 
