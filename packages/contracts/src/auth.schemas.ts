@@ -1,4 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
+import { standardApiResponses } from './api.schemas';
 import {
   EmailField,
   IdField,
@@ -6,24 +7,13 @@ import {
   TimestampField,
   UserIdField,
   UsernameField,
+  userByIdSchema, // TODO remove deoendency
 } from './user.schemas';
 
 export const PasswordField = Type.String();
 export const PwHashField = Type.String();
 
-export const registerUserSchema = Type.Object({
-  username: UsernameField,
-  email: EmailField,
-  password: PasswordField,
-});
-export type RegisterUser = Static<typeof registerUserSchema>;
-
-export const loginUserSchema = Type.Object({
-  username: UsernameField,
-  password: PasswordField,
-});
-export type LoginUser = Static<typeof loginUserSchema>;
-
+// ENTITY SCHEMAS
 export const userCredentialsEntrySchema = Type.Object({
   user_id: UserIdField,
   pw_hash: PwHashField,
@@ -51,13 +41,50 @@ export const JWTPayloadSchema = Type.Object({
 });
 export type JWTPayload = Static<typeof JWTPayloadSchema>;
 
-export const changePasswordSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-  body: Type.Object({
-    oldPassword: PasswordField,
-    newPassword: PasswordField,
-  }),
-};
-export type ChangePasswordRequest = Static<typeof changePasswordSchema.body>;
+// ROUTE SCHEMAS
+export const authRouteSchemas = {
+  register: {
+    description: 'Authenticate something',
+    tags: ['Auth'],
+    body: Type.Object({
+      username: UsernameField,
+      email: EmailField,
+      password: PasswordField,
+    }),
+    response: standardApiResponses,
+  },
+
+  login: {
+    description: 'Authenticate something',
+    tags: ['Auth'],
+    body: Type.Object({
+      username: UsernameField,
+      password: PasswordField,
+    }),
+    response: standardApiResponses,
+  },
+
+  delete: {
+    description: 'remove user credentials',
+    tags: ['Internal ONLY'],
+    params: userByIdSchema.params,
+    response: standardApiResponses,
+  },
+
+  changePassword: {
+    description: 'change user password',
+    tags: ['Auth'],
+    params: Type.Object({
+      id: IdParamField,
+    }),
+    body: Type.Object({
+      oldPassword: PasswordField,
+      newPassword: PasswordField,
+    }),
+    response: standardApiResponses,
+  },
+} as const;
+
+export type RegisterUser = Static<typeof authRouteSchemas.register.body>;
+export type LoginUser = Static<typeof authRouteSchemas.login.body>;
+export type ChangePasswordRequest = Static<typeof authRouteSchemas.changePassword.body>;

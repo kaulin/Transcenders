@@ -1,64 +1,36 @@
-import {
-  AUTH_ROUTES,
-  changePasswordSchema,
-  loginUserSchema,
-  registerUserSchema,
-  standardApiResponses,
-  userByIdSchema,
-} from '@transcenders/contracts';
+import { AUTH_ROUTES, authRouteSchemas } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
 import { AuthController } from '../controllers/auth.controller';
 
-export async function registerAuthRoutes(app: FastifyInstance) {
-  app.post(
+export default async function authRoutes(fastify: FastifyInstance) {
+  fastify.post(
     AUTH_ROUTES.REGISTER,
     {
-      schema: {
-        description: 'Authenticate something',
-        tags: ['Auth'],
-        body: registerUserSchema,
-        response: standardApiResponses,
-      },
+      schema: authRouteSchemas.register,
     },
     AuthController.register,
   );
 
-  app.post(
+  fastify.post(
     AUTH_ROUTES.LOGIN,
     {
-      schema: {
-        description: 'Authenticate something',
-        tags: ['Auth'],
-        body: loginUserSchema,
-        response: standardApiResponses,
-      },
+      schema: authRouteSchemas.login,
     },
     AuthController.login,
   );
 
-  app.delete(
+  fastify.delete(
     AUTH_ROUTES.DELETE,
     {
-      schema: {
-        description: 'remove user credentials',
-        tags: ['Internal ONLY'],
-        params: userByIdSchema.params,
-        response: standardApiResponses,
-      },
+      schema: authRouteSchemas.delete,
     },
     AuthController.delete,
   );
 
-  app.patch(
+  fastify.patch(
     AUTH_ROUTES.CHANGE_PASSWORD,
     {
-      schema: {
-        description: 'change user password',
-        tags: ['Auth'],
-        params: changePasswordSchema.params,
-        body: changePasswordSchema.body,
-        response: standardApiResponses,
-      },
+      schema: authRouteSchemas.changePassword,
     },
     AuthController.changePassword,
   );

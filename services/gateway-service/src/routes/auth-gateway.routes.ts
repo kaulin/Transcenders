@@ -1,9 +1,37 @@
 import { FastifyInstance } from 'fastify';
+import { AUTH_ROUTES, authRouteSchemas } from '@transcenders/contracts';
 import { AuthController } from '../controllers/auth-gateway.controller';
 
 export default async function authRoutes(fastify: FastifyInstance) {
-  fastify.post('/auth/register', AuthController.register);
-  fastify.post('/auth/login', AuthController.login);
-  fastify.patch('/auth/change-password/:id', AuthController.changePassword);
-  fastify.delete('/auth/credentials/:id', AuthController.deleteCredentials);
+  fastify.post(
+    AUTH_ROUTES.REGISTER,
+    {
+      schema: authRouteSchemas.register,
+    },
+    AuthController.register,
+  );
+
+  fastify.post(
+    AUTH_ROUTES.LOGIN,
+    {
+      schema: authRouteSchemas.login,
+    },
+    AuthController.login,
+  );
+
+  fastify.delete(
+    AUTH_ROUTES.DELETE,
+    {
+      schema: authRouteSchemas.delete,
+    },
+    AuthController.deleteCredentials,
+  );
+
+  fastify.patch(
+    AUTH_ROUTES.CHANGE_PASSWORD,
+    {
+      schema: authRouteSchemas.changePassword,
+    },
+    AuthController.changePassword,
+  );
 }
