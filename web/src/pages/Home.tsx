@@ -41,7 +41,7 @@ const Home = () => {
     return (
 		<div className="relative w-full h-full">
 			<div ref={boxRef} className="profile-box bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat relative">
-				<div className="flex flex-col lg:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center">
+				<div className="flex flex-col lg:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center bg-[#6e5d41]/15 lg:bg-transparent">
 					<h1 className="text-6xl font-fascinate">{t('hello')} {user?.username}</h1>
 					<p className="mb-10 text-xl">{t('welcome')}!</p>
 
@@ -63,9 +63,9 @@ const Home = () => {
 
 				</div>
 
-				<div className="relative flex flex-col lg:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full px-10 items-center justify-center gap-2">
+				<div className="relative flex flex-col lg:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2">
 					{gameMode === "match" && (
-						<div className="w-full h-full max-w-[826px] bg-[#6e5d41]/15 border-x border-white flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0">
+						<div className="box-section-dark w-full lg:w-[790px] px-8 backdrop-blur-sm">
 								<div className="w-full max-w-[384px] h-[174px] p-4">
 									<h2 className="profile-label mb-3">{t('player')} 1</h2>
 									<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
@@ -81,7 +81,7 @@ const Home = () => {
 					)}
 
 					{gameMode === "tournament" && (
-						<div className="w-full h-full max-w-[826px] bg-[#6e5d41]/15 border-x border-white flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0">
+						<div className="box-section-dark w-full lg:max-w-[790px] px-8">
 							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<h2 className="profile-label mb-3">{t('player')} 1</h2>
 								<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
@@ -122,7 +122,7 @@ const Home = () => {
 			<img
 				src={curiousCat}
 				alt="curiousCat"
-				className="absolute left-0 bottom-0 translate-y-[41%] w-[300px] sm:w-[350px] lg:w-[400px] object-contain pointer-events-none"
+				className="absolute left-0 bottom-0 translate-y-[40.5%] translate-x-[0.5%] w-[300px] sm:w-[350px] lg:w-[400px] object-contain pointer-events-none"
 			/>
 		</div>
 	)
