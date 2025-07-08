@@ -210,7 +210,7 @@ export const friendshipRouteSchemas = {
     }),
     response: standardApiResponses,
   },
-};
+} as const;
 
 // REQUEST TYPES
 export type CreateUserRequest = Static<typeof userRouteSchemas.addUser.body>;
