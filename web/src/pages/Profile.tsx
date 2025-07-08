@@ -102,7 +102,7 @@ const Profile = () => {
 
     return (
         <div className="profile-box lg:flex-wrap bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat]">
-            <div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink items-center justify-center gap-10 px-8 py-16">
+            <div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink items-center justify-center gap-10 px-8 py-16 bg-[#6e5d41]/15 lg:bg-transparent">
                 <div className="bubble bg-white/50 w-72 h-72 flex items-end justify-center overflow-hidden">
                     <img
                         src={avatars[avatarIdx]}
@@ -127,7 +127,7 @@ const Profile = () => {
                 
             </div>
 
-            <div className="flex lg:flex-1 w-full min-h-full flex-col gap-10 flex-shrink-0 lg:flex-shrink items-center justify-center bg-[#6e5d41]/20 border-x border-white px-8 py-16">
+            <div className="w-full min-h-full flex lg:flex-1 flex-col items-center justify-center gap-10 flex-shrink-0 lg:flex-shrink bg-[#6e5d41]/15 lg:border-x border-white px-8 py-16">
                 <div className="w-full max-w-sm">
                     <label className="profile-label">{t('username')}</label>
                     <input
@@ -193,7 +193,7 @@ const Profile = () => {
                 </button>
             </div>
             
-            <div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink justify-center items-center px-8 py-16">
+            <div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink justify-center items-center px-8 py-16 bg-[#6e5d41]/15 lg:bg-transparent">
                 <button 
                     onClick={handleDelete}
                     className="profile-button"
