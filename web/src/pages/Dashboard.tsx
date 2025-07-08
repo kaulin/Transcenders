@@ -8,6 +8,7 @@ import {
 	HeartCrack,
 	MailQuestionMark,
 	ChevronRight,
+	Trophy,
 } from 'lucide-react'
 
 import { useUser } from "../contexts/UserContext"
@@ -81,12 +82,11 @@ const Dashboard = () => {
 	const wins = 42
 	const losses = 13
 
-  	return (
-		<div className="profile-box bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat lg:flex-wrap">
-			{/* profile */}
-			<div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink items-center gap-14 px-8 py-16">
-				<div className="flex basis-4/12 flex-col items-center">
-					<div className="bubble bg-[#6e5d41]/20 w-64 h-64 flex items-end justify-center overflow-hidden">
+	return (
+		<div className="profile-box bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat flex-col xl:flex-row">
+			<div className="dashboard-section">
+				<div className="flex flex-col items-center">
+					<div className="bubble bg-white/50 w-56 h-56 flex items-end justify-center overflow-hidden">
 						<img
 						src={avatars[0]}
 						alt="Avatar"
@@ -97,18 +97,18 @@ const Dashboard = () => {
 					<h1 className="pt-6 text-5xl text-[#fff] font-fascinate">{viewedUser?.username}</h1>
 				</div>
 
-				<div className="flex basis-7/12 w-full flex-col items-center justify-center">
+				<div className="w-full flex flex-col items-center justify-center">
 					{user?.id === viewedUser?.id ? (
 						<>
-								<div className="w-80 h-[535px] bg-[#6e5d41]/20 rounded-full border border-white p-10 custom-scrollbar">
-									<p className="pb-2 text-[#fff] text-center font-fascinate uppercase text-xl mb-4">Friends</p>
-									<div className="relative h-[80%] p-2 overflow-y-auto">
+								<div className="w-80 h-[509px] p-10">
+									<p className="text-[#fff] text-center font-fascinate uppercase text-xl mb-6">{t('friends')}</p>
+									<div className="relative h-[80%] px-2 overflow-y-auto custom-scrollbar">
 										{friends.map((friend) => (
 											<div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
 												<span>{friend.name}</span>
 												<span
 													className={`w-3 h-3 rounded-full border border-white ${
-														friend.online ? 'bg-[#ceff5d]' : 'bg-[#d7d4cd00]'
+														friend.online ? 'bg-[#ceff5d]' : 'bg-transparent'
 													}`}
 												></span>
 											</div>
@@ -117,65 +117,77 @@ const Dashboard = () => {
 								</div>
 						</>
 					) : (
-						<div className="flex flex-col">
-							<button className="play-button flex gap-3 min-w-48 justify-start m-2"><HeartPlus className="text-[#b15789c5]"/>{t('add_friend')}</button>
-							<button className="play-button flex gap-3 min-w-48 justify-start m-2"><HeartMinus className="text-[#b15789c5]"/>{t('remove_friend')}</button>
-							<button className="play-button flex gap-3 min-w-48 justify-start m-2"><HeartOff className="text-[#b15789c5]"/>{t('block_user')}</button>
+						<div className="flex flex-col h-[500px] justify-start p-10">
+							<button className="play-button bg-white/5 flex gap-3 min-w-48 justify-start m-2"><HeartPlus className="text-[#741c4d]"/>{t('add_friend')}</button>
+							<button className="play-button bg-white/5 flex gap-3 min-w-48 justify-start m-2"><HeartMinus className="text-[#741c4d]"/>{t('remove_friend')}</button>
+							<button className="play-button bg-white/5 flex gap-3 min-w-48 justify-start m-2"><HeartOff className="text-[#741c4d]"/>{t('block_user')}</button>
 						</div>
 					)}
 				</div>
 
-				<div className="flex basis-1/12 w-full flex-col justify-start items-center">
-					<div className="flex">
-						<input
-							type="text"
-							value={searchId}
-							placeholder={t('search_user')}
-							onChange={(e) => setSearchId(e.target.value)}
-							className="login-input-field min-w-24 p-2 bg-[#6e5d41]/20 border border-white"
-							/>
-						<button onClick={handleSearch} className="ml-4 p-2 rounded-full border border-white hover:border-[#786647] bg-[#6e5d41]/20 text-white"><ChevronRight /></button>
+				<div className="flex w-full flex-col justify-start items-center">
+					<div className="flex flex-col">
+						<div className="flex">
+							<input
+								type="text"
+								value={searchId}
+								placeholder={t('search_user')}
+								onChange={(e) => setSearchId(e.target.value)}
+								className="profile-input-field"
+								/>
+							<button onClick={handleSearch} className="ml-4 p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white"><ChevronRight /></button>
+						</div>
+						<div className="h-6 pt-2">
+							{error && (
+								<p className="flex justify-start text-[#513838] text-sm">{error}</p>
+								)}
+						</div>
 					</div>
-					{error && (
-						<p className="text-[#513838] pt-2">{error}</p>
-					)}
 				</div>
 			</div>
 
-			{/* stats */}
-			<div className="flex lg:flex-1 w-full min-h-full flex-col gap-28 flex-shrink-0 lg:flex-shrink px-8 py-16">
-		 		<div className="flex w-full justify-center text-center items-center text-lg font-fascinate uppercase">
-		 			<p className="text-4xl text-[#fff]">{t('games_played')} </p>
+			<div className="dashboard-section">
+				<div className="flex flex-col font-fascinate uppercase text-center">
+					<p className="text-2xl text-[#fff] mb-2">{t('games_played')}</p>
+					<div className="flex justify-between text-md">
+						<p>{t('total')}</p>
+						<p className="font-sans">{wins + losses}</p>
+					</div>
+					<div className="flex justify-between text-md">
+						<p>{t('wins')}</p>
+						<p className="font-sans">{wins}</p>
+					</div>
+					<div className="flex justify-between text-md">
+						<p>{t('losses')}</p>
+						<p className="font-sans">{losses}</p>
+					</div>
+				</div>
 
-		 		</div>		
-		 		<div className="flex flex-col md:flex-row items-center justify-center gap-12 text-xl uppercase font-fascinate">
-		 			<div className="bubble min-w-40 bg-[#6e5d41]/20 border border-white flex flex-col justify-center items-center">
-		 				<div className="text-[#fff]">{t('total')}</div>
-		 				<div className="text-center text-[#fff]">{wins + losses}</div>
-		 			</div>
-		 			<div className="bubble min-w-40 bg-[#6e5d41]/20 border border-white flex flex-col justify-center items-center">
-		 				<div className="text-[#fff]">{t('wins')}</div>
-		 				<div className="text-center text-[#fff]">{wins}</div>
-		 			</div>
-		 			<div className="bubble min-w-40 bg-[#6e5d41]/20 border border-white flex flex-col justify-center items-center">
-		 				<div className="text-[#fff]">{t('losses')}</div>
-		 				<div className="text-center text-[#fff]">{losses}</div>
-		 			</div>
-		 		</div>
-				 <div className="flex items-center justify-center gap-10">
-		 			<PieCharts />
-				</div>	
-		 		<div className="flex items-end w-full">
-		 			<AreaCharts />
-		 		</div>
+				<div className="flex w-full max-w-[400px]">
+					<PieCharts />
+				</div>
+
+				<div className="flex flex-col items-center w-full">
+					<p className="text-center text-[#fff] font-fascinate text-xl uppercase">Latest matches</p>
+					<AreaCharts />
+					<div className="flex flex-col sm:flex-row gap-4">
+						<div className="flex gap-2 items-center ">
+							<div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
+							Your Score
+						</div>
+						<div className="flex gap-2 items-center ">
+							<div className="w-4 h-4 rounded-full bg-[#5d6b2f52] border border-white"></div>
+							Opponent's Score
+						</div>
+					</div>
+				</div>
 			</div>
-
-			{/* match history */}
-			<div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink px-8 py-16">
-				<h1 className="flex justify-center text-center text-4xl text-[#fff] font-fascinate uppercase mb-16">
-					{t('history')}
-				</h1>
-				<MatchHistory />
+			
+			<div className="dashboard-section h-full">
+				<p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
+				<div className="relative min-w-[250px] h-[90%] px-4 overflow-y-auto custom-scrollbar">
+					<MatchHistory />
+				</div>
 			</div>
 
 		</div>
