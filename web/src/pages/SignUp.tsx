@@ -72,11 +72,11 @@ const SignUp = () => {
 	}
 
 	return (
-		<div className="relative w-full h-full">
-			<div className="profile-box justify-center items-center pb-28 bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat]">
+		<div className="relative w-full h-full flex justify-center items-center pb-28">
+			{/* <div className="profile-box justify-center items-center pb-28 bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat]"> */}
 				<form
 					onSubmit={handleSignUp}
-					className="login-bubble bg-[#6e5d41]/10">
+					className="login-bubble bg-[#ffe6d5]/20">
 
 					<h1 className="text-3xl font-fascinate mb-3">{t('sign_up')}</h1>
 
@@ -133,7 +133,7 @@ const SignUp = () => {
 					alt="playful cat"
 					className="login-cat-position"
 				/> */}
-			</div>
+			{/* </div> */}
 		</div>
 	)
 }
