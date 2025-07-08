@@ -16,7 +16,7 @@ const Header = () => {
     }
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 h-24 py-6 px-10 flex">
+        <header className="fixed top-0 left-0 w-full z-50 h-32 py-6 px-24 flex">
             { user? (
                 <>
                     <div className="flex basis-1/2 justify-start items-center text-center gap-10">
