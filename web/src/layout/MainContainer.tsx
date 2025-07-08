@@ -14,8 +14,13 @@ const MainContainer = () => {
   const { user } = useUser()
 
   return (
-    <div className="flex-1 min-h-0 overflow-hidden p-10 pt-24">
-      {user ? (
+    <div className="relative flex-1 min-h-0 overflow-hidden">
+
+      <div className="absolute inset-0 -z-10 bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat blur-md scale-105" />
+      <div className="absolute inset-0 -z-10 bg-black/10" />
+
+      <div className="relative h-full z-10 p-24 pt-32">
+        {user ? (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/matchpage" element={<MatchPage />} />
@@ -30,7 +35,8 @@ const MainContainer = () => {
             <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
-			)}
+        )}
+      </div>
     </div>
   );
 }
