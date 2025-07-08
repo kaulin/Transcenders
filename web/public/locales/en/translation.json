@@ -9,7 +9,7 @@
     "change_language": "Change Language",
     "change_password": "Change Password",
     "change_username": "Change Username",
-	"confirm": "Confirm changes",
+	"confirm": "Confirm",
     "confirm_pw": "Confirm password",
     "confirm_new_pw": "Confirm new password",
 	"continue": "Continue",
@@ -35,6 +35,7 @@
     "log_in": "Log in",
     "log_out": "Log out",
     "losses": "Losses",
+    "mode": "Game Mode",
     "new_pw": "New password",
     "new_user": "New here",
     "no": "No",
@@ -68,5 +69,6 @@
     "welcome": "Welcome to play Pong",
     "winner": "Winner",
     "wins": "Wins",
-    "yes": "Yes"
+    "yes": "Yes",
+    "one_v_one": "One v One"
 }
