@@ -41,6 +41,11 @@
     .button-text {
         @apply text-white hover:text-[#786647];
     }
+
+    .dashboard-section {
+        @apply bg-[#6e5d41]/20 backdrop-blur-sm w-full min-h-full flex-shrink-0
+        lg:flex-1 lg:h-full lg:flex-shrink px-4 py-24 flex flex-col items-center justify-between;
+    }
     
 	.play-button {
         @apply rounded-full bg-white bg-opacity-10 border hover:border-[#786647] p-4 button-text text-center mt-4 min-w-24;
@@ -52,9 +57,14 @@
     
     .profile-box  {
         @apply flex flex-col lg:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
-        items-center rounded-lg border border-white shadow-[0_0_3px_3px_#fff] bg-[#d3bfb1];
+        items-center rounded-sm border border-white shadow-[0_0_3px_3px_#fff];
 	}
     
+    .box-section-dark {
+        @apply w-full h-full bg-[#6e5d41]/15 lg:border-x border-white
+        flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0;
+    }
+
 	.profile-label {
 		@apply block font-fascinate text-2xl uppercase mb-2;
 	}
@@ -64,7 +74,7 @@
 	}
 
 	.profile-button {
-		@apply mt-8 bg-[#6e5d41]/20 font-fascinate uppercase text-center px-6 py-2 rounded-full hover:text-[#786647] border border-white hover:border-[#786647] transition;
+		@apply mt-6 bg-[#6e5d41]/20 font-fascinate uppercase text-center py-[0.8em] px-[1em] rounded-full hover:text-[#786647] border border-white hover:border-[#786647] transition;
 	}
 
     .custom-scrollbar {
