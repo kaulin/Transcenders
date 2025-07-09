@@ -38,44 +38,18 @@
 
 @layer components {
     
+    .box-section-dark {
+        @apply bg-[#6e5d41]/15 backdrop-blur-sm w-full min-h-full flex-shrink-0
+        xl:flex-1 xl:h-full xl:flex-shrink px-4 py-24 flex flex-col items-center;
+    }
+
+    .bubble {
+        @apply rounded-full aspect-square border border-white;
+    }
+
     .button-text {
         @apply text-white hover:text-[#786647];
     }
-
-    .dashboard-section {
-        @apply bg-[#6e5d41]/20 backdrop-blur-sm w-full min-h-full flex-shrink-0
-        lg:flex-1 lg:h-full lg:flex-shrink px-4 py-24 flex flex-col items-center justify-between;
-    }
-    
-	.play-button {
-        @apply rounded-full bg-white bg-opacity-10 border hover:border-[#786647] p-4 button-text text-center mt-4 min-w-24;
-	}
-    
-    .login-input-field {
-        @apply rounded-lg bg-white bg-opacity-20 p-1 text-white placeholder-white;
-    }
-    
-    .profile-box  {
-        @apply flex flex-col lg:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
-        items-center rounded-sm border border-white shadow-[0_0_3px_3px_#fff];
-	}
-    
-    .box-section-dark {
-        @apply w-full h-full bg-[#6e5d41]/15 lg:border-x border-white
-        flex flex-col items-center justify-center gap-6 overflow-y-auto min-h-0;
-    }
-
-	.profile-label {
-		@apply block font-fascinate text-2xl uppercase mb-2;
-	}
-
-	.profile-input-field {
-		@apply w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60;
-	}
-
-	.profile-button {
-		@apply mt-6 bg-[#6e5d41]/20 font-fascinate uppercase text-center py-[0.8em] px-[1em] rounded-full hover:text-[#786647] border border-white hover:border-[#786647] transition;
-	}
 
     .custom-scrollbar {
         scrollbar-width: thin; /* Firefox */
@@ -86,19 +60,28 @@
         scrollbar-color: rgba(255, 255, 255, 0.3) transparent; 
     }
 
-    .bubble {
-        @apply rounded-full aspect-square border border-white;
-    }
-
 	.login-bubble {
-		@apply bubble shadow-[0_0_3px_3px_#fff] w-[min(90vw,90vh)] max-w-[500px] z-10 p-16 flex flex-col justify-center items-center;
+		@apply bubble bg-[#ffe6d5]/20 shadow-[0_0_3px_3px_#fff] min-w-[400px] sm:w-[500px] p-[4em] flex flex-col justify-center items-center text-center text-sm sm:text-base;
+	}
+    
+    .login-input-field {
+        @apply rounded-lg bg-white bg-opacity-20 p-[0.25em] text-white placeholder-white;
+    }
+    
+    .profile-box  {
+        @apply flex flex-col xl:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
+        items-center rounded-sm border border-white shadow-[0_0_3px_3px_#fff] bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat;
 	}
 
-    .bg-bubble {
-        @apply absolute rounded-full aspect-square shadow-xl shadow-[#be7d8486] bg-gradient-to-t from-[#c5567580] via-[#ff7da463] to-[#fcefe11b] w-full z-0;
-    }
+	.profile-label {
+		@apply block font-fascinate text-2xl uppercase mb-2;
+	}
 
-	.login-cat-position {
-		@apply absolute bottom-0 left-1/2 -translate-x-[10%] w-72 sm:w-96 lg:w-[400px] object-contain pointer-events-none;
+	.profile-input-field {
+		@apply w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60;
+	}
+
+	.rounded-button {
+		@apply bg-[#6e5d41]/15 rounded-full min-w-[120px] button-text border border-white hover:border-[#786647] transition py-[0.75em] px-[1em] text-center;
 	}
 }
