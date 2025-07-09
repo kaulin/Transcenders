@@ -78,7 +78,7 @@ const SignUp = () => {
 					onSubmit={handleSignUp}
 					className="login-bubble bg-[#ffe6d5]/20">
 
-					<h1 className="text-3xl font-fascinate mb-3">{t('sign_up')}</h1>
+					<h1 className="text-2xl sm:text-3xl font-fascinate mb-3">{t('sign_up')}</h1>
 
 					<input
 						type="text"
