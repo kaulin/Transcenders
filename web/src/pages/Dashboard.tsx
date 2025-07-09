@@ -83,8 +83,8 @@ const Dashboard = () => {
 	const losses = 13
 
 	return (
-		<div className="profile-box bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat flex-col xl:flex-row">
-			<div className="dashboard-section">
+		<div className="profile-box">
+			<div className="box-section-dark justify-between">
 				<div className="flex flex-col items-center">
 					<div className="bubble bg-white/50 w-56 h-56 flex items-end justify-center overflow-hidden">
 						<img
@@ -118,9 +118,9 @@ const Dashboard = () => {
 						</>
 					) : (
 						<div className="flex flex-col h-[500px] justify-start p-10">
-							<button className="play-button bg-white/5 flex gap-3 min-w-48 justify-start m-2"><HeartPlus className="text-[#741c4d]"/>{t('add_friend')}</button>
-							<button className="play-button bg-white/5 flex gap-3 min-w-48 justify-start m-2"><HeartMinus className="text-[#741c4d]"/>{t('remove_friend')}</button>
-							<button className="play-button bg-white/5 flex gap-3 min-w-48 justify-start m-2"><HeartOff className="text-[#741c4d]"/>{t('block_user')}</button>
+							<button className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"><HeartPlus className="text-[#786647]"/>{t('add_friend')}</button>
+							<button className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"><HeartMinus className="text-[#786647]"/>{t('remove_friend')}</button>
+							<button className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"><HeartOff className="text-[#786647]"/>{t('block_user')}</button>
 						</div>
 					)}
 				</div>
@@ -146,7 +146,7 @@ const Dashboard = () => {
 				</div>
 			</div>
 
-			<div className="dashboard-section">
+			<div className="box-section-dark justify-between">
 				<div className="flex flex-col font-fascinate uppercase text-center">
 					<p className="text-2xl text-[#fff] mb-2">{t('games_played')}</p>
 					<div className="flex justify-between text-md">
@@ -183,7 +183,7 @@ const Dashboard = () => {
 				</div>
 			</div>
 			
-			<div className="dashboard-section h-full">
+			<div className="box-section-dark justify-between h-full">
 				<p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
 				<div className="relative min-w-[250px] h-[90%] px-4 overflow-y-auto custom-scrollbar">
 					<MatchHistory />
