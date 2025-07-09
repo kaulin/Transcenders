@@ -29,9 +29,9 @@ const Login = () => {
 		{/* <div className="profile-box justify-center items-center pb-28 bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat"> */}
 			<form
 				onSubmit={handleLogin}
-				className="login-bubble bg-[#ffe6d5]/20">
+				className="login-bubble">
 				
-				<h1 className="text-3xl font-fascinate py-3">{t('log_in')}</h1>
+				<h1 className="text-2xl sm:text-3xl font-fascinate py-3">{t('log_in')}</h1>
 
 				<input
 					type="text"
