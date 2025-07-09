@@ -101,8 +101,8 @@ const Profile = () => {
 	}
 
     return (
-        <div className="profile-box lg:flex-wrap bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat]">
-            <div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink items-center justify-center gap-10 px-8 py-16 bg-[#6e5d41]/15 lg:bg-transparent">
+        <div className="profile-box">
+            <div className="flex xl:flex-1 w-full min-h-full flex-col flex-shrink-0 xl:flex-shrink items-center justify-center gap-10 px-8 py-16 bg-[#6e5d41]/15 xl:bg-transparent">
                 <div className="bubble bg-white/50 w-72 h-72 flex items-end justify-center overflow-hidden">
                     <img
                         src={avatars[avatarIdx]}
@@ -114,12 +114,12 @@ const Profile = () => {
                 <div className="flex flex-col items-center">
                     <h1 className="pt-6 text-6xl text-[#fff] font-fascinate">{user?.username}</h1>
                     
-                        <div className="flex justify-center gap-2 pt-3">
-							<button onClick={prevAvatar}><ChevronLeft /></button>
+                        <div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white">
+							<button className="" onClick={prevAvatar}><ChevronLeft /></button>
 							<p>{t('select_avatar')}</p>
-                            <button onClick={nextAvatar}><ChevronRight /></button>
+                            <button className="" onClick={nextAvatar}><ChevronRight /></button>
                         </div>
-						<div className="flex h-[36px] gap-2 items-center">
+						<div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white">
 							<p className="pt-1">{t('upload_avatar')}</p>
 							<button><Upload className="h-5 w-5"/></button>
 						</div>
@@ -127,7 +127,7 @@ const Profile = () => {
                 
             </div>
 
-            <div className="w-full min-h-full flex lg:flex-1 flex-col items-center justify-center gap-10 flex-shrink-0 lg:flex-shrink bg-[#6e5d41]/15 lg:border-x border-white px-8 py-16">
+            <div className="w-full min-h-full flex xl:flex-1 flex-col items-center justify-center gap-10 flex-shrink-0 xl:flex-shrink bg-[#6e5d41]/15 px-8 py-16 backdrop-blur-sm">
                 <div className="w-full max-w-sm">
                     <label className="profile-label">{t('username')}</label>
                     <input
@@ -187,16 +187,16 @@ const Profile = () => {
 
                 <button
                     onClick={handleConfirm}
-                    className="profile-button"
+                    className="rounded-button font-fascinate uppercase mt-8"
                 >
                     {t('confirm')}
                 </button>
             </div>
             
-            <div className="flex lg:flex-1 w-full min-h-full flex-col flex-shrink-0 lg:flex-shrink justify-center items-center px-8 py-16 bg-[#6e5d41]/15 lg:bg-transparent">
+            <div className="flex xl:flex-1 w-full min-h-full flex-col flex-shrink-0 xl:flex-shrink justify-center items-center px-8 py-16 bg-[#6e5d41]/15 xl:bg-transparent">
                 <button 
                     onClick={handleDelete}
-                    className="profile-button"
+                    className="rounded-button font-fascinate uppercase"
                 >
                     {t('delete_account')}
                 </button>
