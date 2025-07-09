@@ -30,7 +30,7 @@ const Home = () => {
 	const handleGameMode = (mode: "match" | "tournament") => {
 		setGameMode(mode)
 
-		if (window.innerWidth < 1024 && boxRef.current) {
+		if (window.innerWidth < 1200 && boxRef.current) {
 			boxRef.current.scrollTo({
 				top: boxRef.current.scrollHeight,
 				behavior: 'smooth',
@@ -41,31 +41,30 @@ const Home = () => {
     return (
 		<div className="relative w-full h-full">
 			<div ref={boxRef} className="profile-box bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat relative">
-				<div className="flex flex-col lg:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center bg-[#6e5d41]/15 lg:bg-transparent">
+				<div className="flex flex-col xl:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center bg-[#6e5d41]/15 xl:bg-transparent">
 					<h1 className="text-6xl font-fascinate">{t('hello')} {user?.username}</h1>
 					<p className="mb-10 text-xl">{t('welcome')}!</p>
 
 					<div className="flex flex-col">
 						<button
 							onClick={() => handleGameMode("match")}
-							className="profile-button"
+							className="rounded-button font-fascinate uppercase mt-6"
 						>
 							{t('start_match')}
 						</button>
 
 						<button
 							onClick={() => handleGameMode("tournament")}
-							className="profile-button"
+							className="rounded-button font-fascinate uppercase mt-6"
 						>
 							{t('start_tournament')}
 						</button>
 					</div>
-
 				</div>
 
-				<div className="relative flex flex-col lg:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2">
+				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2">
 					{gameMode === "match" && (
-						<div className="box-section-dark w-full lg:w-[790px] px-8 backdrop-blur-sm">
+						<div className="box-section-dark justify-center xl:max-w-[790px]">
 								<div className="w-full max-w-[384px] h-[174px] p-4">
 									<h2 className="profile-label mb-3">{t('player')} 1</h2>
 									<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
@@ -81,7 +80,7 @@ const Home = () => {
 					)}
 
 					{gameMode === "tournament" && (
-						<div className="box-section-dark w-full lg:max-w-[790px] px-8">
+						<div className="box-section-dark justify-center xl:max-w-[790px]">
 							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<h2 className="profile-label mb-3">{t('player')} 1</h2>
 								<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
@@ -107,13 +106,13 @@ const Home = () => {
 							</div>
 						</div>
 					)}
-					<div className="absolute bottom-[160px]">
+					<div className="absolute bottom-[130px]">
 						{gameMode === "tournament" && players[2]?.ready && players[3]?.ready && players[4]?.ready && (
-							<Link to="/TournamentPage" className="profile-button mt-0 w-[400px]">start</Link>
+							<Link to="/TournamentPage" className="rounded-button font-fascinate uppercase w-[400px]">start</Link>
 						)}
 
 						{gameMode === "match" && players[2]?.ready &&(
-							<Link to="/MatchPage" className="profile-button">start</Link>
+							<Link to="/MatchPage" className="rounded-button font-fascinate uppercase w-[400px]">start</Link>
 						)}
 					</div>
 				</div>
@@ -122,7 +121,7 @@ const Home = () => {
 			<img
 				src={curiousCat}
 				alt="curiousCat"
-				className="absolute left-0 bottom-0 translate-y-[40.5%] translate-x-[0.5%] w-[300px] sm:w-[350px] lg:w-[400px] object-contain pointer-events-none"
+				className="absolute left-0 bottom-0 translate-y-[40.5%] translate-x-[0.5%] w-[250px] sm:w-[325px] lg:w-[400px] object-contain pointer-events-none"
 			/>
 		</div>
 	)
