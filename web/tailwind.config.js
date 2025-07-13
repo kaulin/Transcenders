@@ -25,7 +25,7 @@ export default {
   
 	  extend: {
 		screens: {
-			'xl': '1200px',
+			'xl': '1300px',
 		},
 		colors: {
 		  bg_primary: "#8a63ff",
