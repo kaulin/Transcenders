@@ -101,9 +101,9 @@ const Profile = () => {
 	}
 
     return (
-        <div className="profile-box">
+        <div className="box">
             <div className="flex xl:flex-1 w-full min-h-full flex-col flex-shrink-0 xl:flex-shrink items-center justify-center gap-10 px-8 py-16 bg-[#6e5d41]/15 xl:bg-transparent">
-                <div className="bubble bg-white/50 w-72 h-72 flex items-end justify-center overflow-hidden">
+                <div className="bubble bg-white/50 w-56 h-56 sm:w-72 sm:h-72 flex items-end justify-center overflow-hidden">
                     <img
                         src={avatars[avatarIdx]}
                         alt="Avatar preview"
@@ -112,7 +112,7 @@ const Profile = () => {
                 </div>
                 
                 <div className="flex flex-col items-center">
-                    <h1 className="pt-6 text-6xl text-[#fff] font-fascinate">{user?.username}</h1>
+                    <h1 className="text-6xl text-[#fff] font-fascinate">{user?.username}</h1>
                     
                         <div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white">
 							<button className="" onClick={prevAvatar}><ChevronLeft /></button>
@@ -127,29 +127,29 @@ const Profile = () => {
                 
             </div>
 
-            <div className="w-full min-h-full flex xl:flex-1 flex-col items-center justify-center gap-10 flex-shrink-0 xl:flex-shrink bg-[#6e5d41]/15 px-8 py-16 backdrop-blur-sm">
+            <div className="box-section bg-[#6e5d41]/15 justify-center gap-10">
                 <div className="w-full max-w-sm">
-                    <label className="profile-label">{t('username')}</label>
+                    <label className="fascinate-label">{t('username')}</label>
                     <input
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="profile-input-field"
+                        className="input-field"
                     />
                 </div>
 
                 <div className="w-full max-w-sm">
-                    <label className="profile-label">{t('display_name')}</label>
+                    <label className="fascinate-label">{t('display_name')}</label>
                     <input
                         type="text"
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
-                        className="profile-input-field"
+                        className="input-field"
                     />
                 </div>
 
                 <div className="w-full max-w-sm">
-                    <label className="profile-label">{t('password')}</label>
+                    <label className="fascinate-label">{t('password')}</label>
                     <input
                         type="password"
                         value={password}
@@ -157,7 +157,7 @@ const Profile = () => {
                             setPassword(e.target.value)
                         }}
                         placeholder={t('new_pw')}
-                        className="profile-input-field"
+                        className="input-field"
                     />
                     <input
                         type="password"
@@ -173,7 +173,7 @@ const Profile = () => {
                 </div>
 
                 <div className="w-full max-w-sm">
-                    <label className="profile-label">{t('language')}</label>
+                    <label className="fascinate-label">{t('language')}</label>
                     <select
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}
@@ -187,7 +187,7 @@ const Profile = () => {
 
                 <button
                     onClick={handleConfirm}
-                    className="rounded-button font-fascinate uppercase mt-8"
+                    className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase mt-8"
                 >
                     {t('confirm')}
                 </button>
@@ -196,7 +196,7 @@ const Profile = () => {
             <div className="flex xl:flex-1 w-full min-h-full flex-col flex-shrink-0 xl:flex-shrink justify-center items-center px-8 py-16 bg-[#6e5d41]/15 xl:bg-transparent">
                 <button 
                     onClick={handleDelete}
-                    className="rounded-button font-fascinate uppercase"
+                    className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase"
                 >
                     {t('delete_account')}
                 </button>
