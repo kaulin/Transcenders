@@ -37,9 +37,15 @@
 }
 
 @layer components {
-    
-    .box-section-dark {
-        @apply bg-[#6e5d41]/15 backdrop-blur-sm w-full min-h-full flex-shrink-0
+        
+    .box {
+        @apply flex flex-col xl:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
+        items-center rounded-sm border border-white shadow-[0_0_3px_3px_#fff]
+        bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat;
+	}
+
+    .box-section {
+        @apply backdrop-blur-sm w-full min-h-full flex-shrink-0
         xl:flex-1 xl:h-full xl:flex-shrink px-4 py-24 flex flex-col items-center;
     }
 
@@ -47,12 +53,8 @@
         @apply rounded-full aspect-square border border-white;
     }
 
-    .button-text {
-        @apply text-white hover:text-[#786647];
-    }
-
     .custom-scrollbar {
-        scrollbar-width: thin; /* Firefox */
+        scrollbar-width: auto; /* Firefox */
         scrollbar-color: transparent transparent; /* Firefox */
     }
 
@@ -67,21 +69,16 @@
     .login-input-field {
         @apply rounded-lg bg-white bg-opacity-20 p-[0.25em] text-white placeholder-white;
     }
-    
-    .profile-box  {
-        @apply flex flex-col xl:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
-        items-center rounded-sm border border-white shadow-[0_0_3px_3px_#fff] bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat;
-	}
 
-	.profile-label {
+	.fascinate-label {
 		@apply block font-fascinate text-2xl uppercase mb-2;
 	}
 
-	.profile-input-field {
+	.input-field {
 		@apply w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg placeholder-white/60;
 	}
 
 	.rounded-button {
-		@apply bg-[#6e5d41]/15 rounded-full min-w-[120px] button-text border border-white hover:border-[#786647] transition py-[0.75em] px-[1em] text-center;
+		@apply rounded-full border border-white hover:border-[#786647] text-white hover:text-[#786647] transition py-[0.75em] px-[1em] text-center;
 	}
 }
