@@ -30,7 +30,7 @@ const Home = () => {
 	const handleGameMode = (mode: "match" | "tournament") => {
 		setGameMode(mode)
 
-		if (window.innerWidth < 1200 && boxRef.current) {
+		if (window.innerWidth < 1300 && boxRef.current) {
 			boxRef.current.scrollTo({
 				top: boxRef.current.scrollHeight,
 				behavior: 'smooth',
@@ -40,7 +40,7 @@ const Home = () => {
 
     return (
 		<div className="relative w-full h-full">
-			<div ref={boxRef} className="profile-box bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat relative">
+			<div ref={boxRef} className="box relative">
 				<div className="flex flex-col xl:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center bg-[#6e5d41]/15 xl:bg-transparent">
 					<h1 className="text-6xl font-fascinate">{t('hello')} {user?.username}</h1>
 					<p className="mb-10 text-xl">{t('welcome')}!</p>
@@ -48,25 +48,25 @@ const Home = () => {
 					<div className="flex flex-col">
 						<button
 							onClick={() => handleGameMode("match")}
-							className="rounded-button font-fascinate uppercase mt-6"
+							className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase mt-6"
 						>
 							{t('start_match')}
 						</button>
 
 						<button
 							onClick={() => handleGameMode("tournament")}
-							className="rounded-button font-fascinate uppercase mt-6"
+							className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase mt-6"
 						>
 							{t('start_tournament')}
 						</button>
 					</div>
 				</div>
 
-				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2">
+				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2 bg-[#6e5d41]/15 xl:bg-transparent">
 					{gameMode === "match" && (
-						<div className="box-section-dark justify-center xl:max-w-[790px]">
+						<div className="box-section xl:bg-[#6e5d41]/15 justify-center xl:max-w-[790px]">
 								<div className="w-full max-w-[384px] h-[174px] p-4">
-									<h2 className="profile-label mb-3">{t('player')} 1</h2>
+									<h2 className="fascinate-label mb-3">{t('player')} 1</h2>
 									<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
 									<p className="flex justify-end text-lg mt-2 p-2">✓</p>
 								</div>
@@ -80,9 +80,9 @@ const Home = () => {
 					)}
 
 					{gameMode === "tournament" && (
-						<div className="box-section-dark justify-center xl:max-w-[790px]">
+						<div className="box-section xl:bg-[#6e5d41]/15 justify-center xl:max-w-[790px]">
 							<div className="w-full max-w-[384px] h-[174px] p-4">
-								<h2 className="profile-label mb-3">{t('player')} 1</h2>
+								<h2 className="fascinate-label mb-3">{t('player')} 1</h2>
 								<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
 								<p className="flex justify-end text-lg mt-2 p-2">✓</p>
 							</div>
@@ -108,16 +108,17 @@ const Home = () => {
 					)}
 					<div className="absolute bottom-[130px]">
 						{gameMode === "tournament" && players[2]?.ready && players[3]?.ready && players[4]?.ready && (
-							<Link to="/TournamentPage" className="rounded-button font-fascinate uppercase w-[400px]">start</Link>
+							<Link to="/TournamentPage" className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase">start</Link>
 						)}
 
 						{gameMode === "match" && players[2]?.ready &&(
-							<Link to="/MatchPage" className="rounded-button font-fascinate uppercase w-[400px]">start</Link>
+							<Link to="/MatchPage" className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase">start</Link>
 						)}
 					</div>
 				</div>
 
 			</div>
+
 			<img
 				src={curiousCat}
 				alt="curiousCat"

@@ -79,7 +79,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 	}
 
 	const backAndContinueButtons = (onContinue: () => void) => (
-		<div className="flex justify-between">
+		<div className="flex justify-between text-sm sm:text-base">
 			<button className="mt-2 p-2" onClick={handleGoBack}>
 				← {t('go_back')}
 			</button>
@@ -93,7 +93,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 	if (!player?.mode) {
 		return (
 			<>
-				<h2 className="profile-label mb-3">{t('player')} {playerNumber}</h2>
+				<h2 className="fascinate-label mb-3">{t('player')} {playerNumber}</h2>
 				<div className="flex flex-col gap-2 items-start text-sm">
 					<button className="flex items-center text-lg gap-1" onClick={() => setPlayer(playerNumber, {mode: "guest"})}>
 						{t('play_as_guest')}
@@ -110,7 +110,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 	if (player?.ready) {
 		return (
 			<>
-				<h2 className="profile-label">{t('player')} {playerNumber}</h2>
+				<h2 className="fascinate-label">{t('player')} {playerNumber}</h2>
 				<p className="border-b-2 border-white text-lg">{player.username}</p>
 				<div className="flex justify-between">
 					<button className="mt-2 p-2" onClick={handleGoBack}>
@@ -125,11 +125,11 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 
 	return (
 		<>
-			<h2 className="profile-label">{t('player')} {playerNumber}</h2>
+			<h2 className="fascinate-label">{t('player')} {playerNumber}</h2>
 			<input
 				type="text"
 				placeholder={t('username')}
-				className="profile-input-field"
+				className="input-field"
 				value={username}
 				onChange={(e) => setUsername(e.target.value)}
 			/>
@@ -138,7 +138,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 				<input
 					type="password"
 					placeholder={t('password')}
-					className="profile-input-field"
+					className="input-field"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
 				/>		

@@ -83,8 +83,8 @@ const Dashboard = () => {
 	const losses = 13
 
 	return (
-		<div className="profile-box">
-			<div className="box-section-dark justify-between">
+		<div className="box xl:gap-6">
+			<div className="box-section bg-[#6e5d41]/15 justify-between">
 				<div className="flex flex-col items-center">
 					<div className="bubble bg-white/50 w-56 h-56 flex items-end justify-center overflow-hidden">
 						<img
@@ -133,9 +133,9 @@ const Dashboard = () => {
 								value={searchId}
 								placeholder={t('search_user')}
 								onChange={(e) => setSearchId(e.target.value)}
-								className="profile-input-field"
+								className="input-field"
 								/>
-							<button onClick={handleSearch} className="ml-4 p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white"><ChevronRight /></button>
+							<button onClick={handleSearch} className="ml-4 p-2 rounded-full  border-white hover:border-[#786647] bg-white/15 text-white"><ChevronRight /></button>
 						</div>
 						<div className="h-6 pt-2">
 							{error && (
@@ -146,7 +146,7 @@ const Dashboard = () => {
 				</div>
 			</div>
 
-			<div className="box-section-dark justify-between">
+			<div className="box-section bg-[#6e5d41]/15 justify-between gap-24">
 				<div className="flex flex-col font-fascinate uppercase text-center">
 					<p className="text-2xl text-[#fff] mb-2">{t('games_played')}</p>
 					<div className="flex justify-between text-md">
@@ -171,11 +171,11 @@ const Dashboard = () => {
 					<p className="text-center text-[#fff] font-fascinate text-xl uppercase">Latest matches</p>
 					<AreaCharts />
 					<div className="flex flex-col sm:flex-row gap-4">
-						<div className="flex gap-2 items-center ">
+						<div className="flex gap-2 items-center text-white">
 							<div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
 							Your Score
 						</div>
-						<div className="flex gap-2 items-center ">
+						<div className="flex gap-2 items-center text-white">
 							<div className="w-4 h-4 rounded-full bg-[#5d6b2f52] border border-white"></div>
 							Opponent's Score
 						</div>
@@ -183,9 +183,9 @@ const Dashboard = () => {
 				</div>
 			</div>
 			
-			<div className="box-section-dark justify-between h-full">
+			<div className="box-section bg-[#6e5d41]/15 justify-between h-full">
 				<p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
-				<div className="relative min-w-[250px] h-[90%] px-4 overflow-y-auto custom-scrollbar">
+				<div className="relative w-80 h-[90%] px-4 overflow-y-auto custom-scrollbar">
 					<MatchHistory />
 				</div>
 			</div>

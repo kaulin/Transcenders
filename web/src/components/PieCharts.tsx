@@ -31,11 +31,11 @@ const PieCharts = () => {
         { title: t('one_v_one'), data: singleMatchData },
         { title: t('tournament'), data: tournamentData },
       ].map(({ title, data }, i) => (
-        <div key={i} className="flex flex-col sm:flex-row w-full items-center justify-between">
+        <div key={i} className="flex flex-col sm:flex-row w-full items-center justify-between text-md">
           <div className="flex flex-col items-center sm:items-start">
             <div className="text-white text-center sm:text-xl font-fascinate uppercase">{title}</div>
             {data.map((entry, index) => (
-              <div key={index} className="flex items-center gap-2 mb-1 text-md">
+              <div key={index} className="flex items-center gap-2 mb-1">
               <span
                 className="inline-block w-4 h-4 rounded-full border border-white"
                 style={{ backgroundColor: COLORS[index % COLORS.length] }}
