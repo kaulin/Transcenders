@@ -152,22 +152,26 @@ export class UserApiService {
   }
 
   /**
-   * Set a random avatar for a user
-   */
-  static async setRandomAvatar(userId: number) {
-    return this.callUserService(AVATAR_ROUTES.SET_RANDOM.replace(':userId', userId.toString()), {
-      method: 'POST',
-    });
-  }
-
-  /**
    * Get the full URL for an avatar path
    */
   static getAvatarUrl(avatarPath: string): string {
-    if (avatarPath.startsWith('http')) {
+    if (this.getAvatarType(avatarPath) == 'web') {
       return avatarPath;
     }
     return `${SERVICE_URLS.USER}${avatarPath}`;
+  }
+
+  /**
+   * Get the type of the Avatar
+   */
+  static getAvatarType(avatarPath: string): 'default' | 'web' | 'custom' {
+    if (avatarPath.startsWith('http')) {
+      return 'web';
+    }
+    if (avatarPath.startsWith('/uploads/avatars/')) {
+      return 'custom';
+    }
+    return 'default';
   }
 
   /**
@@ -183,5 +187,14 @@ export class UserApiService {
         body: formData,
       },
     );
+  }
+
+  /**
+   * Hard set an avatar URL for the user
+   */
+  static async setAvatar(userId: number, avatarUrl: string) {
+    return await this.updateUser(userId, {
+      avatar: avatarUrl,
+    });
   }
 }
