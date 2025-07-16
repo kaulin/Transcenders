@@ -1,19 +1,18 @@
 import { MultipartFile } from '@fastify/multipart';
 import {
-  BooleanOperationResult,
-  BooleanResultHelper,
+  AvatarResult,
   DatabaseHelper,
   DatabaseResult,
   DefaultAvatarsResult,
-  SetAvatarResult,
+  RandomAvatarResult,
+  RandomCatsQuery,
 } from '@transcenders/contracts';
 import fs from 'fs';
 import path from 'path';
-import SQL from 'sql-template-strings';
-import { Database } from 'sqlite';
-import { pipeline, Readable } from 'stream';
+import { pipeline } from 'stream';
 import { promisify } from 'util';
 import { getDB } from '../db/database';
+import { UserService } from './UserService';
 
 const pump = promisify(pipeline);
 
@@ -35,16 +34,13 @@ export class AvatarService {
     // Ensure upload directories exist
     fs.mkdirSync(uploadDir, { recursive: true });
     fs.mkdirSync(defaultAvatarsDir, { recursive: true });
-
-    // Copy default avatars from frontend to backend (run once)
-    await this.copyDefaultAvatars(defaultAvatarsDir);
   }
 
   static async uploadAvatar(
     userId: string,
     file: MultipartFile,
-  ): Promise<DatabaseResult<BooleanOperationResult>> {
-    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+  ): Promise<DatabaseResult<AvatarResult>> {
+    return DatabaseHelper.executeQuery<AvatarResult>(
       'upload avatar',
       await getDB(),
       async (database) => {
@@ -58,73 +54,12 @@ export class AvatarService {
         const avatarPath = await this.saveFileToUploads(userId, ext, file.file);
 
         // Update database
-        await this.updateUserAvatar(database, userId, avatarPath);
+        await UserService.updateUser(+userId, { avatar: avatarPath });
 
-        return BooleanResultHelper.success(`user '${userId}' avatar changed`);
-      },
-    );
-  }
-
-  static async setRandomAvatar(userId: string): Promise<DatabaseResult<SetAvatarResult>> {
-    return DatabaseHelper.executeQuery<SetAvatarResult>(
-      'set random avatar',
-      await getDB(),
-      async (database) => {
-        const headers = new Headers({
-          'Content-Type': 'application/json',
-          'x-api-key': `${process.env.CAT_API_KEY}`,
-        });
-
-        const requestOptions: RequestInit = {
-          method: 'GET',
-          headers: headers,
-          redirect: 'follow',
-        };
-
-        // get a random cat object
-        const response = await fetch(
-          'https://api.thecatapi.com/v1/images/search?&mime_types=jpg,png,avif&size=any&format=json&order=RANDOM&page=0&limit=1',
-          requestOptions,
-        );
-
-        if (!response.ok) {
-          throw new Error(`Cat API error: ${response.status}`);
-        }
-
-        // Parse the JSON
-        const catData = await response.json();
-
-        if (!catData || catData.length === 0) {
-          throw new Error('No cat image found');
-        }
-
-        const imageUrl = catData[0].url;
-
-        // Download the actual image
-        const imageResponse = await fetch(imageUrl);
-
-        if (!imageResponse.ok) {
-          throw new Error(`Failed to download image: ${imageResponse.status}`);
-        }
-
-        // save image
-        const extension = path.extname(imageUrl);
-        const body = imageResponse.body;
-        if (!body) {
-          throw new Error('No response body');
-        }
-        const nodeStream = Readable.fromWeb(body as any);
-        const avatarPath = await this.saveFileToUploads(userId, extension, nodeStream);
-
-        // Update database
-        await this.updateUserAvatar(database, userId, avatarPath);
-
-        const result: SetAvatarResult = {
+        return {
           success: true,
           url: avatarPath,
         };
-
-        return result;
       },
     );
   }
@@ -152,12 +87,12 @@ export class AvatarService {
   static async setDefaultAvatar(
     userId: string,
     avatarName: string,
-  ): Promise<DatabaseResult<SetAvatarResult>> {
+  ): Promise<DatabaseResult<AvatarResult>> {
     const defaultAvatarsDir = this.getDefaultAvatarsDir();
-    return DatabaseHelper.executeQuery<SetAvatarResult>(
+    return DatabaseHelper.executeQuery<AvatarResult>(
       'set default avatar',
       await getDB(),
-      async (database) => {
+      async () => {
         // Validate avatar exists
         const avatarPath = path.join(defaultAvatarsDir, avatarName);
         if (!fs.existsSync(avatarPath)) {
@@ -167,9 +102,11 @@ export class AvatarService {
         // Update user's avatar in database
         const avatarUrl = `/uploads/default-avatars/${avatarName}`;
 
-        await this.updateUserAvatar(database, userId, avatarUrl);
+        await UserService.updateUser(+userId, {
+          avatar: avatarUrl,
+        });
 
-        const result: SetAvatarResult = {
+        const result: AvatarResult = {
           success: true,
           url: avatarUrl,
         };
@@ -200,38 +137,6 @@ export class AvatarService {
     return `/uploads/avatars/${filename}`;
   }
 
-  private static async updateUserAvatar(
-    database: Database,
-    userId: string,
-    avatarPath: string,
-  ): Promise<void> {
-    const sql = SQL`
-      UPDATE users SET avatar = ${avatarPath}, updated_at = CURRENT_TIMESTAMP WHERE id = ${userId}
-    `;
-    await database.run(sql.text, sql.values);
-  }
-
-  private static async copyDefaultAvatars(defaultAvatarsDir: string): Promise<void> {
-    const frontendAvatarsDir = path.join(import.meta.dirname, '../../../../web/public/images');
-
-    try {
-      const files = fs.readdirSync(frontendAvatarsDir);
-      const avatarFiles = files.filter((file) => file.startsWith('avatarCat'));
-
-      for (const file of avatarFiles) {
-        const src = path.join(frontendAvatarsDir, file);
-        const dest = path.join(defaultAvatarsDir, file);
-
-        if (!fs.existsSync(dest)) {
-          fs.copyFileSync(src, dest);
-          console.log(`Copied default avatar: ${file}`);
-        }
-      }
-    } catch (error) {
-      console.log('Note: Could not copy default avatars from frontend');
-    }
-  }
-
   private static async removeOldAvatar(uploadDir: string, userId: string): Promise<void> {
     try {
       const files = fs.readdirSync(uploadDir);
@@ -242,6 +147,52 @@ export class AvatarService {
       }
     } catch (error) {
       // Ignore errors
+    }
+  }
+
+  static async getRandomCatUrls({
+    limit = 10,
+    imageSize = 'med',
+    mimeTypes = 'jpeg,jpg,avif,png',
+  }: Partial<RandomCatsQuery> = {}): Promise<DatabaseResult<RandomAvatarResult[]>> {
+    try {
+      const headers = new Headers({
+        'Content-Type': 'application/json',
+      });
+
+      const requestOptions: RequestInit = {
+        method: 'GET',
+        headers: headers,
+        redirect: 'follow',
+      };
+
+      // Get multiple random cats
+      const response = await fetch(
+        `https://api.thecatapi.com/v1/images/search?&size=${imageSize}&mime_types=${mimeTypes}&format=json&order=RANDOM&page=0&limit=${limit}`,
+        requestOptions,
+      );
+
+      if (!response.ok) {
+        throw new Error(`Cat API error: ${response.status}`);
+      }
+
+      const catData = await response.json();
+
+      if (!catData || catData.length === 0) {
+        throw new Error('No cat images found');
+      }
+
+      const cats: RandomAvatarResult[] = catData.map((cat: RandomAvatarResult) => ({
+        url: cat.url,
+        id: cat.id,
+        width: cat.width,
+        height: cat.height,
+      }));
+
+      return DatabaseHelper.success(cats);
+    } catch (error) {
+      console.error('Error getting random cats:', error);
+      return DatabaseHelper.error('Error getting random cats:');
     }
   }
 }

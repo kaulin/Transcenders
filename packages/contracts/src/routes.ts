@@ -74,12 +74,12 @@ export const SCORE_ROUTES = {
 } as const;
 
 export const AVATAR_ROUTES = {
-  // POST /avatar - Upload avatar, multipart/formdata
+  // POST /avatar - Upload avatar and set it as the avatar for the userId, multipart/formdata
   UPLOAD: '/avatar/:userId',
   // GET /avatar/default - Get list of default avatars
   GET_DEFAULTS: '/avatar/default',
   // POST /avatar/default/:userId - Set one of the default avatars as user avatar
   SET_DEFAULT: '/avatar/default/:userId',
-  // POST /avatar/random/:userId - Set a random avatar as default from TheCatApi
-  SET_RANDOM: '/avatar/random/:userId',
+  // GET /avatar/random/ - ?count=number?imageSize=string?mimeTypes=string(comma seperated)get random cats in the amount of :count
+  GET_RANDOM: '/avatar/random/',
 } as const;

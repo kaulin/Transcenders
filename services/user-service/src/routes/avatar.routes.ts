@@ -1,7 +1,7 @@
 import {
   AVATAR_ROUTES,
+  randomCatsRequestSchema,
   setDefaultAvatarSchema,
-  setRandomAvatarSchema,
   standardApiResponses,
   uploadAvatarSchema,
 } from '@transcenders/contracts';
@@ -53,17 +53,17 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
     AvatarController.setDefaultAvatar,
   );
 
-  // Set random avatar
-  app.post(
-    AVATAR_ROUTES.SET_RANDOM,
+  // Get default avatars
+  app.get(
+    AVATAR_ROUTES.GET_RANDOM,
     {
       schema: {
-        description: 'Set a random avatar for user',
+        description: 'get <count:number> random cats from TheCatApi',
         tags: ['Avatar'],
-        params: setRandomAvatarSchema.params,
+        querystring: randomCatsRequestSchema.querystring,
         response: standardApiResponses,
       },
     },
-    AvatarController.setRandomAvatar,
+    AvatarController.getRandomCats,
   );
 }
