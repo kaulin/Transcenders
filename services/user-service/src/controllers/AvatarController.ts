@@ -1,4 +1,5 @@
 import {
+  RandomCatsQuery,
   ResponseHelper,
   SetDefaultAvatarParams,
   SetDefaultAvatarRequest,
@@ -33,18 +34,17 @@ export class AvatarController {
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
+  static async getRandomCats(request: FastifyRequest, reply: FastifyReply) {
+    const queryString = request.query as RandomCatsQuery;
+    const result = await AvatarService.getRandomCatUrls(queryString);
+    return ResponseHelper.handleDatabaseResult(reply, result);
+  }
+
   static async setDefaultAvatar(request: FastifyRequest, reply: FastifyReply) {
     const { userId } = request.params as SetDefaultAvatarParams;
     const { avatarName } = request.body as SetDefaultAvatarRequest;
 
     const result = await AvatarService.setDefaultAvatar(userId, avatarName);
-    return ResponseHelper.handleDatabaseResult(reply, result);
-  }
-
-  static async setRandomAvatar(request: FastifyRequest, reply: FastifyReply) {
-    const { userId } = request.params as SetDefaultAvatarParams;
-
-    const result = await AvatarService.setRandomAvatar(userId);
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }

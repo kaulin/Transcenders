@@ -37,15 +37,25 @@ export const DefaultAvatarsResultSchema = Type.Object({
 });
 export type DefaultAvatarsResult = Static<typeof DefaultAvatarsResultSchema>;
 
-export const SetAvatarResultSchema = Type.Object({
+export const avatarResultSchema = Type.Object({
   success: Type.Boolean(),
   url: Type.String(),
 });
-export type SetAvatarResult = Static<typeof SetAvatarResultSchema>;
+export type AvatarResult = Static<typeof avatarResultSchema>;
 
-export const setRandomAvatarSchema = {
-  params: Type.Object({
-    userId: IdParamField,
+export const randomAvatarResultSchema = Type.Object({
+  id: Type.String(),
+  url: Type.String(),
+  width: Type.String(),
+  height: Type.String(),
+});
+export type RandomAvatarResult = Static<typeof randomAvatarResultSchema>;
+
+export const randomCatsRequestSchema = {
+  querystring: Type.Object({
+    limit: Type.Optional(Type.Number()),
+    imageSize: Type.Optional(Type.String()),
+    mimeTypes: Type.Optional(Type.String()),
   }),
 };
-export type SetRandomAvatarParams = Static<typeof setRandomAvatarSchema.params>;
+export type RandomCatsQuery = Static<typeof randomCatsRequestSchema.querystring>;
