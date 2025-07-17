@@ -216,7 +216,8 @@ export class UserApiService {
   /**
    * Hard set an avatar URL for the user
    */
-  static async setAvatar(userId: number, avatarUrl: string) {
+  static async setWebAvatar(userId: number, avatarUrl: string) {
+    await this.removeAvatar(userId);
     return await this.updateUser(userId, {
       avatar: avatarUrl,
     });

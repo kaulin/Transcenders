@@ -136,6 +136,7 @@ export class AvatarService {
         await UserService.updateUser(+userId, {
           avatar: avatarUrl,
         });
+        await this.removeOldAvatar(this.getUploadDir(), userId);
 
         const result: AvatarResult = {
           success: true,
