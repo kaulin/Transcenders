@@ -2,9 +2,9 @@ import {
   ApiResponseType,
   CreateScoreRequest,
   GetScoresQuery,
-  toQueryString,
   SCORE_ROUTES,
   SERVICE_URLS,
+  toQueryString,
 } from '@transcenders/contracts';
 import { ApiClient } from '../api/ApiClient';
 import { ApiCallOptions } from '../types/client.options';
@@ -20,7 +20,7 @@ export class ScoreApiService {
     const url = `${SERVICE_URLS.SCORE}${endpoint}`;
     return ApiClient.call(url, options);
   }
-  
+
   /**
    * Gets a list of scores based on optional query parameters
    */
@@ -28,22 +28,21 @@ export class ScoreApiService {
     const queryString = query ? toQueryString(query) : '';
     return this.callScoreService(`${SCORE_ROUTES.SCORES}${queryString}`);
   }
-  
+
   /**
    * Creates a new score
    */
   static async createScore(scoreData: CreateScoreRequest) {
     return this.callScoreService(SCORE_ROUTES.SCORES, {
-    method: 'POST',
-    body: scoreData,
+      method: 'POST',
+      body: scoreData,
     });
   }
-  
+
   /**
    * Gets scores by user by their ID
    */
   static async getScoresById(id: number) {
     return this.callScoreService(SCORE_ROUTES.SCORES_BY_ID.replace(':id', id.toString()));
   }
-
 }

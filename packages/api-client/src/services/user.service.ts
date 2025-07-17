@@ -138,17 +138,20 @@ export class UserApiService {
    * Get list of available default avatars
    */
   static async getDefaultAvatars() {
-    return this.callUserService(AVATAR_ROUTES.GET_DEFAULTS);
+    return this.callUserService(AVATAR_ROUTES.AVATARS_DEFAULTS);
   }
 
   /**
    * Set a default avatar for a user
    */
   static async setDefaultAvatar(userId: number, avatarName: string) {
-    return this.callUserService(AVATAR_ROUTES.SET_DEFAULT.replace(':userId', userId.toString()), {
-      method: 'POST',
-      body: { avatarName },
-    });
+    return this.callUserService(
+      AVATAR_ROUTES.USER_AVATAR_DEFAULT.replace(':userId', userId.toString()),
+      {
+        method: 'POST',
+        body: { avatarName },
+      },
+    );
   }
 
   /**
@@ -181,7 +184,7 @@ export class UserApiService {
     const formData = new FormData();
     formData.append('file', file);
     return await this.callUserService(
-      `${AVATAR_ROUTES.UPLOAD.replace(':userId', userId.toString())}`,
+      `${AVATAR_ROUTES.USER_AVATAR.replace(':userId', userId.toString())}`,
       {
         method: 'POST',
         body: formData,
