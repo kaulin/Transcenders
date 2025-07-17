@@ -64,6 +64,25 @@ export class AvatarService {
     );
   }
 
+  static async deleteAvatar(userId: string): Promise<DatabaseResult<AvatarResult>> {
+    return DatabaseHelper.executeQuery<AvatarResult>(
+      'delete user avatar',
+      await getDB(),
+      async () => {
+        await this.removeOldAvatar(this.getUploadDir(), userId);
+
+        //Reset user avatar to default in database #TODO potentially change hardcoded default avatar
+        const defaultAvatarUrl = '/uploads/default-avatars/avatarCat1.avif';
+        await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
+
+        return {
+          success: true,
+          url: defaultAvatarUrl,
+        };
+      },
+    );
+  }
+
   static async getDefaultAvatars(): Promise<DatabaseResult<DefaultAvatarsResult>> {
     try {
       const defaultAvatarsDir = this.getDefaultAvatarsDir();

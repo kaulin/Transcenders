@@ -1,5 +1,6 @@
 import {
   AVATAR_ROUTES,
+  deleteAvatarSchema,
   randomCatsRequestSchema,
   setDefaultAvatarSchema,
   standardApiResponses,
@@ -9,25 +10,38 @@ import { FastifyInstance } from 'fastify';
 import { AvatarController } from '../controllers/AvatarController';
 
 export async function registerAvatarRoutes(app: FastifyInstance) {
-  app.post(
-    AVATAR_ROUTES.UPLOAD,
+  app.put(
+    AVATAR_ROUTES.USER_AVATAR,
     {
       schema: {
-        description: 'Upload user avatar image',
+        description: 'Upload or update user avatar image',
         tags: ['Avatar'],
         consumes: ['multipart/form-data'],
         params: uploadAvatarSchema.params,
         body: uploadAvatarSchema.body,
         response: standardApiResponses,
       },
+      // Adding this actually disables the schema validation, and validates within the function
       attachValidation: true,
     },
     AvatarController.uploadAvatar,
   );
 
-  // Get default avatars
+  app.delete(
+    AVATAR_ROUTES.USER_AVATAR,
+    {
+      schema: {
+        description: 'Remove user avatar',
+        tags: ['Avatar'],
+        params: deleteAvatarSchema.params,
+        response: standardApiResponses,
+      },
+    },
+    AvatarController.deleteAvatar,
+  );
+
   app.get(
-    AVATAR_ROUTES.GET_DEFAULTS,
+    AVATAR_ROUTES.AVATARS_DEFAULTS,
     {
       schema: {
         description: 'Get list of default avatar options',
@@ -38,9 +52,8 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
     AvatarController.getDefaultAvatars,
   );
 
-  // Set default avatar
   app.post(
-    AVATAR_ROUTES.SET_DEFAULT,
+    AVATAR_ROUTES.USER_AVATAR_DEFAULT,
     {
       schema: {
         description: 'Set a default avatar for user',
@@ -53,12 +66,11 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
     AvatarController.setDefaultAvatar,
   );
 
-  // Get default avatars
   app.get(
-    AVATAR_ROUTES.GET_RANDOM,
+    AVATAR_ROUTES.AVATARS_RANDOM,
     {
       schema: {
-        description: 'get <count:number> random cats from TheCatApi',
+        description: 'Get random cat avatars from TheCatApi',
         tags: ['Avatar'],
         querystring: randomCatsRequestSchema.querystring,
         response: standardApiResponses,

@@ -1,4 +1,5 @@
 import {
+  DeleteAvatarRequestParams,
   RandomCatsQuery,
   ResponseHelper,
   SetDefaultAvatarParams,
@@ -27,6 +28,12 @@ export class AvatarController {
       console.error('Avatar upload controller error:', error);
       return ResponseHelper.error(reply, 'upload-avatar', 500, 'Upload failed');
     }
+  }
+
+  static async deleteAvatar(request: FastifyRequest, reply: FastifyReply) {
+    const { userId } = request.params as DeleteAvatarRequestParams;
+    const result = await AvatarService.deleteAvatar(userId);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 
   static async getDefaultAvatars(request: FastifyRequest, reply: FastifyReply) {
