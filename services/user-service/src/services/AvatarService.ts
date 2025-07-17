@@ -9,6 +9,7 @@ import {
 } from '@transcenders/contracts';
 import fs from 'fs';
 import path from 'path';
+import sharp from 'sharp';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
 import { getDB } from '../db/database';
@@ -36,32 +37,47 @@ export class AvatarService {
     fs.mkdirSync(defaultAvatarsDir, { recursive: true });
   }
 
+  private static async processAndSaveAvatar(userId: string, inputBuffer: Buffer): Promise<string> {
+    const uploadDir = this.getUploadDir();
+    await this.removeOldAvatar(uploadDir, userId);
+
+    // Standardize all avatars to .webp
+    const filename = `${userId}.webp`;
+    const filePath = path.join(uploadDir, filename);
+
+    // Process with Sharp and save the file #TODO change hardcoded image conversion sizes and settings
+    await sharp(inputBuffer)
+      .resize(300, 300, {
+        fit: 'cover',
+        position: 'center',
+      })
+      .webp({ quality: 80 })
+      .toFile(filePath);
+
+    return `/uploads/avatars/${filename}`;
+  }
+
   static async uploadAvatar(
     userId: string,
     file: MultipartFile,
   ): Promise<DatabaseResult<AvatarResult>> {
-    return DatabaseHelper.executeQuery<AvatarResult>(
-      'upload avatar',
-      await getDB(),
-      async (database) => {
-        // Validate file type
-        if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
-          throw new Error('Invalid file type. Only images are allowed.');
-        }
+    return DatabaseHelper.executeQuery<AvatarResult>('upload avatar', await getDB(), async () => {
+      // Validate file type
+      if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
+        throw new Error('Invalid file type. Only images are allowed.');
+      }
 
-        // Save file and get the avatar path
-        const ext = path.extname(file.filename);
-        const avatarPath = await this.saveFileToUploads(userId, ext, file.file);
+      const inputBuffer = await file.toBuffer();
+      const avatarPath = await this.processAndSaveAvatar(userId, inputBuffer);
 
-        // Update database
-        await UserService.updateUser(+userId, { avatar: avatarPath });
+      // Update database
+      await UserService.updateUser(+userId, { avatar: avatarPath });
 
-        return {
-          success: true,
-          url: avatarPath,
-        };
-      },
-    );
+      return {
+        success: true,
+        url: avatarPath,
+      };
+    });
   }
 
   static async deleteAvatar(userId: string): Promise<DatabaseResult<AvatarResult>> {
@@ -133,27 +149,6 @@ export class AvatarService {
         return result;
       },
     );
-  }
-
-  private static async saveFileToUploads(
-    userId: string,
-    extension: string,
-    fileStream: NodeJS.ReadableStream,
-  ): Promise<string> {
-    const uploadDir = this.getUploadDir();
-
-    // Remove old avatar if exists
-    await this.removeOldAvatar(uploadDir, userId);
-
-    // Create new filename and path
-    const filename = `${userId}${extension}`;
-    const filePath = path.join(uploadDir, filename);
-
-    // Save the file
-    await pump(fileStream, fs.createWriteStream(filePath));
-
-    // Return the avatar path for database
-    return `/uploads/avatars/${filename}`;
   }
 
   private static async removeOldAvatar(uploadDir: string, userId: string): Promise<void> {
