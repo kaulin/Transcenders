@@ -10,12 +10,8 @@ import {
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { pipeline } from 'stream';
-import { promisify } from 'util';
 import { getDB } from '../db/database';
 import { UserService } from './UserService';
-
-const pump = promisify(pipeline);
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
 
@@ -121,7 +117,7 @@ export class AvatarService {
 
   static async setDefaultAvatar(
     userId: string,
-    avatarName: string,
+    avatarName = 'avatarCat1.avif',
   ): Promise<DatabaseResult<AvatarResult>> {
     const defaultAvatarsDir = this.getDefaultAvatarsDir();
     return DatabaseHelper.executeQuery<AvatarResult>(

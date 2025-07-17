@@ -5,6 +5,7 @@ import {
   FRIENDSHIP_ROUTES,
   GetUserRequest,
   GetUsersQuery,
+  RandomCatsQuery,
   SERVICE_URLS,
   toQueryString,
   UpdateUserRequest,
@@ -190,6 +191,26 @@ export class UserApiService {
         body: formData,
       },
     );
+  }
+
+  /**
+   * Remove user avatar and set default
+   */
+  static async removeAvatar(userId: number) {
+    return await this.callUserService(
+      `${AVATAR_ROUTES.USER_AVATAR.replace(':userId', userId.toString())}`,
+      {
+        method: 'DELETE',
+      },
+    );
+  }
+
+  /**
+   * Get a list of random cat avatars from TheCatApi
+   */
+  static async getRandomCats(query?: RandomCatsQuery) {
+    const queryString = query ? toQueryString(query) : '';
+    return this.callUserService(`${AVATAR_ROUTES.AVATARS_RANDOM}${queryString}`);
   }
 
   /**
