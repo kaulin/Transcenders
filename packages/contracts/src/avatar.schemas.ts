@@ -27,7 +27,7 @@ export const setDefaultAvatarSchema = {
     userId: IdParamField,
   }),
   body: Type.Object({
-    avatarName: Type.String(),
+    avatarName: Type.Optional(Type.String()),
   }),
 };
 export type SetDefaultAvatarParams = Static<typeof setDefaultAvatarSchema.params>;
