@@ -15,6 +15,13 @@ export const uploadAvatarSchema = {
 };
 export type UploadAvatarRequestParams = Static<typeof uploadAvatarSchema.params>;
 
+export const deleteAvatarSchema = {
+  params: Type.Object({
+    userId: IdParamField,
+  }),
+};
+export type DeleteAvatarRequestParams = Static<typeof deleteAvatarSchema.params>;
+
 export const setDefaultAvatarSchema = {
   params: Type.Object({
     userId: IdParamField,
