@@ -1,6 +1,7 @@
 export * from './admin.schemas';
 export * from './auth.schemas';
 export * from './avatar.schemas';
+export { UserConfig } from './config';
 export * from './errors';
 export * from './interfaces';
 export * from './routes';
