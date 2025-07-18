@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS users (
   display_name TEXT,
   avatar TEXT,
   lang TEXT,
+  status TEXT DEFAULT 'offline' CHECK (status IN ('online', 'offline')),
+  last_activity DATETIME DEFAULT CURRENT_TIMESTAMP,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -14,6 +16,10 @@ CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 
 CREATE INDEX IF NOT EXISTS idx_users_created_at ON users (created_at);
+
+CREATE INDEX IF NOT EXISTS idx_users_status ON users (status);
+
+CREATE INDEX IF NOT EXISTS idx_users_last_activity ON users (last_activity);
 
 CREATE TABLE IF NOT EXISTS friend_requests (
   id INTEGER PRIMARY KEY,
@@ -48,7 +54,8 @@ UPDATE
 UPDATE
   users
 SET
-  updated_at = CURRENT_TIMESTAMP
+  updated_at = CURRENT_TIMESTAMP,
+  last_activity = CURRENT_TIMESTAMP
 WHERE
   id = NEW.id;
 

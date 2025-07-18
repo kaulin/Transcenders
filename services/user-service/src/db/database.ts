@@ -86,6 +86,8 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
         'idx_users_created_at',
         'idx_friendships_user2',
         'idx_friend_requests_recipient',
+        'idx_users_status',
+        'idx_users_last_activity',
       ],
       tablesCreated: ['users', 'friend_requests', 'friendships'],
       triggersCreated: ['friend_requests_updated_at', 'users_updated_at'],
