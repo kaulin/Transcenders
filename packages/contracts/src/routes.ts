@@ -30,6 +30,8 @@ export const USER_ROUTES = {
 export const ADMIN_ROUTES = {
   // POST /admin/users/:id/activity - Create new user
   ACTIVITY: '/admin/users/:id/activity',
+  // POST /admin/cleanup/offline - Cleanup offline users (query params: ?timeoutMinutes)
+  CLEANUP_OFFLINE: '/admin/cleanup/offline',
 } as const;
 
 /**
