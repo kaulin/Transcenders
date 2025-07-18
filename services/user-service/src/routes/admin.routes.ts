@@ -1,4 +1,9 @@
-import { ADMIN_ROUTES, standardApiResponses, userActivitySchema } from '@transcenders/contracts';
+import {
+  ADMIN_ROUTES,
+  cleanupOfflineUsersSchema,
+  standardApiResponses,
+  userActivitySchema,
+} from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
 import { AdminController } from '../controllers/AdminController';
 
@@ -15,5 +20,18 @@ export async function registerAdminRoutes(app: FastifyInstance) {
       },
     },
     AdminController.updateUserActivity,
+  );
+
+  app.post(
+    ADMIN_ROUTES.CLEANUP_OFFLINE,
+    {
+      schema: {
+        description: 'Set offline/idle users offline',
+        tags: ['Admin'],
+        querystring: cleanupOfflineUsersSchema.querystring,
+        response: standardApiResponses,
+      },
+    },
+    AdminController.cleanupOfflineUsers,
   );
 }

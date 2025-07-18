@@ -1,4 +1,4 @@
-import { ResponseHelper } from '@transcenders/contracts';
+import { CleanupOfflineQuery, ResponseHelper } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AdminService } from '../services/AdminService';
 import { HealthResponse } from '../types/api.types';
@@ -25,6 +25,15 @@ export class AdminController {
   static async updateUserActivity(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: number };
     const result = await AdminService.updateUserActivity(id);
+    return ResponseHelper.handleDatabaseResult(reply, result);
+  }
+
+  /**
+   * set users offline who have been away for a time specified in config or with ?timeoutMinutes=
+   */
+  static async cleanupOfflineUsers(request: FastifyRequest, reply: FastifyReply) {
+    const querystring = request.query as CleanupOfflineQuery;
+    const result = await AdminService.cleanupOfflineUsers(querystring.timeoutMinutes);
     return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }
