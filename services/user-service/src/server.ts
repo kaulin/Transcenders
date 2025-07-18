@@ -1,12 +1,13 @@
 import multipart from '@fastify/multipart';
 import staticFiles from '@fastify/static';
-import { ApiResponse } from '@transcenders/contracts';
+import { ApiResponse, UserConfig } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import path from 'path';
 import { registerAdminRoutes } from './routes/admin.routes';
 import { registerAvatarRoutes } from './routes/avatar.routes';
 import { registerFriendshipRoutes } from './routes/friend.routes';
 import { registerUserRoutes } from './routes/user.routes';
+import { AdminService } from './services/AdminService';
 import { AvatarService } from './services/AvatarService';
 
 const config: ServerConfig = {
@@ -57,6 +58,22 @@ async function start() {
   //     }
   //   }
   // });
+
+  const cleanupInterval = setInterval(
+    async () => {
+      const result = await AdminService.cleanupOfflineUsers();
+      console.log(`cleanup result: ${result.data?.message}`);
+    },
+    UserConfig.CLEANUP_INTERVAL_MINUTES * 60 * 1000,
+  );
+
+  const shutdown = () => {
+    clearInterval(cleanupInterval);
+    fastify.close();
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 
   await AvatarService.initializeAvatarDirectories();
 
