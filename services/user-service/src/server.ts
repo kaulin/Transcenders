@@ -30,6 +30,34 @@ async function start() {
     decorateReply: false, // Don't decorate reply object
   });
 
+  // Hook to update userActivity #TODO move to gateway and use only on authenticated api calls
+  // gateway will have a preValidation hook that authenticates token and also extracts userId from the token
+  // and adds it to request.userId, for now just testing it via routes that have id params
+
+  // fastify.addHook('preHandler', async (request) => {
+  //   let userId: string | number | undefined;
+
+  //   if (request.originalUrl.includes('/admin')) {
+  //     return;
+  //   }
+  //   if (
+  //     request.params &&
+  //     typeof request.params === 'object' &&
+  //     ('id' in request.params || 'userId' in request.params)
+  //   ) {
+  //     const params = request.params as { id?: string; userId?: string };
+  //     userId = params.id ?? params.userId;
+  //   }
+  //   if (userId) {
+  //     try {
+  //       AdminService.updateUserActivity(+userId);
+  //       console.log(`user <${userId}> activity updated`);
+  //     } catch (error) {
+  //       console.error('Failed to update user activity:', error);
+  //     }
+  //   }
+  // });
+
   await AvatarService.initializeAvatarDirectories();
 
   fastify.addSchema(ApiResponse);

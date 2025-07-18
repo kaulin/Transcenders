@@ -1,3 +1,4 @@
+export * from './admin.schemas';
 export * from './auth.schemas';
 export * from './avatar.schemas';
 export * from './errors';
