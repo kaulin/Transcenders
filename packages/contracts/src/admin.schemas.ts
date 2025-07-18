@@ -7,3 +7,10 @@ export const userActivitySchema = {
   }),
 };
 export type UserActivity = Static<typeof userActivitySchema.params>;
+
+export const cleanupOfflineUsersSchema = {
+  querystring: Type.Object({
+    timeoutMinutes: Type.Optional(Type.Number()),
+  }),
+};
+export type CleanupOfflineQuery = Static<typeof cleanupOfflineUsersSchema.querystring>;
