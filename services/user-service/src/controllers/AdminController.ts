@@ -1,6 +1,7 @@
+import { ResponseHelper } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { AdminService } from '../services/AdminService';
 import { HealthResponse } from '../types/api.types';
-import { DatabaseTestService } from '../services/DatabaseTestService';
 
 export class AdminController {
   /**
@@ -9,22 +10,21 @@ export class AdminController {
   static async getHealth(request: FastifyRequest, reply: FastifyReply): Promise<HealthResponse> {
     return {
       success: true,
-      service: 'user-service',
-      status: 'ok',
-      timestamp: new Date().toISOString(),
+      data: {
+        service: 'user-service',
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 
   /**
-   * Database test controller
+   * Update user activity (called by gateway after auth)
+   * #TODO get the token parsed userId after Gateway is ready
    */
-  static async testDatabase(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const result = await DatabaseTestService.runTests();
-      return { success: true, data: result };
-    } catch (error: any) {
-      reply.code(500);
-      return { success: false, error: error.message };
-    }
+  static async updateUserActivity(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as { id: number };
+    const result = await AdminService.updateUserActivity(id);
+    return ResponseHelper.handleDatabaseResult(reply, result);
   }
 }

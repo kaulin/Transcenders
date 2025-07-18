@@ -27,6 +27,11 @@ export const USER_ROUTES = {
   USERS_EXACT: '/users/exact',
 } as const;
 
+export const ADMIN_ROUTES = {
+  // POST /admin/users/:id/activity - Create new user
+  ACTIVITY: '/admin/users/:id/activity',
+} as const;
+
 /**
  * FRIENDSHIP ROUTES - RESTful friendship and friend request management
  */
