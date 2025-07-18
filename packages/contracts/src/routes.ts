@@ -72,3 +72,15 @@ export const SCORE_ROUTES = {
   // GET /score/:id/stats - Get a user's statistics
   STATS_BY_ID: '/score/:id/stats',
 } as const;
+
+export const AVATAR_ROUTES = {
+  // PUT /users/:userId/avatar - Upload/update user avatar (multipart/form-data)
+  // DELETE /users/:userId/avatar - delete the user avatar (reset to default)
+  USER_AVATAR: '/users/:userId/avatar',
+  // POST /users/:userId/avatar/default - Set a default avatar for user (body: { avatarName: string })
+  USER_AVATAR_DEFAULT: '/users/:userId/avatar/default',
+  // GET /avatars/defaults - Get list of available default avatar options
+  AVATARS_DEFAULTS: '/avatars/defaults',
+  // GET /avatars/random - Get random cat avatars from TheCatApi (query params: ?limit=, ?imageSize=, ?mimeTypes=)
+  AVATARS_RANDOM: '/avatars/random',
+} as const;

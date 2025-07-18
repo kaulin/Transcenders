@@ -1,8 +1,13 @@
+import multipart from '@fastify/multipart';
+import staticFiles from '@fastify/static';
 import { ApiResponse } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
+import path from 'path';
 import { registerAdminRoutes } from './routes/admin.routes';
+import { registerAvatarRoutes } from './routes/avatar.routes';
 import { registerFriendshipRoutes } from './routes/friend.routes';
 import { registerUserRoutes } from './routes/user.routes';
+import { AvatarService } from './services/AvatarService';
 
 const config: ServerConfig = {
   port: 3001,
@@ -12,11 +17,26 @@ const config: ServerConfig = {
 
 async function start() {
   const fastify = await createFastifyServer(config);
+  fastify.register(multipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024,
+      files: 1,
+    },
+  });
+
+  fastify.register(staticFiles, {
+    root: path.join(import.meta.dirname, '../uploads'),
+    prefix: '/uploads/',
+    decorateReply: false, // Don't decorate reply object
+  });
+
+  await AvatarService.initializeAvatarDirectories();
 
   fastify.addSchema(ApiResponse);
   await registerAdminRoutes(fastify);
   await registerUserRoutes(fastify);
   await registerFriendshipRoutes(fastify);
+  await registerAvatarRoutes(fastify);
 
   await startServer(fastify, config);
 }
