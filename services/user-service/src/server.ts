@@ -1,6 +1,6 @@
 import multipart from '@fastify/multipart';
 import staticFiles from '@fastify/static';
-import { ApiResponse, UserConfig } from '@transcenders/contracts';
+import { ApiResponse, AvatarConfig, UserConfig } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import path from 'path';
 import { registerAdminRoutes } from './routes/admin.routes';
@@ -20,7 +20,7 @@ async function start() {
   const fastify = await createFastifyServer(config);
   fastify.register(multipart, {
     limits: {
-      fileSize: 10 * 1024 * 1024,
+      fileSize: AvatarConfig.MAX_FILE_SIZE,
       files: 1,
     },
   });
