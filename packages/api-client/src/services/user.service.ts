@@ -187,7 +187,7 @@ export class UserApiService {
     return await this.callUserService(
       `${AVATAR_ROUTES.USER_AVATAR.replace(':userId', userId.toString())}`,
       {
-        method: 'POST',
+        method: 'PUT',
         body: formData,
       },
     );
