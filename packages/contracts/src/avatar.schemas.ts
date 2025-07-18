@@ -8,7 +8,7 @@ export const uploadAvatarSchema = {
   body: Type.Object({
     file: Type.String({
       format: 'binary',
-      description: 'Avatar image file (JPEG, PNG, GIF, WebP, AVIF)',
+      description: 'Avatar image file',
       contentMediaType: 'image/*',
     }),
   }),
