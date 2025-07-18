@@ -1,5 +1,6 @@
 import { MultipartFile } from '@fastify/multipart';
 import {
+  AvatarConfig,
   AvatarResult,
   DatabaseHelper,
   DatabaseResult,
@@ -12,8 +13,6 @@ import path from 'path';
 import sharp from 'sharp';
 import { getDB } from '../db/database';
 import { UserService } from './UserService';
-
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
 
 export class AvatarService {
   private static getUploadDir(): string {
@@ -37,17 +36,12 @@ export class AvatarService {
     const uploadDir = this.getUploadDir();
     await this.removeOldAvatar(uploadDir, userId);
 
-    // Standardize all avatars to .webp
-    const filename = `${userId}.webp`;
+    const filename = `${userId}.${AvatarConfig.OUTPUT_FORMAT}`;
     const filePath = path.join(uploadDir, filename);
 
-    // Process with Sharp and save the file #TODO change hardcoded image conversion sizes and settings
     await sharp(inputBuffer)
-      .resize(300, 300, {
-        fit: 'cover',
-        position: 'center',
-      })
-      .webp({ quality: 80 })
+      .resize(AvatarConfig.WIDTH, AvatarConfig.HEIGHT, AvatarConfig.RESIZE_OPTIONS)
+      .webp(AvatarConfig.WEBP_OPTIONS)
       .toFile(filePath);
 
     return `/uploads/avatars/${filename}`;
@@ -58,8 +52,7 @@ export class AvatarService {
     file: MultipartFile,
   ): Promise<DatabaseResult<AvatarResult>> {
     return DatabaseHelper.executeQuery<AvatarResult>('upload avatar', await getDB(), async () => {
-      // Validate file type
-      if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
+      if (!file.mimetype.startsWith('image/')) {
         throw new Error('Invalid file type. Only images are allowed.');
       }
 
@@ -83,8 +76,8 @@ export class AvatarService {
       async () => {
         await this.removeOldAvatar(this.getUploadDir(), userId);
 
-        //Reset user avatar to default in database #TODO potentially change hardcoded default avatar
-        const defaultAvatarUrl = '/uploads/default-avatars/avatarCat1.avif';
+        // Reset user avatar to default
+        const defaultAvatarUrl = `/uploads/default-avatars/${AvatarConfig.DEFAULT_AVATAR.FILENAME}`;
         await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
 
         return {
@@ -101,7 +94,7 @@ export class AvatarService {
       const files = fs.readdirSync(defaultAvatarsDir);
 
       const avatars = files
-        .filter((file) => file.startsWith('avatarCat'))
+        .filter((file) => file.startsWith(AvatarConfig.DEFAULT_AVATAR.PREFIX_FILTER))
         .map((file) => ({
           name: file,
           url: `/uploads/default-avatars/${file}`,
@@ -117,7 +110,7 @@ export class AvatarService {
 
   static async setDefaultAvatar(
     userId: string,
-    avatarName = 'avatarCat1.avif',
+    avatarName: string = AvatarConfig.DEFAULT_AVATAR.FILENAME,
   ): Promise<DatabaseResult<AvatarResult>> {
     const defaultAvatarsDir = this.getDefaultAvatarsDir();
     return DatabaseHelper.executeQuery<AvatarResult>(
@@ -162,9 +155,9 @@ export class AvatarService {
   }
 
   static async getRandomCatUrls({
-    limit = 10,
-    imageSize = 'med',
-    mimeTypes = 'jpeg,jpg,avif,png',
+    limit = AvatarConfig.RANDOM_CATS.DEFAULT_LIMIT,
+    imageSize = AvatarConfig.RANDOM_CATS.DEFAULT_IMAGE_SIZE,
+    mimeTypes = AvatarConfig.RANDOM_CATS.DEFAULT_MIME_TYPES,
   }: Partial<RandomCatsQuery> = {}): Promise<DatabaseResult<RandomAvatarResult[]>> {
     try {
       const headers = new Headers({
@@ -177,9 +170,9 @@ export class AvatarService {
         redirect: 'follow',
       };
 
-      // Get multiple random cats
+      // Use configurable API URL
       const response = await fetch(
-        `https://api.thecatapi.com/v1/images/search?&size=${imageSize}&mime_types=${mimeTypes}&format=json&order=RANDOM&page=0&limit=${limit}`,
+        `${AvatarConfig.RANDOM_CATS.API_URL}?&size=${imageSize}&mime_types=${mimeTypes}&format=json&order=RANDOM&page=0&limit=${limit}`,
         requestOptions,
       );
 
