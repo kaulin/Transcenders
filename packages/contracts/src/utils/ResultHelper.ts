@@ -132,6 +132,7 @@ export class ResultHelper {
 
   /**
    * Map common exceptions to appropriate error codes
+   * #TODO maybe an external error maps object with searchstrings to match to error codes
    */
   private static mapExceptionToErrorCode(error: unknown, fallbackCode: string): string {
     if (error instanceof Error) {
