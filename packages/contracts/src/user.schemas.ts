@@ -24,10 +24,6 @@ export const IdField = Type.Number();
 export const TimestampField = Type.String();
 export const IdParamField = Type.String({ pattern: '^[0-9]+$' });
 export const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
-export const FriendRequestStateField = Type.Union([
-  Type.Literal('pending'),
-  Type.Literal('declined'),
-]);
 
 /**
  * ENTITY SCHEMAS
@@ -178,7 +174,6 @@ export const FriendRequestsDataSchema = Type.Object({
   id: UserIdField,
   initiator_id: UserIdField,
   recipient_id: UserIdField,
-  state: FriendRequestStateField,
   created_at: TimestampField,
   updated_at: TimestampField,
 });
