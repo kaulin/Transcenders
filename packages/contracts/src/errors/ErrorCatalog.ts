@@ -185,6 +185,38 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'conflict',
   },
 
+  [ERROR_CODES.USER.FRIENDSHIP_NOT_FOUND]: {
+    code: ERROR_CODES.USER.FRIENDSHIP_NOT_FOUND,
+    message: 'Friendship not found between these users',
+    userMessage: 'You are not friends with this user',
+    httpStatus: 404,
+    category: 'not_found',
+  },
+
+  [ERROR_CODES.USER.FRIEND_REQUEST_NOT_FOUND]: {
+    code: ERROR_CODES.USER.FRIEND_REQUEST_NOT_FOUND,
+    message: 'Friend request not found or already processed',
+    userMessage: 'Friend request not found',
+    httpStatus: 404,
+    category: 'not_found',
+  },
+
+  [ERROR_CODES.USER.FRIEND_REQUEST_ALREADY_EXISTS]: {
+    code: ERROR_CODES.USER.FRIEND_REQUEST_ALREADY_EXISTS,
+    message: 'Friend request already exists between these users',
+    userMessage: 'Friend request already sent',
+    httpStatus: 409,
+    category: 'conflict',
+  },
+
+  [ERROR_CODES.USER.CANNOT_BEFRIEND_SELF]: {
+    code: ERROR_CODES.USER.CANNOT_BEFRIEND_SELF,
+    message: 'Users cannot send friend requests to themselves',
+    userMessage: 'You cannot send a friend request to yourself',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
   // Score service errors
   [ERROR_CODES.SCORE.MATCH_CREATION_FAILED]: {
     code: ERROR_CODES.SCORE.MATCH_CREATION_FAILED,
