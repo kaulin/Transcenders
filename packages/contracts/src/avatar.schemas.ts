@@ -45,7 +45,6 @@ export const DefaultAvatarsResultSchema = Type.Object({
 export type DefaultAvatarsResult = Static<typeof DefaultAvatarsResultSchema>;
 
 export const avatarResultSchema = Type.Object({
-  success: Type.Boolean(),
   url: Type.String(),
 });
 export type AvatarResult = Static<typeof avatarResultSchema>;
