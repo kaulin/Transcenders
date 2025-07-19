@@ -1,9 +1,11 @@
 import {
   BooleanOperationResult,
   BooleanResultHelper,
-  DatabaseHelper,
-  DatabaseResult,
+  ERROR_CODES,
   FriendRequestsData,
+  ResultHelper,
+  ServiceError,
+  ServiceResult,
   User,
 } from '@transcenders/contracts';
 import SQL from 'sql-template-strings';
@@ -11,9 +13,8 @@ import { Database } from 'sqlite';
 import { getDB } from '../db/database';
 
 export class FriendshipService {
-  static async getUserFriends(userId: number): Promise<DatabaseResult<User[]>> {
-    const db = await getDB();
-    return DatabaseHelper.executeQuery<User[]>(`get friends`, db, async (database) => {
+  static async getUserFriends(userId: number): Promise<ServiceResult<User[]>> {
+    return ResultHelper.executeQuery<User[]>('get friends', await getDB(), async (database) => {
       const sql = SQL`
         SELECT users.* FROM users
         JOIN friendships f ON (
@@ -46,11 +47,10 @@ export class FriendshipService {
   static async checkFriendshipExists(
     user1_id: number,
     user2_id: number,
-  ): Promise<DatabaseResult<BooleanOperationResult>> {
-    const db = await getDB();
-    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    return ResultHelper.executeQuery<BooleanOperationResult>(
       'check friendship',
-      db,
+      await getDB(),
       async (database) => {
         const exists = await this.checkFriendshipExistsLogic(database, user1_id, user2_id);
         if (exists) {
@@ -65,15 +65,26 @@ export class FriendshipService {
   static async sendFriendRequest(
     initiator: number,
     recipient: number,
-  ): Promise<DatabaseResult<BooleanOperationResult>> {
-    const db = await getDB();
-    return DatabaseHelper.executeTransaction<BooleanOperationResult>(
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    return ResultHelper.executeTransaction<BooleanOperationResult>(
       'send friend request',
-      db,
+      await getDB(),
       async (database) => {
-        if (await this.checkFriendshipExistsLogic(database, initiator, recipient)) {
-          throw new Error(`${initiator} and ${recipient} are already friends`);
+        if (initiator === recipient) {
+          throw new ServiceError(ERROR_CODES.USER.CANNOT_BEFRIEND_SELF, {
+            initiator,
+            recipient,
+          });
         }
+
+        if (await this.checkFriendshipExistsLogic(database, initiator, recipient)) {
+          throw new ServiceError(ERROR_CODES.USER.FRIENDSHIP_ALREADY_EXISTS, {
+            user1: initiator,
+            user2: recipient,
+          });
+        }
+
+        // Check for existing friend request from recipient to initiator (mutual request)
         const mutualRequestQuery = SQL`
           SELECT id FROM friend_requests
           WHERE initiator_id = ${recipient} AND recipient_id = ${initiator}
@@ -82,38 +93,40 @@ export class FriendshipService {
           mutualRequestQuery.text,
           mutualRequestQuery.values,
         );
-
         if (mutualRequest) {
+          // Auto-accept mutual friend request by creating friendship
           await this.acceptFriendLogic(database, mutualRequest.id);
           return BooleanResultHelper.success(
-            `Mutual friend request found - users ${initiator} and ${recipient} are now friends`,
+            `Mutual friend request accepted between users ${initiator} and ${recipient}`,
           );
         }
 
+        // Create new friend request
         const insertQuery = SQL`
-          INSERT INTO friend_requests (initiator_id, recipient_id)
-          VALUES (${initiator}, ${recipient});
-        `;
+        INSERT INTO friend_requests (initiator_id, recipient_id)
+        VALUES (${initiator}, ${recipient});
+      `;
         const result = await database.run(insertQuery.text, insertQuery.values);
+
         if (result.lastID) {
           return BooleanResultHelper.success(
             `Friend request sent from user ${initiator} to user ${recipient}`,
           );
         }
-        return BooleanResultHelper.failure(
-          `Failed to send friend request from user ${initiator} to user ${recipient}`,
-        );
+
+        throw new ServiceError(ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, {
+          reason: 'Failed to insert friend request',
+        });
       },
     );
   }
 
   static async getIncomingFriendRequests(
     userId: number,
-  ): Promise<DatabaseResult<FriendRequestsData[]>> {
-    const db = await getDB();
-    return DatabaseHelper.executeQuery<FriendRequestsData[]>(
+  ): Promise<ServiceResult<FriendRequestsData[]>> {
+    return ResultHelper.executeQuery<FriendRequestsData[]>(
       'get incoming requests',
-      db,
+      await getDB(),
       async (database) => {
         const sql = SQL`
           SELECT * FROM friend_requests
@@ -138,7 +151,9 @@ export class FriendshipService {
 
     const request = await database.get(selectQuery.text, selectQuery.values);
     if (!request) {
-      throw new Error('Friend request not found or already processed');
+      throw new ServiceError(ERROR_CODES.USER.FRIEND_REQUEST_NOT_FOUND, {
+        friendRequestId,
+      });
     }
 
     const user1_id = Math.min(request.initiator_id, request.recipient_id);
@@ -159,33 +174,25 @@ export class FriendshipService {
 
   static async acceptFriend(
     friendRequestId: number,
-  ): Promise<DatabaseResult<BooleanOperationResult>> {
-    const db = await getDB();
-    return DatabaseHelper.executeTransaction<BooleanOperationResult>(
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    return ResultHelper.executeTransaction<BooleanOperationResult>(
       'accept friend request',
-      db,
+      await getDB(),
       async (database) => {
-        try {
-          await this.acceptFriendLogic(database, friendRequestId);
-          return BooleanResultHelper.success(
-            `Friend request ${friendRequestId} accepted successfully`,
-          );
-        } catch (error: any) {
-          return BooleanResultHelper.failure(
-            `Cannot accept friend request ${friendRequestId}: ${error.message}`,
-          );
-        }
+        await this.acceptFriendLogic(database, friendRequestId);
+        return BooleanResultHelper.success(
+          `Friend request ${friendRequestId} accepted successfully`,
+        );
       },
     );
   }
 
   static async declineFriend(
     friendRequestId: number,
-  ): Promise<DatabaseResult<BooleanOperationResult>> {
-    const db = await getDB();
-    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    return ResultHelper.executeQuery<BooleanOperationResult>(
       'decline friend request',
-      db,
+      await getDB(),
       async (database) => {
         const sql = SQL`
           DELETE FROM friend_requests
@@ -200,9 +207,9 @@ export class FriendshipService {
             `Friend request ${friendRequestId} declined successfully`,
           );
         } else {
-          return BooleanResultHelper.failure(
-            `Friend request ${friendRequestId} not found or already processed`,
-          );
+          throw new ServiceError(ERROR_CODES.USER.FRIEND_REQUEST_NOT_FOUND, {
+            friendRequestId,
+          });
         }
       },
     );
@@ -211,32 +218,41 @@ export class FriendshipService {
   static async removeFriend(
     userId1: number,
     userId2: number,
-  ): Promise<DatabaseResult<BooleanOperationResult>> {
-    const db = await getDB();
-    return DatabaseHelper.executeQuery<BooleanOperationResult>(
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    return ResultHelper.executeQuery<BooleanOperationResult>(
       'remove friend',
-      db,
+      await getDB(),
       async (database) => {
+        // Validate users aren't trying to remove themselves
+        if (userId1 === userId2) {
+          throw new ServiceError(ERROR_CODES.USER.CANNOT_BEFRIEND_SELF, {
+            reason: 'Cannot remove friendship with self',
+            userId1,
+            userId2,
+          });
+        }
+
         // Database requires user1_id to be lower
         const user1_id = Math.min(userId1, userId2);
         const user2_id = Math.max(userId1, userId2);
 
         const sql = SQL`
-        DELETE FROM friendships
-        WHERE user1_id = ${user1_id} AND user2_id = ${user2_id}
-      `;
+          DELETE FROM friendships
+          WHERE user1_id = ${user1_id} AND user2_id = ${user2_id}
+        `;
         const result = await database.run(sql.text, sql.values);
 
         const removed = (result.changes ?? 0) > 0;
 
         if (removed) {
           return BooleanResultHelper.success(
-            `Friendship between users ${userId1} and ${userId2} removed successfully`,
+            `Friendship removed between users ${userId1} and ${userId2}`,
           );
         } else {
-          return BooleanResultHelper.failure(
-            `No friendship found between users ${userId1} and ${userId2}`,
-          );
+          throw new ServiceError(ERROR_CODES.USER.FRIENDSHIP_NOT_FOUND, {
+            user1: userId1,
+            user2: userId2,
+          });
         }
       },
     );

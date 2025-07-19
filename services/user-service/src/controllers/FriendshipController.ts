@@ -1,11 +1,11 @@
 import {
   AcceptFriendRequest,
+  ApiErrorHandler,
   CheckFriendshipExistsRequest,
   DeclineFriendRequest,
   GetFriendsRequest,
-  GetsRequestsRequest as GetRequests,
+  GetsRequestsRequest,
   RemoveFriendRequest,
-  ResponseHelper,
   SendFriendRequestRequest,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -17,7 +17,7 @@ export class FriendshipController {
     const userId = parseInt(id);
 
     const result = await FriendshipService.getUserFriends(userId);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async removeFriend(request: FastifyRequest, reply: FastifyReply) {
@@ -26,15 +26,15 @@ export class FriendshipController {
     const user_id = parseInt(id);
     const friend_id = parseInt(friendId);
     const result = await FriendshipService.removeFriend(user_id, friend_id);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async getRequests(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as GetRequests;
+    const { id } = request.params as GetsRequestsRequest;
     const userId = parseInt(id);
 
     const result = await FriendshipService.getIncomingFriendRequests(userId);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async sendRequest(request: FastifyRequest, reply: FastifyReply) {
@@ -43,7 +43,7 @@ export class FriendshipController {
     const recipient_id = parseInt(recipientId);
 
     const result = await FriendshipService.sendFriendRequest(user_id, recipient_id);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async acceptFriend(request: FastifyRequest, reply: FastifyReply) {
@@ -51,7 +51,7 @@ export class FriendshipController {
     const friendRequestId = parseInt(requestId);
 
     const result = await FriendshipService.acceptFriend(friendRequestId);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async declineFriend(request: FastifyRequest, reply: FastifyReply) {
@@ -59,7 +59,7 @@ export class FriendshipController {
     const friendRequestId = parseInt(requestId);
 
     const result = await FriendshipService.declineFriend(friendRequestId);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async checkFriendshipExists(request: FastifyRequest, reply: FastifyReply) {
@@ -68,6 +68,6 @@ export class FriendshipController {
     const userId1 = parseInt(id1);
     const userId2 = parseInt(id2);
     const result = await FriendshipService.checkFriendshipExists(userId1, userId2);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 }
