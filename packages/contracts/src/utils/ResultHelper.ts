@@ -1,5 +1,5 @@
 import { Database } from 'sqlite';
-import { ERROR_CODES } from '../errors/ErrorCodes';
+import { ERROR_CODES, ErrorCode } from '../errors/ErrorCodes';
 import { ServiceError } from '../errors/ServiceError';
 import { ServiceResult } from '../errors/ServiceResult';
 
@@ -24,7 +24,7 @@ export class ResultHelper {
    * Create an error ServiceResult
    */
   static error<T>(
-    errorCode: string,
+    errorCode: ErrorCode,
     operation: string,
     context?: Record<string, unknown>,
   ): ServiceResult<T> {
@@ -44,7 +44,7 @@ export class ResultHelper {
   static errorFromException<T>(
     error: unknown,
     operation: string,
-    fallbackErrorCode: string = ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR,
+    fallbackErrorCode: ErrorCode = ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR,
     context?: Record<string, unknown>,
   ): ServiceResult<T> {
     // If it's already a ServiceError, preserve it
@@ -134,12 +134,12 @@ export class ResultHelper {
    * Map common exceptions to appropriate error codes
    * #TODO maybe an external error maps object with searchstrings to match to error codes
    */
-  private static mapExceptionToErrorCode(error: unknown, fallbackCode: string): string {
+  private static mapExceptionToErrorCode(error: unknown, fallbackCode: ErrorCode): ErrorCode {
     if (error instanceof Error) {
       const message = error.message.toLowerCase();
 
       // SQLite constraint violations
-      if (error.name === 'SqliteError' || (error as ServiceError).code === 'SQLITE_CONSTRAINT') {
+      if (error.name === 'SqliteError') {
         if (message.includes('unique')) {
           return ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS || fallbackCode;
         }

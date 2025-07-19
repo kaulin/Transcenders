@@ -77,6 +77,7 @@ export class ApiClient {
     }
   }
 
+  // TODO: Fix ApiClient error handling to use the new system with proper messaging
   private static errorResponse(error: string): ApiResponseType {
     return {
       success: false,

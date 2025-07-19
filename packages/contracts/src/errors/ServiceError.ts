@@ -1,17 +1,18 @@
 import { ErrorDefinition, getErrorDefinition } from './ErrorCatalog';
+import { ErrorCode } from './ErrorCodes';
 
 /**
  * Structured error class for consistent error handling across services
  */
 export class ServiceError extends Error {
-  public readonly code: string;
+  public readonly code: ErrorCode;
   public readonly httpStatus: number;
   public readonly userMessage?: string;
   public readonly category: ErrorDefinition['category'];
-  public readonly context?: Record<string, any>;
+  public readonly context?: Record<string, unknown>;
   public readonly timestamp: Date;
 
-  constructor(code: string, context?: Record<string, any>, originalError?: Error) {
+  constructor(code: ErrorCode, context?: Record<string, unknown>, originalError?: Error) {
     const errorDef = getErrorDefinition(code);
 
     if (!errorDef) {
@@ -52,7 +53,7 @@ export class ServiceError extends Error {
     userMessage?: string;
     category: string;
     httpStatus: number;
-    context?: Record<string, any>;
+    context?: Record<string, unknown>;
     timestamp: string;
   } {
     return {
@@ -71,8 +72,8 @@ export class ServiceError extends Error {
    */
   static fromUnknownError(
     error: unknown,
-    fallbackCode: string,
-    context?: Record<string, any>,
+    fallbackCode: ErrorCode,
+    context?: Record<string, unknown>,
   ): ServiceError {
     if (error instanceof ServiceError) {
       return error;
@@ -107,7 +108,7 @@ export class ServiceError extends Error {
    * Get user-safe error message
    */
   getUserMessage(): string {
-    return this.userMessage || 'An error occurred';
+    return this.userMessage ?? 'An error occurred';
   }
 
   /**
@@ -134,7 +135,7 @@ export class ServiceError extends Error {
   /**
    * Get logging context
    */
-  getLoggingContext(): Record<string, any> {
+  getLoggingContext(): Record<string, unknown> {
     return {
       errorCode: this.code,
       category: this.category,

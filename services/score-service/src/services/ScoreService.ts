@@ -106,7 +106,7 @@ export class ScoreService {
   }
 
   /**
-   * #TODO match validatiod via SQL constraints
+   * #TODO match validatiod via SQL constraints and other checks
    *
    * ids cant be same
    * game_duration = game_end - game_start

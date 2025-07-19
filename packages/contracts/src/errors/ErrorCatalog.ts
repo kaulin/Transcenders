@@ -1,10 +1,10 @@
-import { ERROR_CODES } from './ErrorCodes';
+import { ERROR_CODES, ErrorCode } from './ErrorCodes';
 
 /**
  * Error definition interface
  */
 export interface ErrorDefinition {
-  code: string;
+  code: ErrorCode;
   message: string;
   httpStatus: number;
   userMessage?: string; // Optional user-friendly message
@@ -17,42 +17,13 @@ export interface ErrorDefinition {
     | 'internal';
 }
 
-/**
- * Minimal error catalog with HTTP status codes and user messages
- * Start with essential errors - add more as needed during implementation
- */
-export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
-  // Common errors
+const commonErrors: Record<Extract<ErrorCode, `COMMON_${string}`>, ErrorDefinition> = {
   [ERROR_CODES.COMMON.VALIDATION_REQUIRED_FIELD]: {
     code: ERROR_CODES.COMMON.VALIDATION_REQUIRED_FIELD,
     message: 'Required field is missing or empty',
     userMessage: 'Please fill in all required fields',
     httpStatus: 400,
     category: 'validation',
-  },
-
-  [ERROR_CODES.COMMON.RESOURCE_NOT_FOUND]: {
-    code: ERROR_CODES.COMMON.RESOURCE_NOT_FOUND,
-    message: 'Requested resource not found',
-    userMessage: 'The requested item could not be found',
-    httpStatus: 404,
-    category: 'not_found',
-  },
-
-  [ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR]: {
-    code: ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR,
-    message: 'An unexpected internal server error occurred',
-    userMessage: 'Something went wrong. Please try again later.',
-    httpStatus: 500,
-    category: 'internal',
-  },
-
-  [ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS]: {
-    code: ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS,
-    message: 'Authentication required to access this resource',
-    userMessage: 'Please log in to continue',
-    httpStatus: 401,
-    category: 'authentication',
   },
 
   [ERROR_CODES.COMMON.VALIDATION_CONSTRAINT_VIOLATION]: {
@@ -71,6 +42,14 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'validation',
   },
 
+  [ERROR_CODES.COMMON.RESOURCE_NOT_FOUND]: {
+    code: ERROR_CODES.COMMON.RESOURCE_NOT_FOUND,
+    message: 'Requested resource not found',
+    userMessage: 'The requested item could not be found',
+    httpStatus: 404,
+    category: 'not_found',
+  },
+
   [ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS]: {
     code: ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS,
     message: 'Resource already exists',
@@ -87,6 +66,22 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'internal',
   },
 
+  [ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR]: {
+    code: ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR,
+    message: 'An unexpected internal server error occurred',
+    userMessage: 'Something went wrong. Please try again later.',
+    httpStatus: 500,
+    category: 'internal',
+  },
+
+  [ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS]: {
+    code: ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS,
+    message: 'Authentication required to access this resource',
+    userMessage: 'Please log in to continue',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+
   [ERROR_CODES.COMMON.FORBIDDEN_ACCESS]: {
     code: ERROR_CODES.COMMON.FORBIDDEN_ACCESS,
     message: 'Access forbidden - insufficient permissions',
@@ -94,8 +89,9 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     httpStatus: 403,
     category: 'authorization',
   },
+};
 
-  // Auth service errors
+const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> = {
   [ERROR_CODES.AUTH.INVALID_CREDENTIALS]: {
     code: ERROR_CODES.AUTH.INVALID_CREDENTIALS,
     message: 'Invalid username or password provided',
@@ -135,22 +131,15 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     httpStatus: 500,
     category: 'internal',
   },
+};
 
-  // User service errors
+const userErrors: Record<Extract<ErrorCode, `USER_${string}`>, ErrorDefinition> = {
   [ERROR_CODES.USER.NOT_FOUND_BY_ID]: {
     code: ERROR_CODES.USER.NOT_FOUND_BY_ID,
     message: 'User not found with the provided ID',
     userMessage: 'User not found',
     httpStatus: 404,
     category: 'not_found',
-  },
-
-  [ERROR_CODES.USER.AVATAR_UPLOAD_FAILED]: {
-    code: ERROR_CODES.USER.AVATAR_UPLOAD_FAILED,
-    message: 'Avatar upload operation failed',
-    userMessage: 'Avatar upload failed. Please try again.',
-    httpStatus: 500,
-    category: 'internal',
   },
 
   [ERROR_CODES.USER.NOT_FOUND_BY_USERNAME]: {
@@ -169,12 +158,12 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'not_found',
   },
 
-  [ERROR_CODES.USER.FILE_NOT_PROVIDED]: {
-    code: ERROR_CODES.USER.FILE_NOT_PROVIDED,
-    message: 'No file was provided in the request',
-    userMessage: 'Please select a file to upload',
-    httpStatus: 400,
-    category: 'validation',
+  [ERROR_CODES.USER.AVATAR_UPLOAD_FAILED]: {
+    code: ERROR_CODES.USER.AVATAR_UPLOAD_FAILED,
+    message: 'Avatar upload operation failed',
+    userMessage: 'Avatar upload failed. Please try again.',
+    httpStatus: 500,
+    category: 'internal',
   },
 
   [ERROR_CODES.USER.INVALID_FILE_TYPE]: {
@@ -189,6 +178,14 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     code: ERROR_CODES.USER.FILE_TOO_LARGE,
     message: 'File size exceeds maximum allowed limit',
     userMessage: 'File is too large. Please upload a smaller file.',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.USER.FILE_NOT_PROVIDED]: {
+    code: ERROR_CODES.USER.FILE_NOT_PROVIDED,
+    message: 'No file was provided in the request',
+    userMessage: 'Please select a file to upload',
     httpStatus: 400,
     category: 'validation',
   },
@@ -232,14 +229,15 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     httpStatus: 400,
     category: 'validation',
   },
+};
 
-  // Score service errors
-  [ERROR_CODES.SCORE.MATCH_CREATION_FAILED]: {
-    code: ERROR_CODES.SCORE.MATCH_CREATION_FAILED,
-    message: 'Failed to create new match',
-    userMessage: 'Match creation failed. Please try again.',
-    httpStatus: 500,
-    category: 'internal',
+const scoreErrors: Record<Extract<ErrorCode, `SCORE_${string}`>, ErrorDefinition> = {
+  [ERROR_CODES.SCORE.SCORE_CREATION_FAILED]: {
+    code: ERROR_CODES.SCORE.SCORE_CREATION_FAILED,
+    message: 'Failed to create score record - database insert did not return an ID',
+    userMessage: 'Unable to save the game score.',
+    httpStatus: 400,
+    category: 'validation',
   },
 
   [ERROR_CODES.SCORE.INVALID_SCORE_VALUE]: {
@@ -275,12 +273,19 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
   },
 };
 
+export const ERROR_CATALOG: Record<ErrorCode, ErrorDefinition> = {
+  ...commonErrors,
+  ...authErrors,
+  ...userErrors,
+  ...scoreErrors,
+};
+
 /**
  * Helper functions for error catalog
  */
 
 // Get error definition by code
-export function getErrorDefinition(code: string): ErrorDefinition | undefined {
+export function getErrorDefinition(code: ErrorCode): ErrorDefinition | undefined {
   return ERROR_CATALOG[code];
 }
 
