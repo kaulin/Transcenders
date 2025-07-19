@@ -26,7 +26,7 @@ export class ResultHelper {
   static error<T>(
     errorCode: string,
     operation: string,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): ServiceResult<T> {
     const error = new ServiceError(errorCode, context);
 
@@ -45,7 +45,7 @@ export class ResultHelper {
     error: unknown,
     operation: string,
     fallbackErrorCode: string = ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): ServiceResult<T> {
     // If it's already a ServiceError, preserve it
     if (error instanceof ServiceError) {
@@ -138,7 +138,7 @@ export class ResultHelper {
       const message = error.message.toLowerCase();
 
       // SQLite constraint violations
-      if (error.name === 'SqliteError' || (error as any).code === 'SQLITE_CONSTRAINT') {
+      if (error.name === 'SqliteError' || (error as ServiceError).code === 'SQLITE_CONSTRAINT') {
         if (message.includes('unique')) {
           return ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS || fallbackCode;
         }
