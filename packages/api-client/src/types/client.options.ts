@@ -1,5 +1,3 @@
-import { TSchema } from '@sinclair/typebox';
-
 export interface ServiceConfig {
   baseUrl: string;
   timeout?: number;
@@ -11,5 +9,4 @@ export interface ApiCallOptions {
   body?: string | object;
   headers?: Record<string, string>;
   timeout?: number;
-  expectedDataSchema?: TSchema;
 }
