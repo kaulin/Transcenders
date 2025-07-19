@@ -81,7 +81,12 @@ export class ApiClient {
     return {
       success: false,
       operation: 'api-call',
-      error,
+      error: {
+        code: 'API_CLIENT_ERROR',
+        message: error,
+        category: 'internal',
+      },
+      timestamp: new Date().toISOString(),
     };
   }
 
