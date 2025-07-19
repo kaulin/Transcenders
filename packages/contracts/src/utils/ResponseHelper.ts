@@ -9,7 +9,12 @@ export class ResponseHelper {
     statusCode = 200,
   ): ApiResponseType {
     reply.code(statusCode);
-    return { success: true, operation, data };
+    return {
+      success: true,
+      operation,
+      data,
+      timestamp: new Date().toISOString(),
+    };
   }
 
   static error(
@@ -19,7 +24,16 @@ export class ResponseHelper {
     message: string,
   ): ApiResponseType {
     reply.code(statusCode);
-    return { success: false, operation, error: message };
+    return {
+      success: false,
+      operation,
+      error: {
+        code: 'LEGACY_ERROR',
+        message,
+        category: 'internal',
+      },
+      timestamp: new Date().toISOString(),
+    };
   }
 
   /**

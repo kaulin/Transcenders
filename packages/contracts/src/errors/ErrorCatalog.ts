@@ -63,6 +63,14 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'validation',
   },
 
+  [ERROR_CODES.COMMON.VALIDATION_FAILED]: {
+    code: ERROR_CODES.COMMON.VALIDATION_FAILED,
+    message: 'Validation failed for one or more fields',
+    userMessage: 'Please check your input and try again',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
   [ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS]: {
     code: ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS,
     message: 'Resource already exists',
@@ -77,6 +85,14 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     userMessage: 'Unable to connect to the database. Please try again later.',
     httpStatus: 500,
     category: 'internal',
+  },
+
+  [ERROR_CODES.COMMON.FORBIDDEN_ACCESS]: {
+    code: ERROR_CODES.COMMON.FORBIDDEN_ACCESS,
+    message: 'Access forbidden - insufficient permissions',
+    userMessage: 'You do not have permission to access this resource',
+    httpStatus: 403,
+    category: 'authorization',
   },
 
   // Auth service errors

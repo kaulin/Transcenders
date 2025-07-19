@@ -193,6 +193,7 @@ export type BooleanOperationResult = Static<typeof BooleanOperationResultSchema>
 
 /**
  * RESPONSE SCHEMAS
+ * Enhanced API response with structured error handling and timestamps
  */
 export const ApiResponse = Type.Intersect(
   [
@@ -201,11 +202,19 @@ export const ApiResponse = Type.Intersect(
         success: Type.Literal(true),
         operation: Type.String(),
         data: Type.Unknown(),
+        timestamp: Type.String(),
       }),
       Type.Object({
         success: Type.Literal(false),
         operation: Type.String(),
-        error: Type.String(),
+        error: Type.Object({
+          code: Type.String(),
+          message: Type.String(),
+          userMessage: Type.Optional(Type.String()),
+          category: Type.String(),
+          context: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
+        }),
+        timestamp: Type.String(),
       }),
     ]),
   ],
