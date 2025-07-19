@@ -23,6 +23,19 @@ export class AvatarService {
     return path.join(import.meta.dirname, '../../uploads/default-avatars');
   }
 
+  private static async removeOldAvatar(uploadDir: string, userId: string): Promise<void> {
+    try {
+      const files = fs.readdirSync(uploadDir);
+      const userFiles = files.filter((file) => file.startsWith(`${userId}.`));
+
+      for (const file of userFiles) {
+        fs.unlinkSync(path.join(uploadDir, file));
+      }
+    } catch (error) {
+      // Ignore errors
+    }
+  }
+
   static async initializeAvatarDirectories(): Promise<void> {
     const uploadDir = this.getUploadDir();
     const defaultAvatarsDir = this.getDefaultAvatarsDir();
@@ -63,7 +76,6 @@ export class AvatarService {
       await UserService.updateUser(+userId, { avatar: avatarPath });
 
       return {
-        success: true,
         url: avatarPath,
       };
     });
@@ -81,7 +93,6 @@ export class AvatarService {
         await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
 
         return {
-          success: true,
           url: defaultAvatarUrl,
         };
       },
@@ -131,27 +142,11 @@ export class AvatarService {
         });
         await this.removeOldAvatar(this.getUploadDir(), userId);
 
-        const result: AvatarResult = {
-          success: true,
+        return {
           url: avatarUrl,
         };
-
-        return result;
       },
     );
-  }
-
-  private static async removeOldAvatar(uploadDir: string, userId: string): Promise<void> {
-    try {
-      const files = fs.readdirSync(uploadDir);
-      const userFiles = files.filter((file) => file.startsWith(`${userId}.`));
-
-      for (const file of userFiles) {
-        fs.unlinkSync(path.join(uploadDir, file));
-      }
-    } catch (error) {
-      // It's safe to ignore file deletion errors here because the absence of files or permission issues does not affect avatar update logic.
-    }
   }
 
   static async getRandomCatUrls({
