@@ -1,7 +1,9 @@
 import {
+  ApiErrorHandler,
   DeleteAvatarRequestParams,
+  ERROR_CODES,
   RandomCatsQuery,
-  ResponseHelper,
+  ResultHelper,
   SetDefaultAvatarParams,
   SetDefaultAvatarRequest,
   UploadAvatarRequestParams,
@@ -19,32 +21,32 @@ export class AvatarController {
       // Get the uploaded file
       const data = (await request.file())!;
       if (!data) {
-        return ResponseHelper.error(reply, 'upload-avatar', 400, 'No file provided');
+        return ApiErrorHandler.error(reply, ERROR_CODES.USER.FILE_NOT_PROVIDED, 'upload avatar');
       }
 
       const result = await AvatarService.uploadAvatar(userId, data);
-      return ResponseHelper.handleDatabaseResult(reply, result);
+      return ApiErrorHandler.handleServiceResult(reply, result);
     } catch (error) {
-      console.error('Avatar upload controller error:', error);
-      return ResponseHelper.error(reply, 'upload-avatar', 500, 'Upload failed');
+      const errorResult = ResultHelper.errorFromException(error, 'upload avatar');
+      return ApiErrorHandler.handleServiceResult(reply, errorResult);
     }
   }
 
   static async deleteAvatar(request: FastifyRequest, reply: FastifyReply) {
     const { userId } = request.params as DeleteAvatarRequestParams;
     const result = await AvatarService.deleteAvatar(userId);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async getDefaultAvatars(request: FastifyRequest, reply: FastifyReply) {
     const result = await AvatarService.getDefaultAvatars();
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async getRandomCats(request: FastifyRequest, reply: FastifyReply) {
     const queryString = request.query as RandomCatsQuery;
     const result = await AvatarService.getRandomCatUrls(queryString);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async setDefaultAvatar(request: FastifyRequest, reply: FastifyReply) {
@@ -52,6 +54,6 @@ export class AvatarController {
     const { avatarName } = request.body as SetDefaultAvatarRequest;
 
     const result = await AvatarService.setDefaultAvatar(userId, avatarName);
-    return ResponseHelper.handleDatabaseResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 }
