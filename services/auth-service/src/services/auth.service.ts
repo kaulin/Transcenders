@@ -4,11 +4,13 @@ import {
   BooleanOperationResult,
   BooleanResultHelper,
   CreateUserRequest,
-  DatabaseHelper,
-  DatabaseResult,
+  ERROR_CODES,
   JWTPayload,
   LoginUser,
   RegisterUser,
+  ResultHelper,
+  ServiceError,
+  ServiceResult,
   User,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
@@ -29,26 +31,46 @@ export class AuthService {
       `;
     const result = await database.run(sql.text, sql.values);
     if (!result.lastID) {
-      throw new Error('Failed to add user credentials');
+      throw new ServiceError(ERROR_CODES.AUTH.REGISTRATION_FAILED, {
+        reason: 'Failed to add user credentials',
+        userId: userCreds.user_id,
+      });
     }
     return true;
   }
 
   static async register(
     registration: RegisterUser,
-  ): Promise<DatabaseResult<BooleanOperationResult>> {
+  ): Promise<ServiceResult<BooleanOperationResult>> {
     const userCreationInfo: CreateUserRequest = {
       username: registration.username,
       email: registration.email,
     };
     const db = await getAuthDB();
-    return DatabaseHelper.executeTransaction<BooleanOperationResult>(
+    return ResultHelper.executeTransaction<BooleanOperationResult>(
       'register user',
       db,
       async (database) => {
+        // Get user creation result and handle errors with proper ServiceError
         const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
         if (!userCreateResponse.success) {
-          throw new Error(userCreateResponse.error);
+          // Map API errors to appropriate ServiceError codes
+          const errorMessage =
+            typeof userCreateResponse.error === 'string'
+              ? userCreateResponse.error
+              : JSON.stringify(userCreateResponse.error);
+
+          if (errorMessage.includes('already exists') || errorMessage.includes('duplicate')) {
+            throw new ServiceError(ERROR_CODES.AUTH.USER_ALREADY_EXISTS, {
+              username: registration.username,
+              email: registration.email,
+              originalError: userCreateResponse.error,
+            });
+          }
+
+          throw new ServiceError(ERROR_CODES.AUTH.REGISTRATION_FAILED, {
+            reason: userCreateResponse.error,
+          });
         }
         const newUser = userCreateResponse.data as User;
 
@@ -62,55 +84,58 @@ export class AuthService {
     );
   }
 
-  static async login(login: LoginUser): Promise<DatabaseResult<AuthData>> {
+  static async login(login: LoginUser): Promise<ServiceResult<AuthData>> {
     const db: Database = await getAuthDB();
-    return await DatabaseHelper.executeQuery<AuthData>(
-      'auth: get user by username',
-      db,
-      async (database) => {
-        // Get user from user-service with schema validation
-        const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
-        if (!apiResponse.success) {
-          throw new Error(`Authentication failed: ${apiResponse.error}`);
-        }
-        const userData = apiResponse.data as User;
+    return await ResultHelper.executeQuery<AuthData>('authenticate user', db, async (database) => {
+      // Get user from user-service with schema validation
+      const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
+      if (!apiResponse.success) {
+        throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_USERNAME, {
+          username: login.username,
+          originalError: apiResponse.error,
+        });
+      }
+      const userData = apiResponse.data as User;
 
-        // get the matching user credentials entry
-        const sql = SQL`
+      // get the matching user credentials entry
+      const sql = SQL`
         SELECT * FROM user_credentials WHERE user_id = ${userData.id}
       `;
-        const userCredentials = await database.get(sql.text, sql.values);
-        if (!userCredentials) {
-          throw new Error(`user '${login.username}' not found`);
-        }
+      const userCredentials = await database.get(sql.text, sql.values);
+      if (!userCredentials) {
+        throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+          username: login.username,
+        });
+      }
 
-        const userCreds = userCredentials as UserCredentialsEntry;
-        const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
-        if (!isValidPassword) {
-          throw new Error('Invalid password');
-        }
+      const userCreds = userCredentials as UserCredentialsEntry;
+      const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
+      if (!isValidPassword) {
+        throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+          username: login.username,
+        });
+      }
 
-        // Generate JWT accessToken
-        const accessToken = jwt.sign(
-          { userId: userData.id },
-          // TODO fix all env stuff
-          process.env.JWT_SECRET ?? 'testing',
-          { expiresIn: '24h' },
-        );
-        this.verifyToken(accessToken);
-        return { accessToken };
-      },
-    );
+      // Generate JWT accessToken
+      const accessToken = jwt.sign(
+        { userId: userData.id },
+        // TODO fix all env stuff
+        process.env.JWT_SECRET ?? 'testing',
+        { expiresIn: '24h' },
+      );
+      this.verifyToken(accessToken);
+      return { accessToken };
+    });
   }
 
   static async changePassword(
     userId: number,
     oldPassword: string,
     newPassword: string,
-  ): Promise<DatabaseResult<BooleanOperationResult>> {
+  ): Promise<ServiceResult<BooleanOperationResult>> {
     const db = await getAuthDB();
-    return await DatabaseHelper.executeQuery<BooleanOperationResult>(
-      'auth: change password',
+    return await ResultHelper.executeQuery<BooleanOperationResult>(
+      'change password',
       db,
       async (database) => {
         // Get current credentials
@@ -119,7 +144,9 @@ export class AuthService {
         `;
         const userCredentials = await database.get(sql.text, sql.values);
         if (!userCredentials) {
-          throw new Error(`User credentials not found for user ${userId}`);
+          throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_ID, {
+            userId,
+          });
         }
 
         const userCreds = userCredentials as UserCredentialsEntry;
@@ -127,7 +154,10 @@ export class AuthService {
         // Verify old password
         const isValidPassword = await bcrypt.compare(oldPassword, userCreds.pw_hash);
         if (!isValidPassword) {
-          throw new Error('Current password is incorrect');
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+            userId,
+            reason: 'Current password is incorrect',
+          });
         }
 
         // Hash new password and update
@@ -162,10 +192,10 @@ export class AuthService {
     return false;
   }
 
-  static async deleteCredentials(userId: number): Promise<DatabaseResult<BooleanOperationResult>> {
+  static async deleteCredentials(userId: number): Promise<ServiceResult<BooleanOperationResult>> {
     const db = await getAuthDB();
-    return DatabaseHelper.executeQuery<BooleanOperationResult>(
-      'auth: delete user credentials',
+    return ResultHelper.executeQuery<BooleanOperationResult>(
+      'delete user credentials',
       db,
       async (database) => {
         // Check if user exists
@@ -174,13 +204,17 @@ export class AuthService {
         `;
         const userExists = await database.get(checkUserSql.text, checkUserSql.values);
         if (!userExists) {
-          return BooleanResultHelper.failure(
-            `user credentials with userid '${userId}' do not exist`,
-          );
+          throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_ID, {
+            userId,
+            reason: 'User credentials do not exist',
+          });
         }
         const deleted = await this.deleteCredentialsLogic(db, userId);
         if (!deleted) {
-          return BooleanResultHelper.failure(`No changes were made to user credentials: ${userId}`);
+          throw new ServiceError(ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, {
+            userId,
+            reason: 'No changes were made to user credentials',
+          });
         }
         return BooleanResultHelper.success(
           `User credentials for user_id ${userId} have been successfully deleted`,

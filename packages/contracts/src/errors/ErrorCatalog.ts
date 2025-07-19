@@ -120,6 +120,22 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'conflict',
   },
 
+  [ERROR_CODES.AUTH.PASSWORD_TOO_WEAK]: {
+    code: ERROR_CODES.AUTH.PASSWORD_TOO_WEAK,
+    message: 'Password does not meet security requirements',
+    userMessage: 'Password is too weak. Please use a stronger password.',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.AUTH.REGISTRATION_FAILED]: {
+    code: ERROR_CODES.AUTH.REGISTRATION_FAILED,
+    message: 'User registration process failed',
+    userMessage: 'Registration failed. Please try again.',
+    httpStatus: 500,
+    category: 'internal',
+  },
+
   // User service errors
   [ERROR_CODES.USER.NOT_FOUND_BY_ID]: {
     code: ERROR_CODES.USER.NOT_FOUND_BY_ID,
