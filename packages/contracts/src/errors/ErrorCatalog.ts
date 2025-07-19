@@ -137,6 +137,22 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'internal',
   },
 
+  [ERROR_CODES.USER.NOT_FOUND_BY_USERNAME]: {
+    code: ERROR_CODES.USER.NOT_FOUND_BY_USERNAME,
+    message: 'User not found with the provided username',
+    userMessage: 'User not found',
+    httpStatus: 404,
+    category: 'not_found',
+  },
+
+  [ERROR_CODES.USER.NOT_FOUND_BY_EMAIL]: {
+    code: ERROR_CODES.USER.NOT_FOUND_BY_EMAIL,
+    message: 'User not found with the provided email address',
+    userMessage: 'User not found',
+    httpStatus: 404,
+    category: 'not_found',
+  },
+
   [ERROR_CODES.USER.FRIENDSHIP_ALREADY_EXISTS]: {
     code: ERROR_CODES.USER.FRIENDSHIP_ALREADY_EXISTS,
     message: 'Friendship between these users already exists',
