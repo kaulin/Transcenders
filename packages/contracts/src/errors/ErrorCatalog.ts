@@ -249,6 +249,30 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     httpStatus: 400,
     category: 'validation',
   },
+
+  [ERROR_CODES.SCORE.MATCH_NOT_FOUND]: {
+    code: ERROR_CODES.SCORE.MATCH_NOT_FOUND,
+    message: 'Match not found with the provided identifier',
+    userMessage: 'Match not found',
+    httpStatus: 404,
+    category: 'not_found',
+  },
+
+  [ERROR_CODES.SCORE.DUPLICATE_SCORE_ENTRY]: {
+    code: ERROR_CODES.SCORE.DUPLICATE_SCORE_ENTRY,
+    message: 'Score entry already exists for this match',
+    userMessage: 'Score has already been recorded for this match',
+    httpStatus: 409,
+    category: 'conflict',
+  },
+
+  [ERROR_CODES.SCORE.STATS_CALCULATION_FAILED]: {
+    code: ERROR_CODES.SCORE.STATS_CALCULATION_FAILED,
+    message: 'Statistics calculation process failed',
+    userMessage: 'Unable to calculate statistics. Please try again.',
+    httpStatus: 500,
+    category: 'internal',
+  },
 };
 
 /**

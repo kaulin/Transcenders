@@ -1,10 +1,11 @@
 import {
   CreateScoreRequest,
-  DatabaseHelper,
-  DatabaseResult,
-  DB_ERROR_CODES,
+  ERROR_CODES,
   GetScoresQuery,
+  ResultHelper,
   Score,
+  ServiceError,
+  ServiceResult,
   Stats,
 } from '@transcenders/contracts';
 import SQL from 'sql-template-strings';
@@ -12,9 +13,8 @@ import { Database } from 'sqlite';
 import { getDB } from '../db/database';
 
 export class ScoreService {
-
   // Private logic methods for internal use
-  
+
   private static async getScoreByIdLogic(database: Database, id: number): Promise<Score | null> {
     const sql = SQL`
       SELECT * FROM scores WHERE id = ${id}
@@ -51,43 +51,52 @@ export class ScoreService {
     for (const score of scores) {
       total_games++;
       total_duration += score.game_duration;
-      if (score.tournament_level === 0)
-        regular_games++;
-      else
-        tournament_games++;
+      if (score.tournament_level === 0) regular_games++;
+      else tournament_games++;
       if (id === score.winner_id) {
-          total_wins++;
-          total_score += score.winner_score;
-          if (score.tournament_level === 0) {
-            regular_game_wins++;
+        total_wins++;
+        total_score += score.winner_score;
+        if (score.tournament_level === 0) {
+          regular_game_wins++;
+        } else {
+          if (score.tournament_level === 1) {
+            tournament_wins++;
           }
-          else {
-            if (score.tournament_level === 1) {
-              tournament_wins++;
-            }
-            tourament_game_wins++;
-          }
+          tourament_game_wins++;
+        }
       } else {
         total_score += score.loser_score;
       }
     }
 
     if (total_games > 0) {
-      total_win_percentage = total_wins / total_games * 100;
+      total_win_percentage = (total_wins / total_games) * 100;
       if (regular_games > 0) {
-        regular_game_win_percentage = regular_game_wins / regular_games * 100;
+        regular_game_win_percentage = (regular_game_wins / regular_games) * 100;
       }
       if (tournament_games > 0) {
-        tournament_game_win_percentage = tourament_game_wins / tournament_games * 100;
+        tournament_game_win_percentage = (tourament_game_wins / tournament_games) * 100;
       }
       average_score = total_score / total_games;
       average_duration = total_duration / total_games;
     }
 
-    return {total_games, total_wins, total_win_percentage, 
-      regular_games, regular_game_wins, regular_game_win_percentage, 
-      tournament_games, tourament_game_wins, tournament_game_win_percentage, tournament_wins, 
-      total_score, average_score, total_duration, average_duration } as Stats;
+    return {
+      total_games,
+      total_wins,
+      total_win_percentage,
+      regular_games,
+      regular_game_wins,
+      regular_game_win_percentage,
+      tournament_games,
+      tourament_game_wins,
+      tournament_game_win_percentage,
+      tournament_wins,
+      total_score,
+      average_score,
+      total_duration,
+      average_duration,
+    } as Stats;
   }
 
   private static async getStatsByIdLogic(database: Database, id: number): Promise<Stats> {
@@ -96,7 +105,18 @@ export class ScoreService {
     return stats;
   }
 
-  private static async createScoreLogic(database: Database, scoreData: CreateScoreRequest, ): Promise<Score> {
+  /**
+   * #TODO match validatiod via SQL constraints
+   *
+   * ids cant be same
+   * game_duration = game_end - game_start
+   * tournament level between 0 and 4 (or some higher number for potential upgrades)
+   * other anti cheat stuff, since our game is local
+   */
+  private static async createScoreLogic(
+    database: Database,
+    scoreData: CreateScoreRequest,
+  ): Promise<Score> {
     const sql = SQL`
         INSERT INTO scores (winner_id, loser_id, winner_score, loser_score, tournament_level, game_duration, game_start, game_end)
         VALUES (${scoreData.winner_id}, ${scoreData.loser_id}, 
@@ -106,28 +126,25 @@ export class ScoreService {
 
     const result = await database.run(sql.text, sql.values);
     if (!result.lastID) {
-      throw new Error('Failed to create score');
+      throw new ServiceError(ERROR_CODES.SCORE.SCORE_CREATION_FAILED, {
+        matchData: scoreData,
+      });
     }
-
-    const score = await this.getScoreByIdLogic(database, result.lastID);
-    if (!score) {
-      throw new Error('Score created but not found');
-    }
-
-    return score;
+    return {
+      id: result.lastID,
+      ...scoreData,
+    } as Score;
   }
 
-  // Public API methods using DatabaseHelper
+  // Public API methods using ResultHelper
 
-  static async getAllScores(query: GetScoresQuery): Promise<DatabaseResult<Score[]>> {
+  static async getAllScores(query: GetScoresQuery): Promise<ServiceResult<Score[]>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<Score[]>('get all scores', db, async (database) => {
+    return ResultHelper.executeQuery<Score[]>('get all scores', db, async (database) => {
       const sql = SQL`SELECT * FROM scores`;
       if (query.search) {
         const searchTerm = `%${query.search}%`;
-        sql.append(
-          SQL` WHERE winner_id LIKE ${searchTerm} OR loser_id LIKE ${searchTerm}`,
-        );
+        sql.append(SQL` WHERE winner_id LIKE ${searchTerm} OR loser_id LIKE ${searchTerm}`);
       }
 
       sql.append(SQL` ORDER BY created_at DESC`);
@@ -136,36 +153,26 @@ export class ScoreService {
     });
   }
 
-  static async createScore(scoreData: CreateScoreRequest): Promise<DatabaseResult<Score>> {
+  static async createScore(scoreData: CreateScoreRequest): Promise<ServiceResult<Score>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<Score>('create score', db, async (database) => {
+    return ResultHelper.executeQuery<Score>('create score', db, async (database) => {
       return await this.createScoreLogic(database, scoreData);
     });
   }
 
   // TODO Add query string support for limit and offset to implement pagination support
-  static async getScoresById(id: number): Promise<DatabaseResult<Score[]>> {
+  static async getScoresById(id: number): Promise<ServiceResult<Score[]>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<Score[]>('get scores by id', db, async (database) => {
+    return ResultHelper.executeQuery<Score[]>('get scores by id', db, async (database) => {
       const scores = await this.getScoresByIdLogic(database, id);
-      if (!scores) {
-        const error = new Error(`no games found for user id '${id}'`);
-        (error as any).code = DB_ERROR_CODES.RECORD_NOT_FOUND;
-        throw error;
-      }
       return scores as Score[];
     });
   }
 
-  static async getStatsById(id: number): Promise<DatabaseResult<Stats>> {
+  static async getStatsById(id: number): Promise<ServiceResult<Stats>> {
     const db = await getDB();
-    return DatabaseHelper.executeQuery<Stats>('get stats by id', db, async (database) => {
+    return ResultHelper.executeQuery<Stats>('get stats by id', db, async (database) => {
       const stats = await this.getStatsByIdLogic(database, id);
-      if (!stats) {
-        const error = new Error(`no games found for user id '${id}'`);
-        (error as any).code = DB_ERROR_CODES.RECORD_NOT_FOUND;
-        throw error;
-      }
       return stats as Stats;
     });
   }

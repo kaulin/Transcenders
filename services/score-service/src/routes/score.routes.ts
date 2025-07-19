@@ -1,9 +1,9 @@
 import {
-  getScoresSchema,
   createScoreSchema,
-  standardApiResponses,
+  getScoresSchema,
   SCORE_ROUTES,
   scoresByIdSchema,
+  standardApiResponses,
   statsByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
