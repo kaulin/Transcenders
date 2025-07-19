@@ -5,6 +5,7 @@ import { TimestampField, UserIdField } from './user.schemas';
  * ENTITY SCHEMAS
  */
 export const ScoreSchema = Type.Object({
+  id: Type.Optional(Type.Number()),
   winner_id: UserIdField,
   loser_id: UserIdField,
   winner_score: Type.Number(),
@@ -41,16 +42,7 @@ export type Stats = Static<typeof StatsSchema>;
  * REQUEST SCHEMAS
  */
 export const createScoreSchema = {
-  body: Type.Object({
-    winner_id: UserIdField,
-    loser_id: UserIdField,
-    winner_score: Type.Number(),
-    loser_score: Type.Number(),
-    tournament_level: Type.Number(),
-    game_duration: Type.Number(),
-    game_start: TimestampField,
-    game_end: TimestampField,
-  }),
+  body: ScoreSchema,
 };
 export type CreateScoreRequest = Static<typeof createScoreSchema.body>;
 
