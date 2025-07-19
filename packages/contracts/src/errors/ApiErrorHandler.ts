@@ -1,7 +1,7 @@
 import { FastifyReply } from 'fastify';
 import { ApiResponseType } from '../user.schemas';
 import { getErrorDefinition } from './ErrorCatalog';
-import { ERROR_CODES } from './ErrorCodes';
+import { ERROR_CODES, ErrorCode } from './ErrorCodes';
 import { ServiceError } from './ServiceError';
 import { ServiceResult } from './ServiceResult';
 
@@ -33,7 +33,7 @@ export class ApiErrorHandler {
    */
   static error(
     reply: FastifyReply,
-    errorCode: string,
+    errorCode: ErrorCode,
     operation: string,
     context?: Record<string, unknown>,
   ): ApiResponseType {
@@ -127,7 +127,7 @@ export class ApiErrorHandler {
   static authenticationError(
     reply: FastifyReply,
     operation: string,
-    errorCode: string = ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS,
+    errorCode: ErrorCode = ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS,
     context?: Record<string, unknown>,
   ): ApiResponseType {
     return this.error(reply, errorCode, operation, context);
@@ -165,7 +165,7 @@ export class ApiErrorHandler {
   static conflictError(
     reply: FastifyReply,
     operation: string,
-    errorCode: string = ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS,
+    errorCode: ErrorCode = ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS,
     context?: Record<string, unknown>,
   ): ApiResponseType {
     return this.error(reply, errorCode, operation, context);
@@ -185,7 +185,7 @@ export class ApiErrorHandler {
   /**
    * Get HTTP status code for an error code
    */
-  static getHttpStatusForErrorCode(errorCode: string): number {
+  static getHttpStatusForErrorCode(errorCode: ErrorCode): number {
     const errorDef = getErrorDefinition(errorCode);
     return errorDef?.httpStatus ?? 500;
   }
@@ -193,7 +193,7 @@ export class ApiErrorHandler {
   /**
    * Check if an error code represents a client error (4xx)
    */
-  static isClientError(errorCode: string): boolean {
+  static isClientError(errorCode: ErrorCode): boolean {
     const status = this.getHttpStatusForErrorCode(errorCode);
     return status >= 400 && status < 500;
   }
@@ -201,7 +201,7 @@ export class ApiErrorHandler {
   /**
    * Check if an error code represents a server error (5xx)
    */
-  static isServerError(errorCode: string): boolean {
+  static isServerError(errorCode: ErrorCode): boolean {
     const status = this.getHttpStatusForErrorCode(errorCode);
     return status >= 500;
   }

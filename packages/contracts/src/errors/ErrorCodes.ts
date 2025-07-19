@@ -53,9 +53,8 @@ export const ERROR_CODES = {
 } as const;
 
 // Type for all possible error codes
-export type ErrorCode =
-  (typeof ERROR_CODES)[keyof typeof ERROR_CODES][keyof (typeof ERROR_CODES)[keyof typeof ERROR_CODES]];
-
+type ValuesOf<T> = T extends Record<string, infer U> ? ValuesOf<U> : T;
+export type ErrorCode = ValuesOf<typeof ERROR_CODES>;
 // Helper function to get all error codes as an array
 export function getAllErrorCodes(): string[] {
   const codes: string[] = [];
