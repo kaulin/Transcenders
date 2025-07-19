@@ -35,7 +35,7 @@ export class ApiErrorHandler {
     reply: FastifyReply,
     errorCode: string,
     operation: string,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): ApiResponseType {
     const errorDef = getErrorDefinition(errorCode);
 
@@ -110,11 +110,11 @@ export class ApiErrorHandler {
   static validationError(
     reply: FastifyReply,
     operation: string,
-    validationErrors: Array<{
+    validationErrors: {
       field: string;
       message: string;
-      value?: any;
-    }>,
+      value?: unknown;
+    }[],
   ): ApiResponseType {
     return this.error(reply, ERROR_CODES.COMMON.VALIDATION_FAILED, operation, {
       validationErrors,
@@ -128,7 +128,7 @@ export class ApiErrorHandler {
     reply: FastifyReply,
     operation: string,
     errorCode: string = ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): ApiResponseType {
     return this.error(reply, errorCode, operation, context);
   }
@@ -139,7 +139,7 @@ export class ApiErrorHandler {
   static authorizationError(
     reply: FastifyReply,
     operation: string,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): ApiResponseType {
     return this.error(reply, ERROR_CODES.COMMON.FORBIDDEN_ACCESS, operation, context);
   }
@@ -151,7 +151,7 @@ export class ApiErrorHandler {
     reply: FastifyReply,
     operation: string,
     resourceType?: string,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): ApiResponseType {
     return this.error(reply, ERROR_CODES.COMMON.RESOURCE_NOT_FOUND, operation, {
       ...context,
@@ -166,7 +166,7 @@ export class ApiErrorHandler {
     reply: FastifyReply,
     operation: string,
     errorCode: string = ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): ApiResponseType {
     return this.error(reply, errorCode, operation, context);
   }
@@ -177,7 +177,7 @@ export class ApiErrorHandler {
   static internalError(
     reply: FastifyReply,
     operation: string,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): ApiResponseType {
     return this.error(reply, ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, operation, context);
   }
@@ -187,7 +187,7 @@ export class ApiErrorHandler {
    */
   static getHttpStatusForErrorCode(errorCode: string): number {
     const errorDef = getErrorDefinition(errorCode);
-    return errorDef?.httpStatus || 500;
+    return errorDef?.httpStatus ?? 500;
   }
 
   /**
