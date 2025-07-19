@@ -1,4 +1,5 @@
 import { ApiClient } from '@transcenders/api-client';
+import * as Contracts from '@transcenders/contracts';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -10,6 +11,7 @@ import './styles/index.css';
 
 //#TODO DEV only, remove for prod or change later
 window.api = ApiClient;
+window.utils = Contracts;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

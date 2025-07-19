@@ -16,7 +16,8 @@ export class ApiClient {
       headers: {
         ...headers,
       },
-      signal: AbortSignal.timeout(timeout),
+      //#TODO temporary disabled timeout for debugging
+      // signal: AbortSignal.timeout(timeout),
     };
 
     if (body && method !== 'GET') {
