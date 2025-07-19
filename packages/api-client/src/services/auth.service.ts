@@ -1,8 +1,6 @@
 import {
   ApiResponseType,
   AUTH_ROUTES,
-  authDataSchema,
-  BooleanOperationResultSchema,
   LoginUser,
   RegisterUser,
   SERVICE_URLS,
@@ -32,7 +30,6 @@ export class AuthApiService {
     const options: ApiCallOptions = {
       method: 'POST',
       body: registration,
-      expectedDataSchema: BooleanOperationResultSchema,
     };
     return this.callAuthService(endpoint, options);
   }
@@ -42,7 +39,6 @@ export class AuthApiService {
     const options: ApiCallOptions = {
       method: 'POST',
       body: login,
-      expectedDataSchema: authDataSchema,
     };
     return this.callAuthService(endpoint, options);
   }
@@ -51,7 +47,6 @@ export class AuthApiService {
     const endpoint = `${AUTH_ROUTES.DELETE.replace(':id', id.toString())}`;
     const options: ApiCallOptions = {
       method: 'DELETE',
-      expectedDataSchema: BooleanOperationResultSchema,
     };
     return this.callAuthService(endpoint, options);
   }
@@ -61,7 +56,6 @@ export class AuthApiService {
     const options: ApiCallOptions = {
       method: 'PATCH',
       body: { oldPassword, newPassword },
-      expectedDataSchema: BooleanOperationResultSchema,
     };
     return this.callAuthService(endpoint, options);
   }

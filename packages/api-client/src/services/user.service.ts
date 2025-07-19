@@ -10,7 +10,6 @@ import {
   toQueryString,
   UpdateUserRequest,
   USER_ROUTES,
-  UserSchema,
 } from '@transcenders/contracts';
 import { ApiClient } from '../api/ApiClient';
 import { ApiCallOptions } from '../types/client.options';
@@ -83,9 +82,7 @@ export class UserApiService {
    */
   static async getUserExact(query: GetUserRequest) {
     const queryString = `?${new URLSearchParams(query).toString()}`;
-    return this.callUserService(`${USER_ROUTES.USERS_EXACT}${queryString}`, {
-      expectedDataSchema: UserSchema,
-    });
+    return this.callUserService(`${USER_ROUTES.USERS_EXACT}${queryString}`);
   }
 
   // Friendship methods
