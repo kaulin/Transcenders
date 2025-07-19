@@ -55,6 +55,30 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'authentication',
   },
 
+  [ERROR_CODES.COMMON.VALIDATION_CONSTRAINT_VIOLATION]: {
+    code: ERROR_CODES.COMMON.VALIDATION_CONSTRAINT_VIOLATION,
+    message: 'Data constraint violation occurred',
+    userMessage: 'The provided data violates system constraints',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS]: {
+    code: ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS,
+    message: 'Resource already exists',
+    userMessage: 'This item already exists',
+    httpStatus: 409,
+    category: 'conflict',
+  },
+
+  [ERROR_CODES.COMMON.DATABASE_CONNECTION_FAILED]: {
+    code: ERROR_CODES.COMMON.DATABASE_CONNECTION_FAILED,
+    message: 'Database connection failed',
+    userMessage: 'Unable to connect to the database. Please try again later.',
+    httpStatus: 500,
+    category: 'internal',
+  },
+
   // Auth service errors
   [ERROR_CODES.AUTH.INVALID_CREDENTIALS]: {
     code: ERROR_CODES.AUTH.INVALID_CREDENTIALS,
