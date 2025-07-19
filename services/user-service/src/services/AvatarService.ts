@@ -2,16 +2,17 @@ import { MultipartFile } from '@fastify/multipart';
 import {
   AvatarConfig,
   AvatarResult,
-  DatabaseHelper,
-  DatabaseResult,
   DefaultAvatarsResult,
+  ERROR_CODES,
   RandomAvatarResult,
   RandomCatsQuery,
+  ResultHelper,
+  ServiceError,
+  ServiceResult,
 } from '@transcenders/contracts';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { getDB } from '../db/database';
 import { UserService } from './UserService';
 
 export class AvatarService {
@@ -63,17 +64,27 @@ export class AvatarService {
   static async uploadAvatar(
     userId: string,
     file: MultipartFile,
-  ): Promise<DatabaseResult<AvatarResult>> {
-    return DatabaseHelper.executeQuery<AvatarResult>('upload avatar', await getDB(), async () => {
+  ): Promise<ServiceResult<AvatarResult>> {
+    return ResultHelper.executeOperation<AvatarResult>('upload avatar', async () => {
       if (!file.mimetype.startsWith('image/')) {
-        throw new Error('Invalid file type. Only images are allowed.');
+        throw new ServiceError(ERROR_CODES.USER.INVALID_FILE_TYPE, {
+          providedType: file.mimetype,
+          allowedTypes: ['image/*'],
+        });
       }
 
       const inputBuffer = await file.toBuffer();
+
+      // process image and save to uploads
       const avatarPath = await this.processAndSaveAvatar(userId, inputBuffer);
 
       // Update database
-      await UserService.updateUser(+userId, { avatar: avatarPath });
+      const updateResult = await UserService.updateUser(+userId, { avatar: avatarPath });
+      if (!updateResult.success) {
+        throw new ServiceError(ERROR_CODES.USER.AVATAR_UPLOAD_FAILED, {
+          reason: 'Failed to update user avatar in database',
+        });
+      }
 
       return {
         url: avatarPath,
@@ -81,26 +92,28 @@ export class AvatarService {
     });
   }
 
-  static async deleteAvatar(userId: string): Promise<DatabaseResult<AvatarResult>> {
-    return DatabaseHelper.executeQuery<AvatarResult>(
-      'delete user avatar',
-      await getDB(),
-      async () => {
-        await this.removeOldAvatar(this.getUploadDir(), userId);
+  static async deleteAvatar(userId: string): Promise<ServiceResult<AvatarResult>> {
+    return ResultHelper.executeOperation<AvatarResult>('delete user avatar', async () => {
+      await this.removeOldAvatar(this.getUploadDir(), userId);
 
-        // Reset user avatar to default
-        const defaultAvatarUrl = `/uploads/default-avatars/${AvatarConfig.DEFAULT_AVATAR.FILENAME}`;
-        await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
+      // Reset user avatar to default
+      const defaultAvatarUrl = `/uploads/default-avatars/${AvatarConfig.DEFAULT_AVATAR.FILENAME}`;
+      const updateResult = await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
 
-        return {
-          url: defaultAvatarUrl,
-        };
-      },
-    );
+      if (!updateResult.success) {
+        throw new ServiceError(ERROR_CODES.USER.AVATAR_UPLOAD_FAILED, {
+          reason: 'Failed to reset user avatar to default',
+        });
+      }
+
+      return {
+        url: defaultAvatarUrl,
+      };
+    });
   }
 
-  static async getDefaultAvatars(): Promise<DatabaseResult<DefaultAvatarsResult>> {
-    try {
+  static async getDefaultAvatars(): Promise<ServiceResult<DefaultAvatarsResult>> {
+    return ResultHelper.executeOperation<DefaultAvatarsResult>('get default avatars', async () => {
       const defaultAvatarsDir = this.getDefaultAvatarsDir();
       const files = fs.readdirSync(defaultAvatarsDir);
 
@@ -112,49 +125,50 @@ export class AvatarService {
         }));
 
       const result: DefaultAvatarsResult = { avatars };
-      return DatabaseHelper.success(result);
-    } catch (error) {
-      console.error('Error getting default avatars:', error);
-      return DatabaseHelper.error('Failed to get default avatars');
-    }
+      return result;
+    });
   }
 
   static async setDefaultAvatar(
     userId: string,
     avatarName: string = AvatarConfig.DEFAULT_AVATAR.FILENAME,
-  ): Promise<DatabaseResult<AvatarResult>> {
-    const defaultAvatarsDir = this.getDefaultAvatarsDir();
-    return DatabaseHelper.executeQuery<AvatarResult>(
-      'set default avatar',
-      await getDB(),
-      async () => {
-        // Validate avatar exists
-        const avatarPath = path.join(defaultAvatarsDir, avatarName);
-        if (!fs.existsSync(avatarPath)) {
-          throw new Error('Avatar not found');
-        }
+  ): Promise<ServiceResult<AvatarResult>> {
+    return ResultHelper.executeOperation<AvatarResult>('set default avatar', async () => {
+      const defaultAvatarsDir = this.getDefaultAvatarsDir();
 
-        // Update user's avatar in database
-        const avatarUrl = `/uploads/default-avatars/${avatarName}`;
-
-        await UserService.updateUser(+userId, {
-          avatar: avatarUrl,
+      // Validate avatar exists
+      const avatarPath = path.join(defaultAvatarsDir, avatarName);
+      if (!fs.existsSync(avatarPath)) {
+        throw new ServiceError(ERROR_CODES.COMMON.RESOURCE_NOT_FOUND, {
+          resourceType: 'avatar',
+          avatarName,
         });
-        await this.removeOldAvatar(this.getUploadDir(), userId);
+      }
 
-        return {
-          url: avatarUrl,
-        };
-      },
-    );
+      // Update user's avatar in database
+      const avatarUrl = `/uploads/default-avatars/${avatarName}`;
+
+      const updateResult = await UserService.updateUser(+userId, { avatar: avatarUrl });
+      if (!updateResult.success) {
+        throw new ServiceError(ERROR_CODES.USER.AVATAR_UPLOAD_FAILED, {
+          reason: 'Failed to set default avatar in database',
+        });
+      }
+
+      await this.removeOldAvatar(this.getUploadDir(), userId);
+
+      return {
+        url: avatarUrl,
+      };
+    });
   }
 
   static async getRandomCatUrls({
     limit = AvatarConfig.RANDOM_CATS.DEFAULT_LIMIT,
     imageSize = AvatarConfig.RANDOM_CATS.DEFAULT_IMAGE_SIZE,
     mimeTypes = AvatarConfig.RANDOM_CATS.DEFAULT_MIME_TYPES,
-  }: Partial<RandomCatsQuery> = {}): Promise<DatabaseResult<RandomAvatarResult[]>> {
-    try {
+  }: Partial<RandomCatsQuery> = {}): Promise<ServiceResult<RandomAvatarResult[]>> {
+    return ResultHelper.executeOperation<RandomAvatarResult[]>('get random cat urls', async () => {
       const headers = new Headers({
         'Content-Type': 'application/json',
       });
@@ -188,10 +202,7 @@ export class AvatarService {
         height: cat.height,
       }));
 
-      return DatabaseHelper.success(cats);
-    } catch (error) {
-      console.error('Error getting random cats:', error);
-      return DatabaseHelper.error('Error getting random cats:');
-    }
+      return cats;
+    });
   }
 }

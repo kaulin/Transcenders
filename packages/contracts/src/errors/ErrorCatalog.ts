@@ -153,6 +153,30 @@ export const ERROR_CATALOG: Record<string, ErrorDefinition> = {
     category: 'not_found',
   },
 
+  [ERROR_CODES.USER.FILE_NOT_PROVIDED]: {
+    code: ERROR_CODES.USER.FILE_NOT_PROVIDED,
+    message: 'No file was provided in the request',
+    userMessage: 'Please select a file to upload',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.USER.INVALID_FILE_TYPE]: {
+    code: ERROR_CODES.USER.INVALID_FILE_TYPE,
+    message: 'File type is not supported for upload',
+    userMessage: 'Invalid file type. Please upload a supported image format.',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.USER.FILE_TOO_LARGE]: {
+    code: ERROR_CODES.USER.FILE_TOO_LARGE,
+    message: 'File size exceeds maximum allowed limit',
+    userMessage: 'File is too large. Please upload a smaller file.',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
   [ERROR_CODES.USER.FRIENDSHIP_ALREADY_EXISTS]: {
     code: ERROR_CODES.USER.FRIENDSHIP_ALREADY_EXISTS,
     message: 'Friendship between these users already exists',
