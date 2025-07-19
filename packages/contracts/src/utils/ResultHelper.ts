@@ -1,5 +1,5 @@
 import { Database } from 'sqlite';
-import { ERROR_CODES, ErrorCode } from '../errors/ErrorCodes';
+import { ERROR_CODES, ERROR_MAPPINGS, ErrorCode } from '../errors';
 import { ServiceError } from '../errors/ServiceError';
 import { ServiceResult } from '../errors/ServiceResult';
 
@@ -131,53 +131,23 @@ export class ResultHelper {
   }
 
   /**
-   * Map common exceptions to appropriate error codes
-   * #TODO maybe an external error maps object with searchstrings to match to error codes
+   * Map common exceptions to appropriate error codes using configurable mappings
    */
   private static mapExceptionToErrorCode(error: unknown, fallbackCode: ErrorCode): ErrorCode {
-    if (error instanceof Error) {
-      const message = error.message.toLowerCase();
+    if (!(error instanceof Error)) {
+      return fallbackCode;
+    }
 
-      // SQLite constraint violations
-      if (error.name === 'SqliteError') {
-        if (message.includes('unique')) {
-          return ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS || fallbackCode;
+    const message = error.message.toLowerCase();
+    const errorType = error.name;
+
+    for (const mapping of ERROR_MAPPINGS) {
+      if (message.includes(mapping.pattern)) {
+        // If errorType is specified, also check if it matches
+        if (mapping.errorType && errorType !== mapping.errorType) {
+          continue;
         }
-        if (message.includes('foreign key')) {
-          return ERROR_CODES.COMMON.RESOURCE_NOT_FOUND || fallbackCode;
-        }
-        return ERROR_CODES.COMMON.VALIDATION_CONSTRAINT_VIOLATION || fallbackCode;
-      }
-
-      // Database connection errors
-      if (
-        message.includes('database') &&
-        (message.includes('connection') || message.includes('locked'))
-      ) {
-        return ERROR_CODES.COMMON.DATABASE_CONNECTION_FAILED || fallbackCode;
-      }
-
-      // Not found errors
-      if (message.includes('not found') || message.includes('does not exist')) {
-        return ERROR_CODES.COMMON.RESOURCE_NOT_FOUND || fallbackCode;
-      }
-
-      // Validation errors
-      if (
-        message.includes('invalid') ||
-        message.includes('required') ||
-        message.includes('missing')
-      ) {
-        return ERROR_CODES.COMMON.VALIDATION_REQUIRED_FIELD || fallbackCode;
-      }
-
-      // Authentication/Authorization errors
-      if (
-        message.includes('unauthorized') ||
-        message.includes('forbidden') ||
-        message.includes('access denied')
-      ) {
-        return ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS || fallbackCode;
+        return mapping.errorCode;
       }
     }
 
