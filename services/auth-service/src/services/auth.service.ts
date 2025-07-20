@@ -5,6 +5,7 @@ import {
   BooleanResultHelper,
   CreateUserRequest,
   ERROR_CODES,
+  ErrorCode,
   JWTPayload,
   LoginUser,
   RegisterUser,
@@ -51,26 +52,12 @@ export class AuthService {
       'register user',
       db,
       async (database) => {
-        // Get user creation result and handle errors with proper ServiceError
         const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
         if (!userCreateResponse.success) {
-          // Map API errors to appropriate ServiceError codes
-          const errorMessage =
-            typeof userCreateResponse.error === 'string'
-              ? userCreateResponse.error
-              : JSON.stringify(userCreateResponse.error);
-
-          if (errorMessage.includes('already exists') || errorMessage.includes('duplicate')) {
-            throw new ServiceError(ERROR_CODES.AUTH.USER_ALREADY_EXISTS, {
-              username: registration.username,
-              email: registration.email,
-              originalError: userCreateResponse.error,
-            });
-          }
-
-          throw new ServiceError(ERROR_CODES.AUTH.REGISTRATION_FAILED, {
-            reason: userCreateResponse.error,
-          });
+          throw new ServiceError(
+            userCreateResponse.error.code as ErrorCode,
+            userCreateResponse.error.context,
+          );
         }
         const newUser = userCreateResponse.data as User;
 

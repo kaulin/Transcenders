@@ -189,6 +189,7 @@ export type BooleanOperationResult = Static<typeof BooleanOperationResultSchema>
 /**
  * RESPONSE SCHEMAS
  * Enhanced API response with structured error handling and timestamps
+ * #TODO try making the api response errors actualy ServiceErrors
  */
 export const ApiResponse = Type.Intersect(
   [

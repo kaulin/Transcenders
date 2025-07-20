@@ -30,7 +30,7 @@ export async function createFastifyServer(
       },
     },
   }).withTypeProvider<TypeBoxTypeProvider>();
-
+  //#TODO add an on-error hook somehow, to catch FST_ errors
   // Register plugins in order
   await registerCors(fastify);
   registerDevelopmentHooks(fastify);
