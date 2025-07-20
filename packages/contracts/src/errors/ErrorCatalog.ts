@@ -134,6 +134,21 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
 };
 
 const userErrors: Record<Extract<ErrorCode, `USER_${string}`>, ErrorDefinition> = {
+  [ERROR_CODES.USER.USERNAME_ALREADY_EXISTS]: {
+    code: ERROR_CODES.USER.USERNAME_ALREADY_EXISTS,
+    message: 'User with this username already exists',
+    userMessage: 'Username is already taken',
+    httpStatus: 409,
+    category: 'conflict',
+  },
+  [ERROR_CODES.USER.EMAIL_ALREADY_EXISTS]: {
+    code: ERROR_CODES.USER.EMAIL_ALREADY_EXISTS,
+    message: 'User with this email already exists',
+    userMessage: 'Email is already taken',
+    httpStatus: 409,
+    category: 'conflict',
+  },
+
   [ERROR_CODES.USER.NOT_FOUND_BY_ID]: {
     code: ERROR_CODES.USER.NOT_FOUND_BY_ID,
     message: 'User not found with the provided ID',

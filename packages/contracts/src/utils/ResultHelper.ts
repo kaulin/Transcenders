@@ -1,5 +1,5 @@
 import { Database } from 'sqlite';
-import { ERROR_CODES, ERROR_MAPPINGS, ErrorCode } from '../errors';
+import { ERROR_CODES, ErrorCode, mapExceptionToErrorCode } from '../errors';
 import { ServiceError } from '../errors/ServiceError';
 import { ServiceResult } from '../errors/ServiceResult';
 
@@ -58,7 +58,7 @@ export class ResultHelper {
     }
 
     // Map common exceptions to appropriate error codes
-    const errorCode = this.mapExceptionToErrorCode(error, fallbackErrorCode);
+    const errorCode = mapExceptionToErrorCode(error, fallbackErrorCode);
     const serviceError = ServiceError.fromUnknownError(error, errorCode, context);
 
     return {
@@ -128,30 +128,6 @@ export class ResultHelper {
       console.error(`Query failed for ${operation}:`, error);
       return this.errorFromException(error, operation);
     }
-  }
-
-  /**
-   * Map common exceptions to appropriate error codes using configurable mappings
-   */
-  private static mapExceptionToErrorCode(error: unknown, fallbackCode: ErrorCode): ErrorCode {
-    if (!(error instanceof Error)) {
-      return fallbackCode;
-    }
-
-    const message = error.message.toLowerCase();
-    const errorType = error.name;
-
-    for (const mapping of ERROR_MAPPINGS) {
-      if (message.includes(mapping.pattern)) {
-        // If errorType is specified, also check if it matches
-        if (mapping.errorType && errorType !== mapping.errorType) {
-          continue;
-        }
-        return mapping.errorCode;
-      }
-    }
-
-    return fallbackCode;
   }
 
   /**
