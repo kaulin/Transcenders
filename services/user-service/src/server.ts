@@ -62,7 +62,9 @@ async function start() {
   const cleanupInterval = setInterval(
     async () => {
       const result = await AdminService.cleanupOfflineUsers();
-      console.log(`cleanup result: ${result.data?.message}`);
+      if (result.success) {
+        console.log(`cleanup result: ${result.data.message}`);
+      }
     },
     UserConfig.CLEANUP_INTERVAL_MINUTES * 60 * 1000,
   );

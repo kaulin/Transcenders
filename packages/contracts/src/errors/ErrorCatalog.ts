@@ -10,6 +10,7 @@ export interface ErrorDefinition {
   userMessage?: string; // Optional user-friendly message
   category:
     | 'validation'
+    | 'fastify'
     | 'authentication'
     | 'authorization'
     | 'not_found'
@@ -18,6 +19,22 @@ export interface ErrorDefinition {
 }
 
 const commonErrors: Record<Extract<ErrorCode, `COMMON_${string}`>, ErrorDefinition> = {
+  [ERROR_CODES.COMMON.UNKNOWN_ERROR]: {
+    code: ERROR_CODES.COMMON.UNKNOWN_ERROR,
+    message: 'An unknown error occurred',
+    userMessage: 'Something went wrong. Please try again later.',
+    httpStatus: 500,
+    category: 'internal',
+  },
+
+  [ERROR_CODES.COMMON.FASTIFY_ERROR]: {
+    code: ERROR_CODES.COMMON.FASTIFY_ERROR,
+    message: 'Common fastify error',
+    userMessage: 'Common fastify error',
+    httpStatus: 500,
+    category: 'fastify',
+  },
+
   [ERROR_CODES.COMMON.VALIDATION_REQUIRED_FIELD]: {
     code: ERROR_CODES.COMMON.VALIDATION_REQUIRED_FIELD,
     message: 'Required field is missing or empty',
@@ -300,7 +317,7 @@ export const ERROR_CATALOG: Record<ErrorCode, ErrorDefinition> = {
  */
 
 // Get error definition by code
-export function getErrorDefinition(code: ErrorCode): ErrorDefinition | undefined {
+export function getErrorDefinition(code: ErrorCode): ErrorDefinition {
   return ERROR_CATALOG[code];
 }
 

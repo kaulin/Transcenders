@@ -1,3 +1,4 @@
+import { FastifyError } from 'fastify';
 import { Database } from 'sqlite';
 import { ERROR_CODES, ErrorCode, mapExceptionToErrorCode } from '../errors';
 import { ServiceError } from '../errors/ServiceError';
@@ -24,7 +25,7 @@ export class ResultHelper {
    * Create an error ServiceResult
    */
   static error<T>(
-    errorCode: ErrorCode,
+    errorCode: ErrorCode | FastifyError,
     operation: string,
     context?: Record<string, unknown>,
   ): ServiceResult<T> {
@@ -36,6 +37,16 @@ export class ResultHelper {
       operation,
       timestamp: new Date(),
     };
+  }
+
+  static isFastifyError(error: unknown): error is FastifyError {
+    return (
+      error != null &&
+      typeof error === 'object' &&
+      'code' in error &&
+      typeof error.code === 'string' &&
+      error.code.startsWith('FST_ERR_')
+    );
   }
 
   /**
@@ -52,6 +63,15 @@ export class ResultHelper {
       return {
         success: false,
         error,
+        operation,
+        timestamp: new Date(),
+      };
+    }
+
+    if (this.isFastifyError(error)) {
+      return {
+        success: false,
+        error: new ServiceError(error),
         operation,
         timestamp: new Date(),
       };
@@ -139,9 +159,9 @@ export class ResultHelper {
     const data: T[] = [];
 
     for (const result of results) {
-      if (result.success && result.data !== undefined) {
+      if (result.success) {
         data.push(result.data);
-      } else if (result.error) {
+      } else {
         errors.push(result.error);
       }
     }
@@ -151,10 +171,10 @@ export class ResultHelper {
       const firstError = errors[0];
       const context = {
         totalErrors: errors.length,
-        allErrorCodes: errors.map((e) => e.code),
+        allErrorCodes: errors.map((e) => e.codeOrError),
       };
 
-      return this.error(firstError.code, operation, context);
+      return this.error(firstError.codeOrError, operation, context);
     }
 
     return this.success(data, operation);
@@ -164,15 +184,10 @@ export class ResultHelper {
    * Convert a ServiceResult to a Promise that resolves with data or rejects with error
    */
   static toPromise<T>(result: ServiceResult<T>): Promise<T> {
-    if (result.success && result.data !== undefined) {
+    if (result.success) {
       return Promise.resolve(result.data);
     }
-
-    if (result.error) {
-      return Promise.reject(result.error);
-    }
-
-    return Promise.reject(new Error('Invalid ServiceResult state'));
+    return Promise.reject(result.error);
   }
 
   /**

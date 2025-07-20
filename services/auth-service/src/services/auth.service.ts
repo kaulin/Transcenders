@@ -55,7 +55,7 @@ export class AuthService {
         const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
         if (!userCreateResponse.success) {
           throw new ServiceError(
-            userCreateResponse.error.code as ErrorCode,
+            userCreateResponse.error.codeOrError as ErrorCode,
             userCreateResponse.error.context,
           );
         }
