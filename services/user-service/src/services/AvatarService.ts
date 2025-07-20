@@ -150,7 +150,7 @@ export class AvatarService {
         fs.unlinkSync(path.join(uploadDir, file));
       }
     } catch (error) {
-      // Ignore errors
+      // It's safe to ignore file deletion errors here because the absence of files or permission issues does not affect avatar update logic.
     }
   }
 
