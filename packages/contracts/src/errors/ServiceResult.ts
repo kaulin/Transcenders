@@ -1,16 +1,20 @@
 import { ServiceError } from './ServiceError';
-
 /**
- * Generic result wrapper for service operations
- * Replaces DatabaseResult with better naming and enhanced error handling
+ * Internally used ServiceResult interface
  */
-export interface ServiceResult<T> {
-  success: boolean;
-  data?: T;
-  error?: ServiceError;
-  operation: string;
-  timestamp: Date;
-}
+export type ServiceResult<T> =
+  | {
+      success: true;
+      timestamp: Date;
+      data: T;
+      operation: string;
+    }
+  | {
+      success: false;
+      timestamp: Date;
+      error: ServiceError;
+      operation: string;
+    };
 
 /**
  * Type guard to check if a result is successful

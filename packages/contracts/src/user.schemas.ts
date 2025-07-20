@@ -191,32 +191,38 @@ export type BooleanOperationResult = Static<typeof BooleanOperationResultSchema>
  * Enhanced API response with structured error handling and timestamps
  * #TODO try making the api response errors actualy ServiceErrors
  */
-export const ApiResponse = Type.Intersect(
+
+export const ServiceErrorSchema = Type.Object({
+  codeOrError: Type.Union([Type.String(), Type.Unknown()]),
+  message: Type.String(),
+  userMessage: Type.Optional(Type.String()),
+  category: Type.String(),
+  httpStatus: Type.Number(),
+  context: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
+  timestamp: Type.String(),
+});
+
+export const ApiResponseSchema = Type.Union(
   [
-    Type.Union([
-      Type.Object({
-        success: Type.Literal(true),
-        operation: Type.String(),
-        data: Type.Unknown(),
-        timestamp: Type.String(),
-      }),
-      Type.Object({
-        success: Type.Literal(false),
-        operation: Type.String(),
-        error: Type.Object({
-          code: Type.String(),
-          message: Type.String(),
-          userMessage: Type.Optional(Type.String()),
-          category: Type.String(),
-          context: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
-        }),
-        timestamp: Type.String(),
-      }),
-    ]),
+    Type.Object({
+      success: Type.Literal(true),
+      data: Type.Unknown(),
+      operation: Type.String(),
+      timestamp: Type.String(),
+    }),
+    Type.Object({
+      success: Type.Literal(false),
+      error: ServiceErrorSchema,
+      operation: Type.String(),
+      timestamp: Type.String(),
+    }),
   ],
   { $id: 'ApiResponse' },
 );
-export type ApiResponseType = Static<typeof ApiResponse>;
+
+export type ApiResponseType = Static<typeof ApiResponseSchema>;
+// Backward compatibility
+export const ApiResponse = ApiResponseSchema;
 
 export const standardApiResponses = {
   200: { $ref: 'ApiResponse#' },

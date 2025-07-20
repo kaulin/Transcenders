@@ -109,6 +109,11 @@ cleandb:
 	rm -rf ./services/user-service/data
 	rm -rf ./services/auth-service/data
 	rm -rf ./services/score-service/data
+	
+cleanlocal: 
+	rm -rf node_modules
+	rm -rf package-lock.json
+	rm -rf .setup-complete
 
 ################################################################################
 # HELP

@@ -1,45 +1,62 @@
+import { FastifyError } from 'fastify';
 import { ErrorDefinition, getErrorDefinition } from './ErrorCatalog';
-import { ErrorCode } from './ErrorCodes';
+import { ERROR_CODES, ErrorCode } from './ErrorCodes';
 
 /**
  * Structured error class for consistent error handling across services
  */
 export class ServiceError extends Error {
-  public readonly code: ErrorCode;
+  public readonly codeOrError: ErrorCode | FastifyError;
   public readonly httpStatus: number;
   public readonly userMessage?: string;
   public readonly category: ErrorDefinition['category'];
   public readonly context?: Record<string, unknown>;
   public readonly timestamp: Date;
 
-  constructor(code: ErrorCode, context?: Record<string, unknown>, originalError?: Error) {
-    const errorDef = getErrorDefinition(code);
+  constructor(
+    codeOrError: ErrorCode | FastifyError,
+    context?: Record<string, unknown>,
+    originalError?: Error,
+  ) {
+    // FastifyError case
+    if (typeof codeOrError === 'object') {
+      const errorDef = getErrorDefinition(ERROR_CODES.COMMON.FASTIFY_ERROR);
+      super(codeOrError.message);
+      this.codeOrError = errorDef?.code;
+      this.httpStatus = codeOrError.statusCode ?? 500;
+      this.category = 'fastify';
+      this.userMessage = codeOrError.message ?? 'fastify';
 
-    if (!errorDef) {
-      // Fallback for unknown error codes
-      super(`Unknown error code: ${code}`);
-      this.code = code;
-      this.httpStatus = 500;
-      this.category = 'internal';
-      this.userMessage = 'An unknown error occurred';
-    } else {
+      this.context = {
+        fastifyCode: codeOrError.code,
+        validation: codeOrError.validation,
+        validationContext: codeOrError.validationContext,
+      };
+      this.timestamp = new Date();
+      this.name = 'ServiceError';
+
+      this.stack = codeOrError.stack;
+      this.cause = codeOrError;
+    }
+    // ErrorCode case
+    else {
+      const errorDef = getErrorDefinition(codeOrError);
       super(errorDef.message);
-      this.code = errorDef.code;
+      this.codeOrError = errorDef.code;
       this.httpStatus = errorDef.httpStatus;
       this.category = errorDef.category;
       this.userMessage = errorDef.userMessage;
+
+      this.context = context;
+      this.timestamp = new Date();
+      this.name = 'ServiceError';
+
+      // Preserve original error stack if provided
+      if (originalError) {
+        this.stack = originalError.stack;
+        this.cause = originalError;
+      }
     }
-
-    this.context = context;
-    this.timestamp = new Date();
-    this.name = 'ServiceError';
-
-    // Preserve original error stack if provided
-    if (originalError) {
-      this.stack = originalError.stack;
-      this.cause = originalError;
-    }
-
     // Ensure proper prototype chain for instanceof checks
     Object.setPrototypeOf(this, ServiceError.prototype);
   }
@@ -48,7 +65,7 @@ export class ServiceError extends Error {
    * Convert error to JSON representation
    */
   toJSON(): {
-    code: string;
+    codeOrError: string | FastifyError;
     message: string;
     userMessage?: string;
     category: string;
@@ -57,7 +74,7 @@ export class ServiceError extends Error {
     timestamp: string;
   } {
     return {
-      code: this.code,
+      codeOrError: this.codeOrError,
       message: this.message,
       userMessage: this.userMessage,
       category: this.category,
@@ -137,7 +154,7 @@ export class ServiceError extends Error {
    */
   getLoggingContext(): Record<string, unknown> {
     return {
-      errorCode: this.code,
+      errorCode: this.codeOrError,
       category: this.category,
       httpStatus: this.httpStatus,
       timestamp: this.timestamp.toISOString(),

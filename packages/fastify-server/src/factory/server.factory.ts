@@ -2,6 +2,7 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import 'dotenv/config';
 import Fastify, { FastifyInstance } from 'fastify';
 import { registerDevelopmentHooks } from '../hooks/development.hooks';
+import { registerErrorHandler } from '../hooks/error.hook';
 import { registerCors } from '../plugins/cors.plugin';
 import { registerSwagger } from '../plugins/swagger.plugin';
 import { ServerConfig, SwaggerConfig } from '../types/server.config';
@@ -34,6 +35,7 @@ export async function createFastifyServer(
   // Register plugins in order
   await registerCors(fastify);
   registerDevelopmentHooks(fastify);
+  registerErrorHandler(fastify);
   await registerSwagger(fastify, config, swaggerConfig);
 
   return fastify;

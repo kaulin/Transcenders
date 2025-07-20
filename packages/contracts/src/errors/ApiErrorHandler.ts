@@ -1,4 +1,4 @@
-import { FastifyReply } from 'fastify';
+import { FastifyError, FastifyReply } from 'fastify';
 import { ApiResponseType } from '../user.schemas';
 import { getErrorDefinition } from './ErrorCatalog';
 import { ERROR_CODES, ErrorCode } from './ErrorCodes';
@@ -29,15 +29,35 @@ export class ApiErrorHandler {
   }
 
   /**
+   * Convert Fastify Error to Api response
+   */
+  static errorFromFastify(
+    reply: FastifyReply,
+    error: FastifyError,
+    operation: string,
+  ): ApiResponseType {
+    reply.code(error.statusCode ?? 500);
+    return {
+      success: false,
+      operation,
+      error: new ServiceError(error).toJSON(),
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
    * Create an error API response using error code
    */
   static error(
     reply: FastifyReply,
-    errorCode: ErrorCode,
+    codeOrError: ErrorCode | FastifyError,
     operation: string,
     context?: Record<string, unknown>,
   ): ApiResponseType {
-    const errorDef = getErrorDefinition(errorCode);
+    if (typeof codeOrError !== 'string') {
+      return this.errorFromFastify(reply, codeOrError, operation);
+    }
+    const errorDef = getErrorDefinition(codeOrError);
 
     if (!errorDef) {
       // Fallback for unknown error codes
@@ -45,13 +65,7 @@ export class ApiErrorHandler {
       return {
         success: false,
         operation,
-        error: {
-          code: 'UNKNOWN_ERROR',
-          message: 'An unknown error occurred',
-          userMessage: 'Something went wrong. Please try again later.',
-          category: 'internal',
-          context,
-        },
+        error: new ServiceError(ERROR_CODES.COMMON.UNKNOWN_ERROR, context).toJSON(),
         timestamp: new Date().toISOString(),
       };
     }
@@ -60,13 +74,7 @@ export class ApiErrorHandler {
     return {
       success: false,
       operation,
-      error: {
-        code: errorDef.code,
-        message: errorDef.message,
-        userMessage: errorDef.userMessage,
-        category: errorDef.category,
-        context,
-      },
+      error: new ServiceError(errorDef.code, context).toJSON(),
       timestamp: new Date().toISOString(),
     };
   }
@@ -79,7 +87,7 @@ export class ApiErrorHandler {
     serviceError: ServiceError,
     operation: string,
   ): ApiResponseType {
-    return this.error(reply, serviceError.code, operation, serviceError.context);
+    return this.error(reply, serviceError.codeOrError, operation, serviceError.context);
   }
 
   /**
@@ -102,107 +110,5 @@ export class ApiErrorHandler {
     return this.error(reply, ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, result.operation, {
       malformedResult: true,
     });
-  }
-
-  /**
-   * Handle validation errors with multiple error details
-   */
-  static validationError(
-    reply: FastifyReply,
-    operation: string,
-    validationErrors: {
-      field: string;
-      message: string;
-      value?: unknown;
-    }[],
-  ): ApiResponseType {
-    return this.error(reply, ERROR_CODES.COMMON.VALIDATION_FAILED, operation, {
-      validationErrors,
-    });
-  }
-
-  /**
-   * Handle authentication errors with proper 401 status
-   */
-  static authenticationError(
-    reply: FastifyReply,
-    operation: string,
-    errorCode: ErrorCode = ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS,
-    context?: Record<string, unknown>,
-  ): ApiResponseType {
-    return this.error(reply, errorCode, operation, context);
-  }
-
-  /**
-   * Handle authorization errors with proper 403 status
-   */
-  static authorizationError(
-    reply: FastifyReply,
-    operation: string,
-    context?: Record<string, unknown>,
-  ): ApiResponseType {
-    return this.error(reply, ERROR_CODES.COMMON.FORBIDDEN_ACCESS, operation, context);
-  }
-
-  /**
-   * Handle not found errors with proper 404 status
-   */
-  static notFoundError(
-    reply: FastifyReply,
-    operation: string,
-    resourceType?: string,
-    context?: Record<string, unknown>,
-  ): ApiResponseType {
-    return this.error(reply, ERROR_CODES.COMMON.RESOURCE_NOT_FOUND, operation, {
-      ...context,
-      resourceType,
-    });
-  }
-
-  /**
-   * Handle conflict errors with proper 409 status
-   */
-  static conflictError(
-    reply: FastifyReply,
-    operation: string,
-    errorCode: ErrorCode = ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS,
-    context?: Record<string, unknown>,
-  ): ApiResponseType {
-    return this.error(reply, errorCode, operation, context);
-  }
-
-  /**
-   * Handle internal server errors with proper 500 status
-   */
-  static internalError(
-    reply: FastifyReply,
-    operation: string,
-    context?: Record<string, unknown>,
-  ): ApiResponseType {
-    return this.error(reply, ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, operation, context);
-  }
-
-  /**
-   * Get HTTP status code for an error code
-   */
-  static getHttpStatusForErrorCode(errorCode: ErrorCode): number {
-    const errorDef = getErrorDefinition(errorCode);
-    return errorDef?.httpStatus ?? 500;
-  }
-
-  /**
-   * Check if an error code represents a client error (4xx)
-   */
-  static isClientError(errorCode: ErrorCode): boolean {
-    const status = this.getHttpStatusForErrorCode(errorCode);
-    return status >= 400 && status < 500;
-  }
-
-  /**
-   * Check if an error code represents a server error (5xx)
-   */
-  static isServerError(errorCode: ErrorCode): boolean {
-    const status = this.getHttpStatusForErrorCode(errorCode);
-    return status >= 500;
   }
 }
