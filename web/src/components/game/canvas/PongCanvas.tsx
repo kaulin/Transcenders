@@ -1,13 +1,31 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { type GameState, GameStatus } from '../models/GameState';
+import { ApiClient } from '@transcenders/api-client';
 
+// interface PongCanvasProps {
+// 	gameState: GameState;
+// 	player1Name?: string;
+// 	player2Name?: string;
+// }
 interface PongCanvasProps {
 	gameState: GameState;
 	player1Name?: string;
 	player2Name?: string;
+	player1Id?: number;
+	player2Id?: number;
+	player1Avatar?: string;
+	player2Avatar?: string;
 }
 
-const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Player 1', player2Name = 'Player 2' }) => {
+const PongCanvas: React.FC<PongCanvasProps> = ({ 
+	gameState, 
+	player1Name = 'Player 1', 
+	player2Name = 'Player 2',
+	player1Id,
+	player2Id,
+	player1Avatar,
+	player2Avatar
+	}) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	
 	// State to track if images are loaded
@@ -20,6 +38,15 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Playe
 		leftPaddle: null,
 		rightPaddle: null,
 		ball: null
+	});
+
+	// State for avatar images
+	const [avatarImages, setAvatarImages] = useState<{
+		player1Avatar: HTMLImageElement | null;
+		player2Avatar: HTMLImageElement | null;
+	}>({
+		player1Avatar: null,
+		player2Avatar: null
 	});
 
 	// Load images when component mounts
@@ -62,6 +89,56 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Playe
 		loadImages();
 	}, []);
 
+	// Load avatar images when avatar props change
+	useEffect(() => {
+		const loadAvatarImages = async () => {
+			const newAvatarImages = {
+				player1Avatar: null as HTMLImageElement | null,
+				player2Avatar: null as HTMLImageElement | null
+			};
+
+			try {
+				// Load player 1 avatar
+				if (player1Avatar) {
+					const player1AvatarImg = new Image();
+					await new Promise<void>((resolve, reject) => {
+						player1AvatarImg.onload = () => resolve();
+						player1AvatarImg.onerror = () => {
+							console.warn('Failed to load player 1 avatar:', player1Avatar);
+							resolve(); // Don't reject, just skip this avatar
+						};
+						// Get the full avatar URL using the API client helper
+						player1AvatarImg.src = ApiClient.user.getAvatarUrl(player1Avatar);
+					});
+					newAvatarImages.player1Avatar = player1AvatarImg;
+				}
+
+				// Load player 2 avatar
+				if (player2Avatar) {
+					const player2AvatarImg = new Image();
+					await new Promise<void>((resolve, reject) => {
+						player2AvatarImg.onload = () => resolve();
+						player2AvatarImg.onerror = () => {
+							console.warn('Failed to load player 2 avatar:', player2Avatar);
+							resolve(); // Don't reject, just skip this avatar
+						};
+						// Get the full avatar URL using the API client helper
+						player2AvatarImg.src = ApiClient.user.getAvatarUrl(player2Avatar);
+					});
+					newAvatarImages.player2Avatar = player2AvatarImg;
+				}
+
+				setAvatarImages(newAvatarImages);
+			} catch (error) {
+				console.error('Failed to load avatar images:', error);
+			}
+		};
+
+		if (player1Avatar || player2Avatar) {
+			loadAvatarImages();
+		}
+	}, [player1Avatar, player2Avatar]);
+
 	//calcuulates scaled dimensions for paddle images
 	const scaledDimensions = (
 		image: HTMLImageElement,
@@ -73,6 +150,11 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Playe
 			width :scaledWidth,
 			height: targetHeight
 		};
+	};
+
+	//calculate avatar size
+	const getAvatarSize = (): number => {
+		return 60; // Size for in-game avatars
 	};
 
 	const drawGame = (context: CanvasRenderingContext2D, state: GameState) => {
@@ -93,17 +175,120 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Playe
 		context.stroke();
 		context.setLineDash([]);
 	
-		//player names
-		context.font = '48px Arial';
-		context.textAlign = 'center';
-		context.fillText(player1Name, canvasWidth / 4, 45);
-		context.fillText(player2Name, (canvasWidth / 4) * 3, 45);
+		// //player names
+		// context.font = '48px Arial';
+		// context.textAlign = 'center';
+		// context.fillText(player1Name, canvasWidth / 4, 45);
+		// context.fillText(player2Name, (canvasWidth / 4) * 3, 45);
 		
-		// score
-		context.font = '48px Arial';
-		context.textAlign = 'center';
-		context.fillText(leftScore.toString(), canvasWidth / 4, 95);
-		context.fillText(rightScore.toString(), (canvasWidth / 4) * 3, 95);
+		// //score
+		// context.font = '48px Arial';
+		// context.textAlign = 'center';
+		// context.fillText(leftScore.toString(), canvasWidth / 4, 95);
+		// context.fillText(rightScore.toString(), (canvasWidth / 4) * 3, 95);
+
+		// Player 1 (left side) - Avatar, Name, and Score
+		const avatarSize = getAvatarSize();
+		const leftSideY = 45;
+		
+		// Calculate positions for left side (centered as a group)
+		const leftGroupWidth = avatarSize + 10 + context.measureText(player1Name).width + 10 + context.measureText(': ' + leftScore.toString()).width;
+		const leftStartX = (canvasWidth / 4) - (leftGroupWidth / 2);
+
+		// Draw Player 1 avatar
+		if (avatarImages.player1Avatar) {
+			const avatarX = leftStartX;
+			const avatarY = leftSideY - avatarSize / 2;
+			
+			// Save context for clipping
+			context.save();
+			
+			// Create circular clipping path
+			context.beginPath();
+			context.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
+			context.clip();
+			
+			// Draw avatar image
+			context.drawImage(
+				avatarImages.player1Avatar,
+				avatarX,
+				avatarY,
+				avatarSize,
+				avatarSize
+			);
+			
+			// Restore context
+			context.restore();
+			
+			// Draw circular border
+			context.beginPath();
+			context.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
+			context.strokeStyle = '#8366FF';
+			context.lineWidth = 2;
+			context.stroke();
+		}
+
+		// Draw Player 1 name and score
+		context.fillStyle = '#FFFFFF';
+		context.font = '36px Arial';
+		context.textAlign = 'left';
+		const player1NameX = leftStartX + avatarSize + 10;
+		context.fillText(player1Name, player1NameX, leftSideY + 10);
+		
+		// Measure name width to position score
+		const nameWidth = context.measureText(player1Name).width;
+		context.fillText(': ' + leftScore.toString(), player1NameX + nameWidth + 10, leftSideY + 10);
+
+		// Player 2 (right side) - Avatar, Name, and Score
+		const rightSideY = 45;
+		
+		// Calculate positions for right side (centered as a group)
+		const rightGroupWidth = avatarSize + 10 + context.measureText(player2Name).width + 10 + context.measureText(': ' + rightScore.toString()).width;
+		const rightStartX = ((canvasWidth / 4) * 3) - (rightGroupWidth / 2);
+
+		// Draw Player 2 avatar
+		if (avatarImages.player2Avatar) {
+			const avatarX = rightStartX;
+			const avatarY = rightSideY - avatarSize / 2;
+			
+			// Save context for clipping
+			context.save();
+			
+			// Create circular clipping path
+			context.beginPath();
+			context.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
+			context.clip();
+			
+			// Draw avatar image
+			context.drawImage(
+				avatarImages.player2Avatar,
+				avatarX,
+				avatarY,
+				avatarSize,
+				avatarSize
+			);
+			
+			// Restore context
+			context.restore();
+			
+			// Draw circular border
+			context.beginPath();
+			context.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
+			context.strokeStyle = '#8366FF';
+			context.lineWidth = 2;
+			context.stroke();
+		}
+
+		// Draw Player 2 name and score
+		context.fillStyle = '#FFFFFF';
+		context.font = '36px Arial';
+		context.textAlign = 'left';
+		const player2NameX = rightStartX + avatarSize + 10;
+		context.fillText(player2Name, player2NameX, rightSideY + 10);
+		
+		// Measure name width to position score
+		const name2Width = context.measureText(player2Name).width;
+		context.fillText(': ' + rightScore.toString(), player2NameX + name2Width + 10, rightSideY + 10);
 	
 		// draw paddles and ball
 		if (imagesLoaded && images.leftPaddle && images.rightPaddle && images.ball) {

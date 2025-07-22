@@ -64,8 +64,23 @@ const SignUp = () => {
 				}
 
 				const user = userReq.data as User
-				setUser(user)
-
+				// Silently set a default avatar for the new user
+				try {
+					await ApiClient.user.setDefaultAvatar(user.id, 'avatarCat1.avif')
+					
+					//refresh user data to get the updated avatar
+					const updatedUserReq = await ApiClient.user.getUserById(user.id)
+					if (updatedUserReq.success) {
+						setUser(updatedUserReq.data as User)
+					} else {
+						//if avatar update fails, still set the user without avatar
+						setUser(user)
+					}
+				} catch (avatarError) {
+					// if avatar setting fails, still continue with user registration
+					console.warn('Failed to set default avatar:', avatarError)
+					setUser(user)
+				}
 			} catch (err: any) {
 				setError(err.message || t('something_went_wrong'))
 			}

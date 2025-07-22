@@ -248,6 +248,10 @@ const GameContainer: React.FC<GameContainerProps> = ({
 				gameState={gameState} 
 				player1Name={player1Name}
 				player2Name={player2Name}
+				player1Id={players[1]?.id}
+    			player2Id={players[2]?.id}
+    			player1Avatar={players[1]?.avatar}
+    			player2Avatar={players[2]?.avatar}
 			/>
 	  
 			<div className="flex w-full justify-center gap-10">
