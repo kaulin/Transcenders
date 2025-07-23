@@ -39,9 +39,9 @@ const Home = () => {
 	}
 
     return (
-		<div className="relative w-full h-full bg-[#6e5d41]/5">
-			<div ref={boxRef} className="box relative">
-				<div className="flex flex-col xl:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center bg-[#6e5d41]/5 xl:bg-transparent backdrop-blur-sm">
+		<div className="relative w-full h-full">
+			<div ref={boxRef} className="box relative bg-[#6e5d41]/10 xl:bg-[#6e5d41]/5">
+				<div className="flex flex-col xl:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center xl:bg-transparent backdrop-blur-sm">
 					<h1 className="text-6xl font-fascinate">{t('hello')} {user?.username}</h1>
 					<p className="mb-10 text-xl">{t('welcome')}!</p>
 
@@ -62,7 +62,7 @@ const Home = () => {
 					</div>
 				</div>
 
-				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2 bg-[#6e5d41]/5 xl:bg-transparent backdrop-blur-sm">
+				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2 backdrop-blur-sm">
 					{gameMode === "match" && (
 						<div className="box-section xl:bg-[#6e5d41]/10 justify-center xl:max-w-[790px]">
 								<div className="w-full max-w-[384px] h-[174px] p-4">
