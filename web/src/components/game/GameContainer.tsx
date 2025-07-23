@@ -17,6 +17,7 @@ import {
 	handlePaddleCollisions, 
 	checkScore 
 } from './utils/CollisionDetection';
+import { useTranslation } from 'react-i18next';
 
 interface GameContainerProps {
 	width?: number;
@@ -44,6 +45,9 @@ const GameContainer: React.FC<GameContainerProps> = ({
 	const [gameStartTime, setGameStartTime] = useState<number | null>(null);
 	const [isProcessingGameEnd, setIsProcessingGameEnd] = useState(false);
 	
+	// Translations
+	const { t } = useTranslation();
+
 	// Contexts
 	const { players } = usePlayers();
 	
@@ -240,7 +244,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
 	
 	return (
 		<div className="flex flex-col items-center justify-center p-4">
-			<h1 className="text-3xl font-bold mb-4">
+			<h1 className="text-6xl text-[#fff] font-fascinate mb-4">
 				{gameMode === 'tournament' ? 'Paw-Paw Pong Tournament' : 'Paw-Paw Pong'}
 			</h1>
 		
@@ -258,7 +262,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
 						)}
 						{gameMode === 'tournament' && isRoundComplete ? (
 							<button
-								className="play-button"
+								className="rounded-button"
 								disabled={isProcessingGameEnd}
 								onClick={() => {
 									if (isFinalRound) {
@@ -272,7 +276,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
 							</button>
 						) : gameMode === 'match' ? (
 							<button
-								className="play-button"
+								className="rounded-button"
 								disabled={isProcessingGameEnd}
 								onClick={() => onNewGame?.()}
 								>
@@ -283,7 +287,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
 				) : (
 					<>
 						<button
-							className="play-button"
+							className="rounded-button bg-[#6e5d41]/10 mt-4 font-fascinate uppercase text-lg"
 							onClick={() => {
 								setGameState(prevState => {
 									if (prevState.status === GameStatus.WAITING) {
@@ -302,17 +306,17 @@ const GameContainer: React.FC<GameContainerProps> = ({
 								});
 							}}
 							>
-							{gameState.status === GameStatus.RUNNING ? 'Pause' : 'Start/Resume'}
+							{gameState.status === GameStatus.RUNNING ? t('pause') : t('start')}
 						</button>
 						
 						<button
-							className="play-button"
+							className="rounded-button bg-[#6e5d41]/10 mt-4 font-fascinate uppercase text-lg"
 							onClick={() => {
 								setGameState(createInitialGameState(width, height));
 								setGameStartTime(null);
 							}}
 						>
-							Reset Game
+							{t('reset')}
 						</button>
 					</>
 				)}
