@@ -82,7 +82,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Playe
 	
 		// context.fillStyle = '#8366FF'; // text color
 		context.fillStyle = '#FFFFFF';
-		context.strokeStyle = '#FFB6C1'; // center line
+		context.strokeStyle = '#FFF'; // center line
 	
 		// center line
 		context.beginPath();
@@ -226,7 +226,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState, player1Name = 'Playe
 			ref={canvasRef}
 			width={gameState.canvasWidth}
 			height={gameState.canvasHeight}
-			className="profile-box"
+			className="box bg-[#6e5d41]/5"
 		/>
 	);
 };

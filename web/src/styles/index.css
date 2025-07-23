@@ -5,43 +5,37 @@
 @tailwind utilities;
 
 @layer base {
-
-    html, body, #root {
-        @apply h-screen overflow-hidden;
-    }
-
-    /* html {
-        @apply bg-[#e0cec2];
-    } */
     
-    html {
-        @apply bg-[#e7cfbf];
+    button {
+        @apply text-white hover:text-[#786647];
     }
 
 	div {
         @apply text-white;
 	}
+
+    html, body, #root {
+        @apply h-screen overflow-hidden;
+    }
     
-	p {
-        @apply text-white;
-	}
-    
+    html {
+        @apply bg-[#e7cfbf];
+    }
+
     h1 {
         @apply text-white font-bold;
     }
-    
-    button {
-        @apply text-white hover:text-[#786647];
-    }
-    
+
+	p {
+        @apply text-white;
+	}
 }
 
 @layer components {
         
     .box {
         @apply flex flex-col xl:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
-        items-center rounded-sm border border-white shadow-[0_0_3px_3px_#fff]
-        bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat;
+        items-center rounded-sm border border-white shadow-[0_0_3px_3px_#fff] backdrop-blur-3xl;
 	}
 
     .box-section {
@@ -54,12 +48,16 @@
     }
 
     .custom-scrollbar {
-        scrollbar-width: auto; /* Firefox */
-        scrollbar-color: transparent transparent; /* Firefox */
+        scrollbar-width: auto;
+        scrollbar-color: transparent transparent;
     }
 
     .custom-scrollbar:hover {
         scrollbar-color: rgba(255, 255, 255, 0.3) transparent; 
+    }
+
+    .link-color {
+        @apply text-white hover:text-[#786647];
     }
 
 	.login-bubble {
@@ -79,6 +77,6 @@
 	}
 
 	.rounded-button {
-		@apply rounded-full border border-white hover:border-[#786647] text-white hover:text-[#786647] transition py-[0.75em] px-[1em] text-center;
+		@apply rounded-full border border-white hover:border-[#786647] link-color transition py-[0.75em] px-[1em] text-center;
 	}
 }

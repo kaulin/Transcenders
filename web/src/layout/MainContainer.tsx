@@ -16,8 +16,13 @@ const MainContainer = () => {
   return (
     <div className="relative flex-1 min-h-0 overflow-hidden">
 
-      <div className="absolute inset-0 -z-10 bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat blur-md scale-105" />
-      <div className="absolute inset-0 -z-10 bg-black/10" />
+      <div className="absolute inset-0 -z-10 bg-[url('/images/bg-orange.svg')] bg-cover bg-center bg-no-repeat scale-105" />
+
+      {user ? (
+        <div className="absolute inset-0 -z-10 bg-black/5 backdrop-blur-sm" />
+      ) : (
+        <div className="absolute inset-0 -z-10 bg-black/10 backdrop-blur-md" />
+      )}
 
       <div className="relative h-full z-10 p-24 pt-32">
         {user ? (

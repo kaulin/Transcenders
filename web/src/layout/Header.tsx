@@ -23,13 +23,13 @@ const Header = () => {
                         <LanguageSwitch />
                         <div className="flex justify-center items-center gap-4 uppercase">
                             <div className="w-[36px] flex justify-center">
-							    <Link to="/home"><Home className="h-6 w-6 hover:h-9 hover:w-9 text-white hover:text-[#786647]" /></Link>
+							    <Link to="/home"><Home className="link-color h-6 w-6 hover:h-9 hover:w-9" /></Link>
                             </div>
                             <div className="w-[36px] flex justify-center">
-							    <Link to="/dashboard"><LayoutDashboard className="h-6 w-6 hover:h-9 hover:w-9 text-white hover:text-[#786647]" /></Link>
+							    <Link to="/dashboard"><LayoutDashboard className="link-color h-6 w-6 hover:h-9 hover:w-9" /></Link>
                             </div>
                             <div className="w-[36px] flex justify-center">
-							    <Link to="/profile"><Cat className="h-6 w-6 hover:h-9 hover:w-9 text-white hover:text-[#786647]" /></Link>
+							    <Link to="/profile"><Cat className="link-color h-6 w-6 hover:h-9 hover:w-9" /></Link>
                             </div>
                         </div>
                     </div>

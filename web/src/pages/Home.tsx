@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useUser } from "../contexts/UserContext"
 import { usePlayers } from "../contexts/PlayersContext"
 import PlayerLoginForm from "../components/PlayerLoginForm"
-import curiousCat from "/images/curiousCat.avif"
+// import curiousCat from "/images/curiousCat.avif"
 
 const Home = () => {
     const { t } = useTranslation()
@@ -39,9 +39,9 @@ const Home = () => {
 	}
 
     return (
-		<div className="relative w-full h-full">
+		<div className="relative w-full h-full bg-[#6e5d41]/5">
 			<div ref={boxRef} className="box relative">
-				<div className="flex flex-col xl:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center bg-[#6e5d41]/15 xl:bg-transparent">
+				<div className="flex flex-col xl:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center bg-[#6e5d41]/5 xl:bg-transparent backdrop-blur-sm">
 					<h1 className="text-6xl font-fascinate">{t('hello')} {user?.username}</h1>
 					<p className="mb-10 text-xl">{t('welcome')}!</p>
 
@@ -62,9 +62,9 @@ const Home = () => {
 					</div>
 				</div>
 
-				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2 bg-[#6e5d41]/15 xl:bg-transparent">
+				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2 bg-[#6e5d41]/5 xl:bg-transparent backdrop-blur-sm">
 					{gameMode === "match" && (
-						<div className="box-section xl:bg-[#6e5d41]/15 justify-center xl:max-w-[790px]">
+						<div className="box-section xl:bg-[#6e5d41]/10 justify-center xl:max-w-[790px]">
 								<div className="w-full max-w-[384px] h-[174px] p-4">
 									<h2 className="fascinate-label mb-3">{t('player')} 1</h2>
 									<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
@@ -80,7 +80,7 @@ const Home = () => {
 					)}
 
 					{gameMode === "tournament" && (
-						<div className="box-section xl:bg-[#6e5d41]/15 justify-center xl:max-w-[790px]">
+						<div className="box-section xl:bg-[#6e5d41]/10 justify-center xl:max-w-[790px]">
 							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<h2 className="fascinate-label mb-3">{t('player')} 1</h2>
 								<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
@@ -119,11 +119,11 @@ const Home = () => {
 
 			</div>
 
-			<img
+			{/* <img
 				src={curiousCat}
 				alt="curiousCat"
 				className="absolute left-0 bottom-0 translate-y-[40.5%] translate-x-[0.5%] w-[250px] sm:w-[325px] lg:w-[400px] object-contain pointer-events-none"
-			/>
+			/> */}
 		</div>
 	)
 }

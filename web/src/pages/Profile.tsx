@@ -101,8 +101,8 @@ const Profile = () => {
 	}
 
     return (
-        <div className="box">
-            <div className="flex xl:flex-1 w-full min-h-full flex-col flex-shrink-0 xl:flex-shrink items-center justify-center gap-10 px-8 py-16 bg-[#6e5d41]/15 xl:bg-transparent">
+        <div className="box xl:gap-6">
+            <div className="box-section bg-[#6e5d41]/10 justify-center gap-10">
                 <div className="bubble bg-white/50 w-56 h-56 sm:w-72 sm:h-72 flex items-end justify-center overflow-hidden">
                     <img
                         src={avatars[avatarIdx]}
@@ -127,7 +127,7 @@ const Profile = () => {
                 
             </div>
 
-            <div className="box-section bg-[#6e5d41]/15 justify-center gap-10">
+            <div className="box-section bg-[#6e5d41]/10 xl:bg-[#6e5d41]/15 justify-center gap-10">
                 <div className="w-full max-w-sm">
                     <label className="fascinate-label">{t('username')}</label>
                     <input
@@ -165,7 +165,7 @@ const Profile = () => {
                         onChange={(e) => {
                             setConfirmPassword(e.target.value)
                         }}
-                        placeholder={t('confirm_new_pw')}
+                        placeholder={t('repeat_pw')}
                         className={`w-full bg-transparent border-b-2 mt-3 border-white focus:outline-none focus:border-white/70 ${
                             password === confirmPassword ? 'text-white' : 'text-white/40'
                         } text-lg placeholder-white/60`}
@@ -193,7 +193,7 @@ const Profile = () => {
                 </button>
             </div>
             
-            <div className="flex xl:flex-1 w-full min-h-full flex-col flex-shrink-0 xl:flex-shrink justify-center items-center px-8 py-16 bg-[#6e5d41]/15 xl:bg-transparent">
+            <div className="box-section bg-[#6e5d41]/10 justify-center">
                 <button 
                     onClick={handleDelete}
                     className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase"

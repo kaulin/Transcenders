@@ -84,7 +84,7 @@ const Dashboard = () => {
 
 	return (
 		<div className="box xl:gap-6">
-			<div className="box-section bg-[#6e5d41]/15 justify-between">
+			<div className="box-section bg-[#6e5d41]/10 justify-between">
 				<div className="flex flex-col items-center">
 					<div className="bubble bg-white/50 w-56 h-56 flex items-end justify-center overflow-hidden">
 						<img
@@ -146,7 +146,7 @@ const Dashboard = () => {
 				</div>
 			</div>
 
-			<div className="box-section bg-[#6e5d41]/15 justify-between gap-24">
+			<div className="box-section bg-[#6e5d41]/10 xl:bg-[#6e5d41]/15 justify-between gap-24">
 				<div className="flex flex-col font-fascinate uppercase text-center">
 					<p className="text-2xl text-[#fff] mb-2">{t('games_played')}</p>
 					<div className="flex justify-between text-md">
@@ -183,7 +183,7 @@ const Dashboard = () => {
 				</div>
 			</div>
 			
-			<div className="box-section bg-[#6e5d41]/15 justify-between h-full">
+			<div className="box-section bg-[#6e5d41]/10 justify-between h-full">
 				<p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
 				<div className="relative w-80 h-[90%] px-4 overflow-y-auto custom-scrollbar">
 					<MatchHistory />
