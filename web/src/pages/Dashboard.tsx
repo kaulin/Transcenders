@@ -146,7 +146,7 @@ const Dashboard = () => {
 				</div>
 			</div>
 
-			<div className="box-section bg-[#6e5d41]/10 xl:bg-[#6e5d41]/15 justify-between gap-24">
+			<div className="box-section bg-[#6e5d41]/10 justify-between gap-24">
 				<div className="flex flex-col font-fascinate uppercase text-center">
 					<p className="text-2xl text-[#fff] mb-2">{t('games_played')}</p>
 					<div className="flex justify-between text-md">
