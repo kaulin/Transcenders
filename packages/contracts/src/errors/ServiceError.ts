@@ -9,6 +9,7 @@ export class ServiceError extends Error {
   public readonly codeOrError: ErrorCode | FastifyError;
   public readonly httpStatus: number;
   public readonly userMessage?: string;
+  public readonly localeKey?: string;
   public readonly category: ErrorDefinition['category'];
   public readonly context?: Record<string, unknown>;
   public readonly timestamp: Date;
@@ -46,6 +47,7 @@ export class ServiceError extends Error {
       this.httpStatus = errorDef.httpStatus;
       this.category = errorDef.category;
       this.userMessage = errorDef.userMessage;
+      this.localeKey = errorDef.localeKey;
 
       this.context = context;
       this.timestamp = new Date();
@@ -68,6 +70,7 @@ export class ServiceError extends Error {
     codeOrError: string | FastifyError;
     message: string;
     userMessage?: string;
+    localeKey?: string;
     category: string;
     httpStatus: number;
     context?: Record<string, unknown>;
@@ -77,6 +80,7 @@ export class ServiceError extends Error {
       codeOrError: this.codeOrError,
       message: this.message,
       userMessage: this.userMessage,
+      localeKey: this.localeKey,
       category: this.category,
       httpStatus: this.httpStatus,
       context: this.context,

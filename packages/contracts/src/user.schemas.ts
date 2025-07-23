@@ -194,6 +194,7 @@ export type BooleanOperationResult = Static<typeof BooleanOperationResultSchema>
 export const ServiceErrorSchema = Type.Object({
   codeOrError: Type.Union([Type.String(), Type.Unknown()]),
   message: Type.String(),
+  localeKey: Type.Optional(Type.String()),
   userMessage: Type.Optional(Type.String()),
   category: Type.String(),
   httpStatus: Type.Number(),
