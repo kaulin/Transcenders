@@ -40,7 +40,7 @@ const SignUp = () => {
 				const response = await ApiClient.auth.register(registrationInfo)
 
 				if (!response.success) {
-					throw new Error(response.error || t('something_went_wrong'))
+					throw new Error(response.error.userMessage || t('something_went_wrong'))
 				}
 
 				const loginInfo: LoginUser = {
@@ -50,7 +50,7 @@ const SignUp = () => {
 
 				const userLogin = await ApiClient.auth.login(loginInfo)
 				if (!userLogin.success) {
-					throw new Error(userLogin.error || t('something_went_wrong'))
+					throw new Error(userLogin.error.userMessage || t('something_went_wrong'))
 				}
 				
 				const authData = userLogin.data as AuthData
@@ -58,7 +58,7 @@ const SignUp = () => {
 				const userReq = await ApiClient.user.getUserById(newUserId.userId)
 
 				if (!userReq.success) {
-					throw new Error(userReq.error || t('something_went_wrong'))
+					throw new Error(userReq.error.userMessage || t('something_went_wrong'))
 				}
 
 				const user = userReq.data as User
@@ -79,6 +79,7 @@ const SignUp = () => {
 
 				<input
 					type="text"
+					maxLength={20}
 					required
 					value={username}
 					placeholder={t('username')}
@@ -113,7 +114,7 @@ const SignUp = () => {
 					onChange={(e) => setConfirmPassword(e.target.value)}
 				/>
 
-				{error && <p className="text-[#901c1c] mt-2 text-sm">{error}</p>}
+				{error && <p className="text-[#786647] mt-2 text-xs sm:text-sm">{error}</p>}
 
 				<button type="submit" className="mt-4">
 					{t('sign_up')}
