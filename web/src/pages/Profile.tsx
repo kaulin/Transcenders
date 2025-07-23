@@ -127,7 +127,7 @@ const Profile = () => {
                 
             </div>
 
-            <div className="box-section bg-[#6e5d41]/10 xl:bg-[#6e5d41]/15 justify-center gap-10">
+            <div className="box-section bg-[#6e5d41]/10 justify-center gap-10">
                 <div className="w-full max-w-sm">
                     <label className="fascinate-label">{t('username')}</label>
                     <input
