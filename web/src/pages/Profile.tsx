@@ -85,7 +85,7 @@ const Profile = () => {
 			const response = await ApiClient.user.deleteUser(user.id)
 
 			if (!response.success) {
-				throw new Error(response.error || t('something_went_wrong'))
+				throw new Error(response.error.userMessage)
 			}
 
 			setSuccess(true)
@@ -202,11 +202,11 @@ const Profile = () => {
                 </button>
                 {success && (
                     <p className="text-white mt-4 text-center">
-                        Account deleted successfully
+                        {t('deletion_successful')}
                     </p>
                 )}
                 {error && (
-                    <p className="text-[#513838] mt-4 text-center">
+                    <p className="text-[#786647] text-xs sm:text-sm mt-4 text-center">
                         {error}
                     </p>
                 )}

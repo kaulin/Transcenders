@@ -139,7 +139,7 @@ const Dashboard = () => {
 						</div>
 						<div className="h-6 pt-2">
 							{error && (
-								<p className="flex justify-start text-[#513838] text-sm">{error}</p>
+								<p className="flex justify-start text-[#786647] text-xs sm:text-sm">{error}</p>
 								)}
 						</div>
 					</div>

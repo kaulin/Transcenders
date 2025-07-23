@@ -18,7 +18,7 @@ const Login = () => {
 		try {
 			await login(username, password)
 		} catch (err: any) {
-			setError(t('incorrect_username_pw'))
+			setError(t('invalid_credentials'))
 		}
 	}
 
@@ -32,6 +32,7 @@ const Login = () => {
 
 				<input
 					type="text"
+					maxLength={20}
 					required
 					value={username}
 					placeholder={t("username")}
@@ -48,7 +49,7 @@ const Login = () => {
 					onChange={(e) => setPassword(e.target.value)}
 					/>
 
-				{error && <p className="text-[#513838] mt-2 text-sm">{error}</p>}
+				{error && <p className="text-[#786647] mt-2 text-xs sm:text-sm">{error}</p>}
 
 				<button type="submit" className="mt-4">
 					{t('log_in')}

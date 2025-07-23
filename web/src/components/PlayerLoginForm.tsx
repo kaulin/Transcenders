@@ -74,7 +74,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 		try {
 			await login(username?.trim(), password, playerNumber)
 		} catch (err: any) {
-			setError(t('incorrect_username_pw'))
+			setError(t('invalid_credentials'))
 		}
 	}
 
@@ -150,7 +150,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 			}
 
 			{error && (
-				<div className="text-[#513838]">
+				<div className="text-[#786647] text-xs sm:text-sm">
 					{error}
 				</div>
 			)}
