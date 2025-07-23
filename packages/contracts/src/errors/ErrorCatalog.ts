@@ -8,6 +8,7 @@ export interface ErrorDefinition {
   message: string;
   httpStatus: number;
   userMessage?: string; // Optional user-friendly message
+  localeKey?: string;
   category:
     | 'validation'
     | 'fastify'
@@ -113,6 +114,7 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     code: ERROR_CODES.AUTH.INVALID_CREDENTIALS,
     message: 'Invalid username or password provided',
     userMessage: 'Invalid login credentials',
+    localeKey: 'invalid_credentials',
     httpStatus: 401,
     category: 'authentication',
   },
@@ -178,6 +180,7 @@ const userErrors: Record<Extract<ErrorCode, `USER_${string}`>, ErrorDefinition> 
     code: ERROR_CODES.USER.NOT_FOUND_BY_USERNAME,
     message: 'User not found with the provided username',
     userMessage: 'User not found',
+    localeKey: 'invalid_credentials',
     httpStatus: 404,
     category: 'not_found',
   },
