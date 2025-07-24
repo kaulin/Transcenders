@@ -1,4 +1,7 @@
 export const SERVICE_URLS = {
+  GATEWAY:
+    (typeof process !== 'undefined' ? process.env.USER_SERVICE_URL : undefined) ??
+    'http://localhost:4000',
   USER:
     (typeof process !== 'undefined' ? process.env.USER_SERVICE_URL : undefined) ??
     'http://localhost:3001',

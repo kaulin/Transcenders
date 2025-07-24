@@ -1,4 +1,27 @@
 services:
+  gateway-service:
+    container_name: gateway-service
+    image: gateway-service:hive
+    build:
+      context: .
+      dockerfile: services/gateway-service/dockerfile
+      target: development
+    depends_on:
+      - user-service
+      - auth-service
+      - score-service
+    ports:
+      - '4000:4000'
+      - '9230:9230'
+    environment:
+      - NODE_ENV=development
+      - USER_SERVICE_URL=http://user-service:3001
+      - AUTH_SERVICE_URL=http://auth-service:3002
+      - SCORE_SERVICE_URL=http://score-service:3003
+    volumes:
+      - ./services/gateway-service:/workspace/services/gateway-service
+      - gateway_node_modules:/workspace/node_modules
+      - ./packages/contracts:/workspace/packages/contracts
   user-service:
     container_name: user-service
     image: user-service:hive
