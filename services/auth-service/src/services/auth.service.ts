@@ -18,7 +18,7 @@ import {
   User,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
-import { QueryBuilder, TokenValidator } from '@transcenders/server-utils';
+import { DeviceUtils, QueryBuilder, TokenValidator } from '@transcenders/server-utils';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import SQL from 'sql-template-strings';
@@ -42,6 +42,57 @@ export class AuthService {
       });
     }
     return true;
+  }
+
+  private static async findExistingTokenForDevice(
+    database: Database,
+    userId: number,
+    deviceInfo: DeviceInfo,
+  ): Promise<RefreshTokenEntry | null> {
+    const sql = SQL`
+      SELECT * FROM refresh_tokens 
+      WHERE user_id = ${userId}
+      AND revoked_at IS NULL
+      AND device_fingerprint = ${deviceInfo.deviceFingerprint}
+      AND ip_address = ${deviceInfo.ipAddress}
+    `;
+
+    const result = await database.get(sql.text, sql.values);
+    return result as RefreshTokenEntry | null;
+  }
+
+  private static async revokeRefreshTokens(
+    database: Database,
+    criteria: { jti?: string; userId?: number; all?: boolean },
+    reason: string,
+  ): Promise<number> {
+    let whereClause = `revoked_at IS NULL`;
+    const whereValues: unknown[] = [];
+
+    if (criteria.jti) {
+      whereClause += ' AND jti = ?';
+      whereValues.push(criteria.jti);
+    } else if (criteria.userId && !criteria.all) {
+      // Revoke only current session tokens for user
+      whereClause += ' AND user_id = ? LIMIT 1';
+      whereValues.push(criteria.userId);
+    } else if (criteria.userId && criteria.all) {
+      // Revoke ALL tokens for user (security event)
+      whereClause += ' AND user_id = ?';
+      whereValues.push(criteria.userId);
+    }
+
+    const revokeQuery = QueryBuilder.update(
+      `refresh_tokens`,
+      {
+        revoked_at: new Date().toISOString(),
+        revoke_reason: reason,
+      },
+      whereClause,
+      whereValues,
+    );
+    const result = await database.run(revokeQuery.sql, revokeQuery.values);
+    return result.changes ?? 0;
   }
 
   static async register(
@@ -75,7 +126,6 @@ export class AuthService {
     );
   }
 
-  // TODO fix all env stuff
   private static generateTokenPair(userId: number): AuthData {
     const payload: JWTPayload = {
       userId: userId,
@@ -100,7 +150,7 @@ export class AuthService {
       token_hash: await bcrypt.hash(refreshToken, 12),
       expires_at: new Date(Date.now() + AuthConfig.REFRESH_TOKEN_EXPIRE_MS).toISOString(),
       jti,
-      device_info: deviceInfo.deviceInfo,
+      device_fingerprint: deviceInfo.deviceFingerprint,
       ip_address: deviceInfo.ipAddress,
       user_agent: deviceInfo.userAgent,
     };
@@ -142,6 +192,21 @@ export class AuthService {
           });
         }
 
+        // Check if this device already has active tokens
+        const existingToken = await this.findExistingTokenForDevice(
+          database,
+          userData.id,
+          deviceInfo,
+        );
+        if (existingToken) {
+          // Same device logging in again - revoke existing tokens for this device
+          await this.revokeRefreshTokens(
+            database,
+            { jti: existingToken.jti },
+            'same_device_relogin',
+          );
+        }
+
         const tokens = this.generateTokenPair(userData.id);
         // store refresh token in the database
         await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
@@ -151,7 +216,10 @@ export class AuthService {
     );
   }
 
-  static async refreshToken(refreshToken: string): Promise<ServiceResult<AuthData>> {
+  static async refreshToken(
+    refreshToken: string,
+    currentDeviceInfo: DeviceInfo,
+  ): Promise<ServiceResult<AuthData>> {
     const db = await getAuthDB();
     return await ResultHelper.executeQuery<AuthData>(
       'refresh access token',
@@ -160,9 +228,42 @@ export class AuthService {
         const { userId, jti } = TokenValidator.verifyRefreshToken(refreshToken);
         const sql = SQL`
         SELECT * FROM refresh_tokens WHERE jti = ${jti}
+        AND user_id = ${userId}
+        AND revoked_at IS NULL
       `;
-        const test = await database.run(sql.text, sql.values);
-        return this.generateTokenPair(userId);
+        const storedToken = await database.get(sql.text, sql.values);
+        if (!storedToken) {
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+            jti,
+            userId,
+            reason: 'Refresh token not found, revoked, or expired',
+          });
+        }
+
+        const isValidToken = await bcrypt.compare(refreshToken, storedToken.token_hash);
+        if (!isValidToken) {
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+            jti,
+            userId,
+            reason: 'Refresh token hash mismatch',
+          });
+        }
+
+        const storedDeviceInfo = DeviceUtils.fromDatabaseValues(storedToken);
+        if (!DeviceUtils.isSameDevice(storedDeviceInfo, currentDeviceInfo)) {
+          // SECURITY EVENT: Token used from different device - revoke ALL user tokens
+          await this.revokeRefreshTokens(database, { userId, all: true }, 'security_device_change');
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+            jti,
+            userId,
+            reason: 'Token used from different device - all sessions revoked for security',
+          });
+        }
+        this.revokeRefreshTokens(database, { jti }, 'token_rotation');
+
+        const newTokens = this.generateTokenPair(userId);
+        await this.storeRefreshToken(database, newTokens.refreshToken, storedDeviceInfo);
+        return newTokens;
       },
     );
   }

@@ -24,7 +24,8 @@ export class AuthController {
 
   static async refresh(request: FastifyRequest, reply: FastifyReply) {
     const { refreshToken } = request.body as RefreshTokenRequest;
-    const result = await AuthService.refreshToken(refreshToken);
+    const deviceInfo = DeviceUtils.extractDeviceInfo(request);
+    const result = await AuthService.refreshToken(refreshToken, deviceInfo);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 

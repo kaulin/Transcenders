@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   expires_at DATETIME NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   revoked_at DATETIME NULL,
-  device_info TEXT,
+  revoke_reason TEXT,
+  device_fingerprint TEXT,
   ip_address TEXT,
   user_agent TEXT,
   FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
@@ -33,11 +34,4 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_jti ON refresh_tokens (jti);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens (user_id);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires ON refresh_tokens (expires_at);
-
-CREATE TRIGGER IF NOT EXISTS refresh_tokens_updated_at
-AFTER UPDATE ON refresh_tokens
-BEGIN
-  UPDATE refresh_tokens
-  SET updated_at = CURRENT_TIMESTAMP
-  WHERE id = NEW.id;
-END;
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_revoked_at ON refresh_tokens (revoked_at);

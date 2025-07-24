@@ -54,7 +54,7 @@ export type RefreshTokenRequest = Static<typeof refreshTokenRequestSchema>;
 export const deviceInfoSchema = Type.Object({
   userAgent: Type.Optional(Type.String()),
   ipAddress: Type.Optional(Type.String()),
-  deviceInfo: Type.Optional(Type.String()),
+  deviceFingerprint: Type.Optional(Type.String()),
 });
 export type DeviceInfo = Static<typeof deviceInfoSchema>;
 
@@ -66,7 +66,7 @@ export const refreshTokenEntrySchema = Type.Object({
   expires_at: TimestampField,
   created_at: Type.Optional(TimestampField),
   revoked_at: Type.Optional(Type.Union([TimestampField, Type.Null()])),
-  device_info: Type.Optional(Type.String()),
+  device_fingerprint: Type.Optional(Type.String()),
   ip_address: Type.Optional(Type.String()),
   user_agent: Type.Optional(Type.String()),
 });
