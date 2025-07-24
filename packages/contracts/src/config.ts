@@ -6,8 +6,8 @@ export const UserConfig = {
 } as const;
 
 export const AuthConfig = {
-  ACCESS_TOKEN_EXPIRE_MS: 15 * 60 * 1000, // 15 min
-  REFRESH_TOKEN_EXPIRE_MS: 7 * 24 * 60 * 60 * 1000, //7 days
+  ACCESS_TOKEN_EXPIRE_MS: 2 * 60 * 1000, // 2 min
+  REFRESH_TOKEN_EXPIRE_MS: 7 * 24 * 60 * 60 * 1000, // 7 days
 } as const;
 
 export const AvatarConfig = {
