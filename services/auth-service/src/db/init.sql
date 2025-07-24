@@ -9,14 +9,9 @@ CREATE TABLE IF NOT EXISTS user_credentials (
 CREATE INDEX IF NOT EXISTS idx_user_credentials_user_id ON user_credentials (user_id);
 
 CREATE TRIGGER IF NOT EXISTS user_credentials_updated_at
-AFTER
-UPDATE
-  ON user_credentials BEGIN
-UPDATE
-  user_credentials
-SET
-  updated_at = CURRENT_TIMESTAMP
-WHERE
-  id = NEW.id;
-
+AFTER UPDATE ON user_credentials
+BEGIN
+  UPDATE user_credentials
+  SET updated_at = CURRENT_TIMESTAMP
+  WHERE id = NEW.id;
 END;
