@@ -148,6 +148,14 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     httpStatus: 500,
     category: 'internal',
   },
+
+  [ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE]: {
+    code: ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE,
+    message: 'Invalid token structure.',
+    userMessage: 'Invalid token structure.',
+    httpStatus: 401,
+    category: 'authentication',
+  },
 };
 
 const userErrors: Record<Extract<ErrorCode, `USER_${string}`>, ErrorDefinition> = {
