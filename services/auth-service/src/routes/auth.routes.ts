@@ -2,6 +2,7 @@ import {
   AUTH_ROUTES,
   changePasswordSchema,
   loginUserSchema,
+  refreshTokenRequestSchema,
   registerUserSchema,
   standardApiResponses,
   userByIdSchema,
@@ -34,6 +35,19 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.login,
+  );
+
+  app.post(
+    AUTH_ROUTES.REFRESH,
+    {
+      schema: {
+        description: 'Refresh Access Token',
+        tags: ['Auth'],
+        body: refreshTokenRequestSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.refresh,
   );
 
   app.delete(

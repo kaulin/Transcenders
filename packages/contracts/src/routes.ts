@@ -61,6 +61,8 @@ export const FRIENDSHIP_ROUTES = {
 export const AUTH_ROUTES = {
   // POST /auth/register, body as RegisterUser
   REGISTER: '/auth/register',
+  // POST /auth/refresh, body as RefreshTokenRequest
+  REFRESH: '/auth/refresh',
   // POST /auth/login, body as LoginUser
   LOGIN: '/auth/login',
   // PATCH /auth/change-password/:id

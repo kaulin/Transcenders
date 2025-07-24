@@ -51,20 +51,34 @@ export const refreshTokenRequestSchema = Type.Object({
 });
 export type RefreshTokenRequest = Static<typeof refreshTokenRequestSchema>;
 
+export const deviceInfoSchema = Type.Object({
+  userAgent: Type.Optional(Type.String()),
+  ipAddress: Type.Optional(Type.String()),
+  deviceInfo: Type.Optional(Type.String()),
+});
+export type DeviceInfo = Static<typeof deviceInfoSchema>;
+
 export const refreshTokenEntrySchema = Type.Object({
   id: Type.Optional(IdField),
   user_id: UserIdField,
   token_hash: Type.String(),
+  jti: Type.String(),
   expires_at: TimestampField,
   created_at: Type.Optional(TimestampField),
   revoked_at: Type.Optional(Type.Union([TimestampField, Type.Null()])),
+  device_info: Type.Optional(Type.String()),
+  ip_address: Type.Optional(Type.String()),
+  user_agent: Type.Optional(Type.String()),
 });
 export type RefreshTokenEntry = Static<typeof refreshTokenEntrySchema>;
 
 export const JWTPayloadSchema = Type.Object({
   userId: UserIdField,
-  iat: Type.Number(),
-  exp: Type.Number(),
+  jti: Type.String(),
+  aud: Type.Literal('transcenders'),
+  iss: Type.String(),
+  iat: Type.Optional(Type.Number()),
+  exp: Type.Optional(Type.Number()),
 });
 export type JWTPayload = Static<typeof JWTPayloadSchema>;
 

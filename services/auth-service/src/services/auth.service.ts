@@ -5,10 +5,12 @@ import {
   BooleanOperationResult,
   BooleanResultHelper,
   CreateUserRequest,
+  DeviceInfo,
   ERROR_CODES,
   ErrorCode,
   JWTPayload,
   LoginUser,
+  RefreshTokenEntry,
   RegisterUser,
   ResultHelper,
   ServiceError,
@@ -16,6 +18,7 @@ import {
   User,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
+import { QueryBuilder, TokenValidator } from '@transcenders/server-utils';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import SQL from 'sql-template-strings';
@@ -72,36 +75,40 @@ export class AuthService {
     );
   }
 
+  // TODO fix all env stuff
   private static generateTokenPair(userId: number): AuthData {
-    const accessToken = jwt.sign(
-      { userId },
-      // TODO fix all env stuff
-      process.env.JWT_ACCESS_SECRET ?? 'testing_access',
-      { expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS },
-    );
+    const payload: JWTPayload = {
+      userId: userId,
+      aud: 'transcenders',
+      iss: 'auth-service',
+      jti: crypto.randomUUID(),
+    };
+    const accessToken = jwt.sign(payload, TokenValidator.getAccessSecret());
+    const refreshToken = jwt.sign(payload, TokenValidator.getRefreshSecret());
 
-    const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET ?? 'testing_refresh', {
-      expiresIn: AuthConfig.REFRESH_TOKEN_EXPIRE_MS,
-    });
-    this.verifyToken(accessToken);
     return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS };
   }
 
   private static async storeRefreshToken(
     database: Database,
-    userId: number,
     refreshToken: string,
+    deviceInfo: DeviceInfo,
   ): Promise<void> {
-    const tokenHash = bcrypt.hash(refreshToken, 12);
-    const expiresAt = new Date(Date.now() + AuthConfig.REFRESH_TOKEN_EXPIRE_MS);
-    const sql = SQL`
-      INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
-      VALUES (${userId}, ${tokenHash}, ${expiresAt.toISOString()})
-    `;
-    await database.run(sql.text, sql.values);
+    const { userId, jti } = jwt.decode(refreshToken) as JWTPayload;
+    const entry: RefreshTokenEntry = {
+      user_id: userId,
+      token_hash: await bcrypt.hash(refreshToken, 12),
+      expires_at: new Date(Date.now() + AuthConfig.REFRESH_TOKEN_EXPIRE_MS).toISOString(),
+      jti,
+      device_info: deviceInfo.deviceInfo,
+      ip_address: deviceInfo.ipAddress,
+      user_agent: deviceInfo.userAgent,
+    };
+    const { sql, values } = QueryBuilder.insert('refresh_tokens', entry);
+    await database.run(sql, values);
   }
 
-  static async login(login: LoginUser): Promise<ServiceResult<AuthData>> {
+  static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
     const db: Database = await getAuthDB();
     return await ResultHelper.executeTransaction<AuthData>(
       'authenticate user',
@@ -137,9 +144,25 @@ export class AuthService {
 
         const tokens = this.generateTokenPair(userData.id);
         // store refresh token in the database
-        await this.storeRefreshToken(database, userData.id, tokens.refreshToken);
+        await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
 
         return tokens;
+      },
+    );
+  }
+
+  static async refreshToken(refreshToken: string): Promise<ServiceResult<AuthData>> {
+    const db = await getAuthDB();
+    return await ResultHelper.executeQuery<AuthData>(
+      'refresh access token',
+      db,
+      async (database) => {
+        const { userId, jti } = TokenValidator.verifyRefreshToken(refreshToken);
+        const sql = SQL`
+        SELECT * FROM refresh_tokens WHERE jti = ${jti}
+      `;
+        const test = await database.run(sql.text, sql.values);
+        return this.generateTokenPair(userId);
       },
     );
   }
@@ -237,9 +260,5 @@ export class AuthService {
         );
       },
     );
-  }
-  static verifyToken(token: string): JWTPayload {
-    // #TODO fix all env stuff
-    return jwt.verify(token, process.env.JWT_SECRET ?? 'testing_access') as JWTPayload;
   }
 }

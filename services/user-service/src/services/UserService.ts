@@ -11,6 +11,7 @@ import {
   UpdateUserRequest,
   User,
 } from '@transcenders/contracts';
+import { QueryBuilder } from '@transcenders/server-utils';
 import SQL from 'sql-template-strings';
 import { Database } from 'sqlite';
 import { getDB } from '../db/database';
@@ -60,12 +61,7 @@ export class UserService {
       throw new Error('No fields to update');
     }
 
-    const setFields = fields.map((field) => `${field} = ?`).join(', ');
-    const values = Object.values(updates);
-    values.push(id.toString());
-
-    const sql = `UPDATE users SET ${setFields} WHERE id = ?`;
-
+    const { sql, values } = QueryBuilder.update('users', updates, 'id = ?', [id]);
     const result = await database.run(sql, values);
     // user does not exist
     if ((result.changes ?? 0) === 0) {
