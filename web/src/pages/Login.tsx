@@ -18,7 +18,7 @@ const Login = () => {
 		try {
 			await login(username, password)
 		} catch (err: any) {
-			setError(t('invalid_credentials'))
+			setError(t(err.message) || t('something_went_wrong'))
 		}
 	}
 

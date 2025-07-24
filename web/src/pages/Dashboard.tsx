@@ -59,23 +59,26 @@ const Dashboard = () => {
 	]
 
 	const [viewedUser, setViewedUser] = useState<User | null>(user)
-	const [searchId, setSearchId] = useState("")
+	const [searchedUser, setSearchedUser] = useState("")
 	const [error, setError] = useState<string | null>(null)
 
 	const handleSearch = async () => {
 		setError(null)
 
+		if (!searchedUser?.trim())
+			return
+
 		try {
-      		const response = await ApiClient.user.getUserExact({ username: searchId })
+      		const response = await ApiClient.user.getUserExact({ username: searchedUser })
 			
 			if (response?.success && response?.data) {
 				setViewedUser(response.data as User)
-			} else {
-				setError("User not found")
+			} else if (!response.success) {
+				throw new Error(response.error.localeKey)
 			}
 
 		} catch (err: any) {
-			setError(err.message || t('something_went_wrong'))
+			setError(t(err.message) || t('something_went_wrong'))
 		}
 	}
 
@@ -83,7 +86,7 @@ const Dashboard = () => {
 	const losses = 13
 
 	return (
-		<div className="box xl:gap-6">
+		<div className="box xl:gap-4">
 			<div className="box-section bg-[#6e5d41]/10 justify-between">
 				<div className="flex flex-col items-center">
 					<div className="bubble bg-white/50 w-56 h-56 flex items-end justify-center overflow-hidden">
@@ -130,9 +133,10 @@ const Dashboard = () => {
 						<div className="flex">
 							<input
 								type="text"
-								value={searchId}
+								maxLength={20}
+								value={searchedUser}
 								placeholder={t('search_user')}
-								onChange={(e) => setSearchId(e.target.value)}
+								onChange={(e) => setSearchedUser(e.target.value)}
 								className="input-field"
 								/>
 							<button onClick={handleSearch} className="ml-4 p-2 rounded-full  border-white hover:border-[#786647] bg-white/15 text-white"><ChevronRight /></button>
