@@ -5,7 +5,6 @@ import useVerifyLogin from "../hooks/useVerifyLogin.ts"
 import { usePlayers } from "../contexts/PlayersContext.tsx"
 import { ApiClient } from "@transcenders/api-client"
 import type { Player } from "../types/types.ts"
-import { ChevronRight } from "lucide-react"
 
 type Props = {
   playerNumber: number;
@@ -74,7 +73,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 		try {
 			await login(username?.trim(), password, playerNumber)
 		} catch (err: any) {
-			setError(t('invalid_credentials'))
+			setError(t(err.message) || t('something_went_wrong'))
 		}
 	}
 

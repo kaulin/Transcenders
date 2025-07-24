@@ -11,19 +11,16 @@ import {
 } from "@transcenders/contracts"
 
 const useAuthLogin = () => {
-	const { t } = useTranslation()
 	const { setUser } = useUser()
-	const [loginError, setLoginError] = useState<string | null>(null)
 
 	async function login(username: string, password: string) {
-		setLoginError(null)
 
 		try {
 			const loginInfo: LoginUser = { username, password }
 			const userLogin = await ApiClient.auth.login(loginInfo)
 
 			if (!userLogin.success) {
-				throw new Error(userLogin.error.userMessage)
+				throw new Error(userLogin.error.localeKey)
 			}
 
 			const authData = userLogin.data as AuthData
@@ -32,19 +29,18 @@ const useAuthLogin = () => {
 			const userReq = await ApiClient.user.getUserById(payload.userId)
 
 			if (!userReq.success) {
-				throw new Error(userReq.error.userMessage)
+				throw new Error(userReq.error.localeKey)
 			}
 
 			const user = userReq.data as User
 			setUser(user)
 
 		} catch (err: any) {
-			setLoginError(err.message || t('something_went_wrong'))
 			throw err
 		}
 	}
 
-	return { login, loginError }
+	return { login }
 }
 
 export default useAuthLogin

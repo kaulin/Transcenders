@@ -54,7 +54,7 @@ const Profile = () => {
     const [username, setUsername] = useState(user?.username || "")
     const [displayName, setDisplayName] = useState(user?.display_name || "")
     const [password, setPassword] = useState("")
-    const [confirmPassword, setConfirmPassword] = useState("")
+    const [repeatPassword, setRepeatPassword] = useState("")
     const [language, setLanguage] = useState(user?.lang || "")
 	const [success, setSuccess] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
@@ -62,7 +62,7 @@ const Profile = () => {
     const handleConfirm = async () => {
         setError(null)
         
-        if (password !== confirmPassword) {
+        if (password !== repeatPassword) {
 			setError(t('pw_no_match'))
 			return
 		}
@@ -85,7 +85,7 @@ const Profile = () => {
 			const response = await ApiClient.user.deleteUser(user.id)
 
 			if (!response.success) {
-				throw new Error(response.error.userMessage)
+				throw new Error(response.error.localeKey)
 			}
 
 			setSuccess(true)
@@ -101,7 +101,7 @@ const Profile = () => {
 	}
 
     return (
-        <div className="box xl:gap-6">
+        <div className="box xl:gap-4">
             <div className="box-section bg-[#6e5d41]/10 justify-center gap-10">
                 <div className="bubble bg-white/50 w-56 h-56 sm:w-72 sm:h-72 flex items-end justify-center overflow-hidden">
                     <img
@@ -161,13 +161,13 @@ const Profile = () => {
                     />
                     <input
                         type="password"
-                        value={confirmPassword}
+                        value={repeatPassword}
                         onChange={(e) => {
-                            setConfirmPassword(e.target.value)
+                            setRepeatPassword(e.target.value)
                         }}
                         placeholder={t('repeat_pw')}
                         className={`w-full bg-transparent border-b-2 mt-3 border-white focus:outline-none focus:border-white/70 ${
-                            password === confirmPassword ? 'text-white' : 'text-white/40'
+                            password === repeatPassword ? 'text-white' : 'text-white/40'
                         } text-lg placeholder-white/60`}
                     />
                 </div>

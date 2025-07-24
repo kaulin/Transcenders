@@ -40,7 +40,7 @@ const SignUp = () => {
 				const response = await ApiClient.auth.register(registrationInfo)
 
 				if (!response.success) {
-					throw new Error(response.error.userMessage || t('something_went_wrong'))
+					throw new Error(response.error.localeKey)
 				}
 
 				const loginInfo: LoginUser = {
@@ -50,7 +50,7 @@ const SignUp = () => {
 
 				const userLogin = await ApiClient.auth.login(loginInfo)
 				if (!userLogin.success) {
-					throw new Error(userLogin.error.userMessage || t('something_went_wrong'))
+					throw new Error(userLogin.error.localeKey)
 				}
 				
 				const authData = userLogin.data as AuthData
@@ -58,14 +58,14 @@ const SignUp = () => {
 				const userReq = await ApiClient.user.getUserById(newUserId.userId)
 
 				if (!userReq.success) {
-					throw new Error(userReq.error.userMessage || t('something_went_wrong'))
+					throw new Error(userReq.error.localeKey)
 				}
 
 				const user = userReq.data as User
 				setUser(user)
 
 			} catch (err: any) {
-				setError(err.message || t('something_went_wrong'))
+				setError(t(err.message) || t('something_went_wrong'))
 			}
 	}
 
