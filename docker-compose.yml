@@ -18,7 +18,7 @@ services:
     volumes:
       - ./services/user-service:/workspace/services/user-service
       - user_node_modules:/workspace/node_modules
-      - ./packages/contracts:/workspace/packages/contracts
+      - ./packages:/workspace/packages
   auth-service:
     container_name: auth-service
     image: auth-service:hive
@@ -36,7 +36,7 @@ services:
     volumes:
       - ./services/auth-service:/workspace/services/auth-service
       - auth_node_modules:/workspace/node_modules
-      - ./packages/contracts:/workspace/packages/contracts
+      - ./packages:/workspace/packages
   score-service:
     container_name: score-service
     image: score-service:hive
@@ -52,7 +52,7 @@ services:
     volumes:
       - ./services/score-service:/workspace/services/score-service
       - score_node_modules:/workspace/node_modules
-      - ./packages/contracts:/workspace/packages/contracts
+      - ./packages:/workspace/packages
 volumes:
   user_node_modules:
   auth_node_modules:
