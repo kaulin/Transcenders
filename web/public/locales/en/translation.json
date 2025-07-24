@@ -17,6 +17,7 @@
     "deletion_successful": "Account deleted successfully",
     "display_name": "Display name",
     "email": "Email",
+    "email_taken": "Email is already taken",
 	"english": "English",
 	"estonian": "Estonian",
     "existing_user": "Already have an account",
