@@ -5,6 +5,11 @@ export const UserConfig = {
   CLEANUP_INTERVAL_MINUTES: 1,
 } as const;
 
+export const AuthConfig = {
+  ACCESS_TOKEN_EXPIRE_MS: 15 * 60 * 1000, // 15 min
+  REFRESH_TOKEN_EXPIRE_MS: 7 * 24 * 60 * 60 * 1000, //7 days
+} as const;
+
 export const AvatarConfig = {
   MAX_FILE_SIZE: 10 * 1024 * 1024, //10 mb
 

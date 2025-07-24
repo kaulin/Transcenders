@@ -41,8 +41,25 @@ export type UserCredentials = Static<typeof userCredentialsSchema>;
 
 export const authDataSchema = Type.Object({
   accessToken: Type.String(),
+  refreshToken: Type.String(),
+  expiresIn: Type.Number(),
 });
 export type AuthData = Static<typeof authDataSchema>;
+
+export const refreshTokenRequestSchema = Type.Object({
+  refreshToken: Type.String(),
+});
+export type RefreshTokenRequest = Static<typeof refreshTokenRequestSchema>;
+
+export const refreshTokenEntrySchema = Type.Object({
+  id: Type.Optional(IdField),
+  user_id: UserIdField,
+  token_hash: Type.String(),
+  expires_at: TimestampField,
+  created_at: Type.Optional(TimestampField),
+  revoked_at: Type.Optional(Type.Union([TimestampField, Type.Null()])),
+});
+export type RefreshTokenEntry = Static<typeof refreshTokenEntrySchema>;
 
 export const JWTPayloadSchema = Type.Object({
   userId: UserIdField,

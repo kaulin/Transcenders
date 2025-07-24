@@ -1,5 +1,6 @@
 import { ApiClient } from '@transcenders/api-client';
 import {
+  AuthConfig,
   AuthData,
   BooleanOperationResult,
   BooleanResultHelper,
@@ -71,48 +72,76 @@ export class AuthService {
     );
   }
 
+  private static generateTokenPair(userId: number): AuthData {
+    const accessToken = jwt.sign(
+      { userId },
+      // TODO fix all env stuff
+      process.env.JWT_ACCESS_SECRET ?? 'testing_access',
+      { expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS },
+    );
+
+    const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET ?? 'testing_refresh', {
+      expiresIn: AuthConfig.REFRESH_TOKEN_EXPIRE_MS,
+    });
+    this.verifyToken(accessToken);
+    return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS };
+  }
+
+  private static async storeRefreshToken(
+    database: Database,
+    userId: number,
+    refreshToken: string,
+  ): Promise<void> {
+    const tokenHash = bcrypt.hash(refreshToken, 12);
+    const expiresAt = new Date(Date.now() + AuthConfig.REFRESH_TOKEN_EXPIRE_MS);
+    const sql = SQL`
+      INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
+      VALUES (${userId}, ${tokenHash}, ${expiresAt.toISOString()})
+    `;
+    await database.run(sql.text, sql.values);
+  }
+
   static async login(login: LoginUser): Promise<ServiceResult<AuthData>> {
     const db: Database = await getAuthDB();
-    return await ResultHelper.executeQuery<AuthData>('authenticate user', db, async (database) => {
-      // Get user from user-service with schema validation
-      const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
-      if (!apiResponse.success) {
-        throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_USERNAME, {
-          username: login.username,
-          originalError: apiResponse.error,
-        });
-      }
-      const userData = apiResponse.data as User;
+    return await ResultHelper.executeTransaction<AuthData>(
+      'authenticate user',
+      db,
+      async (database) => {
+        const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
+        if (!apiResponse.success) {
+          throw new ServiceError(
+            apiResponse.error.codeOrError as ErrorCode,
+            apiResponse.error.context,
+          );
+        }
+        const userData = apiResponse.data as User;
 
-      // get the matching user credentials entry
-      const sql = SQL`
+        // get the matching user credentials entry
+        const sql = SQL`
         SELECT * FROM user_credentials WHERE user_id = ${userData.id}
       `;
-      const userCredentials = await database.get(sql.text, sql.values);
-      if (!userCredentials) {
-        throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-          username: login.username,
-        });
-      }
+        const userCredentials = await database.get(sql.text, sql.values);
+        if (!userCredentials) {
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+            username: login.username,
+          });
+        }
 
-      const userCreds = userCredentials as UserCredentialsEntry;
-      const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
-      if (!isValidPassword) {
-        throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-          username: login.username,
-        });
-      }
+        const userCreds = userCredentials as UserCredentialsEntry;
+        const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
+        if (!isValidPassword) {
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+            username: login.username,
+          });
+        }
 
-      // Generate JWT accessToken
-      const accessToken = jwt.sign(
-        { userId: userData.id },
-        // TODO fix all env stuff
-        process.env.JWT_SECRET ?? 'testing',
-        { expiresIn: '24h' },
-      );
-      this.verifyToken(accessToken);
-      return { accessToken };
-    });
+        const tokens = this.generateTokenPair(userData.id);
+        // store refresh token in the database
+        await this.storeRefreshToken(database, userData.id, tokens.refreshToken);
+
+        return tokens;
+      },
+    );
   }
 
   static async changePassword(
@@ -211,6 +240,6 @@ export class AuthService {
   }
   static verifyToken(token: string): JWTPayload {
     // #TODO fix all env stuff
-    return jwt.verify(token, process.env.JWT_SECRET ?? 'testing') as JWTPayload;
+    return jwt.verify(token, process.env.JWT_SECRET ?? 'testing_access') as JWTPayload;
   }
 }

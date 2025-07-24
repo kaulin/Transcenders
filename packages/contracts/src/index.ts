@@ -1,7 +1,7 @@
 export * from './admin.schemas';
 export * from './auth.schemas';
 export * from './avatar.schemas';
-export { AvatarConfig, UserConfig } from './config';
+export { AuthConfig, AvatarConfig, UserConfig } from './config';
 export * from './errors';
 export * from './errors/ApiErrorHandler';
 export * from './errors/ErrorCatalog';
