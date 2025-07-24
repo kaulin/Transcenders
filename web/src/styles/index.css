@@ -35,12 +35,12 @@
         
     .box {
         @apply flex flex-col xl:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
-        items-center rounded-sm border border-white shadow-[0_0_3px_3px_#fff] backdrop-blur-3xl;
+        rounded-sm border border-white shadow-[0_0_3px_3px_#fff] backdrop-blur-3xl;
 	}
 
     .box-section {
         @apply backdrop-blur-sm w-full min-h-full flex-shrink-0
-        xl:flex-1 xl:h-full xl:flex-shrink px-4 py-24 flex flex-col items-center;
+        xl:flex-1 xl:h-[1106px] xl:flex-shrink px-4 py-24 flex flex-col items-center;
     }
 
     .bubble {
