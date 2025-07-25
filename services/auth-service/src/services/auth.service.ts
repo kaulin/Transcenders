@@ -45,26 +45,25 @@ export class AuthService {
     return true;
   }
 
-  private static async findExistingTokenForDevice(
+  private static async findExistingTokensForDevice(
     database: Database,
     userId: number,
     deviceInfo: DeviceInfo,
-  ): Promise<RefreshToken | null> {
+  ): Promise<RefreshToken[]> {
     const sql = SQL`
       SELECT * FROM refresh_tokens 
       WHERE user_id = ${userId}
       AND revoked_at IS NULL
       AND device_fingerprint = ${deviceInfo.deviceFingerprint}
-      AND ip_address = ${deviceInfo.ipAddress}
     `;
 
-    const result = await database.get(sql.text, sql.values);
-    return result as RefreshToken | null;
+    const results = await database.all(sql.text, sql.values);
+    return results as RefreshToken[];
   }
 
   private static async revokeRefreshTokens(
     database: Database,
-    criteria: { jti?: string; userId?: number; all?: boolean },
+    criteria: { jti?: string; userId?: number },
     reason: string,
   ): Promise<number> {
     let whereClause = `revoked_at IS NULL`;
@@ -73,11 +72,7 @@ export class AuthService {
     if (criteria.jti) {
       whereClause += ' AND jti = ?';
       whereValues.push(criteria.jti);
-    } else if (criteria.userId && !criteria.all) {
-      // Revoke only current session tokens for user
-      whereClause += ' AND user_id = ? LIMIT 1';
-      whereValues.push(criteria.userId);
-    } else if (criteria.userId && criteria.all) {
+    } else if (criteria.userId) {
       // Revoke ALL tokens for user (security event)
       whereClause += ' AND user_id = ?';
       whereValues.push(criteria.userId);
@@ -91,6 +86,29 @@ export class AuthService {
       },
       whereClause,
       whereValues,
+    );
+    const result = await database.run(revokeQuery.sql, revokeQuery.values);
+    return result.changes ?? 0;
+  }
+
+  private static async revokeMultipleTokens(
+    database: Database,
+    jtis: string[],
+    reason: string,
+  ): Promise<number> {
+    if (jtis.length === 0) return 0;
+
+    const placeholders = jtis.map(() => '?').join(',');
+    const whereClause = `revoked_at IS NULL AND jti IN (${placeholders})`;
+
+    const revokeQuery = QueryBuilder.update(
+      `refresh_tokens`,
+      {
+        revoked_at: new Date().toISOString(),
+        revoke_reason: reason,
+      },
+      whereClause,
+      jtis,
     );
     const result = await database.run(revokeQuery.sql, revokeQuery.values);
     return result.changes ?? 0;
@@ -194,22 +212,24 @@ export class AuthService {
         }
 
         // Check if this device already has active tokens
-        const existingToken = await this.findExistingTokenForDevice(
+        const existingTokens = await this.findExistingTokensForDevice(
           database,
           userData.id,
           deviceInfo,
         );
-        if (existingToken) {
-          // Same device logging in again - revoke existing tokens for this device
-          await this.revokeRefreshTokens(
+        if (existingTokens.length > 0) {
+          // Same device logging in again - revoke ALL existing tokens for this device
+          const jtisToRevoke = existingTokens.map((token) => token.jti);
+          const revokedCount = await this.revokeMultipleTokens(
             database,
-            { jti: existingToken.jti },
+            jtisToRevoke,
             'same_device_relogin',
           );
+          console.log(`Revoked ${revokedCount} existing tokens for device during login`);
         }
 
+        // generate and save new tokens
         const tokens = this.generateTokenPair(userData.id);
-        // store refresh token in the database
         await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
 
         return tokens;
@@ -262,17 +282,18 @@ export class AuthService {
         const storedDeviceInfo = DeviceUtils.fromDatabaseValues(storedToken);
         if (!DeviceUtils.isSameDevice(storedDeviceInfo, currentDeviceInfo)) {
           // SECURITY EVENT: Token used from different device - revoke ALL user tokens
-          await this.revokeRefreshTokens(database, { userId, all: true }, 'security_device_change');
+          await this.revokeRefreshTokens(database, { userId }, 'security_device_change');
           throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
             jti,
             userId,
             reason: 'Token used from different device - all sessions revoked for security',
           });
         }
-        this.revokeRefreshTokens(database, { jti }, 'token_rotation');
-
+        // generate and store new tokens
         const newTokens = this.generateTokenPair(userId);
         await this.storeRefreshToken(database, newTokens.refreshToken, storedDeviceInfo);
+        // revoke old token
+        this.revokeRefreshTokens(database, { jti }, 'token_rotation');
         return newTokens;
       },
     );

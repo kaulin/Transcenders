@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@transcenders/contracts": "^1.0.0",
+    "bcrypt": "^6.0.0",
     "fastify": "^5.4.0",
     "jsonwebtoken": "^9.0.2"
   },
