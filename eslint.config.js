@@ -1,27 +1,26 @@
-import eslint from '@eslint/js';
 import prettierConfig from 'eslint-config-prettier';
 import prettierPlugin from 'eslint-plugin-prettier';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended, //...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
+  { ignores: ['**/node_modules', 'web'] },
+  tseslint.configs.recommended,
 
   {
-    files: ['**/*.ts', '**/*.tsx'],
-
+    files: ['**/*.{ts,tsx}'],
+    extends: [tseslint.configs.recommendedTypeChecked, tseslint.configs.stylisticTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
-
+  },
+  {
+    files: ['**/*.{js,ts,tsx}'],
     plugins: {
       prettier: prettierPlugin,
     },
-
     rules: {
       ...prettierConfig.rules,
       '@typescript-eslint/no-unused-vars': 'off',

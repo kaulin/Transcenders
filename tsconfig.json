@@ -1,11 +1,38 @@
 {
   "compilerOptions": {
+    // Language settings
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+
+    // Type Checking
     "strict": true,
+
+    // Import/Export behaviour
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    // Quality of life
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true,
+    "pretty": true,
+
+    // Output settings
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+
+  "references": [
+    { "path": "./packages/api-client" },
+    { "path": "./packages/contracts" },
+    { "path": "./packages/fastify-server" },
+    { "path": "./packages/server-utils" },
+    { "path": "./services/auth-service" },
+    { "path": "./services/user-service" },
+    { "path": "./services/score-service" }
+  ]
 }
