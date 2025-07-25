@@ -24,6 +24,11 @@ export const loginUserSchema = Type.Object({
 });
 export type LoginUser = Static<typeof loginUserSchema>;
 
+export const logoutUserSchema = Type.Object({
+  refreshToken: Type.String(),
+});
+export type LogoutUser = Static<typeof logoutUserSchema>;
+
 export const userCredentialsEntrySchema = Type.Object({
   user_id: UserIdField,
   pw_hash: PwHashField,
@@ -58,19 +63,30 @@ export const deviceInfoSchema = Type.Object({
 });
 export type DeviceInfo = Static<typeof deviceInfoSchema>;
 
-export const refreshTokenEntrySchema = Type.Object({
-  id: Type.Optional(IdField),
+export const refreshTokenSchema = Type.Object({
+  id: IdField,
   user_id: UserIdField,
   token_hash: Type.String(),
   jti: Type.String(),
   expires_at: TimestampField,
-  created_at: Type.Optional(TimestampField),
-  revoked_at: Type.Optional(Type.Union([TimestampField, Type.Null()])),
+  created_at: TimestampField,
+  revoked_at: Type.Union([TimestampField, Type.Null()]),
+  revoke_reason: Type.Optional(Type.String()),
   device_fingerprint: Type.Optional(Type.String()),
   ip_address: Type.Optional(Type.String()),
   user_agent: Type.Optional(Type.String()),
 });
-export type RefreshTokenEntry = Static<typeof refreshTokenEntrySchema>;
+
+// Derive insert schema
+export const refreshTokenInsertSchema = Type.Omit(refreshTokenSchema, [
+  'id',
+  'created_at',
+  'revoked_at',
+  'revoke_reason',
+]);
+
+export type RefreshToken = Static<typeof refreshTokenSchema>;
+export type RefreshTokenInsert = Static<typeof refreshTokenInsertSchema>;
 
 export const JWTPayloadSchema = Type.Object({
   userId: UserIdField,

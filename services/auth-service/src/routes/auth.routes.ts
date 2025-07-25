@@ -2,6 +2,7 @@ import {
   AUTH_ROUTES,
   changePasswordSchema,
   loginUserSchema,
+  logoutUserSchema,
   refreshTokenRequestSchema,
   registerUserSchema,
   standardApiResponses,
@@ -10,6 +11,8 @@ import {
 import { FastifyInstance } from 'fastify';
 import { AuthController } from '../controllers/auth.controller';
 
+// #TODO api-client helpers for setting up refresh token cycling
+// #TODO google sign in
 export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.REGISTER,
@@ -31,6 +34,20 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         description: 'Authenticate something',
         tags: ['Auth'],
         body: loginUserSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.login,
+  );
+
+  app.post(
+    AUTH_ROUTES.LOGOUT,
+    {
+      schema: {
+        description: 'logout user',
+        tags: ['Auth'],
+        body: logoutUserSchema,
+        param: userByIdSchema,
         response: standardApiResponses,
       },
     },

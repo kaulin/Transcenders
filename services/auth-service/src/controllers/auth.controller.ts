@@ -2,6 +2,7 @@ import {
   ApiErrorHandler,
   ChangePasswordRequest,
   LoginUser,
+  LogoutUser,
   RefreshTokenRequest,
   RegisterUser,
   userByIdRequest,
@@ -19,6 +20,14 @@ export class AuthController {
   static async login(request: FastifyRequest, reply: FastifyReply) {
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
     const result = await AuthService.login(request.body as LoginUser, deviceInfo);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async logout(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as userByIdRequest;
+    const userId = parseInt(id);
+    const { refreshToken } = request.body as LogoutUser;
+    const result = await AuthService.logout(userId, refreshToken);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 

@@ -1,4 +1,4 @@
-import { DeviceInfo, RefreshTokenEntry } from '@transcenders/contracts';
+import { DeviceInfo, RefreshToken } from '@transcenders/contracts';
 import { FastifyRequest } from 'fastify';
 
 export class DeviceUtils {
@@ -74,7 +74,7 @@ export class DeviceUtils {
   /**
    * Convert DeviceInfo from database values
    */
-  static fromDatabaseValues(tokenEntry: RefreshTokenEntry): DeviceInfo {
+  static fromDatabaseValues(tokenEntry: RefreshToken): DeviceInfo {
     return {
       userAgent: tokenEntry.user_agent,
       ipAddress: tokenEntry.ip_address,

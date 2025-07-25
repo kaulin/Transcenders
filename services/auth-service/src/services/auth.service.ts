@@ -10,7 +10,8 @@ import {
   ErrorCode,
   JWTPayload,
   LoginUser,
-  RefreshTokenEntry,
+  RefreshToken,
+  RefreshTokenInsert,
   RegisterUser,
   ResultHelper,
   ServiceError,
@@ -48,7 +49,7 @@ export class AuthService {
     database: Database,
     userId: number,
     deviceInfo: DeviceInfo,
-  ): Promise<RefreshTokenEntry | null> {
+  ): Promise<RefreshToken | null> {
     const sql = SQL`
       SELECT * FROM refresh_tokens 
       WHERE user_id = ${userId}
@@ -58,7 +59,7 @@ export class AuthService {
     `;
 
     const result = await database.get(sql.text, sql.values);
-    return result as RefreshTokenEntry | null;
+    return result as RefreshToken | null;
   }
 
   private static async revokeRefreshTokens(
@@ -145,7 +146,7 @@ export class AuthService {
     deviceInfo: DeviceInfo,
   ): Promise<void> {
     const { userId, jti } = jwt.decode(refreshToken) as JWTPayload;
-    const entry: RefreshTokenEntry = {
+    const entry: RefreshTokenInsert = {
       user_id: userId,
       token_hash: await bcrypt.hash(refreshToken, 12),
       expires_at: new Date(Date.now() + AuthConfig.REFRESH_TOKEN_EXPIRE_MS).toISOString(),
@@ -216,6 +217,28 @@ export class AuthService {
     );
   }
 
+  static async logout(
+    userId: number,
+    refreshToken: string,
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    const db = await getAuthDB();
+    return await ResultHelper.executeQuery<BooleanOperationResult>(
+      'logout user',
+      db,
+      async (database) => {
+        const { jti } = TokenValidator.verifyRefreshToken(refreshToken, userId);
+        const sql = SQL`
+          SELECT * FROM refresh_tokens WHERE jti = ${jti}
+      `;
+        const refreshTokenData = await database.get(sql.text, sql.values);
+        await TokenValidator.authenticateRefreshToken(refreshToken, refreshTokenData);
+
+        this.revokeRefreshTokens(database, { jti }, 'user logged out');
+        return BooleanResultHelper.success('user logged out successfully');
+      },
+    );
+  }
+
   static async refreshToken(
     refreshToken: string,
     currentDeviceInfo: DeviceInfo,
@@ -227,27 +250,14 @@ export class AuthService {
       async (database) => {
         const { userId, jti } = TokenValidator.verifyRefreshToken(refreshToken);
         const sql = SQL`
-        SELECT * FROM refresh_tokens WHERE jti = ${jti}
-        AND user_id = ${userId}
-        AND revoked_at IS NULL
+          SELECT * FROM refresh_tokens WHERE jti = ${jti}
       `;
-        const storedToken = await database.get(sql.text, sql.values);
-        if (!storedToken) {
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
-            jti,
-            userId,
-            reason: 'Refresh token not found, revoked, or expired',
-          });
-        }
-
-        const isValidToken = await bcrypt.compare(refreshToken, storedToken.token_hash);
-        if (!isValidToken) {
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
-            jti,
-            userId,
-            reason: 'Refresh token hash mismatch',
-          });
-        }
+        const refreshTokenData = await database.get(sql.text, sql.values);
+        // Authenticate token against databaseData
+        const storedToken = await TokenValidator.authenticateRefreshToken(
+          refreshToken,
+          refreshTokenData,
+        );
 
         const storedDeviceInfo = DeviceUtils.fromDatabaseValues(storedToken);
         if (!DeviceUtils.isSameDevice(storedDeviceInfo, currentDeviceInfo)) {

@@ -65,6 +65,8 @@ export const AUTH_ROUTES = {
   REFRESH: '/auth/refresh',
   // POST /auth/login, body as LoginUser
   LOGIN: '/auth/login',
+  // POST /auth/logout/, body as LogoutUser
+  LOGOUT: '/auth/logout/:id',
   // PATCH /auth/change-password/:id
   CHANGE_PASSWORD: '/auth/change-password/:id',
   // DELETE /auth/credentials/:id

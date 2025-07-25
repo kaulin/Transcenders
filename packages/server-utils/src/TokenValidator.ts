@@ -1,24 +1,42 @@
 import { Value } from '@sinclair/typebox/value';
-import { ERROR_CODES, JWTPayload, JWTPayloadSchema, ServiceError } from '@transcenders/contracts';
+import {
+  ERROR_CODES,
+  JWTPayload,
+  JWTPayloadSchema,
+  RefreshToken,
+  refreshTokenSchema,
+  ServiceError,
+} from '@transcenders/contracts';
+import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export class TokenValidator {
-  static verifyAccessToken(token: string): JWTPayload {
-    return this.verifyToken(token, false);
+  static verifyAccessToken(token: string, expectedUser?: number): JWTPayload {
+    return this.verifyToken(token, false, expectedUser);
   }
 
-  static verifyRefreshToken(token: string): JWTPayload {
-    return this.verifyToken(token, true);
+  static verifyRefreshToken(token: string, expectedUser?: number): JWTPayload {
+    return this.verifyToken(token, true, expectedUser);
   }
 
-  private static verifyToken(token: string, isRefreshToken: boolean): JWTPayload {
+  private static verifyToken(
+    token: string,
+    isRefreshToken: boolean,
+    expectedUser?: number,
+  ): JWTPayload {
     const secret = isRefreshToken ? this.getRefreshSecret() : this.getAccessSecret();
 
     try {
       const payload = jwt.verify(token, secret);
+      Value.Assert(JWTPayloadSchema, payload);
 
-      if (!Value.Check(JWTPayloadSchema, payload)) {
-        throw new ServiceError(ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE);
+      if (expectedUser && payload.userId !== expectedUser) {
+        throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+          jti: payload.jti,
+          reason: 'Token does not belong to the authenticated user',
+          expectedUserId: expectedUser,
+          tokenUserId: payload.userId,
+        });
       }
 
       return payload as JWTPayload;
@@ -31,17 +49,60 @@ export class TokenValidator {
       if (error instanceof jwt.TokenExpiredError) {
         throw new ServiceError(
           ERROR_CODES.AUTH.TOKEN_EXPIRED,
-          { expiredAt: error.expiredAt },
+          {
+            originalMessage: error.message,
+            expiredAt: error.expiredAt,
+          },
           error,
         );
       }
-      if (error instanceof jwt.JsonWebTokenError) {
-        throw new ServiceError(ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE, {}, error);
+      if (error instanceof Error) {
+        throw new ServiceError(
+          ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE,
+          { originalMessage: error.message },
+          error,
+        );
       }
 
       // rest of the errors with some context
-      throw new ServiceError(ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE, { error: String(error) });
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE, {
+        originalMessage: String(error),
+      });
     }
+  }
+
+  static async authenticateRefreshToken(
+    refreshToken: string,
+    storedToken: unknown,
+  ): Promise<RefreshToken> {
+    if (!storedToken) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+        reason: 'Refresh token not found in database',
+      });
+    }
+
+    if (!Value.Check(refreshTokenSchema, storedToken)) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+        reason: 'Invalid refresh token database structure',
+      });
+    }
+
+    if (storedToken.revoked_at !== null) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+        jti: storedToken.jti,
+        reason: 'Refresh token has been revoked',
+        revokedAt: storedToken.revoked_at,
+      });
+    }
+
+    const isValidToken = await bcrypt.compare(refreshToken, storedToken.token_hash);
+    if (!isValidToken) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+        jti: storedToken.jti,
+        reason: 'Refresh token hash mismatch',
+      });
+    }
+    return storedToken;
   }
 
   static getAccessSecret(): string {
