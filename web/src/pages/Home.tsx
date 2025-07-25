@@ -48,14 +48,14 @@ const Home = () => {
 					<div className="flex flex-col">
 						<button
 							onClick={() => handleGameMode("match")}
-							className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase mt-6"
+							className="rounded-button bg-[#6e5d41]/15 text-xs sm:text-base font-fascinate uppercase mt-6"
 						>
 							{t('start_match')}
 						</button>
 
 						<button
 							onClick={() => handleGameMode("tournament")}
-							className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase mt-6"
+							className="rounded-button bg-[#6e5d41]/15 text-xs sm:text-base font-fascinate uppercase mt-6"
 						>
 							{t('start_tournament')}
 						</button>
