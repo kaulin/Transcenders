@@ -189,7 +189,7 @@ const Dashboard = () => {
 			
 			<div className="box-section bg-[#6e5d41]/10 justify-between">
 				<p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
-				<div className="relative w-80 h-[90%] px-4 overflow-y-auto custom-scrollbar">
+				<div className="relative w-80 h-[823px] px-4 overflow-y-auto custom-scrollbar">
 					<MatchHistory />
 				</div>
 			</div>

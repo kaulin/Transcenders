@@ -1,10 +1,7 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { useTranslation } from "react-i18next"
 
-// const COLORS = ['#ffdcc4c3', '#6e5d414e']
-// const COLORS = ['#d6fb819a', '#6e5d414e']
 const COLORS = ['#a7d4373c', '#5d6b2f52']
-// const COLORS = ['#ff8ba860', '#741c4c82']
 
 const PieCharts = () => {
   const { t } = useTranslation()
@@ -31,7 +28,7 @@ const PieCharts = () => {
         { title: t('one_v_one'), data: singleMatchData },
         { title: t('tournament'), data: tournamentData },
       ].map(({ title, data }, i) => (
-        <div key={i} className="flex flex-col sm:flex-row w-full items-center justify-between text-md">
+        <div key={i} className="flex flex-col mt-6 sm:mt-0 sm:flex-row w-full items-center justify-between text-md">
           <div className="flex flex-col items-center sm:items-start">
             <div className="text-white text-center sm:text-xl font-fascinate uppercase">{title}</div>
             {data.map((entry, index) => (
