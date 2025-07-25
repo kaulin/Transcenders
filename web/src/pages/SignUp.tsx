@@ -114,7 +114,9 @@ const SignUp = () => {
 					onChange={(e) => setConfirmPassword(e.target.value)}
 				/>
 
-				{error && <p className="text-[#786647] mt-2 text-xs sm:text-sm">{error}</p>}
+				<div className="h-4">
+					{error && <p className="text-[#786647] mt-2 text-xs sm:text-sm">{error}</p>}
+				</div>
 
 				<button type="submit" className="mt-4">
 					{t('sign_up')}
