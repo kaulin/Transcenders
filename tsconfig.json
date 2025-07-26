@@ -35,5 +35,5 @@
     { "path": "./services/user-service" },
     { "path": "./services/score-service" }
   ],
-  "exclude": ["**/node_modules"]
+  "exclude": ["**/node_modules", "web", "scripts"]
 }

@@ -105,22 +105,68 @@ deps-health:
 		$(MAKE) audit-project
 
 ################################################################################
-# PRODUCTION
+# BUILD & PRODUCTION
 ################################################################################
 
-# Run production container using docker compose (builds if needed)
-prod: stop-prod
-	@echo "Starting production container..."
-	docker compose -f docker-compose.prod.yml up -d
+# Build everything for production
+build:
+		@echo "🔨 Building all packages and services for production..."
+		npm run build
 
-# Show production logs
-logs-prod:
-	docker logs -f transcenders-prod
+# Clean all build artifacts
+clean-build:
+		@echo "🧹 Cleaning all build artifacts..."
+		npm run clean
 
-# Stop production container using docker compose
+# Test production build locally (without Docker)
+test-prod-local: build
+		@echo "🧪 Testing production build locally..."
+		npm run start:all &
+		@echo "Waiting for services to start..."
+		sleep 5
+		@echo "Testing endpoints..."
+		@curl -f http://localhost:3001/ping && echo "✅ User service OK"
+		@curl -f http://localhost:3002/ping && echo "✅ Auth service OK"  
+		@curl -f http://localhost:3003/ping && echo "✅ Score service OK"
+		@pkill -f "node dist/server.js" || true
+
+# Full production workflow test
+prod-workflow: clean-build build test-prod-local
+		@echo "✅ Production workflow complete and tested!"
+
+################################################################################
+# DOCKER PRODUCTION
+################################################################################
+
+# Build production Docker images
+build-prod:
+		@echo "🐳 Building production Docker images..."
+		docker compose -f docker-compose.prod.yml build --parallel
+
+# Start production environment
+prod: build-prod
+		@echo "🚀 Starting production environment..."
+		docker compose -f docker-compose.prod.yml up -d
+
+# Production with logs
+prod-logs:
+		@echo "🚀 Starting production with logs..."
+		docker compose -f docker-compose.prod.yml up
+
+# Stop production
 stop-prod:
-	@echo "Stopping production container..."
-	docker compose -f docker-compose.prod.yml down
+		@echo "🛑 Stopping production..."
+		docker compose -f docker-compose.prod.yml down
+
+# Production logs
+logs-prod:
+		@echo "📋 Production logs..."
+		docker compose -f docker-compose.prod.yml logs -f
+
+# Clean production
+clean-prod:
+		@echo "🧹 Cleaning production..."
+		docker compose -f docker-compose.prod.yml down --rmi all --volumes
 
 ################################################################################
 # CLEAN

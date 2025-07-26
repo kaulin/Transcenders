@@ -3,12 +3,12 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/node_modules', 'web', '**/dist'] },
+  { ignores: ['**/node_modules', 'web', 'scripts', '**/dist'] },
   tseslint.configs.recommended,
 
   {
     files: ['**/*.{ts,tsx}'],
-    extends: [tseslint.configs.recommended, tseslint.configs.stylisticTypeChecked],
+    extends: [tseslint.configs.recommendedTypeChecked, tseslint.configs.stylisticTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,

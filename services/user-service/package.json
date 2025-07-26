@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch --inspect=0.0.0.0:9228 src/server.ts",
-    "build": "tsc",
+    "build:service": "tsc",
     "start": "node dist/server.js",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit"
