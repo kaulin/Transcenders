@@ -6,20 +6,9 @@ all: setup-check dev web-dev
 # SETUP
 ################################################################################
 
-# Force setup
-setup:
-	@echo "Installing dependencies locally"
-	npm ci --include=dev
-	@touch .setup-complete
-
-# Check if setup is needed
+# Use the shared dependency check script for local setup
 setup-check:
-	@if [ ! -d "./node_modules" ] || [ ! -f ".setup-complete" ] || [ "package.json" -nt ".setup-complete" ] || [ "package-lock.json" -nt ".setup-complete" ]; then \
-		echo "Running setup..."; \
-		$(MAKE) setup; \
-	else \
-		echo "✅ Dependencies are up to date"; \
-	fi
+	@./scripts/docker-deps-check.sh
 
 ################################################################################
 # DEVELOPMENT
