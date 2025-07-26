@@ -1,30 +1,34 @@
-# Dependencies
-node_modules
-npm-debug.log*
+# Ignore all node_modules directories
+node_modules/
+**/node_modules/
 
-# Build outputs (we build inside Docker)
-**/dist
-**/build
-**/*.tsbuildinfo
+# Ignore build artifacts
+dist/
+build/
 
-# Development files
-.git
+# Ignore logs
+*.log
+logs/
+
+# Ignore cache directories
+.cache/
+.vite/
+**/.vite/
+
+# Ignore environment files
+.env*
+
+# Ignore git
+.git/
 .gitignore
-README.md
-.env.local
-.env.development.local
 
-# IDE
-.vscode
+# Ignore IDE files
+.vscode/
+.idea/
 
-# OS
-.DS_Store
-Thumbs.db
+# Ignore test coverage
+coverage/
 
-# Docker stuff
-Dockerfile*
-docker-compose*.yml
-.dockerignore
-
-# Development databases
-**/data
+# Ignore temporary files
+*.tmp
+*.temp

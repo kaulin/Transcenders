@@ -114,6 +114,12 @@ dist
 # vitepress cache directory
 **/.vitepress/cache
 
+# Vite cache directory
+**/.vite/
+
+# TypeScript build info
+**/.tmp/
+
 # Docusaurus cache and generated files
 .docusaurus
 
