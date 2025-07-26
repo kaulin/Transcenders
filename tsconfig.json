@@ -34,5 +34,6 @@
     { "path": "./services/auth-service" },
     { "path": "./services/user-service" },
     { "path": "./services/score-service" }
-  ]
+  ],
+  "exclude": ["**/node_modules"]
 }
