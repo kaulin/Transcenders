@@ -1,23 +1,20 @@
 # Base image
 FROM node:22-alpine AS base
 WORKDIR /workspace
-USER root
 
+# Install SQLite as root
+USER root
 RUN apk add --no-cache sqlite
 
 # Development stage
 FROM base AS development
 
-# Copy all package.json files first
-COPY package.json package-lock.json ./
-COPY services/score-service/package.json ./services/score-service/
-# Copy all the workspace-packages
-COPY packages/ ./packages/
-
-RUN npm ci
-
-#copy all source files
+# Copy source files and set permissions
 COPY services/score-service/ ./services/score-service/
+RUN chown -R node:node /workspace
+
+# Switch to node user
+USER node
 
 WORKDIR /workspace/services/score-service
 

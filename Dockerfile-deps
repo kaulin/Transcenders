@@ -3,22 +3,21 @@
 
 FROM node:22-alpine AS deps-builder
 WORKDIR /workspace
-USER root
 
+# Install build dependencies as root
+USER root
 RUN apk add --no-cache \
     python3 \
     make \
     g++
 
-# Note: package.json and package-lock.json files should be mounted as volumes
-
-# Copy the dependency check script
+# Copy the dependency check script and make it executable
 COPY scripts/docker-deps-check.sh ./scripts/
 RUN chmod +x ./scripts/docker-deps-check.sh
 
-# Create volume mount point
+# Create volume mount point and set permissions
 RUN mkdir -p /workspace/node_modules
-VOLUME ["/workspace/node_modules"]
+RUN mkdir -p /workspace/web/node_modules
 
 # Set environment
 ENV NODE_ENV=development

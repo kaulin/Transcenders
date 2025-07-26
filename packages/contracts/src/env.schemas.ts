@@ -12,6 +12,8 @@ export const envVarSchema = Type.Object({
   HOST: Type.Optional(Type.String({ default: '0.0.0.0' })),
   JWT_ACCESS_SECRET: Type.String(),
   JWT_REFRESH_SECRET: Type.String(),
+  HOST_UID: Type.Number(),
+  HOST_GID: Type.Number(),
 });
 
 export type Env = Static<typeof envVarSchema>;

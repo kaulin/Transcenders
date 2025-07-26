@@ -1,21 +1,41 @@
 # Transcenders Makefile - Docker management commands
 
-all: setup-check dev web-dev
+all: dev web-dev
 
 ################################################################################
 # SETUP
 ################################################################################
 
 # Use the shared dependency check script for local setup
-setup-check:
+setup-check: env-host vite-env
 	@./scripts/docker-deps-check.sh
+	
+ENV_FILE := .env
+env-host:
+	@touch .env
+	@grep -q '^HOST_UID=' $(ENV_FILE) || echo "\nHOST_UID=$$(id -u)" >> $(ENV_FILE)
+	@grep -q '^HOST_GID=' $(ENV_FILE) || echo "\nHOST_GID=$$(id -g)" >> $(ENV_FILE)
+	
+ENV_DIR := env
+SERVICES := $(ENV_DIR)/services.env
+VITE_ENV := $(ENV_DIR)/vite.env
+
+.PHONY: env vite-env
+env:
+	@mkdir -p $(ENV_DIR)
+	@grep -q '^USER_SERVICE_URL=' $(SERVICES) || echo 'USER_SERVICE_URL=http://user-service:3001' >> $(SERVICES)
+	@grep -q '^AUTH_SERVICE_URL=' $(SERVICES) || echo 'AUTH_SERVICE_URL=http://auth-service:3002' >> $(SERVICES)
+	@grep -q '^SCORE_SERVICE_URL=' $(SERVICES) || echo 'SCORE_SERVICE_URL=http://score-service:3003' >> $(SERVICES)
+
+vite-env: env
+	@awk -F= '/^[A-Z_]+=/ {print "VITE_"$$1"="$$2}' $(SERVICES) > $(VITE_ENV)
 
 ################################################################################
 # DEVELOPMENT
 ################################################################################
 
 # Development environment (hot-reloading)
-dev:
+dev: setup-check
 	@echo "Starting development environment..."
 	docker compose up -d
 
@@ -27,11 +47,6 @@ local: setup-check
 	@echo "Score Service at: http://localhost:3003"
 	@echo "Frontend at: http://localhost:5173"
 	npm run dev:all
-
-# Start development with visible logs
-dev-logs: stop-dev
-	@echo "Starting development environment with logs..."
-	docker compose up
 
 # Show logs
 logs:
@@ -51,7 +66,7 @@ restart: stop-dev dev
 ################################################################################
 
 # Start web development server (local)
-web-dev: setup-check
+web-dev:
 	@echo "Starting web development server..."
 	npm run dev --workspace=web
 	
@@ -137,11 +152,6 @@ prod: build-prod
 		@echo "🚀 Starting production environment..."
 		docker compose -f docker-compose.prod.yml up -d
 
-# Production with logs
-prod-logs:
-		@echo "🚀 Starting production with logs..."
-		docker compose -f docker-compose.prod.yml up
-
 # Stop production
 stop-prod:
 		@echo "🛑 Stopping production..."
@@ -169,7 +179,7 @@ stop: stop-dev stop-prod
 rebuild: stop clean
 	@echo "Completely rebuilding development environment..."
 	docker compose build --no-cache
-	docker compose up -d
+	$(MAKE) dev
 
 # Clean everything (volumes, images)
 clean: stop
@@ -182,6 +192,11 @@ cleandb:
 	rm -rf ./services/user-service/data
 	rm -rf ./services/auth-service/data
 	rm -rf ./services/score-service/data
+	
+clean-local:
+	@echo cleaning all databases
+	rm -rf node_modules
+	rm -rf web/node_modules
 
 help:
 		@echo ""
@@ -193,7 +208,6 @@ help:
 		@echo "Development:"
 		@echo "  make, make all         Start development environment (default)"
 		@echo "  make dev               Start development (skip setup check)"
-		@echo "  make dev-logs          Start development with visible logs"
 		@echo "  make local             Run everything locally (no containers)"
 		@echo "  make logs              Show development logs"
 		@echo "  make restart           Restart development environment"
@@ -202,6 +216,7 @@ help:
 		@echo "  make audit-project     Comprehensive audit with knip (unused files/exports)"
 		@echo "  make check-outdated    Check for outdated dependencies"
 		@echo "  make update-deps       Update dependencies interactively"
+		@echo "  make update-docker-deps Update Docker shared dependencies"
 		@echo "  make clean-install     Clean install all dependencies"
 		@echo "  make deps-health       Run full dependency health check"
 		@echo ""
@@ -218,4 +233,4 @@ help:
 		@echo ""
 		@echo "==========================================="
 
-.PHONY: all dev dev-logs stop-prod stop-dev prod stop restart clean logs logs-prod help rebuild setup setup-check local web-dev audit-project check-outdated update-deps clean-install deps-health
+.PHONY: all dev stop-prod stop-dev prod stop restart clean logs logs-prod help rebuild setup setup-check local web-dev audit-project check-outdated update-deps update-docker-deps clean-install deps-health envs
