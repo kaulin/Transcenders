@@ -65,6 +65,44 @@ restart: stop-dev dev
 web-dev: setup-check
 	@echo "Starting web development server..."
 	npm run dev --workspace=web
+	
+################################################################################
+# DEPENDENCY MANAGEMENT
+################################################################################
+
+# Find unused files, dependencies, and exports using knip
+audit-project:
+		@echo "🔍 Running comprehensive project audit with knip..."
+		@echo "   (Finds unused files, dependencies, exports, and dead code)"
+		npx knip
+
+# Check for outdated dependencies across all workspaces
+check-outdated:
+		@echo "📅 Checking for outdated dependencies..."
+		@echo "   (Shows which packages have newer versions available)"
+		npm outdated --workspaces
+
+# Update all dependencies to latest versions (interactive)
+update-deps:
+		@echo "⬆️  Updating dependencies interactively..."
+		@echo "   (Uses npm-check-updates to update package.json files)"
+		@echo "   (Run this carefully - test after updating!)"
+		npx npm-check-updates --interactive --workspaces
+
+# Clean install dependencies (removes node_modules and reinstalls)
+clean-install:
+		@echo "🧹 Clean installing all dependencies..."
+		@echo "   (Removes node_modules and package-lock.json, then reinstalls)"
+		rm -rf node_modules package-lock.json
+		npm install
+
+# Full dependency health check
+deps-health:
+		@echo "🏥 Running full dependency health check..."
+		@echo ""
+		$(MAKE) check-outdated
+		@echo ""
+		$(MAKE) audit-project
 
 ################################################################################
 # PRODUCTION
@@ -109,42 +147,40 @@ cleandb:
 	rm -rf ./services/user-service/data
 	rm -rf ./services/auth-service/data
 	rm -rf ./services/score-service/data
-	
-cleanlocal: 
-	rm -rf node_modules
-	rm -rf package-lock.json
-	rm -rf .setup-complete
-
-################################################################################
-# HELP
-################################################################################
 
 help:
-	@echo ""
-	@echo "========== Transcenders Makefile =========="
-	@echo ""
-	@echo "Setup:"
-	@echo "  make setup             Force install dependencies"
-	@echo ""
-	@echo "Development:"
-	@echo "  make, make all         Start development environment (default)"
-	@echo "  make dev               Start development (skip setup check)"
-	@echo "  make dev-logs          Start development with visible logs"
-	@echo "  make local             Run everything locally (no containers)"
-	@echo "  make logs              Show development logs"
-	@echo "  make restart           Restart development environment"
-	@echo ""
-	@echo "Production:"
-	@echo "  make prod              Start production container"
-	@echo "  make logs-prod         Show production logs"
-	@echo ""
-	@echo "Utilities:"
-	@echo "  make stop              Stop all containers"
-	@echo "  make rebuild           Rebuild dev environment (no cache)"
-	@echo "  make clean             Remove all containers and images"
-	@echo "  make cleandb           remove all databases"
-	@echo "  make help              Show this help message"
-	@echo ""
-	@echo "==========================================="
+		@echo ""
+		@echo "========== Transcenders Makefile =========="
+		@echo ""
+		@echo "Setup:"
+		@echo "  make setup             Force install dependencies"
+		@echo ""
+		@echo "Development:"
+		@echo "  make, make all         Start development environment (default)"
+		@echo "  make dev               Start development (skip setup check)"
+		@echo "  make dev-logs          Start development with visible logs"
+		@echo "  make local             Run everything locally (no containers)"
+		@echo "  make logs              Show development logs"
+		@echo "  make restart           Restart development environment"
+		@echo ""
+		@echo "Dependency Management:"
+		@echo "  make audit-project     Comprehensive audit with knip (unused files/exports)"
+		@echo "  make check-outdated    Check for outdated dependencies"
+		@echo "  make update-deps       Update dependencies interactively"
+		@echo "  make clean-install     Clean install all dependencies"
+		@echo "  make deps-health       Run full dependency health check"
+		@echo ""
+		@echo "Production:"
+		@echo "  make prod              Start production container"
+		@echo "  make logs-prod         Show production logs"
+		@echo ""
+		@echo "Utilities:"
+		@echo "  make stop              Stop all containers"
+		@echo "  make rebuild           Rebuild dev environment (no cache)"
+		@echo "  make clean             Remove all containers and images"
+		@echo "  make cleandb           Remove all databases"
+		@echo "  make help              Show this help message"
+		@echo ""
+		@echo "==========================================="
 
-.PHONY: all dev dev-logs stop-prod stop-dev prod stop restart clean logs logs-prod help rebuild setup setup-check local web-setup web-dev
+.PHONY: all dev dev-logs stop-prod stop-dev prod stop restart clean logs logs-prod help rebuild setup setup-check local web-dev audit-project check-outdated update-deps clean-install deps-health

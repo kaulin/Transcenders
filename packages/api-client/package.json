@@ -13,8 +13,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@transcenders/contracts": "^1.0.0",
-    "@sinclair/typebox": "^0.34.33"
+    "@transcenders/contracts": "^1.0.0"
   },
   "devDependencies": {
     "typescript": "^5.8.3"
