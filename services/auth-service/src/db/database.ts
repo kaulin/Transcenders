@@ -1,4 +1,5 @@
 import { DatabaseHelper } from '@transcenders/contracts';
+import { ENV } from '@transcenders/server-utils';
 import 'dotenv/config';
 import fs from 'fs/promises';
 import path from 'path';
@@ -13,7 +14,7 @@ function getDatabaseConfig(): DatabaseConfig {
   const moduleRoot = path.resolve(import.meta.dirname, '../..');
   const filename = path.resolve(moduleRoot, './data/auth.db');
   const fileDir = path.resolve(moduleRoot, './data/');
-  const verbose = process.env.NODE_ENV === 'development';
+  const verbose = ENV.NODE_ENV === 'development';
 
   console.log(`User-module path: ${moduleRoot}`);
   console.log(`Database path: ${filename}`);

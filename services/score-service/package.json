@@ -12,6 +12,7 @@
   "dependencies": {
     "@transcenders/contracts": "^1.0.0",
     "@transcenders/fastify-server": "^1.0.0",
+    "@transcenders/server-utils": "^1.0.0",
     "dotenv": "^17.2.1",
     "fastify": "^5.4.0",
     "sql-template-strings": "^2.2.2",

@@ -5,6 +5,7 @@ import path from 'path';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { DatabaseConfig, DatabaseInitResult } from '../types/database.types';
+import { ENV } from '@transcenders/server-utils';
 
 console.log('Loading database.ts file...');
 let db: Database | null = null;
@@ -13,7 +14,7 @@ function getDatabaseConfig(): DatabaseConfig {
   const moduleRoot = path.resolve(import.meta.dirname, '../..');
   const filename = path.resolve(moduleRoot, './data/scores.db');
   const fileDir = path.resolve(moduleRoot, './data/');
-  const verbose = process.env.NODE_ENV === 'development';
+  const verbose = ENV.NODE_ENV === 'development';
 
   console.log(`Score-module path: ${moduleRoot}`);
   console.log(`Database path: ${filename}`);

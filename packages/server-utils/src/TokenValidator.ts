@@ -9,6 +9,7 @@ import {
 } from '@transcenders/contracts';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { ENV } from './env.hook';
 
 export class TokenValidator {
   static verifyAccessToken(token: string, expectedUser?: number): JWTPayload {
@@ -106,7 +107,7 @@ export class TokenValidator {
   }
 
   static getAccessSecret(): string {
-    const secret = process.env.JWT_ACCESS_SECRET ?? 'access';
+    const secret = ENV.JWT_ACCESS_SECRET ?? 'access';
     if (!secret) {
       throw new Error('JWT_ACCESS_SECRET environment variable is required');
     }
@@ -114,7 +115,7 @@ export class TokenValidator {
   }
 
   static getRefreshSecret(): string {
-    const secret = process.env.JWT_REFRESH_SECRET ?? 'refresh';
+    const secret = ENV.JWT_REFRESH_SECRET ?? 'refresh';
     if (!secret) {
       throw new Error('JWT_REFRESH_SECRET environment variable is required');
     }

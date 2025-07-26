@@ -1,4 +1,5 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { ENV } from '@transcenders/server-utils';
 import 'dotenv/config';
 import Fastify, { FastifyInstance } from 'fastify';
 import { registerDevelopmentHooks } from '../hooks/development.hooks';
@@ -15,7 +16,7 @@ export async function createFastifyServer(
     logger: {
       level: 'info',
       transport:
-        process.env.NODE_ENV === 'development'
+        ENV.NODE_ENV === 'development'
           ? {
               target: 'pino-pretty',
               options: {
