@@ -9,8 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf dist"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@transcenders/contracts": "^1.0.0"

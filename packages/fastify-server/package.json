@@ -9,8 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf dist"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.1",
