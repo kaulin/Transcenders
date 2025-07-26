@@ -185,13 +185,9 @@ export class AvatarService {
         requestOptions,
       );
 
-      if (!response.ok) {
-        throw new Error(`Cat API error: ${response.status}`);
-      }
-
       const catData = await response.json();
 
-      if (!catData || catData.length === 0) {
+      if (!catData || !Array.isArray(catData) || catData.length === 0) {
         throw new Error('No cat images found');
       }
 

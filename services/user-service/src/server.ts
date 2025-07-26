@@ -1,6 +1,6 @@
 import multipart from '@fastify/multipart';
 import staticFiles from '@fastify/static';
-import { ApiResponse, AvatarConfig, UserConfig } from '@transcenders/contracts';
+import { ApiResponseSchema, AvatarConfig, UserConfig } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import path from 'path';
 import { registerAdminRoutes } from './routes/admin.routes';
@@ -79,7 +79,7 @@ async function start() {
 
   await AvatarService.initializeAvatarDirectories();
 
-  fastify.addSchema(ApiResponse);
+  fastify.addSchema(ApiResponseSchema);
   await registerAdminRoutes(fastify);
   await registerUserRoutes(fastify);
   await registerFriendshipRoutes(fastify);
