@@ -3,8 +3,31 @@ import type { ResizeOptions, WebpOptions } from 'sharp';
 // paths based on project root I guess
 // #TODO un-hardcode all paths, and base them from root
 // #TODO also probably simplify the datapaths to ./data or /db or whatever and ./uploads
-export const PathConfig = {
-  UPLOADS_PATH: './uploads',
+
+// Auto-generate config from service key
+const SERVICE_KEYS = ['AUTH', 'USER', 'SCORE', 'GATEWAY'] as const;
+export type ServiceConfigType = (typeof ServiceConfig)[keyof typeof ServiceConfig];
+
+// Auto-generate the entire config
+export const ServiceConfig = {
+  ...Object.fromEntries(
+    SERVICE_KEYS.map((key) => [
+      key,
+      {
+        serviceName: `${key.toLowerCase()}-service`,
+        dbFile: `${key.toLowerCase()}.db`,
+        initSql: 'init.sql' as const,
+        baseDir: './data' as const,
+      },
+    ]),
+  ),
+} as {
+  [K in (typeof SERVICE_KEYS)[number]]: {
+    serviceName: `${Lowercase<K>}-service`;
+    dbFile: `${Lowercase<K>}.db`;
+    initSql: 'init.sql';
+    baseDir: './data';
+  };
 };
 
 export const UserConfig = {
@@ -18,6 +41,10 @@ export const AuthConfig = {
 } as const;
 
 export const AvatarConfig = {
+  STATIC_PREFIX: '/media/',
+  AVATARS: '/media/avatars/',
+  DEFAULT_AVATARS: '/media/defaults/',
+
   MAX_FILE_SIZE: 10 * 1024 * 1024, //10 mb
 
   // Dimensions
