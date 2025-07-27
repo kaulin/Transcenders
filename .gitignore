@@ -12,9 +12,10 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Runtime data
 services/user-service/data/
-services/user-service/uploads/avatars/
 services/auth-service/data/
 services/score-service/data/
+**/database
+*/uploads/avatars/
 pids
 *.pid
 *.seed

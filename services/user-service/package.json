@@ -6,8 +6,7 @@
     "dev": "tsx watch --inspect=0.0.0.0:9228 src/server.ts",
     "build:service": "tsc",
     "start": "node dist/server.js",
-    "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit"
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@fastify/multipart": "^9.0.3",

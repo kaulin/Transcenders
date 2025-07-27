@@ -6,8 +6,7 @@
     "dev": "tsx watch --inspect=0.0.0.0:9229 src/server.ts",
     "build:service": "tsc",
     "start": "node dist/server.js",
-    "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit"
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@transcenders/contracts": "^1.0.0",

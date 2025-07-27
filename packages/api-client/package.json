@@ -8,9 +8,7 @@
   "exports": {
     ".": "./src/index.ts"
   },
-  "scripts": {
-    "type-check": "tsc --noEmit"
-  },
+  "scripts": {},
   "dependencies": {
     "@transcenders/contracts": "^1.0.0"
   },

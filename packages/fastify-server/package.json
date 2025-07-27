@@ -8,9 +8,7 @@
   "exports": {
     ".": "./src/index.ts"
   },
-  "scripts": {
-    "type-check": "tsc --noEmit"
-  },
+  "scripts": {},
   "dependencies": {
     "@fastify/cors": "^11.0.1",
     "@fastify/swagger": "^9.5.1",

@@ -201,6 +201,7 @@ cleandb:
 	rm -rf ./services/user-service/data
 	rm -rf ./services/auth-service/data
 	rm -rf ./services/score-service/data
+	rm -rf ./database
 	
 clean-node:
 	@echo cleaning all node_modules
