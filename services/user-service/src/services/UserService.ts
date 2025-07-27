@@ -11,10 +11,9 @@ import {
   UpdateUserRequest,
   User,
 } from '@transcenders/contracts';
-import { QueryBuilder } from '@transcenders/server-utils';
+import { DatabaseManager, QueryBuilder } from '@transcenders/server-utils';
 import SQL from 'sql-template-strings';
 import { Database } from 'sqlite';
-import { getDB } from '../db/database';
 
 export class UserService {
   // Private logic methods for internal use
@@ -73,14 +72,14 @@ export class UserService {
 
   // Public API methods using ResultHelper
   static async createUser(userData: CreateUserRequest): Promise<ServiceResult<User>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<User>('create user', db, async (database) => {
       return await this.createUserLogic(database, userData);
     });
   }
 
   static async getUserById(id: number): Promise<ServiceResult<User>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<User>('get user', db, async (database) => {
       const user = await this.getUserByIdLogic(database, id);
       if (!user) {
@@ -91,7 +90,7 @@ export class UserService {
   }
 
   static async getUserByUsername(username: string): Promise<ServiceResult<User>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<User>('get user by username', db, async (database) => {
       const sql = SQL`
         SELECT * FROM users WHERE username = ${username}
@@ -105,7 +104,7 @@ export class UserService {
   }
 
   static async getUserByEmail(email: string): Promise<ServiceResult<User>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<User>('get user by email', db, async (database) => {
       const sql = SQL`
         SELECT * FROM users WHERE email = ${email}
@@ -119,7 +118,7 @@ export class UserService {
   }
 
   static async getAllUsers(query: GetUsersQuery): Promise<ServiceResult<User[]>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<User[]>('get all users', db, async (database) => {
       const sql = SQL`SELECT * FROM users`;
       if (query.search) {
@@ -136,7 +135,7 @@ export class UserService {
   }
 
   static async checkUserExists(identifier: string): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<BooleanOperationResult>(
       'check user exists',
       db,
@@ -158,7 +157,7 @@ export class UserService {
     id: number,
     updates: Partial<UpdateUserRequest>,
   ): Promise<ServiceResult<User>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<User>('update user', db, async (database) => {
       const user = await this.updateUserLogic(database, id, updates);
       if (!user) {
@@ -169,7 +168,7 @@ export class UserService {
   }
 
   static async deleteUser(userId: number): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeTransaction<BooleanOperationResult>(
       'delete user',
       db,

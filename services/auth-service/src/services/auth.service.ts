@@ -19,12 +19,16 @@ import {
   User,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
-import { DeviceUtils, QueryBuilder, TokenValidator } from '@transcenders/server-utils';
+import {
+  DatabaseManager,
+  DeviceUtils,
+  QueryBuilder,
+  TokenValidator,
+} from '@transcenders/server-utils';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import SQL from 'sql-template-strings';
 import { Database } from 'sqlite';
-import { getAuthDB } from '../db/database';
 
 export class AuthService {
   private static async insertCredentialsLogic(
@@ -121,7 +125,7 @@ export class AuthService {
       username: registration.username,
       email: registration.email,
     };
-    const db = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeTransaction<BooleanOperationResult>(
       'register user',
       db,
@@ -178,7 +182,7 @@ export class AuthService {
   }
 
   static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
-    const db: Database = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeTransaction<AuthData>(
       'authenticate user',
       db,
@@ -241,7 +245,7 @@ export class AuthService {
     userId: number,
     refreshToken: string,
   ): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeQuery<BooleanOperationResult>(
       'logout user',
       db,
@@ -263,7 +267,7 @@ export class AuthService {
     refreshToken: string,
     currentDeviceInfo: DeviceInfo,
   ): Promise<ServiceResult<AuthData>> {
-    const db = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeQuery<AuthData>(
       'refresh access token',
       db,
@@ -304,7 +308,7 @@ export class AuthService {
     oldPassword: string,
     newPassword: string,
   ): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeQuery<BooleanOperationResult>(
       'change password',
       db,
@@ -364,7 +368,7 @@ export class AuthService {
   }
 
   static async deleteCredentials(userId: number): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeQuery<BooleanOperationResult>(
       'delete user credentials',
       db,

@@ -1,4 +1,5 @@
 import type { ResizeOptions, WebpOptions } from 'sharp';
+import { getEnvVar } from './utils/getEnvVar';
 
 // paths based on project root I guess
 // #TODO un-hardcode all paths, and base them from root
@@ -17,7 +18,7 @@ export const ServiceConfig = {
         serviceName: `${key.toLowerCase()}-service`,
         dbFile: `${key.toLowerCase()}.db`,
         initSql: 'init.sql' as const,
-        baseDir: './data' as const,
+        baseDir: getEnvVar('OVERRIDE_DATABASE_DIR', '') || ('./database' as const),
       },
     ]),
   ),
@@ -26,7 +27,7 @@ export const ServiceConfig = {
     serviceName: `${Lowercase<K>}-service`;
     dbFile: `${Lowercase<K>}.db`;
     initSql: 'init.sql';
-    baseDir: './data';
+    baseDir: './database';
   };
 };
 
