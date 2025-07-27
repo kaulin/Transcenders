@@ -16,6 +16,11 @@ export type ServiceKey = keyof typeof ServiceConfig;
 export class DatabaseManager {
   private static instances = new Map<ServiceKey, DatabaseManager>();
 
+  /** Clear all instances (useful for development restarts) */
+  static clearInstances(): void {
+    this.instances.clear();
+  }
+
   /** Get (or create) a manager for a given service key */
   static for(service: ServiceKey): DatabaseManager {
     let inst = this.instances.get(service);

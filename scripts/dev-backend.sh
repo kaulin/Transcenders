@@ -3,7 +3,6 @@ set -euo pipefail
 trap "kill 0" SIGINT SIGTERM EXIT
 
 concurrently \
-  --kill-others \
   --graceful-kill \
   --signal SIGTERM \
   --names 'USER,AUTH,SCORE' \

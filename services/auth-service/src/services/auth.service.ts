@@ -195,6 +195,7 @@ export class AuthService {
           );
         }
         const userData = apiResponse.data as User;
+        const test = process.env;
 
         // get the matching user credentials entry
         const sql = SQL`

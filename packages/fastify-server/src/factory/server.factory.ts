@@ -5,6 +5,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import { registerDevelopmentHooks } from '../hooks/development.hooks';
 import { registerErrorHandler } from '../hooks/error.hook';
 import { registerCors } from '../plugins/cors.plugin';
+import { setupGracefulShutdown } from '../plugins/shutdown-plugin';
 import { registerSwagger } from '../plugins/swagger.plugin';
 import { ServerConfig, SwaggerConfig } from '../types/server.config';
 
@@ -33,11 +34,12 @@ export async function createFastifyServer(
     },
   }).withTypeProvider<TypeBoxTypeProvider>();
 
-  // Register plugins in order
   registerErrorHandler(fastify);
+  // Register plugins in order
+  await setupGracefulShutdown(fastify, config);
   await registerCors(fastify);
-  registerDevelopmentHooks(fastify);
   await registerSwagger(fastify, config, swaggerConfig);
+  registerDevelopmentHooks(fastify);
 
   return fastify;
 }
@@ -45,7 +47,7 @@ export async function createFastifyServer(
 export async function startServer(fastify: FastifyInstance, config: ServerConfig): Promise<void> {
   try {
     await fastify.listen({
-      port: config.port ?? 3000,
+      port: config.port,
       host: config.host ?? '0.0.0.0',
     });
   } catch (err) {
