@@ -1,5 +1,12 @@
 import type { ResizeOptions, WebpOptions } from 'sharp';
 
+// paths based on project root I guess
+// #TODO un-hardcode all paths, and base them from root
+// #TODO also probably simplify the datapaths to ./data or /db or whatever and ./uploads
+export const PathConfig = {
+  UPLOADS_PATH: './uploads',
+};
+
 export const UserConfig = {
   OFFLINE_TIMEOUT_MINUTES: 0,
   CLEANUP_INTERVAL_MINUTES: 1,

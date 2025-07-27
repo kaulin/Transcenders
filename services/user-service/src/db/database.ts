@@ -8,6 +8,7 @@ import sqlite3 from 'sqlite3';
 import { DatabaseConfig, DatabaseInitResult } from '../types/database.types';
 
 console.log('Loading database.ts file...');
+// #TODO refactor these ugly database files
 let db: Database | null = null;
 
 function getDatabaseConfig(): DatabaseConfig {
@@ -51,9 +52,9 @@ async function initDB(config: DatabaseConfig): Promise<DatabaseInitResult> {
     console.log('Database connection opened');
 
     try {
-      await fs.chmod(config.filename, 0o666);
+      await fs.chown(config.filename, ENV.HOST_UID, ENV.HOST_GID);
       console.log('Database file permissions set');
-      await fs.chmod(config.fileDir, 0o777);
+      await fs.chown(config.fileDir, ENV.HOST_UID, ENV.HOST_GID);
       console.log('Database dir permissions set');
     } catch (error: any) {
       console.warn('Could not set database permissions:', error.message);
