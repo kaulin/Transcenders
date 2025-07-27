@@ -45,11 +45,12 @@ check_deps_needed() {
         return 0
     fi
     
-    # Check if any workspace package.json files are newer than marker
-    if find packages services web -name "package.json" -newer "${DEPS_COMPLETE_FILE}" 2>/dev/null | grep -q .; then
-        echo "📦 Workspace package.json files are newer than marker - installation needed"
-        return 0
-    fi
+    for pkg_file in packages/*/package.json services/*/package.json web/package.json; do
+        if [ -f "${pkg_file}" ] && [ "${pkg_file}" -nt "${DEPS_COMPLETE_FILE}" ]; then
+            echo "📦 Workspace package.json file ${pkg_file} is newer than marker - installation needed"
+            return 0
+        fi
+    done
     
     echo "✅ Dependencies are up to date (using cache)"
     return 1
