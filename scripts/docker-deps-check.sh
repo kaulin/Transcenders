@@ -59,6 +59,7 @@ check_deps_needed() {
 # Function to install dependencies
 install_dependencies() {
     echo "📦 Installing dependencies..."
+    rm -rf "${DEPS_COMPLETE_FILE}"
     npm ci --include=dev
     # Create completion marker with current timestamp
     touch "${DEPS_COMPLETE_FILE}"

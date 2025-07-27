@@ -181,9 +181,14 @@ rebuild: stop clean
 	docker compose build --no-cache
 	$(MAKE) dev
 
-# Clean everything (volumes, images)
+# Clean everything (images)
 clean: stop
-	@echo "Cleaning all Docker resources..."
+	@echo "Cleaning Docker resources... images"
+	docker compose down --remove-orphans --rmi all
+	-docker system prune -f
+	
+clean-volumes: stop
+	@echo "Cleaning Docker resources... volumes"
 	docker compose down -v --remove-orphans --rmi all
 	-docker system prune -f
 
