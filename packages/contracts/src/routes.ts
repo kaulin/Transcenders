@@ -1,12 +1,9 @@
-import { ENV } from '@transcenders/server-utils';
+import { getEnvVar } from './utils/getEnvVar';
 
 export const SERVICE_URLS = {
-  USER:
-    (typeof process !== 'undefined' ? ENV.USER_SERVICE_URL : undefined) ?? 'http://localhost:3001',
-  AUTH:
-    (typeof process !== 'undefined' ? ENV.AUTH_SERVICE_URL : undefined) ?? 'http://localhost:3002',
-  SCORE:
-    (typeof process !== 'undefined' ? ENV.SCORE_SERVICE_URL : undefined) ?? 'http://localhost:3003',
+  USER: getEnvVar('USER_SERVICE_URL', 'http://localhost:3001'),
+  AUTH: getEnvVar('AUTH_SERVICE_URL', 'http://localhost:3002'),
+  SCORE: getEnvVar('SCORE_SERVICE_URL', 'http://localhost:3003'),
 } as const;
 
 export const USER_ROUTES = {
