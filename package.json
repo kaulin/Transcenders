@@ -24,7 +24,7 @@
     "start:auth": "npm run start --workspace=auth-service",
     "start:score": "npm run start --workspace=score-service",
     "start:all": "concurrently --kill-others --names 'USER,AUTH,SCORE' --prefix-colors 'auto' 'npm run start:user' 'npm run start:auth' 'npm run start:score'",
-    "test": "tsx scripts/tests.ts",
+    "test": "dotenv -e .env -e env/services-local.env -e env/secrets.env tsx scripts/tests.ts",
     "api-client-test": "tsx scripts/api-client-test.ts",
     "reglogin": "tsx scripts/reglogin.ts",
     "lint": "eslint .",
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
+    "dotenv-cli": "^9.0.0",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",

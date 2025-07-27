@@ -18,6 +18,7 @@ env-host:
 	
 ENV_DIR := env
 SERVICES := $(ENV_DIR)/services.env
+SERVICES_LOCAL := $(ENV_DIR)/services-local.env
 VITE_ENV := $(ENV_DIR)/vite.env
 
 .PHONY: env vite-env
@@ -26,6 +27,9 @@ env:
 	@grep -q '^USER_SERVICE_URL=' $(SERVICES) || echo 'USER_SERVICE_URL=http://user-service:3001' >> $(SERVICES)
 	@grep -q '^AUTH_SERVICE_URL=' $(SERVICES) || echo 'AUTH_SERVICE_URL=http://auth-service:3002' >> $(SERVICES)
 	@grep -q '^SCORE_SERVICE_URL=' $(SERVICES) || echo 'SCORE_SERVICE_URL=http://score-service:3003' >> $(SERVICES)
+	@grep -q '^USER_SERVICE_URL=' $(SERVICES_LOCAL) || echo 'USER_SERVICE_URL=http://localhost:3001' >> $(SERVICES_LOCAL)
+	@grep -q '^AUTH_SERVICE_URL=' $(SERVICES_LOCAL) || echo 'AUTH_SERVICE_URL=http://localhost:3002' >> $(SERVICES_LOCAL)
+	@grep -q '^SCORE_SERVICE_URL=' $(SERVICES_LOCAL) || echo 'SCORE_SERVICE_URL=http://localhost:3003' >> $(SERVICES_LOCAL)
 
 vite-env: env
 	@awk -F= '/^[A-Z_]+=/ {print "VITE_"$$1"="$$2}' $(SERVICES) > $(VITE_ENV)
@@ -198,8 +202,8 @@ cleandb:
 	rm -rf ./services/auth-service/data
 	rm -rf ./services/score-service/data
 	
-clean-local:
-	@echo cleaning all databases
+clean-node:
+	@echo cleaning all node_modules
 	rm -rf node_modules
 	rm -rf web/node_modules
 
