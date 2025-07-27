@@ -18,6 +18,7 @@
     "@transcenders/server-utils": "^1.0.0",
     "dotenv": "^17.2.1",
     "fastify": "^5.4.0",
+    "fastify-graceful-shutdown": "^4.0.1",
     "pino-pretty": "^13.0.0"
   },
   "devDependencies": {
