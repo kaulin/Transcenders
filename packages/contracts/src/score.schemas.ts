@@ -1,5 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
-import { TimestampField, UserIdField } from './user.schemas';
+import { TimestampField, UserIdField } from './user.schemas.js';
 
 /**
  * ENTITY SCHEMAS

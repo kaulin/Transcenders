@@ -9,7 +9,7 @@ import {
 } from '@transcenders/contracts';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { ENV } from './env.hook';
+import { ENV } from './env.hook.js';
 
 export class TokenValidator {
   static verifyAccessToken(token: string, expectedUser?: number): JWTPayload {

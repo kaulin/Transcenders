@@ -1,5 +1,5 @@
 import type { ResizeOptions, WebpOptions } from 'sharp';
-import { getEnvVar } from './utils/getEnvVar';
+import { getEnvVar } from './utils/getEnvVar.js';
 
 // paths based on project root I guess
 // #TODO un-hardcode all paths, and base them from root

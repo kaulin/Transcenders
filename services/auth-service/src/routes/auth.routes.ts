@@ -9,7 +9,7 @@ import {
   userByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
-import { AuthController } from '../controllers/auth.controller';
+import { AuthController } from '../controllers/auth.controller.js';
 
 // #TODO api-client helpers for setting up refresh token cycling
 // #TODO google sign in

@@ -27,7 +27,7 @@ import {
 } from '@transcenders/server-utils';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import SQL from 'sql-template-strings';
+import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
 
 export class AuthService {

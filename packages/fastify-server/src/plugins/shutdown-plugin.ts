@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import gracefulShutdown from 'fastify-graceful-shutdown';
-import { ServerConfig } from '../types/server.config';
+import { ServerConfig } from '../types/server.config.js';
 
 export async function setupGracefulShutdown(
   fastify: FastifyInstance,

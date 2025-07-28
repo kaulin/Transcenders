@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
-import { ENV } from './env.hook';
+import { ENV } from './env.hook.js';
 
 export type ServiceKey = keyof typeof ServiceConfig;
 

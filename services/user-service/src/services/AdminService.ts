@@ -6,7 +6,7 @@ import {
   UserConfig,
 } from '@transcenders/contracts';
 import { DatabaseManager } from '@transcenders/server-utils';
-import SQL from 'sql-template-strings';
+import { SQL } from 'sql-template-strings';
 
 export class AdminService {
   static async updateUserActivity(id: number): Promise<ServiceResult<BooleanOperationResult>> {

@@ -1,5 +1,5 @@
 import { Value } from '@sinclair/typebox/value';
-import { JWTPayload, JWTPayloadSchema } from '../auth.schemas';
+import { JWTPayload, JWTPayloadSchema } from '../auth.schemas.js';
 
 export function decodeToken(token: string): JWTPayload {
   const tokenSplit = token.split('.');

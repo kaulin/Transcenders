@@ -1,4 +1,4 @@
-import { BooleanOperationResult } from '../user.schemas';
+import { BooleanOperationResult } from '../user.schemas.js';
 
 export class BooleanResultHelper {
   static success(message: string): BooleanOperationResult {

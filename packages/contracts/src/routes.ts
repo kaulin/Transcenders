@@ -1,4 +1,4 @@
-import { getEnvVar } from './utils/getEnvVar';
+import { getEnvVar } from './utils/getEnvVar.js';
 
 export const SERVICE_URLS = {
   USER: getEnvVar('USER_SERVICE_URL', 'http://localhost:3001'),

@@ -9,7 +9,7 @@ import {
   User,
 } from '@transcenders/contracts';
 import { DatabaseManager } from '@transcenders/server-utils';
-import SQL from 'sql-template-strings';
+import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
 
 export class FriendshipService {

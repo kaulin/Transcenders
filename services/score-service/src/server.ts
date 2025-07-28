@@ -1,7 +1,7 @@
 import { ApiResponseSchema } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import { DatabaseManager } from '@transcenders/server-utils';
-import { registerScoreRoutes } from './routes/score.routes';
+import { registerScoreRoutes } from './routes/score.routes.js';
 
 const config: ServerConfig = {
   port: 3003,

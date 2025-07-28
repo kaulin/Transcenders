@@ -2,7 +2,7 @@ import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import { ENV } from '@transcenders/server-utils';
 import { FastifyInstance } from 'fastify';
-import { ServerConfig, SwaggerConfig } from '../types/server.config';
+import { ServerConfig, SwaggerConfig } from '../types/server.config.js';
 
 export async function registerSwagger(
   fastify: FastifyInstance,

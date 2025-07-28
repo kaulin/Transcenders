@@ -1,4 +1,4 @@
-import { ServiceError } from './ServiceError';
+import { ServiceError } from './ServiceError.js';
 /**
  * Internally used ServiceResult interface
  */

@@ -4,11 +4,11 @@ import { ApiResponseSchema, AvatarConfig } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import { DatabaseManager } from '@transcenders/server-utils';
 import path from 'path';
-import { registerAdminRoutes } from './routes/admin.routes';
-import { registerAvatarRoutes } from './routes/avatar.routes';
-import { registerFriendshipRoutes } from './routes/friend.routes';
-import { registerUserRoutes } from './routes/user.routes';
-import { AvatarService } from './services/AvatarService';
+import { registerAdminRoutes } from './routes/admin.routes.js';
+import { registerAvatarRoutes } from './routes/avatar.routes.js';
+import { registerFriendshipRoutes } from './routes/friend.routes.js';
+import { registerUserRoutes } from './routes/user.routes.js';
+import { AvatarService } from './services/AvatarService.js';
 
 async function start() {
   const config: ServerConfig = {
