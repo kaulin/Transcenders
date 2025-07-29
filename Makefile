@@ -7,44 +7,38 @@ all: dev web-dev
 ################################################################################
 
 # Use the shared dependency check script for local setup
-setup-check: env-host vite-env
+setup-check:
 	@./scripts/docker-deps-check.sh
-	
-ENV_FILE := .env
-env-host:
-	@touch .env
-	@grep -q '^HOST_UID=' $(ENV_FILE) || echo "\nHOST_UID=$$(id -u)" >> $(ENV_FILE)
-	@grep -q '^HOST_GID=' $(ENV_FILE) || echo "\nHOST_GID=$$(id -g)" >> $(ENV_FILE)
-	
-ENV_DIR := env
-SERVICES := $(ENV_DIR)/services.env
-SERVICES_LOCAL := $(ENV_DIR)/services-local.env
-VITE_ENV := $(ENV_DIR)/vite.env
 
-.PHONY: env vite-env
-env:
-	@mkdir -p $(ENV_DIR)
-	@grep -q '^USER_SERVICE_URL=' $(SERVICES) || echo 'USER_SERVICE_URL=http://user-service:3001' >> $(SERVICES)
-	@grep -q '^AUTH_SERVICE_URL=' $(SERVICES) || echo 'AUTH_SERVICE_URL=http://auth-service:3002' >> $(SERVICES)
-	@grep -q '^SCORE_SERVICE_URL=' $(SERVICES) || echo 'SCORE_SERVICE_URL=http://score-service:3003' >> $(SERVICES)
-	@grep -q '^USER_SERVICE_URL=' $(SERVICES_LOCAL) || echo 'USER_SERVICE_URL=http://localhost:3001' >> $(SERVICES_LOCAL)
-	@grep -q '^AUTH_SERVICE_URL=' $(SERVICES_LOCAL) || echo 'AUTH_SERVICE_URL=http://localhost:3002' >> $(SERVICES_LOCAL)
-	@grep -q '^SCORE_SERVICE_URL=' $(SERVICES_LOCAL) || echo 'SCORE_SERVICE_URL=http://localhost:3003' >> $(SERVICES_LOCAL)
+.PHONY: env-local env-docker env-prod
+	
+define set_env_var
+	@sed -i '/^$(1)=/d' .env
+	@sed -i -e '$$a\' .env
+	@echo '$(1)=$(2)' >> .env
+endef
 
-vite-env: env
-	@awk -F= '/^[A-Z_]+=/ {print "VITE_"$$1"="$$2}' $(SERVICES) > $(VITE_ENV)
+
+env-local:
+	@scripts/env-gen.sh local
+
+env-docker:
+	@scripts/env-gen.sh docker
+
+env-prod:
+	@scripts/env-gen.sh production
 
 ################################################################################
 # DEVELOPMENT
 ################################################################################
 
 # Development environment (hot-reloading)
-dev: setup-check
+dev: setup-check env-docker
 	@echo "Starting development environment..."
 	docker compose up -d
 
 # Everything local (for developers who can't use containers)
-local: setup-check
+local: setup-check env-local
 	@echo "Starting backend services locally..."
 	@echo "User Service at: http://localhost:3001"
 	@echo "Auth Service at: http://localhost:3002"

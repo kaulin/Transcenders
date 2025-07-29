@@ -1,6 +1,5 @@
 #!/bin/sh
 # Docker dependency management script with timestamp-based change detection
-# Mirrors Makefile setup-check logic but for Docker shared node_modules volume
 #
 # WORKFLOW:
 # 1. When running in Docker: Manages shared node_modules volume for all services

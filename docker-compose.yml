@@ -5,8 +5,6 @@ x-service-base: &service-base
   depends_on:
     - deps-service
   env_file:
-    - env/services.env
-    - env/secrets.env
     - .env
   volumes:
     - type: bind
@@ -30,13 +28,13 @@ services:
     image: user-service:hive
     ports:
       - '3001:3001'
-      - '9228:9228'
+      - '9227:9227'
     build:
       <<: *service-build
       args:
         SERVICE_NAME: user-service
         SERVICE_PORT: 3001
-        DEBUG_PORT: 9228
+        DEBUG_PORT: 9227
     <<: *service-base
 
   auth-service:
@@ -44,13 +42,13 @@ services:
     image: auth-service:hive
     ports:
       - '3002:3002'
-      - '9227:9227'
+      - '9228:9228'
     build:
       <<: *service-build
       args:
         SERVICE_NAME: auth-service
         SERVICE_PORT: 3002
-        DEBUG_PORT: 9227
+        DEBUG_PORT: 9228
     <<: *service-base
 
   score-service:

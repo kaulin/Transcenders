@@ -3,12 +3,21 @@
   "version": "1.0.0",
   "description": "Helper for setting up fastify server for Transcenders",
   "type": "module",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "development": "./src/index.ts",
+      "typescript": "./src/index.ts",
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
   },
-  "scripts": {},
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
   "dependencies": {
     "@fastify/cors": "^11.0.1",
     "@fastify/swagger": "^9.5.1",
