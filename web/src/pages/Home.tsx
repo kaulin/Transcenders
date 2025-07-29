@@ -12,7 +12,7 @@ const Home = () => {
     const { user } = useUser()
 	const { players, setPlayer } = usePlayers()
 
-	const boxRef = useRef<HTMLDivElement | null>(null)
+	const playerFormRef = useRef<HTMLDivElement | null>(null)
 	const [gameMode, setGameMode] = useState<"match" | "tournament" | null>(null)
 
 	useEffect(() => {
@@ -30,18 +30,20 @@ const Home = () => {
 	const handleGameMode = (mode: "match" | "tournament") => {
 		setGameMode(mode)
 
-		if (window.innerWidth < 1300 && boxRef.current) {
-			boxRef.current.scrollTo({
-				top: boxRef.current.scrollHeight,
-				behavior: 'smooth',
-			})
-		}
+		setTimeout(() => {
+			if (window.innerWidth < 1300 && playerFormRef.current) {
+				playerFormRef.current.scrollIntoView({
+					behavior: 'smooth',
+					block: 'center'
+				})
+			}
+		}, 100)
 	}
 
     return (
 		<div className="relative w-full h-full">
-			<div ref={boxRef} className="box relative bg-[#6e5d41]/10 xl:bg-[#6e5d41]/5">
-				<div className="flex flex-col xl:flex-1 flex-shrink-0 w-full h-full p-10 items-center justify-center text-center xl:bg-transparent backdrop-blur-sm">
+			<div className="box relative bg-[#6e5d41]/10 xl:bg-[#6e5d41]/5">
+				<div className="flex flex-col xl:flex-1 flex-shrink-0 w-full min-h-[1106px] h-full p-10 items-center justify-center text-center xl:bg-transparent backdrop-blur-sm">
 					<h1 className="text-6xl font-fascinate">{t('hello')} {user?.username}</h1>
 					<p className="mb-10 text-xl">{t('welcome')}!</p>
 
@@ -62,9 +64,9 @@ const Home = () => {
 					</div>
 				</div>
 
-				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1048px] w-full h-full items-center justify-center gap-2 backdrop-blur-sm">
+				<div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1106px] w-full h-full items-center justify-center gap-2 backdrop-blur-sm">
 					{gameMode === "match" && (
-						<div className="box-section xl:bg-[#6e5d41]/10 justify-center xl:max-w-[790px]">
+						<div ref={playerFormRef} className="box-section xl:bg-[#6e5d41]/10 justify-center xl:max-w-[790px]">
 								<div className="w-full max-w-[384px] h-[174px] p-4">
 									<h2 className="fascinate-label mb-3">{t('player')} 1</h2>
 									<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
@@ -80,7 +82,7 @@ const Home = () => {
 					)}
 
 					{gameMode === "tournament" && (
-						<div className="box-section xl:bg-[#6e5d41]/10 justify-center xl:max-w-[790px]">
+						<div ref={playerFormRef} className="box-section xl:bg-[#6e5d41]/10 justify-center xl:max-w-[790px]">
 							<div className="w-full max-w-[384px] h-[174px] p-4">
 								<h2 className="fascinate-label mb-3">{t('player')} 1</h2>
 								<p className="border-b-2 border-white text-lg flex justify-between">{user?.username}</p>
