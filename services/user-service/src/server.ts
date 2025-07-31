@@ -2,8 +2,6 @@ import multipart from '@fastify/multipart';
 import staticFiles from '@fastify/static';
 import { AvatarConfig } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
-import { ENV } from '@transcenders/server-utils';
-import path from 'path';
 import { registerAdminRoutes } from './routes/admin.routes.js';
 import { registerAvatarRoutes } from './routes/avatar.routes.js';
 import { registerFriendshipRoutes } from './routes/friend.routes.js';
@@ -27,7 +25,7 @@ async function start() {
   });
 
   fastify.register(staticFiles, {
-    root: path.join(ENV.PROJECT_ROOT, AvatarService.getMediaDir()),
+    root: AvatarService.getMediaDir(),
     prefix: AvatarConfig.MEDIA_DIR,
     decorateReply: false,
   });
