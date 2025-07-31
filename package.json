@@ -1,36 +1,52 @@
 {
   "name": "transcenders",
   "private": true,
+  "type": "module",
+  "packageManager": "npm@11.5.2",
   "workspaces": [
     "packages/*",
     "services/*",
     "web"
   ],
-  "version": "1.0.0",
   "description": "transcenders",
   "author": "",
   "license": "ISC",
   "scripts": {
-    "dev:all": "concurrently --names 'USER,AUTH,SCORE,FRONTEND' --prefix-colors 'auto' 'npm run dev --workspace=user-service' 'npm run dev --workspace=auth-service' 'npm run dev --workspace=score-service' 'npm run dev --workspace=web'",
-    "dev:backend": "npm run dev --workspace=user-service",
-    "dev:frontend": "npm run dev --workspace=web",
-    "test": "tsx scripts/tests.ts",
+    "with-env": "dotenv -e .env --",
+    "dev": "turbo dev",
+    "dev:packages": "turbo dev --filter='./packages/*'",
+    "dev:frontend": "turbo dev --filter=web",
+    "dev:backend": "turbo dev --filter=./services/*",
+    "dev:compiled": "turbo dev:compiled --filter=./services/*",
+    "build": "turbo build",
+    "build:packages": "turbo build --filter='./packages/*'",
+    "build:frontend": "turbo build --filter=web",
+    "build:backend": "turbo build --filter=./services/**",
+    "build:watch": "turbo dev:compiled",
+    "clean": "turbo clean && find . -name 'tsconfig.tsbuildinfo' -delete",
+    "start": "turbo start",
+    "start:backend": "turbo start --filter='!web'",
+    "test": "dotenv -e .env tsx scripts/tests.ts",
     "api-client-test": "tsx scripts/api-client-test.ts",
-    "reglogin": "tsx scripts/reglogin.ts"
+    "reglogin": "tsx scripts/reglogin.ts",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "lint:check": "turbo lint --continue -- --max-warnings 0",
+    "type-check": "turbo type-check",
+    "type-check:watch": "tsc --project tsconfig.typecheck.json --watch"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.34.0",
-    "@typescript-eslint/parser": "^8.34.0",
-    "concurrently": "^9.1.2",
-    "eslint": "^9.28.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.1",
-    "prettier": "^3.5.3",
-    "sql-formatter-plus": "^1.3.6",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.34.0"
-  },
-  "dependencies": {
-    "lucide-react": "^0.525.0"
+    "dotenv-cli": "^10.0.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.3",
+    "turbo": "^2.5.5",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.38.0"
   }
 }
