@@ -15,9 +15,12 @@ import {
   User,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
+import {
+  DatabaseManager,
+} from '@transcenders/server-utils';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import SQL from 'sql-template-strings';
+import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
 import { getAuthDB } from '../db/database';
 
@@ -47,7 +50,7 @@ export class AuthService {
       username: registration.username,
       email: registration.email,
     };
-    const db = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeTransaction<BooleanOperationResult>(
       'register user',
       db,
@@ -71,10 +74,7 @@ export class AuthService {
     );
   }
 
-  static async login(login: LoginUser): Promise<ServiceResult<AuthData>> {
-    const db: Database = await getAuthDB();
-    return await ResultHelper.executeQuery<AuthData>('authenticate user', db, async (database) => {
-      // Get user from user-service with schema validation
+    const db = await DatabaseManager.for('AUTH').open();
       const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
       if (!apiResponse.success) {
         throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_USERNAME, {
@@ -120,7 +120,7 @@ export class AuthService {
     oldPassword: string,
     newPassword: string,
   ): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeQuery<BooleanOperationResult>(
       'change password',
       db,
@@ -180,7 +180,7 @@ export class AuthService {
   }
 
   static async deleteCredentials(userId: number): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getAuthDB();
+    const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeQuery<BooleanOperationResult>(
       'delete user credentials',
       db,

@@ -8,14 +8,17 @@ import {
   ServiceResult,
   User,
 } from '@transcenders/contracts';
-import SQL from 'sql-template-strings';
+import { DatabaseManager } from '@transcenders/server-utils';
+import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
-import { getDB } from '../db/database';
 
 export class FriendshipService {
   static async getUserFriends(userId: number): Promise<ServiceResult<User[]>> {
-    return ResultHelper.executeQuery<User[]>('get friends', await getDB(), async (database) => {
-      const sql = SQL`
+    return ResultHelper.executeQuery<User[]>(
+      'get friends',
+      await DatabaseManager.for('USER').open(),
+      async (database) => {
+        const sql = SQL`
         SELECT users.* FROM users
         JOIN friendships f ON (
           (f.user1_id = ${userId} AND f.user2_id = users.id) OR
@@ -24,9 +27,10 @@ export class FriendshipService {
         WHERE users.id != ${userId}
         ORDER BY f.created_at DESC;
       `;
-      const users = await database.all(sql.text, sql.values);
-      return users as User[];
-    });
+        const users = await database.all(sql.text, sql.values);
+        return users as User[];
+      },
+    );
   }
 
   private static async checkFriendshipExistsLogic(
@@ -50,7 +54,7 @@ export class FriendshipService {
   ): Promise<ServiceResult<BooleanOperationResult>> {
     return ResultHelper.executeQuery<BooleanOperationResult>(
       'check friendship',
-      await getDB(),
+      await DatabaseManager.for('USER').open(),
       async (database) => {
         const exists = await this.checkFriendshipExistsLogic(database, user1_id, user2_id);
         if (exists) {
@@ -68,7 +72,7 @@ export class FriendshipService {
   ): Promise<ServiceResult<BooleanOperationResult>> {
     return ResultHelper.executeTransaction<BooleanOperationResult>(
       'send friend request',
-      await getDB(),
+      await DatabaseManager.for('USER').open(),
       async (database) => {
         if (initiator === recipient) {
           throw new ServiceError(ERROR_CODES.USER.CANNOT_BEFRIEND_SELF, {
@@ -126,7 +130,7 @@ export class FriendshipService {
   ): Promise<ServiceResult<FriendRequestsData[]>> {
     return ResultHelper.executeQuery<FriendRequestsData[]>(
       'get incoming requests',
-      await getDB(),
+      await DatabaseManager.for('USER').open(),
       async (database) => {
         const sql = SQL`
           SELECT * FROM friend_requests
@@ -177,7 +181,7 @@ export class FriendshipService {
   ): Promise<ServiceResult<BooleanOperationResult>> {
     return ResultHelper.executeTransaction<BooleanOperationResult>(
       'accept friend request',
-      await getDB(),
+      await DatabaseManager.for('USER').open(),
       async (database) => {
         await this.acceptFriendLogic(database, friendRequestId);
         return BooleanResultHelper.success(
@@ -192,7 +196,7 @@ export class FriendshipService {
   ): Promise<ServiceResult<BooleanOperationResult>> {
     return ResultHelper.executeQuery<BooleanOperationResult>(
       'decline friend request',
-      await getDB(),
+      await DatabaseManager.for('USER').open(),
       async (database) => {
         const sql = SQL`
           DELETE FROM friend_requests
@@ -221,7 +225,7 @@ export class FriendshipService {
   ): Promise<ServiceResult<BooleanOperationResult>> {
     return ResultHelper.executeQuery<BooleanOperationResult>(
       'remove friend',
-      await getDB(),
+      await DatabaseManager.for('USER').open(),
       async (database) => {
         // Validate users aren't trying to remove themselves
         if (userId1 === userId2) {

@@ -8,9 +8,9 @@ import {
   ServiceResult,
   Stats,
 } from '@transcenders/contracts';
-import SQL from 'sql-template-strings';
+import { DatabaseManager } from '@transcenders/server-utils';
+import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
-import { getDB } from '../db/database';
 
 export class ScoreService {
   // Private logic methods for internal use
@@ -139,7 +139,7 @@ export class ScoreService {
   // Public API methods using ResultHelper
 
   static async getAllScores(query: GetScoresQuery): Promise<ServiceResult<Score[]>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('SCORE').open();
     return ResultHelper.executeQuery<Score[]>('get all scores', db, async (database) => {
       const sql = SQL`SELECT * FROM scores`;
       if (query.search) {
@@ -154,7 +154,7 @@ export class ScoreService {
   }
 
   static async createScore(scoreData: CreateScoreRequest): Promise<ServiceResult<Score>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('SCORE').open();
     return ResultHelper.executeQuery<Score>('create score', db, async (database) => {
       return await this.createScoreLogic(database, scoreData);
     });
@@ -162,7 +162,7 @@ export class ScoreService {
 
   // TODO Add query string support for limit and offset to implement pagination support
   static async getScoresById(id: number): Promise<ServiceResult<Score[]>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('SCORE').open();
     return ResultHelper.executeQuery<Score[]>('get scores by id', db, async (database) => {
       const scores = await this.getScoresByIdLogic(database, id);
       return scores as Score[];
@@ -170,7 +170,7 @@ export class ScoreService {
   }
 
   static async getStatsById(id: number): Promise<ServiceResult<Stats>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('SCORE').open();
     return ResultHelper.executeQuery<Stats>('get stats by id', db, async (database) => {
       const stats = await this.getStatsByIdLogic(database, id);
       return stats as Stats;
