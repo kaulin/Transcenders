@@ -11,11 +11,9 @@ lerna-debug.log*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Runtime data
-services/user-service/data/
-services/auth-service/data/
-services/score-service/data/
-**/database
-*/uploads/avatars/
+database
+media/avatars
+!media/defaults
 pids
 *.pid
 *.seed
