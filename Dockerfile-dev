@@ -1,0 +1,24 @@
+FROM node:22-alpine AS base
+WORKDIR /workspace
+
+RUN apk add --no-cache sqlite
+
+# Development stage
+FROM base AS development
+
+ARG SERVICE_NAME
+ARG SERVICE_PORT=3000
+ARG DEBUG_PORT=9229
+
+ENV NODE_ENV=development
+ENV SERVICE_NAME=${SERVICE_NAME}
+ENV DEBUG_PORT=${DEBUG_PORT}
+
+# Copy and setup entrypoint script
+COPY scripts/docker-dev-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-dev-entrypoint.sh
+
+WORKDIR /workspace/services/${SERVICE_NAME}/
+EXPOSE ${SERVICE_PORT} ${DEBUG_PORT}
+
+ENTRYPOINT ["docker-dev-entrypoint.sh"]

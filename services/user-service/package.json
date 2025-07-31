@@ -1,35 +1,31 @@
 {
   "name": "user-service",
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --inspect=0.0.0.0:9228 src/server.ts",
+    "dev": "tsx watch --inspect=0.0.0.0:9227 src/server.ts",
+    "dev:compiled": "node --watch --inspect=0.0.0.0:9227 dist/server.js",
+    "debug": "tsx --inspect-brk=9227 src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "lint": "eslint src",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@fastify/cors": "^11.0.1",
     "@fastify/multipart": "^9.0.3",
     "@fastify/static": "^8.2.0",
-    "@fastify/swagger": "^9.5.1",
-    "@fastify/swagger-ui": "^5.2.3",
-    "@fastify/type-provider-typebox": "^5.1.0",
-    "@transcenders/api-client": "^1.0.0",
-    "@transcenders/contracts": "^1.0.0",
-    "@transcenders/fastify-server": "^1.0.0",
-    "dotenv": "^16.5.0",
+    "@transcenders/api-client": "*",
+    "@transcenders/contracts": "*",
+    "@transcenders/fastify-server": "*",
+    "@transcenders/server-utils": "*",
     "fastify": "^5.4.0",
     "sharp": "^0.34.3",
     "sql-template-strings": "^2.2.2",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "sqlite": "^5.1.1"
   },
   "devDependencies": {
-    "@types/busboy": "^1.5.4",
-    "@types/node": "^24.0.1",
-    "pino-pretty": "^13.0.0",
-    "tsx": "^4.20.2",
-    "typescript": "^5.8.3"
+    "@types/node": "^24.1.0",
+    "tsx": "^4.20.3",
+    "typescript": "~5.8.3"
   }
 }
