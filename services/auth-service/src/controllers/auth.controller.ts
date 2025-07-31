@@ -6,7 +6,7 @@ import {
   userByIdRequest,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../services/auth.service.js';
 
 export class AuthController {
   static async register(request: FastifyRequest, reply: FastifyReply) {

@@ -1,4 +1,4 @@
-import { ERROR_CODES, ErrorCode } from './ErrorCodes';
+import { ERROR_CODES, ErrorCode } from './ErrorCodes.js';
 
 interface ErrorMap {
   pattern: string;

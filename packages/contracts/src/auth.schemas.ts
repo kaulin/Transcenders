@@ -6,7 +6,7 @@ import {
   TimestampField,
   UserIdField,
   UsernameField,
-} from './user.schemas';
+} from './user.schemas.js';
 
 export const PasswordField = Type.String();
 export const PwHashField = Type.String();

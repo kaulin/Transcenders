@@ -1,5 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
-import { IdParamField } from './user.schemas';
+import { IdParamField } from './user.schemas.js';
 
 export const uploadAvatarSchema = {
   params: Type.Object({

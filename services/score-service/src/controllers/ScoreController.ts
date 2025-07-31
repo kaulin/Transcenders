@@ -6,7 +6,7 @@ import {
   StatsByIdRequest,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ScoreService } from '../services/ScoreService';
+import { ScoreService } from '../services/ScoreService.js';
 
 export class ScoreController {
   // ScoreController

@@ -7,7 +7,7 @@ import {
   userByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
-import { AuthController } from '../controllers/auth.controller';
+import { AuthController } from '../controllers/auth.controller.js';
 
 export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
