@@ -3,12 +3,11 @@ import staticFiles from '@fastify/static';
 import { ApiResponse, AvatarConfig, UserConfig } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import path from 'path';
-import { registerAdminRoutes } from './routes/admin.routes';
-import { registerAvatarRoutes } from './routes/avatar.routes';
-import { registerFriendshipRoutes } from './routes/friend.routes';
-import { registerUserRoutes } from './routes/user.routes';
-import { AdminService } from './services/AdminService';
-import { AvatarService } from './services/AvatarService';
+import { registerAdminRoutes } from './routes/admin.routes.js';
+import { registerAvatarRoutes } from './routes/avatar.routes.js';
+import { registerFriendshipRoutes } from './routes/friend.routes.js';
+import { registerUserRoutes } from './routes/user.routes.js';
+import { AvatarService } from './services/AvatarService.js';
 
 const config: ServerConfig = {
   port: 3001,

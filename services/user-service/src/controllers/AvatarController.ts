@@ -9,7 +9,7 @@ import {
   UploadAvatarRequestParams,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { AvatarService } from '../services/AvatarService';
+import { AvatarService } from '../services/AvatarService.js';
 
 export class AvatarController {
   static async uploadAvatar(request: FastifyRequest, reply: FastifyReply) {

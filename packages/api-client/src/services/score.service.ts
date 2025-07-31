@@ -6,8 +6,8 @@ import {
   SERVICE_URLS,
   toQueryString,
 } from '@transcenders/contracts';
-import { ApiClient } from '../api/ApiClient';
-import { ApiCallOptions } from '../types/client.options';
+import { ApiClient } from '../api/ApiClient.js';
+import { ApiCallOptions } from '../types/client.options.js';
 
 export class ScoreApiService {
   /**

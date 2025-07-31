@@ -1,8 +1,8 @@
 import { FastifyError } from 'fastify';
 import { Database } from 'sqlite';
-import { ERROR_CODES, ErrorCode, mapExceptionToErrorCode } from '../errors';
-import { ServiceError } from '../errors/ServiceError';
-import { ServiceResult } from '../errors/ServiceResult';
+import { ERROR_CODES, ErrorCode, mapExceptionToErrorCode } from '../errors/index.js';
+import { ServiceError } from '../errors/ServiceError.js';
+import { ServiceResult } from '../errors/ServiceResult.js';
 
 /**
  * Helper class for creating and managing ServiceResult objects

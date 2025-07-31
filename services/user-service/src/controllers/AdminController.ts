@@ -1,7 +1,7 @@
 import { ApiErrorHandler, CleanupOfflineQuery } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { AdminService } from '../services/AdminService';
-import { HealthResponse } from '../types/api.types';
+import { AdminService } from '../services/AdminService.js';
+import { HealthResponse } from '../types/api.types.js';
 
 export class AdminController {
   /**

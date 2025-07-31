@@ -7,7 +7,7 @@ import {
   uploadAvatarSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
-import { AvatarController } from '../controllers/AvatarController';
+import { AvatarController } from '../controllers/AvatarController.js';
 
 export async function registerAvatarRoutes(app: FastifyInstance) {
   app.put(

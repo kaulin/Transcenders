@@ -1,6 +1,6 @@
 import { ApiResponse } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
-import { registerAuthRoutes } from './routes/auth.routes';
+import { registerAuthRoutes } from './routes/auth.routes.js';
 
 const config: ServerConfig = {
   port: 3002,
