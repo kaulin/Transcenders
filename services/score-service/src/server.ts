@@ -2,6 +2,7 @@ import { ApiResponseSchema } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import { registerScoreRoutes } from './routes/score.routes.js';
 
+// #TODO all ports from env
 const config: ServerConfig = {
   port: 3003,
   title: 'Score Service API',
@@ -11,7 +12,6 @@ const config: ServerConfig = {
 async function start() {
   const fastify = await createFastifyServer(config);
 
-  fastify.addSchema(ApiResponseSchema);
   await registerScoreRoutes(fastify);
 
   await startServer(fastify, config);
