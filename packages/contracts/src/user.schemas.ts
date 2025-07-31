@@ -221,8 +221,6 @@ export const ApiResponseSchema = Type.Union(
 );
 
 export type ApiResponseType = Static<typeof ApiResponseSchema>;
-// Backward compatibility
-export const ApiResponse = ApiResponseSchema;
 
 export const standardApiResponses = {
   200: { $ref: 'ApiResponse#' },
