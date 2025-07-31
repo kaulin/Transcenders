@@ -37,6 +37,10 @@ export const UserConfig = {
 } as const;
 
 export const AvatarConfig = {
+MEDIA_DIR: '/media/',
+  UPLOADED_AVATARS: 'avatars/',
+  DEFAULT_AVATARS: 'defaults/',
+
   MAX_FILE_SIZE: 10 * 1024 * 1024, //10 mb
 
   // Dimensions

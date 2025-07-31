@@ -1,8 +1,10 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { ApiResponseSchema } from '@transcenders/contracts';
 import { ENV } from '@transcenders/server-utils';
 import Fastify, { FastifyInstance } from 'fastify';
 import { registerDevelopmentHooks } from '../hooks/development.hooks.js';
 import { registerErrorHandler } from '../hooks/error.hook.js';
+import { registerOnCloseHook } from '../hooks/onClose.hook.js';
 import { registerCors } from '../plugins/cors.plugin.js';
 import { setupGracefulShutdown } from '../plugins/shutdown-plugin.js';
 import { registerSwagger } from '../plugins/swagger.plugin.js';
@@ -34,10 +36,15 @@ export async function createFastifyServer(
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   registerErrorHandler(fastify);
+
+  fastify.addSchema(ApiResponseSchema);
+
   // Register plugins in order
+  await setupGracefulShutdown(fastify, config);
   await registerCors(fastify);
   await registerSwagger(fastify, config, swaggerConfig);
   registerDevelopmentHooks(fastify);
+  registerOnCloseHook(fastify);
 
   return fastify;
 }

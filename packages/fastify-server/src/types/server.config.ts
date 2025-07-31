@@ -5,6 +5,10 @@ export interface ServerConfig {
   description: string;
   version?: string;
   routePrefix?: string;
+  shutdown?: {
+    onShutdown?: () => Promise<void> | void;
+    gracefulTimeoutMs?: number;
+  };
 }
 
 export interface SwaggerConfig {
