@@ -2,9 +2,12 @@ import {
   ApiErrorHandler,
   ChangePasswordRequest,
   LoginUser,
+  LogoutUser,
+  RefreshTokenRequest,
   RegisterUser,
   userByIdRequest,
 } from '@transcenders/contracts';
+import { DeviceUtils } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from '../services/auth.service.js';
 
@@ -15,7 +18,23 @@ export class AuthController {
   }
 
   static async login(request: FastifyRequest, reply: FastifyReply) {
-    const result = await AuthService.login(request.body as LoginUser);
+    const deviceInfo = DeviceUtils.extractDeviceInfo(request);
+    const result = await AuthService.login(request.body as LoginUser, deviceInfo);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async logout(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as userByIdRequest;
+    const userId = parseInt(id);
+    const { refreshToken } = request.body as LogoutUser;
+    const result = await AuthService.logout(userId, refreshToken);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async refresh(request: FastifyRequest, reply: FastifyReply) {
+    const { refreshToken } = request.body as RefreshTokenRequest;
+    const deviceInfo = DeviceUtils.extractDeviceInfo(request);
+    const result = await AuthService.refreshToken(refreshToken, deviceInfo);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 

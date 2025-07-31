@@ -1,13 +1,17 @@
 import { ApiClient } from '@transcenders/api-client';
 import {
+  AuthConfig,
   AuthData,
   BooleanOperationResult,
   BooleanResultHelper,
   CreateUserRequest,
+  DeviceInfo,
   ERROR_CODES,
   ErrorCode,
   JWTPayload,
   LoginUser,
+  RefreshToken,
+  RefreshTokenInsert,
   RegisterUser,
   ResultHelper,
   ServiceError,
@@ -17,12 +21,14 @@ import {
 } from '@transcenders/contracts';
 import {
   DatabaseManager,
+  DeviceUtils,
+  QueryBuilder,
+  TokenValidator,
 } from '@transcenders/server-utils';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
-import { getAuthDB } from '../db/database';
 
 export class AuthService {
   private static async insertCredentialsLogic(
@@ -41,6 +47,75 @@ export class AuthService {
       });
     }
     return true;
+  }
+
+  private static async findExistingTokensForDevice(
+    database: Database,
+    userId: number,
+    deviceInfo: DeviceInfo,
+  ): Promise<RefreshToken[]> {
+    const sql = SQL`
+      SELECT * FROM refresh_tokens 
+      WHERE user_id = ${userId}
+      AND revoked_at IS NULL
+      AND device_fingerprint = ${deviceInfo.deviceFingerprint}
+    `;
+
+    const results = await database.all(sql.text, sql.values);
+    return results as RefreshToken[];
+  }
+
+  private static async revokeRefreshTokens(
+    database: Database,
+    criteria: { jti?: string; userId?: number },
+    reason: string,
+  ): Promise<number> {
+    let whereClause = `revoked_at IS NULL`;
+    const whereValues: unknown[] = [];
+
+    if (criteria.jti) {
+      whereClause += ' AND jti = ?';
+      whereValues.push(criteria.jti);
+    } else if (criteria.userId) {
+      // Revoke ALL tokens for user (security event)
+      whereClause += ' AND user_id = ?';
+      whereValues.push(criteria.userId);
+    }
+
+    const revokeQuery = QueryBuilder.update(
+      `refresh_tokens`,
+      {
+        revoked_at: new Date().toISOString(),
+        revoke_reason: reason,
+      },
+      whereClause,
+      whereValues,
+    );
+    const result = await database.run(revokeQuery.sql, revokeQuery.values);
+    return result.changes ?? 0;
+  }
+
+  private static async revokeMultipleTokens(
+    database: Database,
+    jtis: string[],
+    reason: string,
+  ): Promise<number> {
+    if (jtis.length === 0) return 0;
+
+    const placeholders = jtis.map(() => '?').join(',');
+    const whereClause = `revoked_at IS NULL AND jti IN (${placeholders})`;
+
+    const revokeQuery = QueryBuilder.update(
+      `refresh_tokens`,
+      {
+        revoked_at: new Date().toISOString(),
+        revoke_reason: reason,
+      },
+      whereClause,
+      jtis,
+    );
+    const result = await database.run(revokeQuery.sql, revokeQuery.values);
+    return result.changes ?? 0;
   }
 
   static async register(
@@ -74,45 +149,158 @@ export class AuthService {
     );
   }
 
-    const db = await DatabaseManager.for('AUTH').open();
-      const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
-      if (!apiResponse.success) {
-        throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_USERNAME, {
-          username: login.username,
-          originalError: apiResponse.error,
-        });
-      }
-      const userData = apiResponse.data as User;
+  private static generateTokenPair(userId: number): AuthData {
+    const payload: JWTPayload = {
+      userId: userId,
+      aud: 'transcenders',
+      iss: 'auth-service',
+      jti: crypto.randomUUID(),
+    };
+    const accessToken = jwt.sign(payload, TokenValidator.getAccessSecret());
+    const refreshToken = jwt.sign(payload, TokenValidator.getRefreshSecret());
 
-      // get the matching user credentials entry
-      const sql = SQL`
+    return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS };
+  }
+
+  private static async storeRefreshToken(
+    database: Database,
+    refreshToken: string,
+    deviceInfo: DeviceInfo,
+  ): Promise<void> {
+    const { userId, jti } = jwt.decode(refreshToken) as JWTPayload;
+    const entry: RefreshTokenInsert = {
+      user_id: userId,
+      token_hash: await bcrypt.hash(refreshToken, 12),
+      expires_at: new Date(Date.now() + AuthConfig.REFRESH_TOKEN_EXPIRE_MS).toISOString(),
+      jti,
+      device_fingerprint: deviceInfo.deviceFingerprint,
+      ip_address: deviceInfo.ipAddress,
+      user_agent: deviceInfo.userAgent,
+    };
+    const { sql, values } = QueryBuilder.insert('refresh_tokens', entry);
+    await database.run(sql, values);
+  }
+
+  static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return await ResultHelper.executeTransaction<AuthData>(
+      'authenticate user',
+      db,
+      async (database) => {
+        const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
+        if (!apiResponse.success) {
+          throw new ServiceError(
+            apiResponse.error.codeOrError as ErrorCode,
+            apiResponse.error.context,
+          );
+        }
+        const userData = apiResponse.data as User;
+
+        // get the matching user credentials entry
+        const sql = SQL`
         SELECT * FROM user_credentials WHERE user_id = ${userData.id}
       `;
-      const userCredentials = await database.get(sql.text, sql.values);
-      if (!userCredentials) {
-        throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-          username: login.username,
-        });
-      }
+        const userCredentials = await database.get(sql.text, sql.values);
+        if (!userCredentials) {
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+            username: login.username,
+          });
+        }
 
-      const userCreds = userCredentials as UserCredentialsEntry;
-      const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
-      if (!isValidPassword) {
-        throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-          username: login.username,
-        });
-      }
+        const userCreds = userCredentials as UserCredentialsEntry;
+        const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
+        if (!isValidPassword) {
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+            username: login.username,
+          });
+        }
 
-      // Generate JWT accessToken
-      const accessToken = jwt.sign(
-        { userId: userData.id },
-        // TODO fix all env stuff
-        process.env.JWT_SECRET ?? 'testing',
-        { expiresIn: '24h' },
-      );
-      this.verifyToken(accessToken);
-      return { accessToken };
-    });
+        // Check if this device already has active tokens
+        const existingTokens = await this.findExistingTokensForDevice(
+          database,
+          userData.id,
+          deviceInfo,
+        );
+        if (existingTokens.length > 0) {
+          // Same device logging in again - revoke ALL existing tokens for this device
+          const jtisToRevoke = existingTokens.map((token) => token.jti);
+          const revokedCount = await this.revokeMultipleTokens(
+            database,
+            jtisToRevoke,
+            'same_device_relogin',
+          );
+          console.log(`Revoked ${revokedCount} existing tokens for device during login`);
+        }
+
+        // generate and save new tokens
+        const tokens = this.generateTokenPair(userData.id);
+        await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
+
+        return tokens;
+      },
+    );
+  }
+
+  static async logout(
+    userId: number,
+    refreshToken: string,
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return await ResultHelper.executeQuery<BooleanOperationResult>(
+      'logout user',
+      db,
+      async (database) => {
+        const { jti } = TokenValidator.verifyRefreshToken(refreshToken, userId);
+        const sql = SQL`
+          SELECT * FROM refresh_tokens WHERE jti = ${jti}
+      `;
+        const refreshTokenData = await database.get(sql.text, sql.values);
+        await TokenValidator.authenticateRefreshToken(refreshToken, refreshTokenData);
+
+        this.revokeRefreshTokens(database, { jti }, 'user logged out');
+        return BooleanResultHelper.success('user logged out successfully');
+      },
+    );
+  }
+
+  static async refreshToken(
+    refreshToken: string,
+    currentDeviceInfo: DeviceInfo,
+  ): Promise<ServiceResult<AuthData>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return await ResultHelper.executeQuery<AuthData>(
+      'refresh access token',
+      db,
+      async (database) => {
+        const { userId, jti } = TokenValidator.verifyRefreshToken(refreshToken);
+        const sql = SQL`
+          SELECT * FROM refresh_tokens WHERE jti = ${jti}
+      `;
+        const refreshTokenData = await database.get(sql.text, sql.values);
+        // Authenticate token against databaseData
+        const storedToken = await TokenValidator.authenticateRefreshToken(
+          refreshToken,
+          refreshTokenData,
+        );
+
+        const storedDeviceInfo = DeviceUtils.fromDatabaseValues(storedToken);
+        if (!DeviceUtils.isSameDevice(storedDeviceInfo, currentDeviceInfo)) {
+          // SECURITY EVENT: Token used from different device - revoke ALL user tokens
+          await this.revokeRefreshTokens(database, { userId }, 'security_device_change');
+          throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+            jti,
+            userId,
+            reason: 'Token used from different device - all sessions revoked for security',
+          });
+        }
+        // generate and store new tokens
+        const newTokens = this.generateTokenPair(userId);
+        await this.storeRefreshToken(database, newTokens.refreshToken, storedDeviceInfo);
+        // revoke old token
+        this.revokeRefreshTokens(database, { jti }, 'token_rotation');
+        return newTokens;
+      },
+    );
   }
 
   static async changePassword(
@@ -208,9 +396,5 @@ export class AuthService {
         );
       },
     );
-  }
-  static verifyToken(token: string): JWTPayload {
-    // #TODO fix all env stuff
-    return jwt.verify(token, process.env.JWT_SECRET ?? 'testing') as JWTPayload;
   }
 }

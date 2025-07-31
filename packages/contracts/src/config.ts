@@ -36,8 +36,13 @@ export const UserConfig = {
   CLEANUP_INTERVAL_MINUTES: 1,
 } as const;
 
+export const AuthConfig = {
+  ACCESS_TOKEN_EXPIRE_MS: 2 * 60 * 1000, // 2 min
+  REFRESH_TOKEN_EXPIRE_MS: 7 * 24 * 60 * 60 * 1000, // 7 days
+} as const;
+
 export const AvatarConfig = {
-MEDIA_DIR: '/media/',
+  MEDIA_DIR: '/media/',
   UPLOADED_AVATARS: 'avatars/',
   DEFAULT_AVATARS: 'defaults/',
 
