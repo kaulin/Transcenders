@@ -17,12 +17,20 @@ import sharp from 'sharp';
 import { UserService } from './UserService.js';
 
 export class AvatarService {
-  private static getUploadDir(): string {
-    return path.join(import.meta.dirname, '../../uploads/avatars');
+  static getMediaDir(): string {
+    return path.join(ENV.PROJECT_ROOT, AvatarConfig.MEDIA_DIR);
   }
 
   private static getDefaultAvatarsDir(): string {
-    return path.join(import.meta.dirname, '../../uploads/default-avatars');
+    return path.join(this.getMediaDir(), AvatarConfig.DEFAULT_AVATARS);
+  }
+
+  private static getUploadedAvatarsDir(): string {
+    return path.join(this.getMediaDir(), AvatarConfig.UPLOADED_AVATARS);
+  }
+
+  private static getUploadedAvatarsURL(): string {
+    return path.join(AvatarConfig.MEDIA_DIR, AvatarConfig.UPLOADED_AVATARS);
   }
 
   private static async removeOldAvatar(uploadDir: string, userId: string): Promise<void> {
@@ -39,8 +47,9 @@ export class AvatarService {
   }
 
   static async initializeAvatarDirectories(): Promise<void> {
-    const uploadDir = this.getUploadDir();
+    const uploadDir = this.getUploadedAvatarsDir();
     const defaultAvatarsDir = this.getDefaultAvatarsDir();
+    const mediaDir = this.getMediaDir();
 
     // Ensure upload directories exist
     fs.mkdirSync(uploadDir, { recursive: true });
@@ -50,13 +59,12 @@ export class AvatarService {
     fs.chownSync(uploadDir, ENV.HOST_UID, ENV.HOST_GID);
     fs.chownSync(defaultAvatarsDir, ENV.HOST_UID, ENV.HOST_GID);
 
-    // Also chown parent uploads directory if it was created
-    const uploadsParent = path.join(import.meta.dirname, '../../uploads');
-    fs.chownSync(uploadsParent, ENV.HOST_UID, ENV.HOST_GID);
+    // Also chown parent uploads directory
+    fs.chownSync(mediaDir, ENV.HOST_UID, ENV.HOST_GID);
   }
 
   private static async processAndSaveAvatar(userId: string, inputBuffer: Buffer): Promise<string> {
-    const uploadDir = this.getUploadDir();
+    const uploadDir = this.getUploadedAvatarsDir();
     await this.removeOldAvatar(uploadDir, userId);
 
     const filename = `${userId}.${AvatarConfig.OUTPUT_FORMAT}`;
@@ -67,7 +75,7 @@ export class AvatarService {
       .webp(AvatarConfig.WEBP_OPTIONS)
       .toFile(filePath);
     fs.chownSync(filePath, ENV.HOST_UID, ENV.HOST_GID);
-    return `/uploads/avatars/${filename}`;
+    return `${this.getUploadedAvatarsURL()}${filename}`;
   }
 
   static async uploadAvatar(
@@ -85,10 +93,10 @@ export class AvatarService {
       const inputBuffer = await file.toBuffer();
 
       // process image and save to uploads
-      const avatarPath = await this.processAndSaveAvatar(userId, inputBuffer);
+      const avatarURL = await this.processAndSaveAvatar(userId, inputBuffer);
 
       // Update database
-      const updateResult = await UserService.updateUser(+userId, { avatar: avatarPath });
+      const updateResult = await UserService.updateUser(+userId, { avatar: avatarURL });
       if (!updateResult.success) {
         throw new ServiceError(ERROR_CODES.USER.AVATAR_UPLOAD_FAILED, {
           reason: 'Failed to update user avatar in database',
@@ -96,17 +104,17 @@ export class AvatarService {
       }
 
       return {
-        url: avatarPath,
+        url: avatarURL,
       };
     });
   }
 
   static async deleteAvatar(userId: string): Promise<ServiceResult<AvatarResult>> {
     return ResultHelper.executeOperation<AvatarResult>('delete user avatar', async () => {
-      await this.removeOldAvatar(this.getUploadDir(), userId);
+      await this.removeOldAvatar(this.getUploadedAvatarsDir(), userId);
 
       // Reset user avatar to default
-      const defaultAvatarUrl = `/uploads/default-avatars/${AvatarConfig.DEFAULT_AVATAR.FILENAME}`;
+      const defaultAvatarUrl = `${this.getDefaultAvatarsDir()}${AvatarConfig.DEFAULT_AVATAR.FILENAME}`;
       const updateResult = await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
 
       if (!updateResult.success) {
@@ -130,7 +138,7 @@ export class AvatarService {
         .filter((file) => file.startsWith(AvatarConfig.DEFAULT_AVATAR.PREFIX_FILTER))
         .map((file) => ({
           name: file,
-          url: `/uploads/default-avatars/${file}`,
+          url: `${this.getDefaultAvatarsDir()}${file}`,
         }));
 
       const result: DefaultAvatarsResult = { avatars };
@@ -155,7 +163,7 @@ export class AvatarService {
       }
 
       // Update user's avatar in database
-      const avatarUrl = `/uploads/default-avatars/${avatarName}`;
+      const avatarUrl = `${avatarPath}`;
 
       const updateResult = await UserService.updateUser(+userId, { avatar: avatarUrl });
       if (!updateResult.success) {
@@ -164,7 +172,7 @@ export class AvatarService {
         });
       }
 
-      await this.removeOldAvatar(this.getUploadDir(), userId);
+      await this.removeOldAvatar(this.getUploadedAvatarsDir(), userId);
 
       return {
         url: avatarUrl,
