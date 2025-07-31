@@ -1,4 +1,35 @@
 import type { ResizeOptions, WebpOptions } from 'sharp';
+import { getEnvVar } from './utils/getEnvVar.js';
+
+// paths based on project root I guess
+// #TODO un-hardcode all paths, and base them from root
+// #TODO also probably simplify the datapaths to ./data or /db or whatever and ./uploads
+
+// Auto-generate config from service key
+const SERVICE_KEYS = ['AUTH', 'USER', 'SCORE', 'GATEWAY'] as const;
+export type ServiceConfigType = (typeof ServiceConfig)[keyof typeof ServiceConfig];
+
+// Auto-generate the entire config
+export const ServiceConfig = {
+  ...Object.fromEntries(
+    SERVICE_KEYS.map((key) => [
+      key,
+      {
+        serviceName: `${key.toLowerCase()}-service`,
+        dbFile: `${key.toLowerCase()}.db`,
+        initSql: 'src/db/init.sql' as const,
+        baseDir: getEnvVar('OVERRIDE_DATABASE_DIR', '') || ('./database' as const),
+      },
+    ]),
+  ),
+} as {
+  [K in (typeof SERVICE_KEYS)[number]]: {
+    serviceName: `${Lowercase<K>}-service`;
+    dbFile: `${Lowercase<K>}.db`;
+    initSql: 'src/db/init.sql';
+    baseDir: './database';
+  };
+};
 
 export const UserConfig = {
   OFFLINE_TIMEOUT_MINUTES: 0,

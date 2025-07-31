@@ -1,6 +1,5 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { ENV } from '@transcenders/server-utils';
-import 'dotenv/config';
 import Fastify, { FastifyInstance } from 'fastify';
 import { registerDevelopmentHooks } from '../hooks/development.hooks.js';
 import { registerErrorHandler } from '../hooks/error.hook.js';
@@ -17,7 +16,7 @@ export async function createFastifyServer(
     logger: {
       level: 'info',
       transport:
-        process.env.NODE_ENV === 'development'
+        ENV.NODE_ENV === 'development'
           ? {
               target: 'pino-pretty',
               options: {
@@ -34,11 +33,11 @@ export async function createFastifyServer(
     },
   }).withTypeProvider<TypeBoxTypeProvider>();
 
-  // Register plugins in order
   registerErrorHandler(fastify);
+  // Register plugins in order
   await registerCors(fastify);
-  registerDevelopmentHooks(fastify);
   await registerSwagger(fastify, config, swaggerConfig);
+  registerDevelopmentHooks(fastify);
 
   return fastify;
 }
@@ -46,7 +45,7 @@ export async function createFastifyServer(
 export async function startServer(fastify: FastifyInstance, config: ServerConfig): Promise<void> {
   try {
     await fastify.listen({
-      port: config.port ?? 3000,
+      port: config.port,
       host: config.host ?? '0.0.0.0',
     });
   } catch (err) {
