@@ -5,12 +5,12 @@ import {
   ServiceResult,
   UserConfig,
 } from '@transcenders/contracts';
-import SQL from 'sql-template-strings';
-import { getDB } from '../db/database';
+import { DatabaseManager } from '@transcenders/server-utils';
+import { SQL } from 'sql-template-strings';
 
 export class AdminService {
   static async updateUserActivity(id: number): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<BooleanOperationResult>(
       'update user activity',
       db,
@@ -33,7 +33,7 @@ export class AdminService {
   static async cleanupOfflineUsers(
     timeoutMinutes?: number,
   ): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await getDB();
+    const db = await DatabaseManager.for('USER').open();
     const timeout = timeoutMinutes ?? UserConfig.OFFLINE_TIMEOUT_MINUTES;
     return ResultHelper.executeQuery<BooleanOperationResult>(
       'cleanup offline users',
