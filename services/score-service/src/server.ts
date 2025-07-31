@@ -1,4 +1,4 @@
-import { ApiResponse } from '@transcenders/contracts';
+import { ApiResponseSchema } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import { registerScoreRoutes } from './routes/score.routes.js';
 
@@ -11,7 +11,7 @@ const config: ServerConfig = {
 async function start() {
   const fastify = await createFastifyServer(config);
 
-  fastify.addSchema(ApiResponse);
+  fastify.addSchema(ApiResponseSchema);
   await registerScoreRoutes(fastify);
 
   await startServer(fastify, config);
