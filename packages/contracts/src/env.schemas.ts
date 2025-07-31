@@ -8,7 +8,7 @@ export const envVarSchema = Type.Object({
     [Type.Literal('development'), Type.Literal('production'), Type.Literal('test')],
     { default: 'development' },
   ),
-  PORT: Type.Optional(Type.Integer({ minimum: 1, maximum: 65535, default: 3000 })),
+  PORT: Type.Optional(Type.Integer({ minimum: 1, maximum: 65535 })),
   HOST: Type.Optional(Type.String({ default: '0.0.0.0' })),
   JWT_ACCESS_SECRET: Type.String(),
   JWT_REFRESH_SECRET: Type.String(),
