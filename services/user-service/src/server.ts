@@ -25,7 +25,7 @@ async function start() {
   });
 
   fastify.register(staticFiles, {
-    root: path.join(import.meta.dirname, '../uploads'),
+    root: path.join(ENV.PROJECT_ROOT, 'uploads'),
     prefix: '/uploads/',
     decorateReply: false, // Don't decorate reply object
   });

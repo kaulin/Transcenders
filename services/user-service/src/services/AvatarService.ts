@@ -10,6 +10,7 @@ import {
   ServiceError,
   ServiceResult,
 } from '@transcenders/contracts';
+import { ENV } from '@transcenders/server-utils';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
@@ -44,6 +45,14 @@ export class AvatarService {
     // Ensure upload directories exist
     fs.mkdirSync(uploadDir, { recursive: true });
     fs.mkdirSync(defaultAvatarsDir, { recursive: true });
+
+    // Change ownership of directories
+    fs.chownSync(uploadDir, ENV.HOST_UID, ENV.HOST_GID);
+    fs.chownSync(defaultAvatarsDir, ENV.HOST_UID, ENV.HOST_GID);
+
+    // Also chown parent uploads directory if it was created
+    const uploadsParent = path.join(import.meta.dirname, '../../uploads');
+    fs.chownSync(uploadsParent, ENV.HOST_UID, ENV.HOST_GID);
   }
 
   private static async processAndSaveAvatar(userId: string, inputBuffer: Buffer): Promise<string> {
@@ -57,7 +66,7 @@ export class AvatarService {
       .resize(AvatarConfig.WIDTH, AvatarConfig.HEIGHT, AvatarConfig.RESIZE_OPTIONS)
       .webp(AvatarConfig.WEBP_OPTIONS)
       .toFile(filePath);
-
+    fs.chownSync(filePath, ENV.HOST_UID, ENV.HOST_GID);
     return `/uploads/avatars/${filename}`;
   }
 
@@ -185,13 +194,9 @@ export class AvatarService {
         requestOptions,
       );
 
-      if (!response.ok) {
-        throw new Error(`Cat API error: ${response.status}`);
-      }
-
       const catData = await response.json();
 
-      if (!catData || catData.length === 0) {
+      if (!catData || !Array.isArray(catData) || catData.length === 0) {
         throw new Error('No cat images found');
       }
 

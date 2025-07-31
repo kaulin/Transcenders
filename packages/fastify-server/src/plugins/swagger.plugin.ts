@@ -1,5 +1,6 @@
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import { ENV } from '@transcenders/server-utils';
 import { FastifyInstance } from 'fastify';
 import { ServerConfig, SwaggerConfig } from '../types/server.config.js';
 
@@ -33,7 +34,7 @@ export async function registerSwagger(
       docExpansion: 'list',
       deepLinking: false,
     },
-    staticCSP: process.env.NODE_ENV !== 'development',
+    staticCSP: ENV.NODE_ENV !== 'development',
     transformStaticCSP: swaggerConfig?.transformStaticCSP,
     transformSpecification: (swaggerObject, request, reply) => {
       return swaggerObject;
