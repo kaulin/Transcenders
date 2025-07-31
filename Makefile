@@ -1,6 +1,6 @@
 # Transcenders Makefile
 
-all: dev
+all: local
 
 ################################################################################
 # SETUP
@@ -24,8 +24,9 @@ env-prod:
 # DEVELOPMENT
 ################################################################################
 
-dev: env-docker
+docker: env-docker
 		docker compose up -d
+		$(MAKE) dev-web
 
 local: env-local
 		npm run dev
@@ -43,10 +44,10 @@ dev-compiled: env-local
 dev-logs:
 		docker compose logs -f
 
-dev-stop:
+stop:
 		docker compose down
 
-dev-restart: dev-stop dev
+restart: stop dev
 
 .PHONY: dev dev-local dev-web dev-backend dev-compiled dev-logs dev-stop dev-restart
 

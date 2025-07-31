@@ -32,7 +32,7 @@ export default tseslint.config(
     },
   },
 
-  // 4️⃣ React/web specifics
+  // React/web specifics
   {
     files: ['web/**/*.{ts,tsx}'],
     languageOptions: { globals: globals.browser },
