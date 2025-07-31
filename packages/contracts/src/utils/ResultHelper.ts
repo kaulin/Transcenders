@@ -169,6 +169,9 @@ export class ResultHelper {
     if (errors.length > 0) {
       // Return the first error, but include context about multiple errors
       const firstError = errors[0];
+      if (!firstError) {
+        throw new Error('Expected at least one error but found none');
+      }
       const context = {
         totalErrors: errors.length,
         allErrorCodes: errors.map((e) => e.codeOrError),
