@@ -9,7 +9,7 @@ import {
   userByIdSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
-import { UserController } from '../controllers/UserController';
+import { UserController } from '../controllers/UserController.js';
 
 /**
  * SWAGGER

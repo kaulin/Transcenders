@@ -1,11 +1,13 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { ENV } from '@transcenders/server-utils';
 import 'dotenv/config';
 import Fastify, { FastifyInstance } from 'fastify';
-import { registerDevelopmentHooks } from '../hooks/development.hooks';
-import { registerErrorHandler } from '../hooks/error.hook';
-import { registerCors } from '../plugins/cors.plugin';
-import { registerSwagger } from '../plugins/swagger.plugin';
-import { ServerConfig, SwaggerConfig } from '../types/server.config';
+import { registerDevelopmentHooks } from '../hooks/development.hooks.js';
+import { registerErrorHandler } from '../hooks/error.hook.js';
+import { registerCors } from '../plugins/cors.plugin.js';
+import { setupGracefulShutdown } from '../plugins/shutdown-plugin.js';
+import { registerSwagger } from '../plugins/swagger.plugin.js';
+import { ServerConfig, SwaggerConfig } from '../types/server.config.js';
 
 export async function createFastifyServer(
   config: ServerConfig,

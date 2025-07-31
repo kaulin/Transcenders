@@ -10,7 +10,7 @@ import {
   standardApiResponses,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
-import { FriendshipController } from '../controllers/FriendshipController';
+import { FriendshipController } from '../controllers/FriendshipController.js';
 
 /**
  * SWAGGER

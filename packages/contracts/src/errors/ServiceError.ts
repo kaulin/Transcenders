@@ -1,6 +1,6 @@
 import { FastifyError } from 'fastify';
-import { ErrorDefinition, getErrorDefinition } from './ErrorCatalog';
-import { ERROR_CODES, ErrorCode } from './ErrorCodes';
+import { ErrorDefinition, getErrorDefinition } from './ErrorCatalog.js';
+import { ERROR_CODES, ErrorCode } from './ErrorCodes.js';
 
 /**
  * Structured error class for consistent error handling across services

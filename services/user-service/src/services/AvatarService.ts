@@ -13,7 +13,7 @@ import {
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { UserService } from './UserService';
+import { UserService } from './UserService.js';
 
 export class AvatarService {
   private static getUploadDir(): string {

@@ -1,8 +1,8 @@
 import { ApiResponseType } from '@transcenders/contracts';
-import { AuthApiService } from '../services/auth.service';
-import { ScoreApiService } from '../services/score.service';
-import { UserApiService } from '../services/user.service';
-import { ApiCallOptions } from '../types/client.options';
+import { AuthApiService } from '../services/auth.service.js';
+import { ScoreApiService } from '../services/score.service.js';
+import { UserApiService } from '../services/user.service.js';
+import { ApiCallOptions } from '../types/client.options.js';
 
 export class ApiClient {
   /**

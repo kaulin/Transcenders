@@ -5,7 +5,7 @@ import {
   userActivitySchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
-import { AdminController } from '../controllers/AdminController';
+import { AdminController } from '../controllers/AdminController.js';
 
 export async function registerAdminRoutes(app: FastifyInstance) {
   app.get('/health', AdminController.getHealth);
