@@ -75,7 +75,7 @@ export class AvatarService {
       .webp(AvatarConfig.WEBP_OPTIONS)
       .toFile(filePath);
     fs.chownSync(filePath, ENV.HOST_UID, ENV.HOST_GID);
-    return `${this.getUploadedAvatarsURL()}${filename}`;
+    return path.join(this.getUploadedAvatarsURL(), filename);
   }
 
   static async uploadAvatar(
