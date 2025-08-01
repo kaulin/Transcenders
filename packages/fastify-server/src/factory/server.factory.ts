@@ -1,11 +1,14 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import 'dotenv/config';
+import { ApiResponseSchema } from '@transcenders/contracts';
+import { ENV } from '@transcenders/server-utils';
 import Fastify, { FastifyInstance } from 'fastify';
-import { registerDevelopmentHooks } from '../hooks/development.hooks';
-import { registerErrorHandler } from '../hooks/error.hook';
-import { registerCors } from '../plugins/cors.plugin';
-import { registerSwagger } from '../plugins/swagger.plugin';
-import { ServerConfig, SwaggerConfig } from '../types/server.config';
+import { registerDevelopmentHooks } from '../hooks/development.hooks.js';
+import { registerErrorHandler } from '../hooks/error.hook.js';
+import { registerOnCloseHook } from '../hooks/onClose.hook.js';
+import { registerCors } from '../plugins/cors.plugin.js';
+import { setupGracefulShutdown } from '../plugins/shutdown-plugin.js';
+import { registerSwagger } from '../plugins/swagger.plugin.js';
+import { ServerConfig, SwaggerConfig } from '../types/server.config.js';
 
 export async function createFastifyServer(
   config: ServerConfig,
@@ -15,7 +18,7 @@ export async function createFastifyServer(
     logger: {
       level: 'info',
       transport:
-        process.env.NODE_ENV === 'development'
+        ENV.NODE_ENV === 'development'
           ? {
               target: 'pino-pretty',
               options: {
@@ -32,11 +35,16 @@ export async function createFastifyServer(
     },
   }).withTypeProvider<TypeBoxTypeProvider>();
 
-  // Register plugins in order
   registerErrorHandler(fastify);
+
+  fastify.addSchema(ApiResponseSchema);
+
+  // Register plugins in order
+  await setupGracefulShutdown(fastify, config);
   await registerCors(fastify);
-  registerDevelopmentHooks(fastify);
   await registerSwagger(fastify, config, swaggerConfig);
+  registerDevelopmentHooks(fastify);
+  registerOnCloseHook(fastify);
 
   return fastify;
 }
@@ -44,7 +52,7 @@ export async function createFastifyServer(
 export async function startServer(fastify: FastifyInstance, config: ServerConfig): Promise<void> {
   try {
     await fastify.listen({
-      port: config.port ?? 3000,
+      port: config.port,
       host: config.host ?? '0.0.0.0',
     });
   } catch (err) {

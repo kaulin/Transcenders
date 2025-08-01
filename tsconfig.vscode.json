@@ -1,0 +1,29 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "packages/api-client"
+    },
+    {
+      "path": "packages/contracts"
+    },
+    {
+      "path": "packages/fastify-server"
+    },
+    {
+      "path": "packages/server-utils"
+    },
+    {
+      "path": "services/auth-service"
+    },
+    {
+      "path": "services/score-service"
+    },
+    {
+      "path": "services/user-service"
+    },
+    {
+      "path": "web"
+    }
+  ]
+}

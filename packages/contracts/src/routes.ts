@@ -1,13 +1,9 @@
+import { getEnvVar } from './utils/getEnvVar.js';
+
 export const SERVICE_URLS = {
-  USER:
-    (typeof process !== 'undefined' ? process.env.USER_SERVICE_URL : undefined) ??
-    'http://localhost:3001',
-  AUTH:
-    (typeof process !== 'undefined' ? process.env.AUTH_SERVICE_URL : undefined) ??
-    'http://localhost:3002',
-  SCORE:
-    (typeof process !== 'undefined' ? process.env.SCORE_SERVICE_URL : undefined) ??
-    'http://localhost:3003',
+  USER: getEnvVar('USER_SERVICE_URL', 'http://localhost:3001'),
+  AUTH: getEnvVar('AUTH_SERVICE_URL', 'http://localhost:3002'),
+  SCORE: getEnvVar('SCORE_SERVICE_URL', 'http://localhost:3003'),
 } as const;
 
 export const USER_ROUTES = {
@@ -61,8 +57,12 @@ export const FRIENDSHIP_ROUTES = {
 export const AUTH_ROUTES = {
   // POST /auth/register, body as RegisterUser
   REGISTER: '/auth/register',
+  // POST /auth/refresh, body as RefreshTokenRequest
+  REFRESH: '/auth/refresh',
   // POST /auth/login, body as LoginUser
   LOGIN: '/auth/login',
+  // POST /auth/logout/, body as LogoutUser
+  LOGOUT: '/auth/logout/:id',
   // PATCH /auth/change-password/:id
   CHANGE_PASSWORD: '/auth/change-password/:id',
   // DELETE /auth/credentials/:id

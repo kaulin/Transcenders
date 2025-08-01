@@ -1,0 +1,26 @@
+# Dockerfile for shared dependency management container
+# This container builds and maintains the shared node_modules volume
+
+FROM node:22-alpine AS deps-builder
+WORKDIR /workspace
+
+# Install build dependencies as root
+USER root
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++
+
+# Copy the dependency check script and make it executable
+COPY scripts/docker-deps-check.sh ./scripts/
+RUN chmod +x ./scripts/docker-deps-check.sh
+
+# Create volume mount point and set permissions
+RUN mkdir -p /workspace/node_modules
+RUN mkdir -p /workspace/web/node_modules
+
+# Set environment
+ENV NODE_ENV=development
+
+# Run the dependency check script
+CMD ["./scripts/docker-deps-check.sh"]

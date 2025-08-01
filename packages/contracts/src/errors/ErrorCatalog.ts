@@ -1,4 +1,4 @@
-import { ERROR_CODES, ErrorCode } from './ErrorCodes';
+import { ERROR_CODES, ErrorCode } from './ErrorCodes.js';
 
 /**
  * Error definition interface
@@ -149,6 +149,30 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     userMessage: 'Registration failed. Please try again.',
     httpStatus: 500,
     category: 'internal',
+  },
+
+  [ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE]: {
+    code: ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE,
+    message: 'Invalid token structure.',
+    userMessage: 'Invalid token structure.',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+
+  [ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN]: {
+    code: ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN,
+    message: 'Refresh token is invalid, expired, or revoked',
+    userMessage: 'Refresh token is invalid, expired, or revoked',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+
+  [ERROR_CODES.AUTH.DEVICE_CHANGED]: {
+    code: ERROR_CODES.AUTH.DEVICE_CHANGED,
+    message: 'Device information has changed, please log in again',
+    userMessage: 'Device information has changed, please log in again',
+    httpStatus: 401,
+    category: 'authentication',
   },
 };
 

@@ -1,5 +1,5 @@
 import { Value } from '@sinclair/typebox/value';
-import { JWTPayload, JWTPayloadSchema } from '../auth.schemas';
+import { JWTPayload, JWTPayloadSchema } from '../auth.schemas.js';
 
 export function decodeToken(token: string): JWTPayload {
   const tokenSplit = token.split('.');
@@ -8,7 +8,11 @@ export function decodeToken(token: string): JWTPayload {
   }
 
   //index one after split by . is the actual payloaded object
-  const decoded = atob(tokenSplit[1]);
+  const payloadPart = tokenSplit[1];
+  if (!payloadPart) {
+    throw new Error('Malformed JWT token, missing payload part');
+  }
+  const decoded = atob(payloadPart);
   const payload = JSON.parse(decoded);
   if (!Value.Check(JWTPayloadSchema, payload)) {
     throw new Error('Invalid JWT payload format');

@@ -1,9 +1,9 @@
 import { FastifyError, FastifyReply } from 'fastify';
-import { ApiResponseType } from '../user.schemas';
-import { getErrorDefinition } from './ErrorCatalog';
-import { ERROR_CODES, ErrorCode } from './ErrorCodes';
-import { ServiceError } from './ServiceError';
-import { ServiceResult } from './ServiceResult';
+import { ApiResponseType } from '../user.schemas.js';
+import { getErrorDefinition } from './ErrorCatalog.js';
+import { ERROR_CODES, ErrorCode } from './ErrorCodes.js';
+import { ServiceError } from './ServiceError.js';
+import { ServiceResult } from './ServiceResult.js';
 
 /**
  * ApiErrorHandler replaces ResponseHelper with enhanced error handling

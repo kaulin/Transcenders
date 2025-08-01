@@ -1,59 +1,111 @@
+x-service-base: &service-base
+  environment:
+    - NODE_ENV=development
+  restart: 'unless-stopped'
+  depends_on:
+    - deps-service
+  env_file:
+    - .env
+  volumes:
+    - type: bind
+      source: .
+      target: /workspace
+    - type: volume
+      source: shared_node_modules
+      target: /workspace/node_modules
+      volume:
+        nocopy: true
+      read_only: true
+
+x-service-build: &service-build
+  context: .
+  dockerfile: Dockerfile-dev
+  target: development
+
 services:
   user-service:
     container_name: user-service
     image: user-service:hive
-    build:
-      context: .
-      dockerfile: services/user-service/dockerfile
-      target: development
     ports:
       - '3001:3001'
       - '9228:9228'
-    environment:
-      - NODE_ENV=development
-      - USER_SERVICE_URL=http://user-service:3001
-      - AUTH_SERVICE_URL=http://auth-service:3002
-    env_file:
-      - .env
-    volumes:
-      - ./services/user-service:/workspace/services/user-service
-      - user_node_modules:/workspace/node_modules
-      - ./packages/contracts:/workspace/packages/contracts
+    build:
+      <<: *service-build
+      args:
+        SERVICE_NAME: user-service
+        SERVICE_PORT: 3001
+        DEBUG_PORT: 9227
+    <<: *service-base
+
   auth-service:
     container_name: auth-service
     image: auth-service:hive
-    build:
-      context: .
-      dockerfile: services/auth-service/dockerfile
-      target: development
     ports:
       - '3002:3002'
       - '9227:9227'
-    environment:
-      - NODE_ENV=development
-      - USER_SERVICE_URL=http://user-service:3001
-      - AUTH_SERVICE_URL=http://auth-service:3002
-    volumes:
-      - ./services/auth-service:/workspace/services/auth-service
-      - auth_node_modules:/workspace/node_modules
-      - ./packages/contracts:/workspace/packages/contracts
+    build:
+      <<: *service-build
+      args:
+        SERVICE_NAME: auth-service
+        SERVICE_PORT: 3002
+        DEBUG_PORT: 9228
+    <<: *service-base
+
   score-service:
     container_name: score-service
     image: score-service:hive
-    build:
-      context: .
-      dockerfile: services/score-service/dockerfile
-      target: development
     ports:
       - '3003:3003'
       - '9229:9229'
+    build:
+      <<: *service-build
+      args:
+        SERVICE_NAME: score-service
+        SERVICE_PORT: 3003
+        DEBUG_PORT: 9229
+    <<: *service-base
+
+  preflight:
+    image: busybox
+    env_file:
+      - .env
+    entrypoint:
+      [
+        'sh',
+        '-c',
+        'mkdir -p /workspace/node_modules && mkdir -p /workspace/web/node_modules && chown ${HOST_UID}:${HOST_GID} /workspace/web/node_modules /workspace/node_modules',
+      ]
+    restart: 'no'
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+
+  deps-service:
+    container_name: deps-service
+    image: deps-service:hive
+    depends_on: [preflight]
+    build:
+      context: .
+      dockerfile: Dockerfile-deps
     environment:
       - NODE_ENV=development
+    restart: 'no'
     volumes:
-      - ./services/score-service:/workspace/services/score-service
-      - score_node_modules:/workspace/node_modules
-      - ./packages/contracts:/workspace/packages/contracts
+      - type: bind
+        source: .
+        target: /workspace
+        read_only: true
+      - type: volume
+        source: shared_node_modules
+        target: /workspace/node_modules
+        volume:
+          nocopy: true
+      - type: volume
+        source: shared_node_modules
+        target: /workspace/web/node_modules
+        volume:
+          nocopy: true
+
 volumes:
-  user_node_modules:
-  auth_node_modules:
-  score_node_modules:
+  shared_node_modules:

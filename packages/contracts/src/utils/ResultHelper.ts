@@ -1,8 +1,8 @@
 import { FastifyError } from 'fastify';
 import { Database } from 'sqlite';
-import { ERROR_CODES, ErrorCode, mapExceptionToErrorCode } from '../errors';
-import { ServiceError } from '../errors/ServiceError';
-import { ServiceResult } from '../errors/ServiceResult';
+import { ERROR_CODES, ErrorCode, mapExceptionToErrorCode } from '../errors/index.js';
+import { ServiceError } from '../errors/ServiceError.js';
+import { ServiceResult } from '../errors/ServiceResult.js';
 
 /**
  * Helper class for creating and managing ServiceResult objects
@@ -169,6 +169,9 @@ export class ResultHelper {
     if (errors.length > 0) {
       // Return the first error, but include context about multiple errors
       const firstError = errors[0];
+      if (!firstError) {
+        throw new Error('Expected at least one error but found none');
+      }
       const context = {
         totalErrors: errors.length,
         allErrorCodes: errors.map((e) => e.codeOrError),
