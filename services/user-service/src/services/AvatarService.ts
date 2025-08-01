@@ -114,7 +114,7 @@ export class AvatarService {
       await this.removeOldAvatar(this.getUploadedAvatarsDir(), userId);
 
       // Reset user avatar to default
-      const defaultAvatarUrl = `${this.getDefaultAvatarsDir()}${AvatarConfig.DEFAULT_AVATAR.FILENAME}`;
+      const defaultAvatarUrl = path.join(this.getDefaultAvatarsDir(), AvatarConfig.DEFAULT_AVATAR.FILENAME);
       const updateResult = await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
 
       if (!updateResult.success) {
