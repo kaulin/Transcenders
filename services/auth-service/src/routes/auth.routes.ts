@@ -51,7 +51,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         response: standardApiResponses,
       },
     },
-    AuthController.login,
+    AuthController.logout,
   );
 
   app.post(
