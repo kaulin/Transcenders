@@ -138,7 +138,7 @@ export class AvatarService {
         .filter((file) => file.startsWith(AvatarConfig.DEFAULT_AVATAR.PREFIX_FILTER))
         .map((file) => ({
           name: file,
-          url: `${this.getDefaultAvatarsDir()}${file}`,
+          url: path.join(this.getDefaultAvatarsDir(), file),
         }));
 
       const result: DefaultAvatarsResult = { avatars };
