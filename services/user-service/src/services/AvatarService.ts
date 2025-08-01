@@ -114,7 +114,10 @@ export class AvatarService {
       await this.removeOldAvatar(this.getUploadedAvatarsDir(), userId);
 
       // Reset user avatar to default
-      const defaultAvatarUrl = path.join(this.getDefaultAvatarsDir(), AvatarConfig.DEFAULT_AVATAR.FILENAME);
+      const defaultAvatarUrl = path.join(
+        this.getDefaultAvatarsDir(),
+        AvatarConfig.DEFAULT_AVATAR.FILENAME,
+      );
       const updateResult = await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
 
       if (!updateResult.success) {
@@ -201,6 +204,9 @@ export class AvatarService {
         `${AvatarConfig.RANDOM_CATS.API_URL}?&size=${imageSize}&mime_types=${mimeTypes}&format=json&order=RANDOM&page=0&limit=${limit}`,
         requestOptions,
       );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch cat images: ${response.status} ${response.statusText}`);
+      }
 
       const catData = await response.json();
 
