@@ -223,9 +223,5 @@ export const ApiResponseSchema = Type.Union(
 export type ApiResponseType = Static<typeof ApiResponseSchema>;
 
 export const standardApiResponses = {
-  200: { $ref: 'ApiResponse#' },
-  400: { $ref: 'ApiResponse#' },
-  404: { $ref: 'ApiResponse#' },
-  409: { $ref: 'ApiResponse#' },
-  500: { $ref: 'ApiResponse#' },
+  default: { $ref: 'ApiResponse' },
 } as const;
