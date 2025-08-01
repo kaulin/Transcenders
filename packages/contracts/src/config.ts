@@ -1,10 +1,6 @@
 import type { ResizeOptions, WebpOptions } from 'sharp';
 import { getEnvVar } from './utils/getEnvVar.js';
 
-// paths based on project root I guess
-// #TODO un-hardcode all paths, and base them from root
-// #TODO also probably simplify the datapaths to ./data or /db or whatever and ./uploads
-
 // Auto-generate config from service key
 const SERVICE_KEYS = ['AUTH', 'USER', 'SCORE', 'GATEWAY'] as const;
 export type ServiceConfigType = (typeof ServiceConfig)[keyof typeof ServiceConfig];

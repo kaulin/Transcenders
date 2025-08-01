@@ -34,7 +34,8 @@
     "lint:fix": "turbo lint:fix",
     "lint:check": "turbo lint --continue -- --max-warnings 0",
     "type-check": "turbo type-check",
-    "type-check:watch": "tsc --project tsconfig.typecheck.json --watch"
+    "type-check:watch": "tsc --project tsconfig.typecheck.json --watch",
+    "gen:refs": "node scripts/gen-refs.js"
   },
   "devDependencies": {
     "dotenv-cli": "^10.0.0",
