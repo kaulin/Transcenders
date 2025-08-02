@@ -15,6 +15,9 @@ export const envVarSchema = Type.Object({
   HOST_UID: Type.Number(),
   HOST_GID: Type.Number(),
   PROJECT_ROOT: Type.String(),
+  OAUTH_CLIENT_ID: Type.String(),
+  OAUTH_CLIENT_SECRET: Type.String(),
+  GOOGLE_REDIRECT_URI: Type.String(),
 });
 
 export type Env = Static<typeof envVarSchema>;

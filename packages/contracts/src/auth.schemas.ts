@@ -8,7 +8,7 @@ import {
   UsernameField,
 } from './user.schemas.js';
 
-export const PasswordField = Type.String();
+export const PasswordField = Type.String({ minLength: 3 });
 export const PwHashField = Type.String();
 
 export const registerUserSchema = Type.Object({
@@ -108,3 +108,19 @@ export const changePasswordSchema = {
   }),
 };
 export type ChangePasswordRequest = Static<typeof changePasswordSchema.body>;
+
+export const googleAuthCallbackSchema = Type.Object({
+  code: Type.String(),
+  state: Type.Optional(Type.String()),
+});
+
+export type GoogleAuthCallback = Static<typeof googleAuthCallbackSchema>;
+
+export const googleUserInfoSchema = Type.Object({
+  id: Type.String(),
+  email: Type.String(),
+  name: Type.String(),
+  picture: Type.Optional(Type.String()),
+});
+
+export type GoogleUserInfo = Static<typeof googleUserInfoSchema>;
