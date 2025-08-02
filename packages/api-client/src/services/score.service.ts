@@ -1,24 +1,27 @@
+import { Static, TSchema } from '@sinclair/typebox';
 import {
-  ApiResponseType,
   CreateScoreRequest,
   GetScoresQuery,
   SCORE_ROUTES,
+  scoreArraySchema,
+  ScoreSchema,
   SERVICE_URLS,
   toQueryString,
 } from '@transcenders/contracts';
-import { ApiClient } from '../api/ApiClient.js';
+import { TypedApiClient } from '../api/TypedApiClient.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
-export class ScoreApiService {
+export class ScoreApiService extends TypedApiClient {
   /**
    * Internal method to call the score service
    */
-  private static async callScoreService(
+  private static async callScoreService<T extends TSchema>(
     endpoint: string,
+    schema: T,
     options: ApiCallOptions = {},
-  ): Promise<ApiResponseType> {
+  ): Promise<Static<T>> {
     const url = `${SERVICE_URLS.SCORE}${endpoint}`;
-    return ApiClient.call(url, options);
+    return this.callTyped(url, schema, options);
   }
 
   /**
@@ -26,23 +29,32 @@ export class ScoreApiService {
    */
   static async getScores(query?: GetScoresQuery) {
     const queryString = query ? toQueryString(query) : '';
-    return this.callScoreService(`${SCORE_ROUTES.SCORES}${queryString}`);
+    const endpoint = `${SCORE_ROUTES.SCORES}${queryString}`;
+    return this.callScoreService(endpoint, scoreArraySchema);
   }
 
   /**
    * Creates a new score
    */
   static async createScore(scoreData: CreateScoreRequest) {
-    return this.callScoreService(SCORE_ROUTES.SCORES, {
-      method: 'POST',
-      body: scoreData,
-    });
+    const endpoint = SCORE_ROUTES.SCORES;
+    const options: ApiCallOptions = { method: 'POST', body: scoreData };
+    return this.callScoreService(endpoint, ScoreSchema, options);
   }
 
   /**
    * Gets scores by user by their ID
    */
-  static async getScoresById(id: number) {
-    return this.callScoreService(SCORE_ROUTES.SCORES_BY_ID.replace(':id', id.toString()));
+  static async getScoresForUser(userId: number) {
+    const endpoint = SCORE_ROUTES.SCORES_BY_ID.replace(':id', userId.toString());
+    return this.callScoreService(endpoint, scoreArraySchema);
+  }
+
+  /**
+   * Gets scores by user by their ID
+   */
+  static async getStatsForUser(userId: number) {
+    const endpoint = SCORE_ROUTES.STATS_BY_ID.replace(':id', userId.toString());
+    return this.callScoreService(endpoint, scoreArraySchema);
   }
 }
