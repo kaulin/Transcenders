@@ -34,7 +34,7 @@ export class UserService {
         INSERT INTO users (username, email, display_name, lang, avatar)
         VALUES (${userData.username}, ${userData.email ?? null}, ${
           userData.display_name ?? userData.username
-        }, ${userData.lang ?? 'en'}, ${AvatarService.getDefaultAvatarPath()})
+        }, ${userData.lang ?? 'en'}, ${AvatarService.getDefaultAvatarURL()})
       `;
 
     const result = await database.run(sql.text, sql.values);
