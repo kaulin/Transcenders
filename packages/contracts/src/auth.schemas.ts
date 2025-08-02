@@ -1,6 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
 import {
-  EmailField,
   IdField,
   IdParamField,
   TimestampField,
@@ -13,7 +12,6 @@ export const PwHashField = Type.String();
 
 export const registerUserSchema = Type.Object({
   username: UsernameField,
-  email: EmailField,
   password: PasswordField,
 });
 export type RegisterUser = Static<typeof registerUserSchema>;

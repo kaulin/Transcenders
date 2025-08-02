@@ -5,7 +5,6 @@ import { decodeToken } from '../packages/contracts/src/utils/decodeToken';
 async function main() {
   const userCreated = await ApiClient.auth.register({
     username: 'allar',
-    email: 'allar@example.com',
     password: '12345',
   });
 

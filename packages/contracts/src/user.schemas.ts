@@ -4,7 +4,7 @@ import { Static, Type } from '@sinclair/typebox';
  *
   id INTEGER PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
-  email TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE,
   display_name TEXT,
   avatar, TEXT
   language, TEXT
@@ -31,7 +31,7 @@ export const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
 export const UserSchema = Type.Object({
   id: UserIdField,
   username: UsernameField,
-  email: EmailField,
+  email: Type.Optional(EmailField),
   display_name: DisplayNameField,
   avatar: AvatarField,
   lang: LangField,
@@ -57,7 +57,7 @@ const userModifiableFields = Type.Object({
 export const createUserSchema = {
   body: Type.Object({
     username: UsernameField,
-    email: EmailField,
+    email: Type.Optional(EmailField),
     display_name: Type.Optional(DisplayNameField),
     lang: Type.Optional(LangField),
   }),

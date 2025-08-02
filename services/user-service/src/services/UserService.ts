@@ -14,6 +14,7 @@ import {
 import { DatabaseManager, QueryBuilder } from '@transcenders/server-utils';
 import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
+import { AvatarService } from './AvatarService.js';
 
 export class UserService {
   // Private logic methods for internal use
@@ -31,9 +32,9 @@ export class UserService {
   ): Promise<User> {
     const sql = SQL`
         INSERT INTO users (username, email, display_name, lang, avatar)
-        VALUES (${userData.username}, ${userData.email}, ${
+        VALUES (${userData.username}, ${userData.email ?? null}, ${
           userData.display_name ?? userData.username
-        }, ${userData.lang ?? 'en'}, '')
+        }, ${userData.lang ?? 'en'}, ${AvatarService.getDefaultAvatarPath()})
       `;
 
     const result = await database.run(sql.text, sql.values);

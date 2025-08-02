@@ -70,7 +70,6 @@ async function createUsers(): Promise<User[]> {
     try {
       const response = await ApiClient.auth.register({
         username: userData.username,
-        email: userData.email,
         password: userData.password,
       });
 

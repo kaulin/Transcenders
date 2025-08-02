@@ -127,7 +127,6 @@ export class AuthService {
   ): Promise<ServiceResult<BooleanOperationResult>> {
     const userCreationInfo: CreateUserRequest = {
       username: registration.username,
-      email: registration.email,
     };
     const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeTransaction<BooleanOperationResult>(
