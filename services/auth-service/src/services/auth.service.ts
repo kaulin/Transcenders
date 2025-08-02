@@ -122,34 +122,29 @@ export class AuthService {
     return result.changes ?? 0;
   }
 
-  static async register(
-    registration: RegisterUser,
-  ): Promise<ServiceResult<BooleanOperationResult>> {
+  // #TODO maybe a seperate try catch to delete user if something actually goes wrong, then rethrow to close up the transaction
+  static async register(registration: RegisterUser): Promise<ServiceResult<User>> {
     const userCreationInfo: CreateUserRequest = {
       username: registration.username,
     };
     const db = await DatabaseManager.for('AUTH').open();
-    return ResultHelper.executeTransaction<BooleanOperationResult>(
-      'register user',
-      db,
-      async (database) => {
-        const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
-        if (!userCreateResponse.success) {
-          throw new ServiceError(
-            userCreateResponse.error.codeOrError as ErrorCode,
-            userCreateResponse.error.context,
-          );
-        }
-        const newUser = userCreateResponse.data as User;
+    return ResultHelper.executeTransaction<User>('register user', db, async (database) => {
+      const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
+      if (!userCreateResponse.success) {
+        throw new ServiceError(
+          userCreateResponse.error.codeOrError as ErrorCode,
+          userCreateResponse.error.context,
+        );
+      }
+      const newUser = userCreateResponse.data as User;
 
-        const userCredentials: UserCredentialsEntry = {
-          user_id: newUser.id,
-          pw_hash: await bcrypt.hash(registration.password, 12),
-        };
-        await this.insertCredentialsLogic(database, userCredentials);
-        return BooleanResultHelper.success(`registration successful for ${newUser.username}`);
-      },
-    );
+      const userCredentials: UserCredentialsEntry = {
+        user_id: newUser.id,
+        pw_hash: await bcrypt.hash(registration.password, 12),
+      };
+      await this.insertCredentialsLogic(database, userCredentials);
+      return newUser;
+    });
   }
 
   private static generateTokenPair(userId: number): AuthData {
