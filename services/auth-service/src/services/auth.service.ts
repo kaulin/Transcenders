@@ -9,6 +9,7 @@ import {
   DeviceInfo,
   ERROR_CODES,
   ErrorCode,
+  googleUserInfoSchema,
   JWTPayload,
   LoginUser,
   RefreshToken,
@@ -184,6 +185,25 @@ export class AuthService {
     await database.run(sql, values);
   }
 
+  private static async handleDeviceTokens(
+    database: Database,
+    userId: number,
+    deviceInfo: DeviceInfo,
+  ): Promise<void> {
+    // Check if this device already has active tokens
+    const existingTokens = await this.findExistingTokensForDevice(database, userId, deviceInfo);
+    if (existingTokens.length > 0) {
+      // Same device logging in again - revoke ALL existing tokens for this device
+      const jtisToRevoke = existingTokens.map((token) => token.jti);
+      const revokedCount = await this.revokeMultipleTokens(
+        database,
+        jtisToRevoke,
+        'same_device_relogin',
+      );
+      console.log(`Revoked ${revokedCount} existing tokens for device during login`);
+    }
+  }
+
   static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
     const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeTransaction<AuthData>(
@@ -218,23 +238,7 @@ export class AuthService {
           });
         }
 
-        // Check if this device already has active tokens
-        const existingTokens = await this.findExistingTokensForDevice(
-          database,
-          userData.id,
-          deviceInfo,
-        );
-        if (existingTokens.length > 0) {
-          // Same device logging in again - revoke ALL existing tokens for this device
-          const jtisToRevoke = existingTokens.map((token) => token.jti);
-          const revokedCount = await this.revokeMultipleTokens(
-            database,
-            jtisToRevoke,
-            'same_device_relogin',
-          );
-          console.log(`Revoked ${revokedCount} existing tokens for device during login`);
-        }
-
+        this.handleDeviceTokens(database, userData.id, deviceInfo);
         // generate and save new tokens
         const tokens = this.generateTokenPair(userData.id);
         await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
@@ -266,7 +270,7 @@ export class AuthService {
     });
     return url;
   }
-
+  // #TODO handle failed user creations, by syncing user and auth DB entries
   static async handleGoogleCallback(
     code: string,
     deviceInfo: DeviceInfo,
@@ -277,13 +281,37 @@ export class AuthService {
       db,
       async (database) => {
         const authClient = this.getGoogleOAuthClient();
-        const test = await authClient.getToken(code);
-        const parsed = decodeToken(test.tokens.id_token!);
-        return {
-          accessToken: '',
-          refreshToken: '',
-          expiresIn: 1,
-        };
+        const { tokens } = await authClient.getToken(code);
+        if (!tokens?.id_token) {
+          throw new Error('failed to google authenticate user');
+        }
+        const googleUser = decodeToken(tokens.id_token, googleUserInfoSchema);
+        const potentialUser = await ApiClient.user.getUserExact({ email: googleUser.email });
+        let userData: User;
+        if (potentialUser.success) {
+          userData = potentialUser.data as User;
+        } else {
+          const creationData: CreateUserRequest = {
+            username: crypto.randomUUID(),
+            email: googleUser.email,
+            display_name: googleUser.given_name,
+          };
+          const createUser = await ApiClient.user.createUser(creationData);
+          if (!createUser.success) {
+            throw new ServiceError(
+              createUser.error.codeOrError as ErrorCode,
+              createUser.error.context,
+            );
+          }
+          userData = createUser.data as User;
+          this.insertCredentialsLogic(database, { user_id: userData.id, pw_hash: '' });
+        }
+
+        this.handleDeviceTokens(database, userData.id, deviceInfo);
+        // generate and save new tokens
+        const newTokens = this.generateTokenPair(userData.id);
+        await this.storeRefreshToken(database, newTokens.refreshToken, deviceInfo);
+        return newTokens;
       },
     );
   }
