@@ -11,7 +11,7 @@ import {
 import { TypedApiClient } from '../api/TypedApiClient.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
-export class ScoreApiService extends TypedApiClient {
+export class ScoreApiClient extends TypedApiClient {
   /**
    * Internal method to call the score service
    */

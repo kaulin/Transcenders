@@ -11,7 +11,7 @@ import {
 import { TypedApiClient } from '../api/TypedApiClient.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
-export class AuthApiService extends TypedApiClient {
+export class AuthApiClient extends TypedApiClient {
   /**
    * Internal method to call the auth service
    */
