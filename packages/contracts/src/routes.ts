@@ -67,6 +67,10 @@ export const AUTH_ROUTES = {
   CHANGE_PASSWORD: '/auth/change-password/:id',
   // DELETE /auth/credentials/:id
   DELETE: '/auth/credentials/:id',
+  // GET /auth/google
+  GOOGLE_AUTH: '/auth/google',
+  // GET /auth/google/callback
+  GOOGLE_CALLBACK: '/auth/google/callback',
 } as const;
 
 export const SCORE_ROUTES = {

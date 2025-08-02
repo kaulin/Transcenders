@@ -1,5 +1,4 @@
-import { Value } from '@sinclair/typebox/value';
-import { JWTPayload, JWTPayloadSchema } from '../auth.schemas.js';
+import { JWTPayload } from '../auth.schemas.js';
 
 export function decodeToken(token: string): JWTPayload {
   const tokenSplit = token.split('.');
@@ -14,8 +13,5 @@ export function decodeToken(token: string): JWTPayload {
   }
   const decoded = atob(payloadPart);
   const payload = JSON.parse(decoded);
-  if (!Value.Check(JWTPayloadSchema, payload)) {
-    throw new Error('Invalid JWT payload format');
-  }
   return payload as JWTPayload;
 }

@@ -1,6 +1,7 @@
 import {
   ApiErrorHandler,
   ChangePasswordRequest,
+  GoogleAuthCallback,
   LoginUser,
   LogoutUser,
   RefreshTokenRequest,
@@ -20,6 +21,18 @@ export class AuthController {
   static async login(request: FastifyRequest, reply: FastifyReply) {
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
     const result = await AuthService.login(request.body as LoginUser, deviceInfo);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async googleAuth(request: FastifyRequest, reply: FastifyReply) {
+    const url = AuthService.getGoogleAuthUrl();
+    reply.redirect(url);
+  }
+
+  static async googleCallback(request: FastifyRequest, reply: FastifyReply) {
+    const { code } = request.query as GoogleAuthCallback;
+    const deviceInfo = DeviceUtils.extractDeviceInfo(request);
+    const result = await AuthService.handleGoogleCallback(code, deviceInfo);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
