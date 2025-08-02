@@ -117,9 +117,10 @@ export const googleAuthCallbackSchema = Type.Object({
 export type GoogleAuthCallback = Static<typeof googleAuthCallbackSchema>;
 
 export const googleUserInfoSchema = Type.Object({
-  id: Type.String(),
+  sub: Type.String(),
   email: Type.String(),
   name: Type.String(),
+  given_name: Type.String(),
   picture: Type.Optional(Type.String()),
 });
 

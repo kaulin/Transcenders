@@ -13,7 +13,7 @@ import { Static, Type } from '@sinclair/typebox';
  * FIELD DEFINITIONS
  */
 export const UserIdField = Type.Number();
-export const UsernameField = Type.String({ minLength: 3, maxLength: 20 });
+export const UsernameField = Type.String({ minLength: 3, maxLength: 36 });
 export const EmailField = Type.String({
   pattern: `^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$`,
 });
