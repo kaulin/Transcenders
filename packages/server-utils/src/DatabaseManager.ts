@@ -53,7 +53,15 @@ export class DatabaseManager {
   /** Return existing connection or open a new one */
   private openPromise?: Promise<Database>;
   async open(): Promise<Database> {
-    if (this.db) return this.db;
+    if (this.db) {
+      try {
+        await this.checkDatabaseFileExists();
+        return this.db;
+      } catch (error) {
+        console.log(`Database ${this.key} appears to be corrupted/missing, recreating...`);
+        this.db = null;
+      }
+    }
     if (this.openPromise) return this.openPromise;
 
     // Ensure dir exists
@@ -96,6 +104,14 @@ export class DatabaseManager {
 
     const initSql = this.cfg.initSql;
     return { dir, file, initSql };
+  }
+
+  private async checkDatabaseFileExists(): Promise<void> {
+    try {
+      await fs.access(this.file, fs.constants.F_OK | fs.constants.R_OK);
+    } catch (error) {
+      throw new Error(`Database file does not exist or is not accessible: ${this.file}`);
+    }
   }
 
   private async ensureDir(dir: string): Promise<void> {
