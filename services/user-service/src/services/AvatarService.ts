@@ -21,6 +21,10 @@ export class AvatarService {
     return path.join(ENV.PROJECT_ROOT, AvatarConfig.MEDIA_DIR);
   }
 
+  static getDefaultAvatarPath(): string {
+    return path.join(this.getDefaultAvatarsDir(), AvatarConfig.DEFAULT_AVATAR.FILENAME);
+  }
+
   private static getDefaultAvatarsDir(): string {
     return path.join(this.getMediaDir(), AvatarConfig.DEFAULT_AVATARS);
   }
@@ -114,10 +118,7 @@ export class AvatarService {
       await this.removeOldAvatar(this.getUploadedAvatarsDir(), userId);
 
       // Reset user avatar to default
-      const defaultAvatarUrl = path.join(
-        this.getDefaultAvatarsDir(),
-        AvatarConfig.DEFAULT_AVATAR.FILENAME,
-      );
+      const defaultAvatarUrl = this.getDefaultAvatarPath();
       const updateResult = await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
 
       if (!updateResult.success) {
