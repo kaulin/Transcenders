@@ -31,7 +31,7 @@ export const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
 export const UserSchema = Type.Object({
   id: UserIdField,
   username: UsernameField,
-  email: Type.Optional(EmailField),
+  email: Type.Union([EmailField, Type.Null()]),
   display_name: DisplayNameField,
   avatar: AvatarField,
   lang: LangField,
@@ -192,7 +192,7 @@ export type BooleanOperationResult = Static<typeof BooleanOperationResultSchema>
  */
 
 export const ServiceErrorSchema = Type.Object({
-  codeOrError: Type.Union([Type.String(), Type.Unknown()]),
+  codeOrError: Type.String(),
   message: Type.String(),
   localeKey: Type.Optional(Type.String()),
   userMessage: Type.Optional(Type.String()),

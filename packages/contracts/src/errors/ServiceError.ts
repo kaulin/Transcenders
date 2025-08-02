@@ -67,7 +67,7 @@ export class ServiceError extends Error {
    * Convert error to JSON representation
    */
   toJSON(): {
-    codeOrError: string | FastifyError;
+    codeOrError: string;
     message: string;
     userMessage?: string;
     localeKey?: string;
@@ -77,7 +77,7 @@ export class ServiceError extends Error {
     timestamp: string;
   } {
     return {
-      codeOrError: this.codeOrError,
+      codeOrError: this.codeOrError.toString(),
       message: this.message,
       userMessage: this.userMessage,
       localeKey: this.localeKey,
@@ -116,6 +116,30 @@ export class ServiceError extends Error {
       ...context,
       originalError: String(error),
     });
+  }
+
+  static fromApiResponse(errorData: {
+    codeOrError: string;
+    message: string;
+    userMessage?: string;
+    localeKey?: string;
+    category: string;
+    httpStatus: number;
+    context?: Record<string, unknown>;
+    timestamp: string;
+  }): ServiceError {
+    const error = Object.create(ServiceError.prototype);
+    error.codeOrError = errorData.codeOrError;
+    error.message = errorData.message;
+    error.userMessage = errorData.userMessage;
+    error.localeKey = errorData.localeKey;
+    error.category = errorData.category;
+    error.httpStatus = errorData.httpStatus;
+    error.context = errorData.context;
+    error.timestamp = new Date(errorData.timestamp);
+    error.name = 'ServiceError';
+
+    return error;
   }
 
   /**

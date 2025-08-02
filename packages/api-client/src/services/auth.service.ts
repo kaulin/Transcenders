@@ -1,23 +1,27 @@
+import { Static, TSchema } from '@sinclair/typebox';
 import {
-  ApiResponseType,
   AUTH_ROUTES,
+  authDataSchema,
+  BooleanOperationResultSchema,
   LoginUser,
   RegisterUser,
   SERVICE_URLS,
+  UserSchema,
 } from '@transcenders/contracts';
-import { ApiClient } from '../api/ApiClient.js';
+import { TypedApiClient } from '../api/TypedApiClient.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
-export class AuthApiService {
+export class AuthApiService extends TypedApiClient {
   /**
    * Internal method to call the auth service
    */
-  private static async callAuthService(
+  private static async callAuthService<T extends TSchema>(
     endpoint: string,
+    schema: T,
     options: ApiCallOptions = {},
-  ): Promise<ApiResponseType> {
+  ): Promise<Static<T>> {
     const url = `${SERVICE_URLS.AUTH}${endpoint}`;
-    return ApiClient.call(url, options);
+    return this.callTyped(url, schema, options);
   }
 
   /**
@@ -31,7 +35,7 @@ export class AuthApiService {
       method: 'POST',
       body: registration,
     };
-    return this.callAuthService(endpoint, options);
+    return this.callAuthService(endpoint, UserSchema, options);
   }
 
   static async login(login: LoginUser) {
@@ -40,7 +44,7 @@ export class AuthApiService {
       method: 'POST',
       body: login,
     };
-    return this.callAuthService(endpoint, options);
+    return this.callAuthService(endpoint, authDataSchema, options);
   }
 
   static async privateDelete(id: number) {
@@ -48,7 +52,7 @@ export class AuthApiService {
     const options: ApiCallOptions = {
       method: 'DELETE',
     };
-    return this.callAuthService(endpoint, options);
+    return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
   }
 
   static async changePassword(userId: number, oldPassword: string, newPassword: string) {
@@ -57,15 +61,7 @@ export class AuthApiService {
       method: 'PATCH',
       body: { oldPassword, newPassword },
     };
-    return this.callAuthService(endpoint, options);
-  }
-
-  static async googleAuthenticate() {
-    const endpoint = `${AUTH_ROUTES.GOOGLE_AUTH}`;
-    const options: ApiCallOptions = {
-      method: 'GET',
-    };
-    return this.callAuthService(endpoint, options);
+    return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
   }
 
   static async refreshToken(refreshToken: string) {
@@ -74,7 +70,7 @@ export class AuthApiService {
       method: 'POST',
       body: { refreshToken },
     };
-    return this.callAuthService(endpoint, options);
+    return this.callAuthService(endpoint, authDataSchema, options);
   }
 
   static async logout(userId: number, refreshToken: string) {
@@ -83,6 +79,6 @@ export class AuthApiService {
       method: 'POST',
       body: { refreshToken },
     };
-    return this.callAuthService(endpoint, options);
+    return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
   }
 }

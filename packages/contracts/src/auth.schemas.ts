@@ -69,7 +69,7 @@ export const refreshTokenSchema = Type.Object({
   expires_at: TimestampField,
   created_at: TimestampField,
   revoked_at: Type.Union([TimestampField, Type.Null()]),
-  revoke_reason: Type.Optional(Type.String()),
+  revoke_reason: Type.Union([Type.String(), Type.Null()]),
   device_fingerprint: Type.Optional(Type.String()),
   ip_address: Type.Optional(Type.String()),
   user_agent: Type.Optional(Type.String()),
