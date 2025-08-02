@@ -14,7 +14,7 @@ import {
 import { ApiClient } from '../api/ApiClient.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
-export class UserApiService {
+export class UserApiClient {
   /**
    * Internal method to call the user service
    */

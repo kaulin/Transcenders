@@ -1,7 +1,7 @@
 import { ApiResponseType } from '@transcenders/contracts';
-import { AuthApiService } from '../services/auth.service.js';
-import { ScoreApiService } from '../services/score.service.js';
-import { UserApiService } from '../services/user.service.js';
+import { AuthApiClient } from '../services/auth.api.js';
+import { ScoreApiClient } from '../services/score.api.js';
+import { UserApiClient } from '../services/user.api.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
 export class ApiClient {
@@ -38,7 +38,7 @@ export class ApiClient {
     return data as ApiResponseType;
   }
 
-  static user = UserApiService;
-  static auth = AuthApiService;
-  static score = ScoreApiService;
+  static user = UserApiClient;
+  static auth = AuthApiClient;
+  static score = ScoreApiClient;
 }
