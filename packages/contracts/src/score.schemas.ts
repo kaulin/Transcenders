@@ -4,6 +4,7 @@ import { TimestampField, UserIdField } from './user.schemas.js';
 /**
  * ENTITY SCHEMAS
  */
+// #TODO naming consistency, PascalCase for types, camelCase for schemas for all schemas
 export const ScoreSchema = Type.Object({
   id: Type.Optional(Type.Number()),
   winner_id: UserIdField,
@@ -15,6 +16,8 @@ export const ScoreSchema = Type.Object({
   game_start: TimestampField,
   game_end: TimestampField,
 });
+
+export const scoreArraySchema = Type.Array(ScoreSchema);
 export type Score = Static<typeof ScoreSchema>;
 
 export const ScoresArraySchema = Type.Array(ScoreSchema);
