@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
   email TEXT UNIQUE,
-  display_name TEXT UNIQUE NOT NULL,
+  display_name TEXT NOT NULL,
   avatar TEXT,
   lang TEXT,
   status TEXT DEFAULT 'offline' CHECK (status IN ('online', 'offline')),

@@ -8,7 +8,7 @@ import {
   RegisterUser,
   userByIdRequest,
 } from '@transcenders/contracts';
-import { DeviceUtils } from '@transcenders/server-utils';
+import { DeviceUtils, ENV } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from '../services/auth.service.js';
 
@@ -33,7 +33,12 @@ export class AuthController {
     const { code } = request.query as GoogleAuthCallback;
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
     const result = await AuthService.handleGoogleCallback(code, deviceInfo);
-    return ApiErrorHandler.handleServiceResult(reply, result);
+    if (result.success) {
+      const tokens = encodeURIComponent(JSON.stringify(result.data));
+      reply.redirect(`${ENV.FRONTEND_URL}/login?tokens=${tokens}`);
+    } else {
+      reply.redirect(`${ENV.FRONTEND_URL}/login?error=auth_failed`);
+    }
   }
 
   static async logout(request: FastifyRequest, reply: FastifyReply) {

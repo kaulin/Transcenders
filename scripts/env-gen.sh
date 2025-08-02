@@ -46,6 +46,7 @@ set_env_var NODE_ENV "$NODE_ENV"
 set_env_var HOST_UID "$(id -u)"
 set_env_var HOST_GID "$(id -g)"
 set_env_var GOOGLE_REDIRECT_URI "http://localhost:${PORTS[AUTH]}/auth/google/callback"
+set_env_var FRONTEND_URL "http://localhost:5173"
 
 for SVC in "${!PORTS[@]}"; do
   svc_lc=$(echo "$SVC" | tr '[:upper:]' '[:lower:]')

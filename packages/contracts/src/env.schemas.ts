@@ -18,6 +18,7 @@ export const envVarSchema = Type.Object({
   OAUTH_CLIENT_ID: Type.String(),
   OAUTH_CLIENT_SECRET: Type.String(),
   GOOGLE_REDIRECT_URI: Type.String(),
+  FRONTEND_URL: Type.String(),
 });
 
 export type Env = Static<typeof envVarSchema>;
