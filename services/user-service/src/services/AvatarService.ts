@@ -17,24 +17,30 @@ import sharp from 'sharp';
 import { UserService } from './UserService.js';
 
 export class AvatarService {
+  // ==== FILE SYSTEM PATHS (for fs operations) ====
   static getMediaDir(): string {
     return path.join(ENV.PROJECT_ROOT, AvatarConfig.MEDIA_DIR);
   }
 
-  static getDefaultAvatarPath(): string {
-    return path.join(this.getDefaultAvatarsDir(), AvatarConfig.DEFAULT_AVATAR.FILENAME);
-  }
-
-  private static getDefaultAvatarsDir(): string {
+  static getDefaultAvatarsDir(): string {
     return path.join(this.getMediaDir(), AvatarConfig.DEFAULT_AVATARS);
   }
 
-  private static getUploadedAvatarsDir(): string {
+  static getUploadedAvatarsDir(): string {
     return path.join(this.getMediaDir(), AvatarConfig.UPLOADED_AVATARS);
   }
 
-  private static getUploadedAvatarsURL(): string {
+  // ==== WEB ACCESSIBLE URLS (for database and HTTP) ====
+  static getDefaultAvatarsURL(): string {
+    return path.join(AvatarConfig.MEDIA_DIR, AvatarConfig.DEFAULT_AVATARS);
+  }
+
+  static getUploadedAvatarsURL(): string {
     return path.join(AvatarConfig.MEDIA_DIR, AvatarConfig.UPLOADED_AVATARS);
+  }
+
+  static getDefaultAvatarURL(): string {
+    return path.join(this.getDefaultAvatarsURL(), AvatarConfig.DEFAULT_AVATAR.FILENAME);
   }
 
   private static async removeOldAvatar(uploadDir: string, userId: string): Promise<void> {
@@ -118,7 +124,7 @@ export class AvatarService {
       await this.removeOldAvatar(this.getUploadedAvatarsDir(), userId);
 
       // Reset user avatar to default
-      const defaultAvatarUrl = this.getDefaultAvatarPath();
+      const defaultAvatarUrl = this.getDefaultAvatarURL();
       const updateResult = await UserService.updateUser(+userId, { avatar: defaultAvatarUrl });
 
       if (!updateResult.success) {
@@ -142,7 +148,7 @@ export class AvatarService {
         .filter((file) => file.startsWith(AvatarConfig.DEFAULT_AVATAR.PREFIX_FILTER))
         .map((file) => ({
           name: file,
-          url: path.join(this.getDefaultAvatarsDir(), file),
+          url: path.join(this.getDefaultAvatarsURL(), file),
         }));
 
       const result: DefaultAvatarsResult = { avatars };
@@ -156,6 +162,7 @@ export class AvatarService {
   ): Promise<ServiceResult<AvatarResult>> {
     return ResultHelper.executeOperation<AvatarResult>('set default avatar', async () => {
       const defaultAvatarsDir = this.getDefaultAvatarsDir();
+      const defaultAvatarsURL = this.getDefaultAvatarsURL();
 
       // Validate avatar exists
       const avatarPath = path.join(defaultAvatarsDir, avatarName);
@@ -167,7 +174,7 @@ export class AvatarService {
       }
 
       // Update user's avatar in database
-      const avatarUrl = `${avatarPath}`;
+      const avatarUrl = path.join(defaultAvatarsURL, avatarName);
 
       const updateResult = await UserService.updateUser(+userId, { avatar: avatarUrl });
       if (!updateResult.success) {
