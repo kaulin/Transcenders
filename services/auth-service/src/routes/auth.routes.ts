@@ -1,6 +1,7 @@
 import {
   AUTH_ROUTES,
   changePasswordSchema,
+  googleAuthCallbackSchema,
   loginUserSchema,
   logoutUserSchema,
   refreshTokenRequestSchema,
@@ -38,6 +39,31 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.login,
+  );
+
+  app.get(
+    AUTH_ROUTES.GOOGLE_AUTH,
+    {
+      schema: {
+        description: 'Initiate Google OAuth flow',
+        tags: ['Auth'],
+        response: standardApiResponses,
+      },
+    },
+    AuthController.googleAuth,
+  );
+
+  app.get(
+    AUTH_ROUTES.GOOGLE_CALLBACK,
+    {
+      schema: {
+        description: 'Handle Google OAuth callback',
+        tags: ['Auth'],
+        querystring: googleAuthCallbackSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.googleCallback,
   );
 
   app.post(

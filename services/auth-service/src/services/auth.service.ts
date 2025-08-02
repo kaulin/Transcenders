@@ -5,6 +5,7 @@ import {
   BooleanOperationResult,
   BooleanResultHelper,
   CreateUserRequest,
+  decodeToken,
   DeviceInfo,
   ERROR_CODES,
   ErrorCode,
@@ -22,10 +23,12 @@ import {
 import {
   DatabaseManager,
   DeviceUtils,
+  ENV,
   QueryBuilder,
   TokenValidator,
 } from '@transcenders/server-utils';
 import * as bcrypt from 'bcrypt';
+import { google } from 'googleapis';
 import jwt from 'jsonwebtoken';
 import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
@@ -237,6 +240,50 @@ export class AuthService {
         await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
 
         return tokens;
+      },
+    );
+  }
+
+  private static getGoogleOAuthClient() {
+    const { OAuth2 } = google.auth;
+    return new OAuth2({
+      client_id: ENV.OAUTH_CLIENT_ID,
+      client_secret: ENV.OAUTH_CLIENT_SECRET,
+      redirectUri: ENV.GOOGLE_REDIRECT_URI,
+    });
+  }
+
+  static getGoogleAuthUrl() {
+    const oauth2Client = this.getGoogleOAuthClient();
+    const scopes = [
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/userinfo.email',
+    ];
+
+    const url = oauth2Client.generateAuthUrl({
+      access_type: 'online',
+      scope: scopes,
+    });
+    return url;
+  }
+
+  static async handleGoogleCallback(
+    code: string,
+    deviceInfo: DeviceInfo,
+  ): Promise<ServiceResult<AuthData>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return await ResultHelper.executeTransaction<AuthData>(
+      'google auth callback',
+      db,
+      async (database) => {
+        const authClient = this.getGoogleOAuthClient();
+        const test = await authClient.getToken(code);
+        const parsed = decodeToken(test.tokens.id_token!);
+        return {
+          accessToken: '',
+          refreshToken: '',
+          expiresIn: 1,
+        };
       },
     );
   }
