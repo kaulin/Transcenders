@@ -59,4 +59,30 @@ export class AuthApiService {
     };
     return this.callAuthService(endpoint, options);
   }
+
+  static async googleAuthenticate() {
+    const endpoint = `${AUTH_ROUTES.GOOGLE_AUTH}`;
+    const options: ApiCallOptions = {
+      method: 'GET',
+    };
+    return this.callAuthService(endpoint, options);
+  }
+
+  static async refreshToken(refreshToken: string) {
+    const endpoint = `${AUTH_ROUTES.REFRESH}`;
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body: { refreshToken },
+    };
+    return this.callAuthService(endpoint, options);
+  }
+
+  static async logout(userId: number, refreshToken: string) {
+    const endpoint = `${AUTH_ROUTES.LOGOUT.replace(':id', userId.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body: { refreshToken },
+    };
+    return this.callAuthService(endpoint, options);
+  }
 }
