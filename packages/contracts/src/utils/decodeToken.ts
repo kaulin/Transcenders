@@ -1,6 +1,12 @@
-import { JWTPayload } from '../auth.schemas.js';
+import { Static, TSchema } from '@sinclair/typebox';
+import { Value } from '@sinclair/typebox/value';
+import { JWTPayload, JWTPayloadSchema } from '../auth.schemas.js';
 
-export function decodeToken(token: string): JWTPayload {
+export function decodeToken<T extends TSchema>(token: string, schema: T): Static<T>;
+export function decodeToken(token: string): JWTPayload;
+export function decodeToken<T extends TSchema>(token: string, schema?: T): Static<T> | JWTPayload {
+  const actualSchema = schema ?? JWTPayloadSchema;
+
   const tokenSplit = token.split('.');
   if (tokenSplit.length < 2) {
     throw new Error('Malformed JWT token, missing payload');
@@ -13,5 +19,6 @@ export function decodeToken(token: string): JWTPayload {
   }
   const decoded = atob(payloadPart);
   const payload = JSON.parse(decoded);
-  return payload as JWTPayload;
+  Value.Assert(actualSchema, payload);
+  return payload;
 }
