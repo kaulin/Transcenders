@@ -1,46 +1,28 @@
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-
-import { useUser } from "../contexts/UserContext"
-import { ApiClient } from "@transcenders/api-client"
-import {
-	decodeToken,
-	type AuthData,
-	type LoginUser,
-	type User,
-} from "@transcenders/contracts"
+import { ApiClient } from '@transcenders/api-client';
+import { decodeToken, type AuthData, type LoginUser } from '@transcenders/contracts';
+import { useUser } from '../contexts/UserContext';
 
 const useAuthLogin = () => {
-	const { setUser } = useUser()
+  const { setUser } = useUser();
 
-	async function login(username: string, password: string) {
+  async function login(username: string, password: string) {
+    const loginInfo: LoginUser = { username, password };
+    const authData = await ApiClient.auth.login(loginInfo);
+    const payload = decodeToken(authData.accessToken);
 
-		try {
-			const loginInfo: LoginUser = { username, password }
-			const userLogin = await ApiClient.auth.login(loginInfo)
+    const user = await ApiClient.user.getUserById(payload.userId);
+    setUser(user);
+  }
 
-			if (!userLogin.success) {
-				throw new Error(userLogin.error.localeKey)
-			}
+  async function loginWithTokens(tokens: AuthData) {
+    const { refreshToken } = tokens;
+    const { userId } = decodeToken(refreshToken);
+    const user = await ApiClient.user.getUserById(userId);
+    console.log('logging in with tokens I think?');
+    setUser(user);
+  }
 
-			const authData = userLogin.data as AuthData
-			const payload = decodeToken(authData.accessToken)
+  return { login, loginWithTokens };
+};
 
-			const userReq = await ApiClient.user.getUserById(payload.userId)
-
-			if (!userReq.success) {
-				throw new Error(userReq.error.localeKey)
-			}
-
-			const user = userReq.data as User
-			setUser(user)
-
-		} catch (err: any) {
-			throw err
-		}
-	}
-
-	return { login }
-}
-
-export default useAuthLogin
+export default useAuthLogin;
