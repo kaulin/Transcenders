@@ -4,7 +4,7 @@ import {
   AvatarResult,
   DefaultAvatarsResult,
   ERROR_CODES,
-  RandomAvatarResult,
+  RandomAvatar,
   RandomCatsQuery,
   ResultHelper,
   ServiceError,
@@ -195,8 +195,8 @@ export class AvatarService {
     limit = AvatarConfig.RANDOM_CATS.DEFAULT_LIMIT,
     imageSize = AvatarConfig.RANDOM_CATS.DEFAULT_IMAGE_SIZE,
     mimeTypes = AvatarConfig.RANDOM_CATS.DEFAULT_MIME_TYPES,
-  }: Partial<RandomCatsQuery> = {}): Promise<ServiceResult<RandomAvatarResult[]>> {
-    return ResultHelper.executeOperation<RandomAvatarResult[]>('get random cat urls', async () => {
+  }: Partial<RandomCatsQuery> = {}): Promise<ServiceResult<RandomAvatar[]>> {
+    return ResultHelper.executeOperation<RandomAvatar[]>('get random cat urls', async () => {
       const headers = new Headers({
         'Content-Type': 'application/json',
       });
@@ -222,7 +222,7 @@ export class AvatarService {
         throw new Error('No cat images found');
       }
 
-      const cats: RandomAvatarResult[] = catData.map((cat: RandomAvatarResult) => ({
+      const cats: RandomAvatar[] = catData.map((cat: RandomAvatar) => ({
         url: cat.url,
         id: cat.id,
         width: cat.width,

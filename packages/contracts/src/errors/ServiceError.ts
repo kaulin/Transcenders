@@ -37,7 +37,6 @@ export class ServiceError extends Error {
       this.name = 'ServiceError';
 
       this.stack = codeOrError.stack;
-      this.cause = codeOrError;
     }
     // ErrorCode case
     else {
@@ -56,7 +55,6 @@ export class ServiceError extends Error {
       // Preserve original error stack if provided
       if (originalError) {
         this.stack = originalError.stack;
-        this.cause = originalError;
       }
     }
     // Ensure proper prototype chain for instanceof checks

@@ -49,13 +49,14 @@ export const avatarResultSchema = Type.Object({
 });
 export type AvatarResult = Static<typeof avatarResultSchema>;
 
-export const randomAvatarResultSchema = Type.Object({
+export const randomAvatarSchema = Type.Object({
   id: Type.String(),
   url: Type.String(),
   width: Type.String(),
   height: Type.String(),
 });
-export type RandomAvatarResult = Static<typeof randomAvatarResultSchema>;
+export const randomAvatarArraySchema = Type.Array(randomAvatarSchema);
+export type RandomAvatar = Static<typeof randomAvatarSchema>;
 
 export const randomCatsRequestSchema = {
   querystring: Type.Object({

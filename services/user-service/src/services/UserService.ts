@@ -181,7 +181,9 @@ export class UserService {
         }
 
         // Delete user from auth, Success or not, dont care, clean later
-        const credentialsDeleted = await ApiClient.auth.privateDelete(userId);
+        try {
+          const credentialsDeleted = await ApiClient.auth.privateDelete(userId);
+        } catch {}
 
         const sql = SQL`
         DELETE FROM users WHERE id = ${userId}

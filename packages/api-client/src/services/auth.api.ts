@@ -6,7 +6,7 @@ import {
   LoginUser,
   RegisterUser,
   SERVICE_URLS,
-  UserSchema,
+  userSchema,
 } from '@transcenders/contracts';
 import { TypedApiClient } from '../api/TypedApiClient.js';
 import { ApiCallOptions } from '../types/client.options.js';
@@ -35,7 +35,7 @@ export class AuthApiClient extends TypedApiClient {
       method: 'POST',
       body: registration,
     };
-    return this.callAuthService(endpoint, UserSchema, options);
+    return this.callAuthService(endpoint, userSchema, options);
   }
 
   static async login(login: LoginUser) {

@@ -1,80 +1,88 @@
+import { Static, TSchema } from '@sinclair/typebox';
 import {
-  ApiResponseType,
   AVATAR_ROUTES,
+  avatarResultSchema,
+  BooleanOperationResultSchema,
   CreateUserRequest,
+  DefaultAvatarsResultSchema,
   FRIENDSHIP_ROUTES,
   GetUserRequest,
   GetUsersQuery,
+  randomAvatarArraySchema,
   RandomCatsQuery,
   SERVICE_URLS,
   toQueryString,
   UpdateUserRequest,
   USER_ROUTES,
+  userArraySchema,
+  userSchema,
 } from '@transcenders/contracts';
-import { ApiClient } from '../api/ApiClient.js';
+import { TypedApiClient } from '../api/TypedApiClient.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
-export class UserApiClient {
+export class UserApiClient extends TypedApiClient {
   /**
    * Internal method to call the user service
    */
-  private static async callUserService(
+  private static async callUserService<T extends TSchema>(
     endpoint: string,
+    schema: T,
     options: ApiCallOptions = {},
-  ): Promise<ApiResponseType> {
+  ): Promise<Static<T>> {
     const url = `${SERVICE_URLS.USER}${endpoint}`;
-    return ApiClient.call(url, options);
+    return this.callTyped(url, schema, options);
   }
 
   /**
    * Gets a list of users based on optional query parameters
    */
   static async getUsers(query?: GetUsersQuery) {
-    const queryString = query ? toQueryString(query) : '';
-    return this.callUserService(`${USER_ROUTES.USERS}${queryString}`);
+    const queryString = toQueryString(query);
+    const endpoint = `${USER_ROUTES.USERS}${queryString}`;
+    return this.callUserService(endpoint, userArraySchema);
   }
 
   /**
    * Creates a new user
    */
   static async createUser(userData: CreateUserRequest) {
-    return this.callUserService(USER_ROUTES.USERS, {
-      method: 'POST',
-      body: userData,
-    });
+    const endpoint = USER_ROUTES.USERS;
+    const options: ApiCallOptions = { method: 'POST', body: userData };
+    return this.callUserService(endpoint, userSchema, options);
   }
 
   /**
    * Gets a user by their ID
    */
   static async getUserById(id: number) {
-    return this.callUserService(USER_ROUTES.USER_BY_ID.replace(':id', id.toString()));
+    const endpoint = USER_ROUTES.USER_BY_ID.replace(':id', id.toString());
+    return this.callUserService(endpoint, userSchema);
   }
 
   /**
    * Updates a user's information
    */
   static async updateUser(id: number, userData: UpdateUserRequest) {
-    return this.callUserService(USER_ROUTES.USER_BY_ID.replace(':id', id.toString()), {
-      method: 'PATCH',
-      body: userData,
-    });
+    const endpoint = USER_ROUTES.USER_BY_ID.replace(':id', id.toString());
+    const options: ApiCallOptions = { method: 'PATCH', body: userData };
+    return this.callUserService(endpoint, userSchema, options);
   }
 
   /**
    * Deletes a user
    */
   static async deleteUser(id: number) {
-    return this.callUserService(USER_ROUTES.USER_BY_ID.replace(':id', id.toString()), {
-      method: 'DELETE',
-    });
+    const endpoint = USER_ROUTES.USER_BY_ID.replace(':id', id.toString());
+    const options: ApiCallOptions = { method: 'DELETE' };
+    return this.callUserService(endpoint, BooleanOperationResultSchema, options);
   }
 
   /**
    * Checks if a user with the given identifier exists
    */
   static async checkUserExists(identifier: string) {
-    return this.callUserService(USER_ROUTES.USER_EXISTS.replace(':identifier', identifier));
+    const endpoint = USER_ROUTES.USER_EXISTS.replace(':identifier', identifier);
+    return this.callUserService(endpoint, BooleanOperationResultSchema);
   }
 
   /**
@@ -82,80 +90,73 @@ export class UserApiClient {
    */
   static async getUserExact(query: GetUserRequest) {
     const queryString = `?${new URLSearchParams(query).toString()}`;
-    return this.callUserService(`${USER_ROUTES.USERS_EXACT}${queryString}`);
+    const endpoint = `${USER_ROUTES.USERS_EXACT}${queryString}`;
+    return this.callUserService(endpoint, userSchema);
   }
 
   // Friendship methods
-  static async getFriends(userId: number) {
-    return this.callUserService(
-      FRIENDSHIP_ROUTES.USER_FRIENDSHIPS.replace(':id', userId.toString()),
-    );
+  static async getUserFriends(userId: number) {
+    const endpoint = FRIENDSHIP_ROUTES.USER_FRIENDSHIPS.replace(':id', userId.toString());
+    return this.callUserService(endpoint, userArraySchema);
   }
 
   static async sendFriendRequest(userId: number, recipientId: number) {
-    return this.callUserService(
-      FRIENDSHIP_ROUTES.SEND_FRIEND_REQUEST.replace(':id', userId.toString()).replace(
-        ':recipientId',
-        recipientId.toString(),
-      ),
-      { method: 'POST' },
-    );
+    const endpoint = FRIENDSHIP_ROUTES.SEND_FRIEND_REQUEST.replace(
+      ':id',
+      userId.toString(),
+    ).replace(':recipientId', recipientId.toString());
+    const options: ApiCallOptions = { method: 'POST' };
+    return this.callUserService(endpoint, BooleanOperationResultSchema, options);
   }
 
   static async acceptFriendRequest(userId: number, requestId: number) {
-    return this.callUserService(
-      FRIENDSHIP_ROUTES.FRIEND_REQUEST.replace(':id', userId.toString()).replace(
-        ':requestId',
-        requestId.toString(),
-      ),
-      { method: 'PUT' },
+    const endpoint = FRIENDSHIP_ROUTES.FRIEND_REQUEST.replace(':id', userId.toString()).replace(
+      ':requestId',
+      requestId.toString(),
     );
+    const options: ApiCallOptions = { method: 'PUT' };
+    return this.callUserService(endpoint, BooleanOperationResultSchema, options);
   }
 
   static async declineFriendRequest(userId: number, requestId: number) {
-    return this.callUserService(
-      FRIENDSHIP_ROUTES.FRIEND_REQUEST.replace(':id', userId.toString()).replace(
-        ':requestId',
-        requestId.toString(),
-      ),
-      { method: 'DELETE' },
+    const endpoint = FRIENDSHIP_ROUTES.FRIEND_REQUEST.replace(':id', userId.toString()).replace(
+      ':requestId',
+      requestId.toString(),
     );
+    const options: ApiCallOptions = { method: 'DELETE' };
+    return this.callUserService(endpoint, BooleanOperationResultSchema, options);
   }
 
   static async removeFriend(userId: number, friendId: number) {
-    return this.callUserService(
-      FRIENDSHIP_ROUTES.FRIENDSHIP.replace(':id', userId.toString()).replace(
-        ':friendId',
-        friendId.toString(),
-      ),
-      { method: 'DELETE' },
+    const endpoint = FRIENDSHIP_ROUTES.FRIENDSHIP.replace(':id', userId.toString()).replace(
+      ':friendId',
+      friendId.toString(),
     );
+    const options: ApiCallOptions = { method: 'DELETE' };
+    return this.callUserService(endpoint, BooleanOperationResultSchema, options);
   }
 
   /**
    * Get list of available default avatars
    */
   static async getDefaultAvatars() {
-    return this.callUserService(AVATAR_ROUTES.AVATARS_DEFAULTS);
+    const endpoint = AVATAR_ROUTES.AVATARS_DEFAULTS;
+    return this.callUserService(endpoint, DefaultAvatarsResultSchema);
   }
 
   /**
    * Set a default avatar for a user
    */
   static async setDefaultAvatar(userId: number, avatarName: string) {
-    return this.callUserService(
-      AVATAR_ROUTES.USER_AVATAR_DEFAULT.replace(':userId', userId.toString()),
-      {
-        method: 'POST',
-        body: { avatarName },
-      },
-    );
+    const endpoint = AVATAR_ROUTES.USER_AVATAR_DEFAULT.replace(':userId', userId.toString());
+    const options: ApiCallOptions = { method: 'POST', body: { avatarName } };
+    return this.callUserService(endpoint, avatarResultSchema, options);
   }
 
   /**
    * Get the full URL for an avatar path
    */
-  static getAvatarUrl(avatarPath: string): string {
+  static getFullAvatarURL(avatarPath: string): string {
     if (this.getAvatarType(avatarPath) == 'web') {
       return avatarPath;
     }
@@ -181,33 +182,27 @@ export class UserApiClient {
   static async uploadAvatar(userId: number, file: File) {
     const formData = new FormData();
     formData.append('file', file);
-    return await this.callUserService(
-      `${AVATAR_ROUTES.USER_AVATAR.replace(':userId', userId.toString())}`,
-      {
-        method: 'PUT',
-        body: formData,
-      },
-    );
+    const endpoint = AVATAR_ROUTES.USER_AVATAR.replace(':userId', userId.toString());
+    const options: ApiCallOptions = { method: 'PUT', body: formData };
+    return await this.callUserService(endpoint, avatarResultSchema, options);
   }
 
   /**
    * Remove user avatar and set default
    */
   static async removeAvatar(userId: number) {
-    return await this.callUserService(
-      `${AVATAR_ROUTES.USER_AVATAR.replace(':userId', userId.toString())}`,
-      {
-        method: 'DELETE',
-      },
-    );
+    const endpoint = AVATAR_ROUTES.USER_AVATAR.replace(':userId', userId.toString());
+    const options: ApiCallOptions = { method: 'DELETE' };
+    return await this.callUserService(endpoint, avatarResultSchema, options);
   }
 
   /**
    * Get a list of random cat avatars from TheCatApi
    */
   static async getRandomCats(query?: RandomCatsQuery) {
-    const queryString = query ? toQueryString(query) : '';
-    return this.callUserService(`${AVATAR_ROUTES.AVATARS_RANDOM}${queryString}`);
+    const queryString = toQueryString(query);
+    const endpoint = `${AVATAR_ROUTES.AVATARS_RANDOM}${queryString}`;
+    return this.callUserService(endpoint, randomAvatarArraySchema);
   }
 
   /**
