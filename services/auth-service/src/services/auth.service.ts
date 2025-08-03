@@ -251,17 +251,18 @@ export class AuthService {
   }
 
   private static async generateUsername(googleUser: GoogleUserInfo): Promise<string> {
-    const firstName = googleUser.given_name?.trim() || '';
-    const fullName = googleUser.name?.trim() || '';
-    const email = googleUser.email?.toLowerCase() || '';
+    const firstName = googleUser.given_name.replace(/\s+/g, '') || 'user';
+    const fullName = googleUser.name.trim() || 'user';
+    const email = googleUser.email.toLowerCase();
     const emailPrefix = email.split('@')[0];
 
     const patterns = [
       firstName,
       firstName.toLowerCase(),
+      firstName ? `${firstName.at(0)}${fullName.split(' ').pop()}` : null,
+      firstName ? `${firstName}${fullName.split(' ').pop()?.at(0)}` : null,
       fullName.replace(/\s+/g, ''),
       fullName.replace(/\s+/g, '').toLowerCase(),
-      firstName && fullName.includes(' ') ? `${firstName[0]}${fullName.split(' ')[1]}` : null,
       emailPrefix,
       `${firstName.toLowerCase()}${Math.floor(Math.random() * 100)}`,
       `${emailPrefix}${Math.floor(Math.random() * 100)}`,
