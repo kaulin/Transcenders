@@ -9,14 +9,14 @@ all: local
 setup-check: env-local
 		@./scripts/docker-deps-check.sh
 
-env-local:
-		@scripts/env-gen.sh local
+env-local: setup-check
+		@scripts/env-gen.js local
 
-env-docker:
-		@scripts/env-gen.sh docker
+env-docker: setup-check
+		@scripts/env-gen.js docker
 
-env-prod:
-		@scripts/env-gen.sh production
+env-prod: setup-check
+		@scripts/env-gen.js production
 
 .PHONY: setup-check env-local env-docker env-prod
 
