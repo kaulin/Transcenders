@@ -8,6 +8,7 @@ import {
   decodeToken,
   DeviceInfo,
   ERROR_CODES,
+  GoogleUserInfo,
   googleUserInfoSchema,
   JWTPayload,
   LoginUser,
@@ -248,6 +249,37 @@ export class AuthService {
     });
     return url;
   }
+
+  private static async generateUsername(googleUser: GoogleUserInfo): Promise<string> {
+    const firstName = googleUser.given_name?.trim() || '';
+    const fullName = googleUser.name?.trim() || '';
+    const email = googleUser.email?.toLowerCase() || '';
+    const emailPrefix = email.split('@')[0];
+
+    const patterns = [
+      firstName,
+      firstName.toLowerCase(),
+      fullName.replace(/\s+/g, ''),
+      fullName.replace(/\s+/g, '').toLowerCase(),
+      firstName && fullName.includes(' ') ? `${firstName[0]}${fullName.split(' ')[1]}` : null,
+      emailPrefix,
+      `${firstName.toLowerCase()}${Math.floor(Math.random() * 100)}`,
+      `${emailPrefix}${Math.floor(Math.random() * 100)}`,
+      `user${Math.floor(Math.random() * 10000)}`,
+      `${firstName}${crypto.randomUUID().slice(0, 8)}`,
+    ].filter((pattern): pattern is string => typeof pattern === 'string' && pattern.length >= 3);
+
+    for (const username of patterns) {
+      try {
+        await ApiClient.user.getUserExact({ username });
+      } catch (error) {
+        return username;
+      }
+    }
+
+    // Fallback on some crazy bad luck
+    return `user_${Date.now()}`;
+  }
   // #TODO handle failed user creations, by syncing user and auth DB entries
   static async handleGoogleCallback(
     code: string,
@@ -269,7 +301,7 @@ export class AuthService {
           userData = await ApiClient.user.getUserExact({ email: googleUser.email });
         } catch {
           const creationData: CreateUserRequest = {
-            username: crypto.randomUUID(),
+            username: await this.generateUsername(googleUser),
             email: googleUser.email,
             display_name: googleUser.given_name,
           };
