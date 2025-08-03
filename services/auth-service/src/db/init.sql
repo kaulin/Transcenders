@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   device_fingerprint TEXT,
   ip_address TEXT,
   user_agent TEXT,
-  FOREIGN KEY (user_id) REFERENCES user_credentials(user_id)
+  FOREIGN KEY (user_id) REFERENCES user_credentials(user_id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_jti ON refresh_tokens (jti);

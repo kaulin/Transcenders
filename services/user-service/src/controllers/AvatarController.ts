@@ -15,10 +15,6 @@ export class AvatarController {
   static async uploadAvatar(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { userId } = request.params as UploadAvatarRequestParams;
-      if (request.validationError) {
-        // ignore validation for multipart, but set a schema for swagger
-      }
-      // Get the uploaded file
       const data = (await request.file())!;
       if (!data) {
         return ApiErrorHandler.error(reply, ERROR_CODES.USER.FILE_NOT_PROVIDED, 'upload avatar');

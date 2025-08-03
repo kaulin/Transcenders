@@ -28,7 +28,7 @@ export const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
 /**
  * ENTITY SCHEMAS
  */
-export const UserSchema = Type.Object({
+export const userSchema = Type.Object({
   id: UserIdField,
   username: UsernameField,
   email: Type.Union([EmailField, Type.Null()]),
@@ -38,10 +38,10 @@ export const UserSchema = Type.Object({
   created_at: TimestampField,
   updated_at: TimestampField,
 });
-export type User = Static<typeof UserSchema>;
+export type User = Static<typeof userSchema>;
 
-export const UsersArraySchema = Type.Array(UserSchema);
-export type UsersArray = Static<typeof UsersArraySchema>;
+export const userArraySchema = Type.Array(userSchema);
+export type UserArray = Static<typeof userArraySchema>;
 
 const userModifiableFields = Type.Object({
   username: UsernameField,

@@ -8,7 +8,6 @@ import {
   decodeToken,
   DeviceInfo,
   ERROR_CODES,
-  ErrorCode,
   googleUserInfoSchema,
   JWTPayload,
   LoginUser,
@@ -129,15 +128,7 @@ export class AuthService {
     };
     const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeTransaction<User>('register user', db, async (database) => {
-      const userCreateResponse = await ApiClient.user.createUser(userCreationInfo);
-      if (!userCreateResponse.success) {
-        throw new ServiceError(
-          userCreateResponse.error.codeOrError as ErrorCode,
-          userCreateResponse.error.context,
-        );
-      }
-      const newUser = userCreateResponse.data as User;
-
+      const newUser = await ApiClient.user.createUser(userCreationInfo);
       const userCredentials: UserCredentialsEntry = {
         user_id: newUser.id,
         pw_hash: await bcrypt.hash(registration.password, 12),
@@ -204,14 +195,7 @@ export class AuthService {
       'authenticate user',
       db,
       async (database) => {
-        const apiResponse = await ApiClient.user.getUserExact({ username: login.username });
-        if (!apiResponse.success) {
-          throw new ServiceError(
-            apiResponse.error.codeOrError as ErrorCode,
-            apiResponse.error.context,
-          );
-        }
-        const userData = apiResponse.data as User;
+        const userData = await ApiClient.user.getUserExact({ username: login.username });
 
         // get the matching user credentials entry
         const sql = SQL`
@@ -280,24 +264,16 @@ export class AuthService {
           throw new Error('failed to google authenticate user');
         }
         const googleUser = decodeToken(tokens.id_token, googleUserInfoSchema);
-        const potentialUser = await ApiClient.user.getUserExact({ email: googleUser.email });
         let userData: User;
-        if (potentialUser.success) {
-          userData = potentialUser.data as User;
-        } else {
+        try {
+          userData = await ApiClient.user.getUserExact({ email: googleUser.email });
+        } catch {
           const creationData: CreateUserRequest = {
             username: crypto.randomUUID(),
             email: googleUser.email,
             display_name: googleUser.given_name,
           };
-          const createUser = await ApiClient.user.createUser(creationData);
-          if (!createUser.success) {
-            throw new ServiceError(
-              createUser.error.codeOrError as ErrorCode,
-              createUser.error.context,
-            );
-          }
-          userData = createUser.data as User;
+          userData = await ApiClient.user.createUser(creationData);
           this.insertCredentialsLogic(database, { user_id: userData.id, pw_hash: '' });
         }
 
