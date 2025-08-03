@@ -6,7 +6,19 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/node_modules', 'scripts', '**/dist'] },
+  {
+    ignores: [
+      '**/node_modules',
+      'scripts',
+      '**/dist',
+      '**/.vite',
+      '**/.tmp',
+      '**/postcss.config.js',
+      '**/tailwind.config.js',
+      '**/vite.config.ts',
+      '**/eslint.config.js',
+    ],
+  },
 
   // shared TypeScript rules, stylistic, parser options
   tseslint.configs.recommended,
@@ -28,7 +40,7 @@ export default tseslint.config(
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
       '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
 
