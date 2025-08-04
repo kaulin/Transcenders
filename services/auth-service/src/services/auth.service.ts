@@ -1,3 +1,4 @@
+import { Value } from '@sinclair/typebox/value';
 import { ApiClient } from '@transcenders/api-client';
 import {
   AuthConfig,
@@ -18,7 +19,9 @@ import {
   ResultHelper,
   ServiceError,
   ServiceResult,
+  twoFactorEntrySchema,
   TwoFactorInsert,
+  TwoFactorUpdate,
   User,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
@@ -483,6 +486,7 @@ export class AuthService {
   ): Promise<ServiceResult<BooleanOperationResult>> {
     const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeQuery<BooleanOperationResult>('2fa enable', db, async (database) => {
+      // #TODO generate actual different codes
       const code = '123456';
       const codeHash = await bcrypt.hash(code, 12);
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
@@ -491,6 +495,7 @@ export class AuthService {
         email: email,
         code_hash: codeHash,
         status: 'pending',
+        verified_at: null,
         code_expires_at: expiresAt.toISOString(),
       };
       const { sql, values } = QueryBuilder.insertReplace('two_factor', twoFactorInsert);
@@ -498,7 +503,51 @@ export class AuthService {
 
       // #TODO send email system;
       console.log(`sending code: ${code} to ${email}`);
-      return BooleanResultHelper.success('two factor verification pending');
+      return BooleanResultHelper.success('2fa pending');
+    });
+  }
+
+  static async twoFactorVerify(
+    userId: number,
+    code: string,
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return ResultHelper.executeQuery<BooleanOperationResult>('2fa verify', db, async (database) => {
+      const sql = SQL`
+        SELECT * FROM two_factor WHERE user_id = ${userId}
+      `;
+      const result = await database.get(sql.text, sql.values);
+      if (!result) {
+        return BooleanResultHelper.failure('start a 2fa verification first');
+      }
+      Value.Assert(twoFactorEntrySchema, result);
+
+      // Already verified, success anyway
+      if (result.status === 'verified') {
+        return BooleanResultHelper.success('2fa already verified');
+      }
+      // check if code is expired
+      if (new Date() > new Date(result.code_expires_at)) {
+        return BooleanResultHelper.failure('code expired, request new one');
+      }
+
+      // verify code
+      if (await bcrypt.compare(code, result.code_hash)) {
+        const twoFactorUpdate: TwoFactorUpdate = {
+          status: 'verified',
+          code_expires_at: null,
+          code_hash: null,
+        };
+        const { sql, values } = QueryBuilder.update(
+          'two_factor',
+          twoFactorUpdate,
+          `id = ${result.id}`,
+        );
+        await database.run(sql, values);
+        return BooleanResultHelper.success('2fa verified');
+      } else {
+        return BooleanResultHelper.failure('wrong code try again');
+      }
     });
   }
 }

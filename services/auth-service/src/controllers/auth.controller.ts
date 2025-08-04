@@ -7,6 +7,7 @@ import {
   RefreshTokenRequest,
   RegisterUser,
   TwoFactorEnable,
+  TwoFactorVerify,
   UserIdParam,
 } from '@transcenders/contracts';
 import { DeviceUtils, ENV } from '@transcenders/server-utils';
@@ -79,6 +80,15 @@ export class AuthController {
     const { email } = request.body as TwoFactorEnable;
 
     const result = await AuthService.twoFactorEnable(userId, email);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async twoFactorVerify(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+    const { code } = request.body as TwoFactorVerify;
+
+    const result = await AuthService.twoFactorVerify(userId, code);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 }

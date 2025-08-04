@@ -128,16 +128,34 @@ export const googleUserInfoSchema = Type.Object({
 
 export type GoogleUserInfo = Static<typeof googleUserInfoSchema>;
 
-export const twoFactorEntrySchema = Type.Object({
-  id: IdField,
-  user_id: UserIdField,
-  email: EmailField,
-  status: TwoFactorStatusField,
-  code_hash: Type.String(),
-  code_expires_at: TimestampField,
-  verified_at: TimestampField,
-  created_at: TimestampField,
-});
+export const twoFactorEntrySchema = Type.Union(
+  [
+    Type.Object({
+      id: IdField,
+      user_id: UserIdField,
+      email: EmailField,
+      status: Type.Literal('pending'),
+      code_hash: Type.String(),
+      code_expires_at: TimestampField,
+      verified_at: Type.Null(),
+      created_at: TimestampField,
+    }),
+    Type.Object({
+      id: IdField,
+      user_id: UserIdField,
+      email: EmailField,
+      status: Type.Literal('verified'),
+      code_hash: Type.Null(),
+      code_expires_at: Type.Null(),
+      verified_at: TimestampField,
+      created_at: TimestampField,
+    }),
+  ],
+  {
+    $id: 'TwoFactorEntry',
+    discriminator: 'status',
+  },
+);
 
 export const twoFactorInsertSchema = Type.Pick(twoFactorEntrySchema, [
   'user_id',
@@ -145,14 +163,17 @@ export const twoFactorInsertSchema = Type.Pick(twoFactorEntrySchema, [
   'status',
   'code_hash',
   'code_expires_at',
+  'verified_at',
 ]);
 
 export type TwoFactorEntry = Static<typeof twoFactorEntrySchema>;
 export type TwoFactorInsert = Static<typeof twoFactorInsertSchema>;
+export type TwoFactorUpdate = Partial<Static<typeof twoFactorInsertSchema>>;
 
 export const twoFactorVerifySchema = Type.Object({
   code: Type.String(),
 });
+export type TwoFactorVerify = Static<typeof twoFactorVerifySchema>;
 
 export const twoFactorEnableSchema = Type.Object({
   email: EmailField,
