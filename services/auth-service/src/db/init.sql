@@ -35,3 +35,29 @@ CREATE INDEX IF NOT EXISTS idx_refresh_tokens_jti ON refresh_tokens (jti);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens (user_id);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires ON refresh_tokens (expires_at);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_revoked_at ON refresh_tokens (revoked_at);
+
+CREATE TABLE IF NOT EXISTS two_factor (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  email TEXT NOT NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('verified', 'pending')),
+  code_hash TEXT,
+  code_expires_at DATETIME,
+  verified_at DATETIME DEFAULT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_two_factor_user_id ON two_factor (user_id);
+CREATE INDEX IF NOT EXISTS idx_two_factor_email ON two_factor (email);
+CREATE INDEX IF NOT EXISTS idx_two_factor_status ON two_factor (status);
+
+CREATE TRIGGER IF NOT EXISTS two_factor_verified_at
+AFTER UPDATE ON two_factor
+  WHEN OLD.status = 'pending' AND NEW.status = 'verified'
+BEGIN
+  UPDATE two_factor
+  SET 
+    verified_at = CURRENT_TIMESTAMP
+  WHERE
+    id = NEW.id;
+END;
