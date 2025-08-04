@@ -299,11 +299,11 @@ export class AuthService {
         const googleUser = decodeToken(tokens.id_token, googleUserInfoSchema);
         let userData: User;
         try {
-          userData = await ApiClient.user.getUserExact({ email: googleUser.email });
+          //#TODO fix email based user search, now from auth db I think
+          throw 42;
         } catch {
           const creationData: CreateUserRequest = {
             username: await this.generateUsername(googleUser),
-            email: googleUser.email,
             display_name: googleUser.given_name,
           };
           userData = await ApiClient.user.createUser(creationData);

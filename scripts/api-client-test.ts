@@ -52,7 +52,6 @@ async function testCrud() {
   try {
     const testUser: CreateUserRequest = {
       username: 'test_user_123',
-      email: 'test@example.com',
       display_name: 'Test User',
     };
 

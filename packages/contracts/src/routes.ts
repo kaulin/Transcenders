@@ -16,10 +16,10 @@ export const USER_ROUTES = {
   // DELETE /users/:id - Delete user by ID
   USER_BY_ID: '/users/:id',
 
-  // GET /users/:identifier/exists - Check if username/email exists
+  // GET /users/:identifier/exists - Check if username exists
   USER_EXISTS: '/users/:identifier/exists',
 
-  // GET /users/match - find user by name or email (query params: ?username=, ?email=)
+  // GET /users/match - find user by name or (query params: ?username=)
   USERS_EXACT: '/users/exact',
 } as const;
 
