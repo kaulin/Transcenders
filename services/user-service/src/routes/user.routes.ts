@@ -86,7 +86,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
     USER_ROUTES.USER_EXISTS,
     {
       schema: {
-        description: 'Check if username/email exists',
+        description: 'Check if username exists',
         tags: ['User'],
         params: checkExistsSchema.params,
         response: standardApiResponses,
@@ -99,7 +99,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
     USER_ROUTES.USERS_EXACT,
     {
       schema: {
-        description: 'find user by name or email (query params: ?username=, ?email=)',
+        description: 'find user by name (query params: ?username=)',
         tags: ['User'],
         querystring: getUserSchema.querystring,
         response: standardApiResponses,

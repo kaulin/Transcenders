@@ -54,7 +54,6 @@ const SQLITE_CONSTRAINT_MAPPINGS: SqliteConstraintMapping[] = [
     constraintType: 'UNIQUE',
     errorCode: ERROR_CODES.COMMON.RESOURCE_ALREADY_EXISTS,
     fieldSpecific: {
-      'users.email': ERROR_CODES.USER.EMAIL_ALREADY_EXISTS,
       'users.username': ERROR_CODES.USER.USERNAME_ALREADY_EXISTS,
       friend_requests: ERROR_CODES.USER.FRIEND_REQUEST_ALREADY_EXISTS,
       friendships: ERROR_CODES.USER.FRIENDSHIP_ALREADY_EXISTS,
