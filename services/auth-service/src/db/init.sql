@@ -38,7 +38,7 @@ CREATE INDEX IF NOT EXISTS idx_refresh_tokens_revoked_at ON refresh_tokens (revo
 
 CREATE TABLE IF NOT EXISTS two_factor (
   id INTEGER PRIMARY KEY,
-  user_id INTEGER NOT NULL,
+  user_id INTEGER UNIQUE NOT NULL,
   email TEXT NOT NULL,
   status TEXT DEFAULT 'pending' CHECK (status IN ('verified', 'pending')),
   code_hash TEXT,
