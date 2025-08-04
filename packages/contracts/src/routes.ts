@@ -71,6 +71,12 @@ export const AUTH_ROUTES = {
   GOOGLE_AUTH: '/auth/google',
   // GET /auth/google/callback
   GOOGLE_CALLBACK: '/auth/google/callback',
+  // PUT /auth/2fa/:id/enable - Creates or replaces 2FA setup
+  TWO_FACTOR_ENABLE: '/auth/2fa/:id/enable',
+  // DELETE /auth/2fa/:id/disable - Removes 2FA (deletes the record)
+  TWO_FACTOR_DISABLE: '/auth/2fa/:id/disable',
+  // PATCH /auth/2fa/:id/verify - Updates status from 'pending' to 'verified'
+  TWO_FACTOR_VERIFY: '/auth/2fa/:id/verify',
 } as const;
 
 export const SCORE_ROUTES = {

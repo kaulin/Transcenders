@@ -4,7 +4,7 @@ import {
   GetUserRequest,
   GetUsersQuery,
   UpdateUserRequest,
-  userByIdRequest,
+  UserIdParam,
 } from '@transcenders/contracts';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/UserService.js';
@@ -26,7 +26,7 @@ export class UserController {
   }
 
   static async getUserById(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
 
     const result = await UserService.getUserById(userId);
@@ -34,7 +34,7 @@ export class UserController {
   }
   // #TODO maybe password protect the Update and Delete for anti drive-by deletes for users
   static async updateUser(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
     const updates = request.body as Partial<UpdateUserRequest>;
 
@@ -43,7 +43,7 @@ export class UserController {
   }
 
   static async deleteUser(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
 
     const result = await UserService.deleteUser(userId);

@@ -95,12 +95,10 @@ export const getUserSchema = {
 };
 export type GetUserRequest = Static<typeof getUserSchema.querystring>;
 
-export const userByIdSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-};
-export type userByIdRequest = Static<typeof userByIdSchema.params>;
+export const userIdParamSchema = Type.Object({
+  id: IdParamField,
+});
+export type UserIdParam = Static<typeof userIdParamSchema>;
 
 export const acceptFriendSchema = {
   params: Type.Object({
