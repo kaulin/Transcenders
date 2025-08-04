@@ -194,6 +194,23 @@ export class AuthService {
     }
   }
 
+  private static async emailExists(database: Database, email: string): Promise<boolean> {
+    const sql = SQL`
+      SELECT 1 FROM 'two_factor' WHERE email = ${email} LIMIT 1
+    `;
+    const result = await database.get(sql.text, sql.values);
+    return !!result;
+  }
+
+  private static async userIdByEmail(database: Database, email: string): Promise<number> {
+    const sql = SQL`
+      SELECT * FROM 'two_factor' WHERE email = ${email}
+    `;
+    const result = await database.get(sql.text, sql.values);
+    Value.Assert(twoFactorEntrySchema, result);
+    return result.user_id;
+  }
+
   static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
     const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeTransaction<AuthData>(
@@ -301,23 +318,26 @@ export class AuthService {
           throw new Error('failed to google authenticate user');
         }
         const googleUser = decodeToken(tokens.id_token, googleUserInfoSchema);
-        let userData: User;
-        try {
-          //#TODO fix email based user search, now from auth db I think
-          throw 42;
-        } catch {
+        let userId: number;
+
+        const userExists = await this.emailExists(database, googleUser.email);
+        if (!userExists) {
           const creationData: CreateUserRequest = {
             username: await this.generateUsername(googleUser),
             display_name: googleUser.given_name,
           };
-          userData = await ApiClient.user.createUser(creationData);
-          this.insertCredentialsLogic(database, { user_id: userData.id, pw_hash: '' });
+          const newUser = await ApiClient.user.createUser(creationData);
+          userId = newUser.id;
+          this.insertCredentialsLogic(database, { user_id: userId, pw_hash: '' });
+        } else {
+          userId = await this.userIdByEmail(database, googleUser.email);
         }
 
-        this.handleDeviceTokens(database, userData.id, deviceInfo);
+        this.handleDeviceTokens(database, userId, deviceInfo);
         // generate and save new tokens
-        const newTokens = this.generateTokenPair(userData.id);
+        const newTokens = this.generateTokenPair(userId);
         await this.storeRefreshToken(database, newTokens.refreshToken, deviceInfo);
+        await this.twoFactorGoogle(userId, googleUser.email);
         return newTokens;
       },
     );
@@ -476,6 +496,32 @@ export class AuthService {
         return BooleanResultHelper.success(
           `User credentials for user_id ${userId} have been successfully deleted`,
         );
+      },
+    );
+  }
+
+  private static async twoFactorGoogle(
+    userId: number,
+    email: string,
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return ResultHelper.executeQuery<BooleanOperationResult>(
+      '2fa google verified',
+      db,
+      async (database) => {
+        const verifiedAt = new Date(Date.now());
+        const twoFactorInsert: TwoFactorInsert = {
+          user_id: userId,
+          email: email,
+          code_hash: null,
+          status: 'verified',
+          verified_at: verifiedAt.toISOString(),
+          code_expires_at: null,
+        };
+        const { sql, values } = QueryBuilder.insertReplace('two_factor', twoFactorInsert);
+        await database.run(sql, values);
+
+        return BooleanResultHelper.success('2fa google verified');
       },
     );
   }
