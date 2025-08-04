@@ -36,4 +36,11 @@ export class QueryBuilder {
       values: [...values, ...whereValues],
     };
   }
+
+  static remove(tableName: string, whereClause: string) {
+    return {
+      sql: `DELETE FROM ${tableName} WHERE ${whereClause}`,
+      values: [],
+    };
+  }
 }

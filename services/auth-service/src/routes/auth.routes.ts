@@ -159,6 +159,6 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         response: standardApiResponses,
       },
     },
-    AuthController.changePassword,
+    AuthController.twoFactorDisable,
   );
 }

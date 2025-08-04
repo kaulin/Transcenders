@@ -550,4 +550,17 @@ export class AuthService {
       }
     });
   }
+
+  static async twoFactorDisable(userId: number): Promise<ServiceResult<BooleanOperationResult>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return ResultHelper.executeQuery<BooleanOperationResult>('2fa verify', db, async (database) => {
+      const { sql, values } = QueryBuilder.remove('two_factor', `user_id = ${userId}`);
+      const result = await database.run(sql, values);
+      const deleted = (result.changes ?? 0) > 0;
+      if (deleted) {
+        return BooleanResultHelper.success('2fa disabled');
+      }
+      return BooleanResultHelper.failure('2fa not disabled');
+    });
+  }
 }
