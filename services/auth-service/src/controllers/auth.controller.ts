@@ -91,4 +91,12 @@ export class AuthController {
     const result = await AuthService.twoFactorVerify(userId, code);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
+
+  static async twoFactorDisable(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+
+    const result = await AuthService.twoFactorDisable(userId);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
 }
