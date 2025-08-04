@@ -146,7 +146,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         response: standardApiResponses,
       },
     },
-    AuthController.changePassword,
+    AuthController.twoFactorVerify,
   );
 
   app.delete(
