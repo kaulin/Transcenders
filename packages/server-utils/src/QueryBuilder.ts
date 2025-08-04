@@ -10,6 +10,17 @@ export class QueryBuilder {
     };
   }
 
+  static insertReplace(tableName: string, data: Record<string, unknown>) {
+    const columns = Object.keys(data);
+    const values = Object.values(data);
+    const placeholders = columns.map(() => '?');
+
+    return {
+      sql: `INSERT OR REPLACE INTO ${tableName} (${columns.join(', ')}) VALUES (${placeholders.join(', ')})`,
+      values,
+    };
+  }
+
   static update(
     tableName: string,
     data: Record<string, unknown>,

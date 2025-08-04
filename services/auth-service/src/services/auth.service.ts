@@ -18,6 +18,7 @@ import {
   ResultHelper,
   ServiceError,
   ServiceResult,
+  TwoFactorInsert,
   User,
   UserCredentialsEntry,
 } from '@transcenders/contracts';
@@ -474,5 +475,30 @@ export class AuthService {
         );
       },
     );
+  }
+
+  static async twoFactorEnable(
+    userId: number,
+    email: string,
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return ResultHelper.executeQuery<BooleanOperationResult>('2fa enable', db, async (database) => {
+      const code = '123456';
+      const codeHash = await bcrypt.hash(code, 12);
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+      const twoFactorInsert: TwoFactorInsert = {
+        user_id: userId,
+        email: email,
+        code_hash: codeHash,
+        status: 'pending',
+        code_expires_at: expiresAt.toISOString(),
+      };
+      const { sql, values } = QueryBuilder.insertReplace('two_factor', twoFactorInsert);
+      await database.run(sql, values);
+
+      // #TODO send email system;
+      console.log(`sending code: ${code} to ${email}`);
+      return BooleanResultHelper.success('two factor verification pending');
+    });
   }
 }

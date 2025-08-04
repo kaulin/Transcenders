@@ -2,12 +2,15 @@ import {
   AUTH_ROUTES,
   changePasswordSchema,
   googleAuthCallbackSchema,
+  IdParamField,
   loginUserSchema,
   logoutUserSchema,
   refreshTokenRequestSchema,
   registerUserSchema,
   standardApiResponses,
-  userByIdSchema,
+  twoFactorEnableSchema,
+  twoFactorVerifySchema,
+  userIdParamSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
 import { AuthController } from '../controllers/auth.controller.js';
@@ -71,7 +74,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         description: 'logout user',
         tags: ['Auth'],
         body: logoutUserSchema,
-        param: userByIdSchema,
+        param: IdParamField,
         response: standardApiResponses,
       },
     },
@@ -97,7 +100,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       schema: {
         description: 'remove user credentials',
         tags: ['Internal ONLY'],
-        params: userByIdSchema.params,
+        params: IdParamField,
         response: standardApiResponses,
       },
     },
@@ -112,6 +115,47 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         tags: ['Auth'],
         params: changePasswordSchema.params,
         body: changePasswordSchema.body,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.changePassword,
+  );
+
+  app.put(
+    AUTH_ROUTES.TWO_FACTOR_ENABLE,
+    {
+      schema: {
+        description: 'Creates or replaces 2FA setup',
+        tags: ['Auth'],
+        params: userIdParamSchema,
+        body: twoFactorEnableSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.twoFactorEnable,
+  );
+
+  app.patch(
+    AUTH_ROUTES.TWO_FACTOR_VERIFY,
+    {
+      schema: {
+        description: 'Updates status from pending to verified',
+        tags: ['Auth'],
+        params: userIdParamSchema,
+        body: twoFactorVerifySchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.changePassword,
+  );
+
+  app.delete(
+    AUTH_ROUTES.TWO_FACTOR_DISABLE,
+    {
+      schema: {
+        description: 'Removes 2FA (deletes the record)',
+        tags: ['Auth'],
+        params: userIdParamSchema,
         response: standardApiResponses,
       },
     },

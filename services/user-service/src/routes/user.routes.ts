@@ -6,7 +6,7 @@ import {
   standardApiResponses,
   updateUserSchema,
   USER_ROUTES,
-  userByIdSchema,
+  userIdParamSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
 import { UserController } from '../controllers/UserController.js';
@@ -48,7 +48,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
       schema: {
         description: 'Get specific user by ID',
         tags: ['User'],
-        params: userByIdSchema.params,
+        params: userIdParamSchema,
         response: standardApiResponses,
       },
     },
@@ -75,7 +75,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
       schema: {
         description: 'Delete user by ID',
         tags: ['User'],
-        params: userByIdSchema.params,
+        params: userIdParamSchema,
         response: standardApiResponses,
       },
     },

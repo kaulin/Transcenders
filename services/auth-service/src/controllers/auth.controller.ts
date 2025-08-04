@@ -6,7 +6,8 @@ import {
   LogoutUser,
   RefreshTokenRequest,
   RegisterUser,
-  userByIdRequest,
+  TwoFactorEnable,
+  UserIdParam,
 } from '@transcenders/contracts';
 import { DeviceUtils, ENV } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -42,7 +43,7 @@ export class AuthController {
   }
 
   static async logout(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
     const { refreshToken } = request.body as LogoutUser;
     const result = await AuthService.logout(userId, refreshToken);
@@ -57,18 +58,27 @@ export class AuthController {
   }
 
   static async delete(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
     const result = await AuthService.deleteCredentials(userId);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async changePassword(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
     const { oldPassword, newPassword } = request.body as ChangePasswordRequest;
 
     const result = await AuthService.changePassword(userId, oldPassword, newPassword);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async twoFactorEnable(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+    const { email } = request.body as TwoFactorEnable;
+
+    const result = await AuthService.twoFactorEnable(userId, email);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 }
