@@ -111,11 +111,18 @@ export const changePasswordSchema = {
 };
 export type ChangePasswordRequest = Static<typeof changePasswordSchema.body>;
 
+export const googleFlows = Type.Union([
+  Type.Literal('login'),
+  Type.Literal('set-password'),
+  Type.Literal('config-change'),
+  Type.Literal('error'),
+]);
+export type GoogleFlows = Static<typeof googleFlows>;
+
 export const googleAuthCallbackSchema = Type.Object({
   code: Type.String(),
-  state: Type.Optional(Type.String()),
+  state: googleFlows,
 });
-
 export type GoogleAuthCallback = Static<typeof googleAuthCallbackSchema>;
 
 export const googleUserInfoSchema = Type.Object({

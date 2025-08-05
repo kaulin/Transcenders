@@ -2,7 +2,7 @@ import {
   AUTH_ROUTES,
   changePasswordSchema,
   googleAuthCallbackSchema,
-  IdParamField,
+  googleUserSetPasswordSchema,
   loginUserSchema,
   logoutUserSchema,
   refreshTokenRequestSchema,
@@ -51,7 +51,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         response: standardApiResponses,
       },
     },
-    AuthController.googleAuth,
+    AuthController.googleAuthLogin,
   );
 
   app.get(
@@ -74,7 +74,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         description: 'logout user',
         tags: ['Auth'],
         body: logoutUserSchema,
-        param: IdParamField,
+        param: userIdParamSchema,
         response: standardApiResponses,
       },
     },
@@ -100,7 +100,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       schema: {
         description: 'remove user credentials',
         tags: ['Internal ONLY'],
-        params: IdParamField,
+        params: userIdParamSchema,
         response: standardApiResponses,
       },
     },

@@ -9,6 +9,7 @@ import {
   decodeToken,
   DeviceInfo,
   ERROR_CODES,
+  GoogleFlows,
   GoogleUserInfo,
   googleUserInfoSchema,
   JWTPayload,
@@ -257,7 +258,7 @@ export class AuthService {
     });
   }
 
-  static getGoogleAuthUrl() {
+  static getGoogleAuthUrl(flow: GoogleFlows) {
     const oauth2Client = this.getGoogleOAuthClient();
     const scopes = [
       'https://www.googleapis.com/auth/userinfo.profile',
@@ -267,6 +268,7 @@ export class AuthService {
     const url = oauth2Client.generateAuthUrl({
       access_type: 'online',
       scope: scopes,
+      state: flow,
     });
     return url;
   }
