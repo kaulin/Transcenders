@@ -1,218 +1,208 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { useTranslation } from "react-i18next"
-import { useUser } from "../contexts/UserContext"
-import { ApiClient } from "@transcenders/api-client"
-import {
-	Upload,
-	ChevronLeft,
-	ChevronRight,
-} from 'lucide-react'
+import { ApiClient } from '@transcenders/api-client';
+import { ChevronLeft, ChevronRight, Upload } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../hooks/useUser';
 
-import avatarCat1 from "/images/avatarCat1.avif"
-import avatarCat2 from "/images/avatarCat2.avif"
-import avatarCat3 from "/images/avatarCat3.avif"
-import avatarCat4 from "/images/avatarCat4.avif"
-import avatarCat5 from "/images/avatarCat5.avif"
-import avatarCat6 from "/images/avatarCat6.avif"
+import avatarCat1 from '/images/avatarCat1.avif';
+import avatarCat2 from '/images/avatarCat2.avif';
+import avatarCat3 from '/images/avatarCat3.avif';
+import avatarCat4 from '/images/avatarCat4.avif';
+import avatarCat5 from '/images/avatarCat5.avif';
+import avatarCat6 from '/images/avatarCat6.avif';
 
-const avatars = [avatarCat1, avatarCat2, avatarCat3, avatarCat4, avatarCat5, avatarCat6]
+const avatars = [avatarCat1, avatarCat2, avatarCat3, avatarCat4, avatarCat5, avatarCat6];
 
 const Profile = () => {
-    const { t } = useTranslation()
-    const { setUser, user } = useUser()
+  const { t } = useTranslation();
+  const { setUser, user } = useUser();
 
-	const [avatarIdx, setAvatarIdx] = useState<number>(0)
-	
-	const navigate = useNavigate()
+  const [avatarIdx, setAvatarIdx] = useState<number>(0);
 
-	const nextAvatar = () => {
-		setAvatarIdx((prev) => (prev + 1) % avatars.length)
-	}
+  const navigate = useNavigate();
 
-	const prevAvatar = () => {
-		setAvatarIdx((prev) => (prev - 1 + avatars.length) % avatars.length)
-	}
+  const nextAvatar = () => {
+    setAvatarIdx((prev) => (prev + 1) % avatars.length);
+  };
 
-	useEffect(() => {
-		const imgs = avatars.map((src) => {
-			const img = new Image()
-			img.src = src
-			return img
-		})
-	}, [])
+  const prevAvatar = () => {
+    setAvatarIdx((prev) => (prev - 1 + avatars.length) % avatars.length);
+  };
 
-	const avatarSizes = [
-		"max-w-[65%]",
-		"max-w-[85%]",
-		"max-w-[98%]",
-		"max-w-[80%]",
-		"max-w-[80%]",
-		"max-w-[70%]",
-	]
+  useEffect(() => {
+    const imgs = avatars.map((src) => {
+      const img = new Image();
+      img.src = src;
+      return img;
+    });
+  }, []);
 
-    const [username, setUsername] = useState(user?.username || "")
-    const [displayName, setDisplayName] = useState(user?.display_name || "")
-    const [password, setPassword] = useState("")
-    const [repeatPassword, setRepeatPassword] = useState("")
-    const [language, setLanguage] = useState(user?.lang || "")
-	const [success, setSuccess] = useState<boolean>(false)
-    const [error, setError] = useState<string | null>(null)
+  const avatarSizes = [
+    'max-w-[65%]',
+    'max-w-[85%]',
+    'max-w-[98%]',
+    'max-w-[80%]',
+    'max-w-[80%]',
+    'max-w-[70%]',
+  ];
 
-    const handleConfirm = async () => {
-        setError(null)
-        
-        if (password !== repeatPassword) {
-			setError(t('pw_no_match'))
-			return
-		}
+  const [username, setUsername] = useState(user?.username ?? '');
+  const [displayName, setDisplayName] = useState(user?.display_name ?? '');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+  const [language, setLanguage] = useState(user?.lang ?? '');
+  const [success, setSuccess] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-        try {
+  const handleConfirm = async () => {
+    setError(null);
 
-        } catch (err) {
-
-        }
+    if (password !== repeatPassword) {
+      setError(t('pw_no_match'));
+      return;
     }
 
-	const handleDelete = async () => {
-		setError(null)
+    try {
+    } catch (err) {}
+  };
 
-		try {
-			if (user?.id == null) {
-				throw new Error("User ID is undefined")
-			}
+  const handleDelete = async () => {
+    setError(null);
 
-			const response = await ApiClient.user.deleteUser(user.id)
+    try {
+      if (user?.id == null) {
+        throw new Error('User ID is undefined');
+      }
 
-			if (!response.success) {
-				throw new Error(response.error.localeKey)
-			}
+      const response = await ApiClient.user.deleteUser(user.id);
+      setSuccess(true);
 
-			setSuccess(true)
-            
-			setTimeout(() => {
-                setUser(null)
-				navigate('/login')
-			}, 2000)
+      setTimeout(() => {
+        setUser(null);
+        navigate('/login');
+      }, 2000);
+    } catch (err: any) {
+      setError(t(err.localekey) ?? t('something_went_wrong'));
+    }
+  };
 
-		} catch (err: any) {
-			setError(err.message || t('something_went_wrong'))
-		}
-	}
+  return (
+    <div className="box xl:gap-4">
+      <div className="box-section bg-[#6e5d41]/10 justify-center gap-10">
+        <div className="bubble bg-white/50 w-56 h-56 sm:w-72 sm:h-72 flex items-end justify-center overflow-hidden">
+          <img
+            src={avatars[avatarIdx]}
+            alt="Avatar preview"
+            className={`object-contain ${avatarSizes[avatarIdx]}`}
+          />
+        </div>
 
-    return (
-        <div className="box xl:gap-4">
-            <div className="box-section bg-[#6e5d41]/10 justify-center gap-10">
-                <div className="bubble bg-white/50 w-56 h-56 sm:w-72 sm:h-72 flex items-end justify-center overflow-hidden">
-                    <img
-                        src={avatars[avatarIdx]}
-                        alt="Avatar preview"
-                        className={`object-contain ${avatarSizes[avatarIdx]}`}
-                    />
-                </div>
-                
-                <div className="flex flex-col items-center">
-                    <h1 className="text-6xl text-[#fff] font-fascinate">{user?.username}</h1>
-                    
-                        <div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white">
-							<button className="" onClick={prevAvatar}><ChevronLeft /></button>
-							<p>{t('select_avatar')}</p>
-                            <button className="" onClick={nextAvatar}><ChevronRight /></button>
-                        </div>
-						<div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white">
-							<p className="pt-1">{t('upload_avatar')}</p>
-							<button><Upload className="h-5 w-5"/></button>
-						</div>
-                </div>
-                
-            </div>
+        <div className="flex flex-col items-center">
+          <h1 className="text-6xl text-[#fff] font-fascinate">{user?.username}</h1>
 
-            <div className="box-section bg-[#6e5d41]/10 justify-center gap-10">
-                <div className="w-full max-w-sm">
-                    <label className="fascinate-label">{t('username')}</label>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="input-field"
-                    />
-                </div>
+          <div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white">
+            <button className="" onClick={prevAvatar}>
+              <ChevronLeft />
+            </button>
+            <p>{t('select_avatar')}</p>
+            <button className="" onClick={nextAvatar}>
+              <ChevronRight />
+            </button>
+          </div>
+          <div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full  border-white hover:border-[#786647] bg-white/10 text-white">
+            <p className="pt-1">{t('upload_avatar')}</p>
+            <button>
+              <Upload className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
 
-                <div className="w-full max-w-sm">
-                    <label className="fascinate-label">{t('display_name')}</label>
-                    <input
-                        type="text"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        className="input-field"
-                    />
-                </div>
+      <div className="box-section bg-[#6e5d41]/10 justify-center gap-10">
+        <div className="w-full max-w-sm">
+          <label className="fascinate-label">{t('username')}</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="input-field"
+          />
+        </div>
 
-                <div className="w-full max-w-sm">
-                    <label className="fascinate-label">{t('password')}</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => {
-                            setPassword(e.target.value)
-                        }}
-                        placeholder={t('new_pw')}
-                        className="input-field"
-                    />
-                    <input
-                        type="password"
-                        value={repeatPassword}
-                        onChange={(e) => {
-                            setRepeatPassword(e.target.value)
-                        }}
-                        placeholder={t('repeat_pw')}
-                        className={`w-full bg-transparent border-b-2 mt-3 border-white focus:outline-none focus:border-white/70 ${
-                            password === repeatPassword ? 'text-white' : 'text-white/40'
-                        } text-lg placeholder-white/60`}
-                    />
-                </div>
+        <div className="w-full max-w-sm">
+          <label className="fascinate-label">{t('display_name')}</label>
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            className="input-field"
+          />
+        </div>
 
-                <div className="w-full max-w-sm">
-                    <label className="fascinate-label">{t('language')}</label>
-                    <select
-                        value={language}
-                        onChange={(e) => setLanguage(e.target.value)}
-                        className="w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg"
-                    >
-                        <option value="en" className="bg-white text-[#786647]">{t('english')}</option>
-                        <option value="fi" className="bg-white text-[#786647]">{t('finnish')}</option>
-                        <option value="et" className="bg-white text-[#786647]">{t('estonian')}</option>
-                    </select>
-                </div>
+        <div className="w-full max-w-sm">
+          <label className="fascinate-label">{t('password')}</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+            placeholder={t('new_pw')}
+            className="input-field"
+          />
+          <input
+            type="password"
+            value={repeatPassword}
+            onChange={(e) => {
+              setRepeatPassword(e.target.value);
+            }}
+            placeholder={t('repeat_pw')}
+            className={`w-full bg-transparent border-b-2 mt-3 border-white focus:outline-none focus:border-white/70 ${
+              password === repeatPassword ? 'text-white' : 'text-white/40'
+            } text-lg placeholder-white/60`}
+          />
+        </div>
 
-                <button
-                    onClick={handleConfirm}
-                    className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase mt-8"
-                >
-                    {t('confirm')}
-                </button>
-            </div>
-            
-            <div className="box-section bg-[#6e5d41]/10 justify-center">
-                <button 
-                    onClick={handleDelete}
-                    className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase"
-                >
-                    {t('delete_account')}
-                </button>
-                {success && (
-                    <p className="text-white mt-4 text-center">
-                        {t('deletion_successful')}
-                    </p>
-                )}
-                {error && (
-                    <p className="text-[#786647] text-xs sm:text-sm mt-4 text-center">
-                        {error}
-                    </p>
-                )}
-            </div>
+        <div className="w-full max-w-sm">
+          <label className="fascinate-label">{t('language')}</label>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-white/70 text-white text-lg"
+          >
+            <option value="en" className="bg-white text-[#786647]">
+              {t('english')}
+            </option>
+            <option value="fi" className="bg-white text-[#786647]">
+              {t('finnish')}
+            </option>
+            <option value="et" className="bg-white text-[#786647]">
+              {t('estonian')}
+            </option>
+          </select>
+        </div>
+
+        <button
+          onClick={handleConfirm}
+          className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase mt-8"
+        >
+          {t('confirm')}
+        </button>
+      </div>
+
+      <div className="box-section bg-[#6e5d41]/10 justify-center">
+        <button
+          onClick={handleDelete}
+          className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase"
+        >
+          {t('delete_account')}
+        </button>
+        {success && <p className="text-white mt-4 text-center">{t('deletion_successful')}</p>}
+        {error && <p className="text-[#786647] text-xs sm:text-sm mt-4 text-center">{error}</p>}
+      </div>
     </div>
-    )
-}
+  );
+};
 
-export default Profile
+export default Profile;

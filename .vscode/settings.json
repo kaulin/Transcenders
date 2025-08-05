@@ -5,8 +5,8 @@
   "editor.detectIndentation": false,
   "editor.trimAutoWhitespace": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll": true,
-    "source.organizeImports": true
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnType": false, // required
@@ -138,5 +138,11 @@
   "editor.autoClosingBrackets": "always",
   "editor.autoClosingQuotes": "always",
   "editor.autoSurround": "languageDefined",
-  "makefile.configureOnOpen": false
+  "makefile.configureOnOpen": false,
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  }
 }

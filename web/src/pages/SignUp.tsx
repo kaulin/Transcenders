@@ -1,22 +1,15 @@
 import { ApiClient } from '@transcenders/api-client';
-import {
-  type AuthData,
-  type JWTPayload,
-  type LoginUser,
-  type RegisterUser,
-  type User,
-} from '@transcenders/contracts';
+import { decodeToken, type RegisterUser, type LoginUser } from '@transcenders/contracts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { useUser } from '../contexts/UserContext';
+import useAuthLogin from '../hooks/useAuthLogin';
 
 const SignUp = () => {
   const { t } = useTranslation();
-  const { setUser } = useUser();
+  const { login } = useAuthLogin();
 
   const [username, setUsername] = useState('');
-  // const [email, setEmail] = useState('')
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -31,39 +24,11 @@ const SignUp = () => {
     }
 
     try {
-      const registrationInfo: RegisterUser = {
-        username: username,
-        password: password,
-      };
-      // this returns just true or false for now, could change to returning a full user object I guess
-      const response = await ApiClient.auth.register(registrationInfo);
-
-      if (!response.success) {
-        throw new Error(response.error.localeKey);
-      }
-
-      const loginInfo: LoginUser = {
-        username: username,
-        password: password,
-      };
-
-      const userLogin = await ApiClient.auth.login(loginInfo);
-      if (!userLogin.success) {
-        throw new Error(userLogin.error.localeKey);
-      }
-
-      const authData = userLogin.data as AuthData;
-      const newUserId = JSON.parse(atob(authData.accessToken.split('.')[1])) as JWTPayload;
-      const userReq = await ApiClient.user.getUserById(newUserId.userId);
-
-      if (!userReq.success) {
-        throw new Error(userReq.error.localeKey);
-      }
-
-      const user = userReq.data as User;
-      setUser(user);
+      const registrationInfo: RegisterUser = { username, password };
+      await ApiClient.auth.register(registrationInfo);
+      await login(username, password);
     } catch (err: any) {
-      setError(t(err.message) || t('something_went_wrong'));
+      setError(t(err.localeKey) || t('something_went_wrong'));
     }
   }
 
