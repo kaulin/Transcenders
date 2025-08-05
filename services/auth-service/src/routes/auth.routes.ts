@@ -2,6 +2,8 @@ import {
   AUTH_ROUTES,
   changePasswordSchema,
   googleAuthCallbackSchema,
+  googleFlowParamSchema,
+  googleUserLogin,
   googleUserSetPasswordSchema,
   loginUserSchema,
   logoutUserSchema,
@@ -46,12 +48,13 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     AUTH_ROUTES.GOOGLE_AUTH,
     {
       schema: {
-        description: 'Initiate Google OAuth flow',
-        tags: ['Auth'],
+        description: 'Redirects to Google OAuth with state',
+        params: googleFlowParamSchema,
+        tags: ['Auth-google'],
         response: standardApiResponses,
       },
     },
-    AuthController.googleAuthLogin,
+    AuthController.googleAuth,
   );
 
   app.get(
@@ -59,12 +62,53 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     {
       schema: {
         description: 'Handle Google OAuth callback',
-        tags: ['Auth'],
+        tags: ['Auth-google'],
         querystring: googleAuthCallbackSchema,
         response: standardApiResponses,
       },
     },
     AuthController.googleCallback,
+  );
+
+  app.post(
+    AUTH_ROUTES.GOOGLE_LOGIN,
+    {
+      schema: {
+        description: 'Complete Google login with code',
+        tags: ['Auth-google'],
+        params: userIdParamSchema,
+        body: googleUserLogin,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.googleLogin,
+  );
+
+  app.post(
+    AUTH_ROUTES.GOOGLE_SET_PASSWORD,
+    {
+      schema: {
+        description: 'Set password for Google user with code',
+        tags: ['Auth-google'],
+        params: userIdParamSchema,
+        body: googleUserSetPasswordSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.googleSetPassword,
+  );
+
+  app.post(
+    AUTH_ROUTES.GOOGLE_VERIFY_CONFIG,
+    {
+      schema: {
+        description: 'Verify Google auth for sensitive operations',
+        tags: ['Auth-google'],
+        params: userIdParamSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.googleVerifyConfig,
   );
 
   app.post(
@@ -74,7 +118,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         description: 'logout user',
         tags: ['Auth'],
         body: logoutUserSchema,
-        param: userIdParamSchema,
+        params: userIdParamSchema,
         response: standardApiResponses,
       },
     },

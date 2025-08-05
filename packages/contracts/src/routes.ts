@@ -67,10 +67,19 @@ export const AUTH_ROUTES = {
   CHANGE_PASSWORD: '/auth/change-password/:id',
   // DELETE /auth/credentials/:id
   DELETE: '/auth/credentials/:id',
-  // GET /auth/google
-  GOOGLE_AUTH: '/auth/google',
-  // GET /auth/google/callback
+
+  // GET /auth/google/:flow - Redirects to Google OAuth with state/flow
+  GOOGLE_AUTH: '/auth/google/:flow',
+  // GET /auth/google/callback - Handles OAuth callback, redirects to frontend
   GOOGLE_CALLBACK: '/auth/google/callback',
+
+  // POST /auth/google/login - Complete Google login with code
+  GOOGLE_LOGIN: '/auth/google/:id/login',
+  // POST /auth/google/set-password - Set password for Google user with code
+  GOOGLE_SET_PASSWORD: '/auth/google/:id/set-password',
+  // POST /auth/google/verify-config - Verify Google auth for sensitive operations
+  GOOGLE_VERIFY_CONFIG: '/auth/google/:id/verify-config',
+
   // PUT /auth/2fa/:id/enable - Creates or replaces 2FA setup
   TWO_FACTOR_ENABLE: '/auth/2fa/:id/enable',
   // DELETE /auth/2fa/:id/disable - Removes 2FA (deletes the record)
