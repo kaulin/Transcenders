@@ -1,6 +1,6 @@
 import { ApiClient } from '@transcenders/api-client';
 import { decodeToken, type AuthData, type LoginUser } from '@transcenders/contracts';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../hooks/useUser';
 
 const useAuthLogin = () => {
   const { setUser } = useUser();

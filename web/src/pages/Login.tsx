@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import useAuthLogin from '../hooks/useAuthLogin.ts';
+import useAuthLogin from '../hooks/useAuthLogin';
 
 const Login = () => {
   const { t } = useTranslation();
