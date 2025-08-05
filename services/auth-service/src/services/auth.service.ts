@@ -259,18 +259,20 @@ export class AuthService {
   }
 
   static getGoogleAuthUrl(flow: GoogleFlows) {
-    const oauth2Client = this.getGoogleOAuthClient();
-    const scopes = [
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'https://www.googleapis.com/auth/userinfo.email',
-    ];
+    return ResultHelper.executeOperation('get google auth url', async () => {
+      const oauth2Client = this.getGoogleOAuthClient();
+      const scopes = [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email',
+      ];
 
-    const url = oauth2Client.generateAuthUrl({
-      access_type: 'online',
-      scope: scopes,
-      state: flow,
+      const url = oauth2Client.generateAuthUrl({
+        access_type: 'online',
+        scope: scopes,
+        state: flow,
+      });
+      return url;
     });
-    return url;
   }
 
   private static async generateUsername(googleUser: GoogleUserInfo): Promise<string> {
@@ -304,22 +306,48 @@ export class AuthService {
     // Fallback on some crazy bad luck
     return `user_${Date.now()}`;
   }
+
+  private static async getGoogleUser(code: string): Promise<GoogleUserInfo> {
+    const authClient = this.getGoogleOAuthClient();
+    const { tokens } = await authClient.getToken(code);
+    if (!tokens?.id_token) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        reason: 'Invalid or expired OAuth code',
+      });
+    }
+    return decodeToken(tokens.id_token, googleUserInfoSchema);
+  }
+
+  private static async validateGoogleUserOwnership(
+    database: Database,
+    googleUser: GoogleUserInfo,
+    expectedUserId: number,
+  ): Promise<void> {
+    const userExists = await this.emailExists(database, googleUser.email);
+    if (!userExists) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        reason: 'Google account not linked to this user',
+        userId: expectedUserId,
+      });
+    }
+
+    const linkedUserId = await this.userIdByEmail(database, googleUser.email);
+    if (linkedUserId !== expectedUserId) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        reason: 'Google account linked to different user',
+        userId: expectedUserId,
+        linkedUserId,
+      });
+    }
+  }
   // #TODO handle failed user creations, by syncing user and auth DB entries
-  static async handleGoogleCallback(
-    code: string,
-    deviceInfo: DeviceInfo,
-  ): Promise<ServiceResult<AuthData>> {
+  static async googleLogin(code: string, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
     const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeTransaction<AuthData>(
-      'google auth callback',
+      'login or create google user',
       db,
       async (database) => {
-        const authClient = this.getGoogleOAuthClient();
-        const { tokens } = await authClient.getToken(code);
-        if (!tokens?.id_token) {
-          throw new Error('failed to google authenticate user');
-        }
-        const googleUser = decodeToken(tokens.id_token, googleUserInfoSchema);
+        const googleUser = await this.getGoogleUser(code);
         let userId: number;
 
         const userExists = await this.emailExists(database, googleUser.email);
@@ -341,6 +369,41 @@ export class AuthService {
         await this.storeRefreshToken(database, newTokens.refreshToken, deviceInfo);
         await this.twoFactorGoogle(userId, googleUser.email);
         return newTokens;
+      },
+    );
+  }
+
+  static async googleSetPassword(
+    userId: number,
+    code: string,
+    password: string,
+  ): Promise<ServiceResult<BooleanOperationResult>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return await ResultHelper.executeTransaction<BooleanOperationResult>(
+      'set google-user password',
+      db,
+      async (database) => {
+        const googleUser = await this.getGoogleUser(code);
+
+        await this.validateGoogleUserOwnership(database, googleUser, userId);
+
+        const pw_hash = await bcrypt.hash(password, 12);
+
+        const updateSql = SQL`
+          UPDATE user_credentials 
+          SET pw_hash = ${pw_hash} 
+          WHERE user_id = ${userId}
+      `;
+
+        const result = await database.run(updateSql.text, updateSql.values);
+        if ((result.changes ?? 0) === 0) {
+          throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_ID, {
+            userId,
+            reason: 'User credentials not found or no changes made',
+          });
+        }
+
+        return BooleanResultHelper.success(`Password successfully set for Google user ${userId}`);
       },
     );
   }

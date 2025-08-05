@@ -111,17 +111,24 @@ export const changePasswordSchema = {
 };
 export type ChangePasswordRequest = Static<typeof changePasswordSchema.body>;
 
-export const googleFlows = Type.Union([
-  Type.Literal('login'),
-  Type.Literal('set-password'),
-  Type.Literal('config-change'),
-  Type.Literal('error'),
-]);
-export type GoogleFlows = Static<typeof googleFlows>;
+const GOOGLE_FLOW_VALUES = ['login', 'set-password', 'config-change', 'error'] as const;
+
+export type GoogleFlows = (typeof GOOGLE_FLOW_VALUES)[number];
+
+export const googleFlowsSchema = Type.Union(GOOGLE_FLOW_VALUES.map((value) => Type.Literal(value)));
+
+export const googleFlowParamSchema = Type.Object({
+  flow: Type.String({
+    enum: GOOGLE_FLOW_VALUES,
+  }),
+});
+export type GoogleFlowParam = Static<typeof googleFlowParamSchema>;
 
 export const googleAuthCallbackSchema = Type.Object({
   code: Type.String(),
-  state: googleFlows,
+  state: Type.String({
+    enum: GOOGLE_FLOW_VALUES,
+  }),
 });
 export type GoogleAuthCallback = Static<typeof googleAuthCallbackSchema>;
 
@@ -132,8 +139,18 @@ export const googleUserInfoSchema = Type.Object({
   given_name: Type.String(),
   picture: Type.Optional(Type.String()),
 });
-
 export type GoogleUserInfo = Static<typeof googleUserInfoSchema>;
+
+export const googleUserLogin = Type.Object({
+  code: Type.String(),
+});
+export type GoogleUserLogin = Static<typeof googleUserLogin>;
+
+export const googleUserSetPasswordSchema = Type.Object({
+  code: Type.String(),
+  password: PasswordField,
+});
+export type GoogleUserSetPassword = Static<typeof googleUserSetPasswordSchema>;
 
 export const twoFactorEntrySchema = Type.Union(
   [
