@@ -29,17 +29,14 @@ function MatchPage() {
   const player2 = players[2];
 
   const handleStartPause = useCallback(() => {
-    console.log('🔵 handleStartPause called, current gameStatus:', gameStatus);
     if (gameStatus === GameStatus.WAITING || gameStatus === GameStatus.PAUSED) {
       setShouldStart(true);
     } else if (gameStatus === GameStatus.RUNNING) {
-      console.log('🔵 Setting shouldPause to true');
       setShouldPause(true);
     }
   }, [gameStatus]);
 
   const handleStatusChange = useCallback((status: GameStatus) => {
-    console.log('🟣 handleStatusChange called with:', status);
     setGameStatus(status);
   }, []);
 
