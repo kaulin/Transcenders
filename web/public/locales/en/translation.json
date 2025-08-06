@@ -77,5 +77,22 @@
     "winner": "Winner",
     "wins": "Wins",
     "yes": "Yes",
-    "one_v_one": "One v One"
+    "one_v_one": "One v One",
+    "paused": "PAW-SED",
+    "pawPawPong": "Paw-Paw Pong",
+    "pawPawPongTournament": "Paw-Paw Pong Tournament",
+    "firstRound": "FIRST ROUND",
+    "secondRound": "SECOND ROUND", 
+    "final": "FINAL",
+    "tournamentComplete": "Tournament Complete",
+    "pressSpaceToStart": "Press Space to Start",
+    "pressSpaceToResume": "Press Space to Resume",
+    "player1Controls": "Player 1: W (up) and S (down)",
+    "player2Controls": "Player 2: ↑ and ↓ keys",
+    "playerWins": "{{player}} Wins!",
+    "clawsomeVictory": "What a Claw-some victory!",
+    "startNewGame": "Start New Game",
+    "backToHome": "Back to Home",
+    "continueToNextRound": "Continue to Next Round",
+    "savingResults": "Saving game results..."
 }
