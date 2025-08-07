@@ -34,19 +34,19 @@ export class AuthController {
     const { flow } = request.params as GoogleFlowParam;
     const result = await AuthService.getGoogleAuthUrl(flow as GoogleFlows);
     if (result.success) {
-      reply.redirect(result.data);
+      return reply.redirect(result.data);
     }
-    // return ApiErrorHandler.handleServiceResult(reply, result);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async googleCallback(request: FastifyRequest, reply: FastifyReply) {
-    const { code, state } = request.query as GoogleAuthCallback;
+    const { code, state, error } = request.query as GoogleAuthCallback;
+    const params = new URLSearchParams();
+    params.set('type', state);
 
-    try {
-      reply.redirect(`${ENV.FRONTEND_URL}/callback?type=${state}&code=${code}`);
-    } catch (error) {
-      reply.redirect(`${ENV.FRONTEND_URL}/callback?type=error&error=server_error`);
-    }
+    if (code) params.set('code', code);
+    if (error) params.set('error', error);
+    return reply.redirect(`${ENV.FRONTEND_URL}/callback?${params.toString()}`);
   }
 
   static async googleLogin(request: FastifyRequest, reply: FastifyReply) {

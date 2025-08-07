@@ -174,6 +174,15 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     httpStatus: 401,
     category: 'authentication',
   },
+
+  [ERROR_CODES.AUTH.GOOGLE_AUTH_FAILED]: {
+    code: ERROR_CODES.AUTH.GOOGLE_AUTH_FAILED,
+    message: 'Google authentication process failed or was cancelled',
+    userMessage: 'Google sign-in failed. Please try again.',
+    localeKey: 'google_auth_failed',
+    httpStatus: 401,
+    category: 'authentication',
+  },
 };
 
 const userErrors: Record<Extract<ErrorCode, `USER_${string}`>, ErrorDefinition> = {

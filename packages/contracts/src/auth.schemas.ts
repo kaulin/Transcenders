@@ -125,7 +125,8 @@ export const googleFlowParamSchema = Type.Object({
 export type GoogleFlowParam = Static<typeof googleFlowParamSchema>;
 
 export const googleAuthCallbackSchema = Type.Object({
-  code: Type.String(),
+  code: Type.Optional(Type.String()),
+  error: Type.Optional(Type.String()),
   state: Type.String({
     enum: GOOGLE_FLOW_VALUES,
   }),
