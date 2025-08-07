@@ -74,6 +74,7 @@ function MatchPage() {
   }, [gameStatus, handleStartPause, handleNewGame]); // Added missing dependencies
 
   const handleGameComplete = async (result: GameResult, winnerName?: string) => {
+    setWinner(winnerName ?? 'Unknown Player');
     try {
       const scoreData: CreateScoreRequest = {
         winner_id: result.winner_id,

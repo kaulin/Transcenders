@@ -74,7 +74,7 @@ export const DEFAULT_GAME_SETTINGS = {
   paddleSpeed: 10,
   ballRadius: 20,
   ballInitialSpeed: 10,
-  maxScore: 10,
+  maxScore: 3,
 };
 
 // create initial game state
