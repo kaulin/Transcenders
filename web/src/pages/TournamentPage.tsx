@@ -9,7 +9,6 @@ import { GameStatus } from '../components/game/models/GameState';
 import { useTranslation } from 'react-i18next';
 
 interface TournamentState {
-  allPlayers: any[]; // All 4 players
   currentMatch: 1 | 2 | 3;
   winners: any[];
   gameResults: GameResult[];
@@ -19,13 +18,14 @@ interface TournamentState {
   gameKey: number;
 }
 
+const TOURNAMENT_PLAYERS_KEY = 'tournament_players';
+
 function TournamentPage() {
   const { players, setPlayer } = usePlayers();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const [tournamentState, setTournamentState] = useState<TournamentState>({
-    allPlayers: [],
     currentMatch: 1,
     winners: [],
     gameResults: [],
@@ -55,11 +55,111 @@ function TournamentPage() {
     return shuffled;
   };
 
+  //store shuffled player order (changes each tourny)
   const fixedPlayersRef = useRef<any[]>([]);
+  //store original player roster (won't change unless chagned)
+  const originalPlayersRef = useRef<any[]>([]);
+
+  const saveTournamentPlayers = (players: any[]) => {
+    try {
+      localStorage.setItem(TOURNAMENT_PLAYERS_KEY, JSON.stringify(players));
+    } catch (error) {
+      console.error('Failed to save tournament players:', error);
+    }
+  };
+
+  const loadTournamentPlayer = (): any[] | null => {
+    try {
+      const saved = localStorage.getItem(TOURNAMENT_PLAYERS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length === 4) {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load tournament players: ', error);
+    }
+    return null;
+  };
+
+  // Initialize tournament ONCE and store fixed player order
+  useEffect(() => {
+    // if we already have fixed players, don't re-initialize
+    if (fixedPlayersRef.current.length === 4) {
+      return;
+    }
+
+    //Get players from local storage
+    const savedPlayers = loadTournamentPlayer();
+    if (savedPlayers) {
+      ///store roster of players
+      console.log('🔄 LOADING SAVED PLAYERS FROM LOCALSTORAGE:');
+      console.log(
+        'savedPlayers:',
+        savedPlayers.map((p) => p?.username || 'Unknown'),
+      );
+      originalPlayersRef.current = [...savedPlayers];
+      console.log(
+        '✅ Set originalPlayersRef to:',
+        originalPlayersRef.current.map((p) => p?.username || 'Unknown'),
+      );
+
+      const shuffledPlayers = shuffleArray([...savedPlayers]);
+      fixedPlayersRef.current = shuffledPlayers;
+
+      //restore players to context so they show up in UI
+      console.log('📝 Restoring players to context...');
+      savedPlayers?.forEach((player, index) => {
+        console.log(`Setting player ${index + 1} to:`, player?.username || 'Unknown');
+        setPlayer(index + 1, player);
+      });
+      return;
+    }
+
+    // If no saved players, create new tournament from current context
+    const allPlayersArray = [players[1], players[2], players[3], players[4]];
+    const validPlayers = allPlayersArray.filter((p) => p?.username);
+
+    if (validPlayers.length < 4) {
+      return;
+    }
+
+    console.log(
+      '✅ Setting originalPlayersRef to allPlayersArray:',
+      allPlayersArray.map((p) => p?.username || 'Unknown'),
+    );
+    originalPlayersRef.current = [...allPlayersArray];
+
+    // Create shuffled tournament order
+    const shuffledPlayers = shuffleArray([...allPlayersArray]);
+    fixedPlayersRef.current = shuffledPlayers;
+
+    // Save ORIGINAL order, not shuffled
+    console.log(
+      '💾 Saving ORIGINAL players to localStorage:',
+      allPlayersArray.map((p) => p?.username ?? 'Unknown'),
+    );
+    saveTournamentPlayers(allPlayersArray);
+  }, [players, setPlayer]);
 
   // Get current players for rendering the page
-  const player1 = players[1];
-  const player2 = players[2];
+  // Get current match players from the SHUFFLED tournament order
+  const getCurrentMatchPlayers = () => {
+    const { currentMatch, winners } = tournamentState;
+    const fixedPlayers = fixedPlayersRef.current;
+
+    if (currentMatch === 1) {
+      return { player1: fixedPlayers[0], player2: fixedPlayers[1] };
+    } else if (currentMatch === 2) {
+      return { player1: fixedPlayers[2], player2: fixedPlayers[3] };
+    } else if (currentMatch === 3) {
+      return { player1: winners[0], player2: winners[1] };
+    }
+    return { player1: null, player2: null };
+  };
+
+  const currentMatchPlayers = getCurrentMatchPlayers();
 
   const handleStartPause = useCallback(() => {
     if (gameStatus === GameStatus.WAITING || gameStatus === GameStatus.PAUSED) {
@@ -94,32 +194,9 @@ function TournamentPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameStatus, handleStartPause]);
 
-  // Initialize tournament ONCE and store fixed player order
-  useEffect(() => {
-    // if we already have fixed players, don't re-initialize
-    if (fixedPlayersRef.current.length > 0) {
-      return;
-    }
-
-    const allPlayersArray = [players[1], players[2], players[3], players[4]];
-    const shuffledPlayers = shuffleArray(allPlayersArray);
-
-    // IMPORTANT: Store in ref so it never changes
-    fixedPlayersRef.current = shuffledPlayers;
-
-    // Update state with fixed players
-    setTournamentState((prev) => ({
-      ...prev,
-      allPlayers: fixedPlayersRef.current,
-    }));
-
-    // set up first match
-    setPlayer(1, fixedPlayersRef.current[0]);
-    setPlayer(2, fixedPlayersRef.current[1]);
-  }, []); // Empty dependencies means it only runs on mount
-
   const handleTGameComplete = (result: GameResult, winnerName?: string) => {
     const { currentMatch, winners, gameResults } = tournamentState;
+    const fixedPlayers = fixedPlayersRef.current;
 
     // backend tournament_level logged as: Final=1, Semi=2,3
     let tournamentLevel: number;
@@ -136,16 +213,44 @@ function TournamentPage() {
       tournament_level: tournamentLevel,
     };
 
-    const currentPlayer1 = players[1];
-    const currentPlayer2 = players[2];
-
+    //find winner from the fixed roster of players
     let winner;
-    if (winnerName === currentPlayer1?.username) {
-      winner = currentPlayer1;
-    } else {
-      winner = currentPlayer2;
-    }
+    if (currentMatch === 1) {
+      // First round: fixedPlayers[0] vs fixedPlayers[1]
+      const player1 = fixedPlayers[0];
+      const player2 = fixedPlayers[1];
+      if (winnerName === player1?.username) {
+        winner = player1;
+      } else if (winnerName === player2?.username) {
+        winner = player2;
+      } else {
+        winner = player1; //fallback
+      }
+    } else if (currentMatch === 2) {
+      // Second round: fixedPlayers[2] vs fixedPlayers[3]
+      const player1 = fixedPlayers[2];
+      const player2 = fixedPlayers[3];
 
+      if (winnerName === player1?.username) {
+        winner = player1;
+      } else if (winnerName === player2?.username) {
+        winner = player2;
+      } else {
+        winner = player1; // Fallback to first player
+      }
+    } else {
+      // Final: winners[0] vs winners[1]
+      const player1 = winners[0];
+      const player2 = winners[1];
+
+      if (winnerName === player1?.username) {
+        winner = player1;
+      } else if (winnerName === player2?.username) {
+        winner = player2;
+      } else {
+        winner = player1; // Fallback to first player
+      }
+    }
     setWinner(winnerName ?? 'Unknown Player'); //sets winner for rendering after match
 
     const newWinners = [...winners, winner];
@@ -163,11 +268,19 @@ function TournamentPage() {
   };
 
   const handleContinueToNextRound = () => {
-    const { currentMatch, allPlayers, winners } = tournamentState;
+    const { currentMatch, winners } = tournamentState;
+    const fixedPlayers = fixedPlayersRef.current;
+
+    console.log(
+      'fixedPlayers:',
+      fixedPlayers.map((p) => p?.username || 'Unknown'),
+    );
+    console.log(
+      'originalPlayersRef before anything:',
+      originalPlayersRef.current.map((p) => p?.username || 'Unknown'),
+    );
 
     if (currentMatch === 1) {
-      setPlayer(1, allPlayers[2]);
-      setPlayer(2, allPlayers[3]);
       setTournamentState((prev) => ({
         ...prev,
         currentMatch: 2,
@@ -176,9 +289,6 @@ function TournamentPage() {
         gameKey: prev.gameKey + 1,
       }));
     } else if (currentMatch === 2) {
-      setPlayer(1, winners[0]);
-      setPlayer(2, winners[1]);
-
       setTournamentState((prev) => ({
         ...prev,
         currentMatch: 3,
@@ -188,13 +298,22 @@ function TournamentPage() {
       }));
     } else if (currentMatch === 3) {
       const finalResults = tournamentState.gameResults;
+      console.log('🎉 TOURNAMENT COMPLETE!');
+
+      console.log(
+        'originalPlayersRef at tournament end:',
+        originalPlayersRef.current.map((p) => p?.username || 'Unknown'),
+      );
+      console.log(
+        'fixedPlayersRef at tournament end:',
+        fixedPlayers.map((p) => p?.username || 'Unknown'),
+      );
 
       setTournamentState((prev) => ({
         ...prev,
         isComplete: true,
         roundComplete: false,
       }));
-
       // Send all tournament results to backend
       sendTournamentResults(finalResults);
     }
@@ -231,13 +350,13 @@ function TournamentPage() {
   const getMatchTitle = () => {
     switch (tournamentState.currentMatch) {
       case 1:
-        return t('firstRound', 'FIRST ROUND');
+        return t('firstRound');
       case 2:
-        return t('secondRound', 'SECOND ROUND');
+        return t('secondRound');
       case 3:
-        return t('final', 'FINAL');
+        return t('final');
       default:
-        return t('tournamentComplete', 'Tournament Complete');
+        return t('tournamentComplete');
     }
   };
 
@@ -256,14 +375,14 @@ function TournamentPage() {
         <div className="flex justify-between items-center mb-4 px-8">
           <div className="text-center">
             <h2 className="text-4xl font-bold text-white mb-2">
-              {player1?.username ?? 'Player 1'}
+              {currentMatchPlayers.player1?.username ?? 'Player 1'}
             </h2>
             <div className="text-5xl font-bold text-white">{leftScore}</div>
           </div>
 
           <div className="text-center">
             <h2 className="text-4xl font-bold text-white mb-2">
-              {player2?.username ?? 'Player 2'}
+              {currentMatchPlayers.player2?.username ?? 'Player 2'}
             </h2>
             <div className="text-5xl font-bold text-white">{rightScore}</div>
           </div>
@@ -282,6 +401,8 @@ function TournamentPage() {
             shouldPause={shouldPause}
             onStartHandled={() => setShouldStart(false)}
             onPauseHandled={() => setShouldPause(false)}
+            player1={currentMatchPlayers.player1}
+            player2={currentMatchPlayers.player2}
           />
 
           {/* Overlay Messages */}

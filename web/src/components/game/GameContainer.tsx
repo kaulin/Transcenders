@@ -24,6 +24,8 @@ interface GameContainerProps {
   shouldPause?: boolean;
   onStartHandled?: () => void;
   onPauseHandled?: () => void;
+  player1?: any;
+  player2?: any;
 }
 
 const GameContainer: React.FC<GameContainerProps> = ({
@@ -36,6 +38,8 @@ const GameContainer: React.FC<GameContainerProps> = ({
   shouldPause = false,
   onStartHandled,
   onPauseHandled,
+  player1,
+  player2,
 }) => {
   const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
@@ -56,7 +60,29 @@ const GameContainer: React.FC<GameContainerProps> = ({
 
   // Get current players
   const getCurrentPlayers = () => {
+    // use players passed by tournament
+    if (player1 && player2) {
+      return {
+        player1: {
+          id: player1.id ?? 1,
+          name: player1.username ?? 'Player 1',
+          avatar: player1.avatar ?? '',
+        },
+        player2: {
+          id: player2.id ?? 2,
+          name: player2.username ?? 'Player 2',
+          avatar: player2.avatar ?? '',
+        },
+      };
+    }
+    // or fall back to context (for match games)
     if (players[1] && players[2]) {
+      console.log(
+        '🎮 GameContainer using context players:',
+        players[1].username,
+        'vs',
+        players[2].username,
+      );
       return {
         player1: {
           id: players[1].id ?? 1,
@@ -143,8 +169,8 @@ const GameContainer: React.FC<GameContainerProps> = ({
         gameResult = createGameResult(
           currentPlayers.player2.id,
           currentPlayers.player1.id,
+          finalGameState.rightScore, //right player won, so right score is higher
           finalGameState.leftScore,
-          finalGameState.rightScore,
           gameStartTime,
           Date.now(),
           0,
@@ -213,7 +239,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
         // Notify parent of score change
         onScoreChange?.(stateAfterScoring.leftScore, stateAfterScoring.rightScore);
 
-        if (stateAfterScoring.rightScore >= 11 || stateAfterScoring.leftScore >= 11) {
+        if (stateAfterScoring.rightScore >= 3 || stateAfterScoring.leftScore >= 3) {
           const finalState = {
             ...stateAfterScoring,
             status: GameStatus.ENDED,
@@ -230,7 +256,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
       } else {
         newState = stateAfterScoring;
       }
-
       setGameState(newState);
     }
 
@@ -277,10 +302,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
 
   return (
     <div className="flex justify-center">
-      <PongCanvas
-        gameState={gameState}
-        // Remove player names - they'll be displayed by parent
-      />
+      <PongCanvas gameState={gameState} />
     </div>
   );
 };
