@@ -73,14 +73,7 @@ function MatchPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameStatus, handleStartPause, handleNewGame]); // Added missing dependencies
 
-  const handleGameComplete = async (result: GameResult) => {
-    setIsProcessingGameEnd(true);
-
-    // Determine winner
-    const leftPlayerWon = result.winner_id === player1?.id;
-    const winnerName = leftPlayerWon ? player1?.username : player2?.username;
-    setWinner(winnerName ?? 'Unknown Player');
-
+  const handleGameComplete = async (result: GameResult, winnerName?: string) => {
     try {
       const scoreData: CreateScoreRequest = {
         winner_id: result.winner_id,
@@ -110,9 +103,7 @@ function MatchPage() {
       <div className="container mx-auto px-4">
         {/* Game Title */}
         <div className="text-center mb-4">
-          <h1 className="text-6xl text-[#fff] font-fascinate mb-4">
-            {t('pawPawPong', 'Paw-Paw Pong')}
-          </h1>
+          <h1 className="text-6xl text-[#fff] font-fascinate mb-4">{t('pawPawPong')}</h1>
         </div>
 
         {/* Player Names and Scores */}
@@ -163,13 +154,9 @@ function MatchPage() {
                 transform: 'translateX(-50%)',
               }}
             >
-              <div className="text-3xl font-bold mb-4">
-                {t('pressSpaceToStart', 'Press Space to Start')}
-              </div>
-              <div className="text-lg mb-2">
-                {t('player1Controls', 'Player 1: W (up) and S (down)')}
-              </div>
-              <div className="text-lg">{t('player2Controls', 'Player 2: ↑ (up) and ↓ (down)')}</div>
+              <div className="text-3xl font-bold mb-4">{t('pressSpaceToStart')}</div>
+              <div className="text-lg mb-2">{t('player1Controls')}</div>
+              <div className="text-lg">{t('player2Controls')}</div>
             </div>
           )}
 
@@ -184,8 +171,8 @@ function MatchPage() {
                 transform: 'translateX(-50%)',
               }}
             >
-              <div className="text-4xl font-bold mb-4">{t('paused', 'PAW-SED')}</div>
-              <div className="text-lg">{t('pressSpaceToResume', 'Press Space to Resume')}</div>
+              <div className="text-4xl font-bold mb-4">{t('paused')}</div>
+              <div className="text-lg">{t('pressSpaceToResume')}</div>
             </div>
           )}
 
@@ -203,15 +190,7 @@ function MatchPage() {
               <div className="text-4xl font-bold mb-4">
                 {t('playerWins', '{{player}} Wins!', { player: winner })}
               </div>
-              <div className="text-xl mb-8">
-                {t('clawsomeVictory', 'What a Claw-some victory!')}
-              </div>
-
-              {isProcessingGameEnd && (
-                <div className="text-lg text-blue-400 mb-4">
-                  {t('savingResults', 'Saving game results...')}
-                </div>
-              )}
+              <div className="text-xl mb-8">{t('clawsomeVictory')}</div>
             </div>
           )}
         </div>
@@ -225,13 +204,13 @@ function MatchPage() {
                 disabled={isProcessingGameEnd}
                 onClick={handleNewGame}
               >
-                {t('startNewGame', 'Start New Game')}
+                {t('startNewGame')}
               </button>
               <button
                 className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-lg"
                 onClick={() => navigate('/')}
               >
-                {t('backToHome', 'Back to Home')}
+                {t('backToHome')}
               </button>
             </div>
           ) : (
@@ -239,7 +218,7 @@ function MatchPage() {
               className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-lg"
               onClick={handleStartPause}
             >
-              {gameStatus === GameStatus.RUNNING ? t('pause', 'Pause') : t('start', 'Start')}
+              {gameStatus === GameStatus.RUNNING ? t('pause') : t('start')}
             </button>
           )}
         </div>
