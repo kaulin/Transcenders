@@ -1,3 +1,4 @@
+import { getEnvVar } from '@transcenders/contracts';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -5,7 +6,7 @@ import useAuthLogin from '../hooks/useAuthLogin';
 
 const Login = () => {
   const { t } = useTranslation();
-  const { login, loginWithTokens } = useAuthLogin();
+  const { login } = useAuthLogin();
 
   const [username, setUsername] = useState<string>('');
   const [searchParams] = useSearchParams();
@@ -13,21 +14,19 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // always read a query param with error= value, expected to be a translatable `localeKey`
     const error = searchParams.get('error');
-    const tokensParam = searchParams.get('tokens');
     if (error) {
-      setError('Google auth failed');
-      window.history.replaceState({}, '', window.location.pathname);
+      setError(t(error ?? 'something_went_wrong'));
     }
-    if (tokensParam) {
-      const tokens = JSON.parse(decodeURIComponent(tokensParam));
-      loginWithTokens(tokens);
-    }
-  }, [searchParams, loginWithTokens]);
+    // Clean up URL
+    window.history.replaceState({}, '', window.location.pathname);
+  }, [searchParams, t]);
 
   async function handleGoogleLogin(e: React.FormEvent) {
     e.preventDefault();
-    window.location.href = 'http://localhost:3002/auth/google';
+    const authGoogleLoginURL = getEnvVar('AUTH_SERVICE_URL', '');
+    window.location.href = `${authGoogleLoginURL}/auth/google/login`;
   }
 
   async function handleLogin(e: React.FormEvent) {
