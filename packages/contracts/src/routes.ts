@@ -74,7 +74,7 @@ export const AUTH_ROUTES = {
   GOOGLE_CALLBACK: '/auth/google/callback',
 
   // POST /auth/google/login - Complete Google login with code
-  GOOGLE_LOGIN: '/auth/google/:id/login',
+  GOOGLE_LOGIN: '/auth/google/login',
   // POST /auth/google/set-password - Set password for Google user with code
   GOOGLE_SET_PASSWORD: '/auth/google/:id/set-password',
   // POST /auth/google/verify-config - Verify Google auth for sensitive operations

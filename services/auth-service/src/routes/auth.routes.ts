@@ -76,7 +76,6 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       schema: {
         description: 'Complete Google login with code',
         tags: ['Auth-google'],
-        params: userIdParamSchema,
         body: googleUserLogin,
         response: standardApiResponses,
       },

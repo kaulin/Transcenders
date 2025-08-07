@@ -99,8 +99,8 @@ export class AuthApiClient extends TypedApiClient {
     this.callAuthService(endpoint, BooleanOperationResultSchema);
   }
 
-  static async googleLogin(userId: number, code: string) {
-    const endpoint = `${AUTH_ROUTES.GOOGLE_LOGIN.replace(':id', userId.toString())}`;
+  static async googleLogin(code: string) {
+    const endpoint = `${AUTH_ROUTES.GOOGLE_LOGIN}`;
     const options: ApiCallOptions = {
       method: 'POST',
       body: { code },
