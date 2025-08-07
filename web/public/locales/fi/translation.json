@@ -88,7 +88,7 @@
   "pressSpaceToStart": "Paina välilyöntiä aloittaaksesi",
   "pressSpaceToResume": "Paina välilyöntiä jatkaaksesi",
   "player1Controls": "Pelaaja 1: W (ylös) ja S (alas)",
-  "player2Controls": "Pelaaja 2: ↑ ja ↓ näppäimet",
+  "player2Controls": "Pelaaja 2: ↑ (ylös) ja ↓ (alas)",
   "playerWins": "{{player}} Voittaa!",
   "clawsomeVictory": "Mikä voitto!",
   "startNewGame": "Aloita Uusi Peli",

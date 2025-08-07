@@ -16,7 +16,7 @@ import { checkWallCollision, handlePaddleCollisions, checkScore } from './utils/
 interface GameContainerProps {
   width?: number;
   height?: number;
-  onGameComplete?: (result: GameResult) => void;
+  onGameComplete?: (result: GameResult, winnername?: string) => void;
   onStatusChange?: (status: GameStatus) => void;
   onScoreChange?: (leftScore: number, rightScore: number) => void;
   // External control props
@@ -122,19 +122,37 @@ const GameContainer: React.FC<GameContainerProps> = ({
       if (isProcessingGameEnd || !gameStartTime || !currentPlayers) return;
 
       setIsProcessingGameEnd(true);
+      const leftPlayerWon = finalGameState.leftScore > finalGameState.rightScore;
 
-      const gameResult = createGameResult(
-        currentPlayers.player1.id,
-        currentPlayers.player2.id,
-        finalGameState.leftScore,
-        finalGameState.rightScore,
-        gameStartTime,
-        Date.now(),
-        0, // tournament level handled by parent
-      );
+      let actualWinner;
+      let gameResult;
+
+      if (leftPlayerWon) {
+        actualWinner = currentPlayers.player1;
+        gameResult = createGameResult(
+          currentPlayers.player1.id,
+          currentPlayers.player2.id,
+          finalGameState.leftScore,
+          finalGameState.rightScore,
+          gameStartTime,
+          Date.now(),
+          0, // tournament level handled by parent
+        );
+      } else {
+        actualWinner = currentPlayers.player2;
+        gameResult = createGameResult(
+          currentPlayers.player2.id,
+          currentPlayers.player1.id,
+          finalGameState.leftScore,
+          finalGameState.rightScore,
+          gameStartTime,
+          Date.now(),
+          0,
+        );
+      }
 
       try {
-        onGameComplete?.(gameResult);
+        onGameComplete?.(gameResult, actualWinner.name);
       } catch (error) {
         console.error('Failed to save game result:', error);
       } finally {
