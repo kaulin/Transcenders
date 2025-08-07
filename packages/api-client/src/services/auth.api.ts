@@ -3,6 +3,8 @@ import {
   AUTH_ROUTES,
   authDataSchema,
   BooleanOperationResultSchema,
+  GoogleFlows,
+  GoogleUserSetPassword,
   LoginUser,
   RegisterUser,
   SERVICE_URLS,
@@ -78,6 +80,39 @@ export class AuthApiClient extends TypedApiClient {
     const options: ApiCallOptions = {
       method: 'POST',
       body: { refreshToken },
+    };
+    return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
+  }
+
+  // reroutes to google-auth picker, and then to the /callback with /callback?type=${state}&code=${code}
+  // type is just a string value of what google auth was initiated with GoogleFlows type
+  // code is the 1-time use code that google returns on successful auth that can be used for our google code based endpoints
+  static async googleAuthLogin(): Promise<void> {
+    const state: GoogleFlows = 'login';
+    const endpoint = `${AUTH_ROUTES.GOOGLE_AUTH.replace(':flow', state)}`;
+    this.callAuthService(endpoint, BooleanOperationResultSchema);
+  }
+
+  static async googleAuthSetPassword(): Promise<void> {
+    const state: GoogleFlows = 'set-password';
+    const endpoint = `${AUTH_ROUTES.GOOGLE_AUTH.replace(':flow', state)}`;
+    this.callAuthService(endpoint, BooleanOperationResultSchema);
+  }
+
+  static async googleLogin(userId: number, code: string) {
+    const endpoint = `${AUTH_ROUTES.GOOGLE_LOGIN.replace(':id', userId.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body: { code },
+    };
+    return this.callAuthService(endpoint, authDataSchema, options);
+  }
+
+  static async googleSetPassword(userId: number, googleSetPassword: GoogleUserSetPassword) {
+    const endpoint = `${AUTH_ROUTES.GOOGLE_LOGIN.replace(':id', userId.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body: googleSetPassword,
     };
     return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
   }
