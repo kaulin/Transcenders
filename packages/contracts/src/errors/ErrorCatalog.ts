@@ -359,6 +359,14 @@ export function getErrorDefinition(code: ErrorCode): ErrorDefinition {
   return ERROR_CATALOG[code];
 }
 
+// Get error definition by code
+export function getErrorLocaleKey(code: ErrorCode): string {
+  if (ERROR_CATALOG[code].localeKey) {
+    return ERROR_CATALOG[code].localeKey;
+  }
+  return 'something_went_wrong';
+}
+
 // Get all error definitions
 export function getAllErrorDefinitions(): ErrorDefinition[] {
   return Object.values(ERROR_CATALOG);

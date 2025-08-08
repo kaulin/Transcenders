@@ -1,6 +1,7 @@
 import {
   ApiErrorHandler,
   ChangePasswordRequest,
+  ERROR_CODES,
   GoogleAuthCallback,
   GoogleFlowParam,
   GoogleFlows,
@@ -45,7 +46,7 @@ export class AuthController {
     params.set('type', state);
 
     if (code) params.set('code', code);
-    if (error) params.set('error', error);
+    if (error) params.set('error', ERROR_CODES.AUTH.GOOGLE_AUTH_FAILED);
     return reply.redirect(`${ENV.FRONTEND_URL}/callback?${params.toString()}`);
   }
 
