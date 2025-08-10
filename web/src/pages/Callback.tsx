@@ -1,62 +1,34 @@
 import { ErrorCode, getErrorLocaleKey, GoogleFlows } from '@transcenders/contracts';
-import { useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const Callback = () => {
-  const hasRun = useRef(false);
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const { search } = useLocation();
 
-  useEffect(() => {
-    // Ref guard to only run once
-    if (hasRun.current) return;
-    hasRun.current = true;
+  const destination = () => {
+    const sp = new URLSearchParams(search);
+    const type = sp.get('type') as GoogleFlows;
+    const code = sp.get('code');
+    const error = sp.get('error') as ErrorCode;
 
-    const redirectWithReplace = (path: string) => {
-      navigate(path, { replace: true });
-    };
-
-    const type = searchParams.get('type') as GoogleFlows;
-    const code = searchParams.get('code');
-    const error = searchParams.get('error') as ErrorCode;
-    // All backend errors go back to login
     if (error) {
       const localeKey = getErrorLocaleKey(error);
-      const search = new URLSearchParams({ error: localeKey }).toString();
-      redirectWithReplace(`/login?${search}`);
-      return;
+      const qs = new URLSearchParams({ error: localeKey }).toString();
+      return `/login?${qs}`;
     }
 
-    // Must have a code to proceed
-    if (!code) {
-      redirectWithReplace(`/login?error=google_auth_failed`);
-      return;
-    }
+    if (!code) return `/login?error=google_auth_failed`;
 
-    // Route by flow type
     switch (type) {
-      case 'login': {
-        const codeParams = new URLSearchParams({ code }).toString();
-        redirectWithReplace(`/login?${codeParams}`);
-        return;
-      }
-      case 'set-password': {
-        const codeParams = new URLSearchParams({ code }).toString();
-        redirectWithReplace(`/profile?${codeParams}`);
-        return;
-      }
+      case 'login':
+        return `/login?${new URLSearchParams({ code }).toString()}`;
+      case 'set-password':
+        return `/profile?${new URLSearchParams({ code }).toString()}`;
       default:
-        redirectWithReplace(`/login?error=google_auth_failed`);
-        return;
+        return `/login?error=google_auth_failed`;
     }
-  }, [navigate, searchParams]);
+  };
 
-  // Show simple loading spinner while processing
-  return (
-    <div className="relative w-full h-full flex justify-center items-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-    </div>
-  );
+  return <Navigate to={destination()} replace />;
 };
 
 export default Callback;

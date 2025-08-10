@@ -23,7 +23,7 @@ const Login = () => {
 
       if (errorLocaleKey) {
         setError(t(errorLocaleKey ?? 'something_went_wrong'));
-        navigate('/login', { replace: true });
+        window.history.replaceState({}, '', window.location.pathname);
         return;
       }
 
@@ -33,14 +33,14 @@ const Login = () => {
         hasHandledOAuth.current = true;
         // Copy code once, then strip URL to avoid duplicate handling
         const codeOnce = code;
-        navigate('/login', { replace: true });
+        window.history.replaceState({}, '', window.location.pathname);
         try {
           const tokens = await ApiClient.auth.googleLogin(codeOnce);
           await loginWithTokens(tokens);
           navigate('/', { replace: true });
         } catch (err: any) {
           setError(t(err?.localeKey ?? 'google_auth_failed'));
-          navigate('/login', { replace: true });
+          window.history.replaceState({}, '', window.location.pathname);
         }
       }
     }
