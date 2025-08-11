@@ -25,6 +25,7 @@ import {
   TwoFactorUpdate,
   User,
   UserCredentialsEntry,
+  userCredentialsSchema,
 } from '@transcenders/contracts';
 import {
   DatabaseManager,
@@ -212,6 +213,30 @@ export class AuthService {
     return result.user_id;
   }
 
+  private static async userCredsByUserId(
+    database: Database,
+    userId: number,
+  ): Promise<UserCredentialsEntry> {
+    const sql = SQL`
+        SELECT * FROM user_credentials WHERE user_id = ${userId}
+      `;
+    const userCredentials = await database.get(sql.text, sql.values);
+    if (!Value.Check(userCredentialsSchema, userCredentials)) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        username: userId,
+      });
+    }
+    return userCredentials;
+  }
+
+  private static async assertPassword(password: string, pw_hash: string): Promise<boolean> {
+    const isValidPassword = await bcrypt.compare(password, pw_hash);
+    if (!isValidPassword) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS);
+    }
+    return true;
+  }
+
   static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
     const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeTransaction<AuthData>(
@@ -220,24 +245,9 @@ export class AuthService {
       async (database) => {
         const userData = await ApiClient.user.getUserExact({ username: login.username });
 
-        // get the matching user credentials entry
-        const sql = SQL`
-        SELECT * FROM user_credentials WHERE user_id = ${userData.id}
-      `;
-        const userCredentials = await database.get(sql.text, sql.values);
-        if (!userCredentials) {
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-            username: login.username,
-          });
-        }
+        const userCreds = await this.userCredsByUserId(database, userData.id);
 
-        const userCreds = userCredentials as UserCredentialsEntry;
-        const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
-        if (!isValidPassword) {
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-            username: login.username,
-          });
-        }
+        this.assertPassword(login.password, userCreds.pw_hash);
 
         this.handleDeviceTokens(database, userData.id, deviceInfo);
         // generate and save new tokens
@@ -481,26 +491,10 @@ export class AuthService {
       db,
       async (database) => {
         // Get current credentials
-        const sql = SQL`
-          SELECT * FROM user_credentials WHERE user_id = ${userId}
-        `;
-        const userCredentials = await database.get(sql.text, sql.values);
-        if (!userCredentials) {
-          throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_ID, {
-            userId,
-          });
-        }
-
-        const userCreds = userCredentials as UserCredentialsEntry;
+        const userCreds = await this.userCredsByUserId(database, userId);
 
         // Verify old password
-        const isValidPassword = await bcrypt.compare(oldPassword, userCreds.pw_hash);
-        if (!isValidPassword) {
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-            userId,
-            reason: 'Current password is incorrect',
-          });
-        }
+        this.assertPassword(oldPassword, userCreds.pw_hash);
 
         // Hash new password and update
         const newHashedPassword = await bcrypt.hash(newPassword, 12);
