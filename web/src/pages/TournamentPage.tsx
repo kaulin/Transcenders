@@ -57,7 +57,7 @@ function TournamentPage() {
 
   //store shuffled player order (changes each tourny)
   const fixedPlayersRef = useRef<any[]>([]);
-  //store original player roster (won't change unless chagned)
+  //store original player roster (won't change unless changed)
   const originalPlayersRef = useRef<any[]>([]);
 
   const saveTournamentPlayers = (players: any[]) => {
@@ -94,24 +94,13 @@ function TournamentPage() {
     const savedPlayers = loadTournamentPlayer();
     if (savedPlayers) {
       ///store roster of players
-      console.log('🔄 LOADING SAVED PLAYERS FROM LOCALSTORAGE:');
-      console.log(
-        'savedPlayers:',
-        savedPlayers.map((p) => p?.username || 'Unknown'),
-      );
       originalPlayersRef.current = [...savedPlayers];
-      console.log(
-        '✅ Set originalPlayersRef to:',
-        originalPlayersRef.current.map((p) => p?.username || 'Unknown'),
-      );
 
       const shuffledPlayers = shuffleArray([...savedPlayers]);
       fixedPlayersRef.current = shuffledPlayers;
 
       //restore players to context so they show up in UI
-      console.log('📝 Restoring players to context...');
       savedPlayers?.forEach((player, index) => {
-        console.log(`Setting player ${index + 1} to:`, player?.username || 'Unknown');
         setPlayer(index + 1, player);
       });
       return;
@@ -125,10 +114,6 @@ function TournamentPage() {
       return;
     }
 
-    console.log(
-      '✅ Setting originalPlayersRef to allPlayersArray:',
-      allPlayersArray.map((p) => p?.username || 'Unknown'),
-    );
     originalPlayersRef.current = [...allPlayersArray];
 
     // Create shuffled tournament order
@@ -136,15 +121,10 @@ function TournamentPage() {
     fixedPlayersRef.current = shuffledPlayers;
 
     // Save ORIGINAL order, not shuffled
-    console.log(
-      '💾 Saving ORIGINAL players to localStorage:',
-      allPlayersArray.map((p) => p?.username ?? 'Unknown'),
-    );
     saveTournamentPlayers(allPlayersArray);
   }, [players, setPlayer]);
 
-  // Get current players for rendering the page
-  // Get current match players from the SHUFFLED tournament order
+  // Get current players for rendering the page from the SHUFFLED tournament order
   const getCurrentMatchPlayers = () => {
     const { currentMatch, winners } = tournamentState;
     const fixedPlayers = fixedPlayersRef.current;
@@ -183,9 +163,11 @@ function TournamentPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === ' ') {
         e.preventDefault();
-        if (gameStatus === GameStatus.WAITING || gameStatus == GameStatus.PAUSED) {
-          handleStartPause();
-        } else if (gameStatus === GameStatus.RUNNING) {
+        if (
+          gameStatus === GameStatus.WAITING ||
+          gameStatus == GameStatus.PAUSED ||
+          gameStatus === GameStatus.RUNNING
+        ) {
           handleStartPause();
         }
       }
@@ -368,23 +350,23 @@ function TournamentPage() {
           <h1 className="text-6xl text-white font-fascinate mb-4">
             {t('pawPawPongTournament', 'Paw-Paw Pong Tournament')}
           </h1>
-          <h2 className="'text=4xl' font-bold text-white mb-2">{getMatchTitle()}</h2>
+          <h2 className="text=5xl font-bold text-white mb-2">{getMatchTitle()}</h2>
         </div>
 
         {/*Player names anad scores */}
         <div className="flex justify-between items-center mb-4 px-8">
           <div className="text-center">
-            <h2 className="text-4xl font-bold text-white mb-2">
+            <h2 className="text-5xl font-bold text-white mb-2">
               {currentMatchPlayers.player1?.username ?? 'Player 1'}
             </h2>
-            <div className="text-5xl font-bold text-white">{leftScore}</div>
+            <div className="text-6xl font-bold text-white">{leftScore}</div>
           </div>
 
           <div className="text-center">
-            <h2 className="text-4xl font-bold text-white mb-2">
+            <h2 className="text-5xl font-bold text-white mb-2">
               {currentMatchPlayers.player2?.username ?? 'Player 2'}
             </h2>
-            <div className="text-5xl font-bold text-white">{rightScore}</div>
+            <div className="text-6xl font-bold text-white">{rightScore}</div>
           </div>
         </div>
 

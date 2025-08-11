@@ -59,9 +59,11 @@ function MatchPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === ' ') {
         e.preventDefault();
-        if (gameStatus === GameStatus.WAITING || gameStatus === GameStatus.PAUSED) {
-          handleStartPause();
-        } else if (gameStatus === GameStatus.RUNNING) {
+        if (
+          gameStatus === GameStatus.WAITING ||
+          gameStatus === GameStatus.PAUSED ||
+          gameStatus === GameStatus.RUNNING
+        ) {
           handleStartPause();
         } else if (gameStatus === GameStatus.ENDED) {
           handleNewGame();
@@ -88,9 +90,6 @@ function MatchPage() {
       };
 
       const response = await ApiClient.score.createScore(scoreData);
-
-      // The response is the created score object, not a success/error wrapper
-      // If we get here without throwing, it was successful
       console.log('SUCCESS: sent score data to backend', response);
     } catch (error) {
       console.error('Failed to send score data:', error);
@@ -110,21 +109,17 @@ function MatchPage() {
         {/* Player Names and Scores */}
         <div className="flex justify-between items-center mb-4 px-8">
           <div className="text-center">
-            <h2 className="text-4xl font-bold text-white mb-2">
+            <h2 className="text-5xl font-bold text-white mb-2">
               {player1?.username ?? 'Player 1'}
             </h2>
-            <div className="text-5xl font-bold text-white">{leftScore}</div>
+            <div className="text-7xl font-bold text-white">{leftScore}</div>
           </div>
 
           <div className="text-center">
-            <div className="text-2xl font-bold text-white"></div>
-          </div>
-
-          <div className="text-center">
-            <h2 className="text-4xl font-bold text-white mb-2">
+            <h2 className="text-5xl font-bold text-white mb-2">
               {player2?.username ?? 'Player 2'}
             </h2>
-            <div className="text-5xl font-bold text-white">{rightScore}</div>
+            <div className="text-7xl font-bold text-white">{rightScore}</div>
           </div>
         </div>
 
