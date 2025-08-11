@@ -109,7 +109,7 @@ export class AuthApiClient extends TypedApiClient {
   }
 
   static async googleSetPassword(userId: number, googleSetPassword: GoogleUserSetPassword) {
-    const endpoint = `${AUTH_ROUTES.GOOGLE_LOGIN.replace(':id', userId.toString())}`;
+    const endpoint = `${AUTH_ROUTES.GOOGLE_SET_PASSWORD.replace(':id', userId.toString())}`;
     const options: ApiCallOptions = {
       method: 'POST',
       body: googleSetPassword,
