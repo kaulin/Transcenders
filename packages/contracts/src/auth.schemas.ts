@@ -100,6 +100,26 @@ export const JWTPayloadSchema = Type.Object({
 });
 export type JWTPayload = Static<typeof JWTPayloadSchema>;
 
+const STEPUP_METHODS = ['password', '2fa', 'google'] as const;
+export type StepupMethod = (typeof STEPUP_METHODS)[number];
+export const stepupMethodsSchema = Type.Union(STEPUP_METHODS.map((value) => Type.Literal(value)));
+
+export const JWTElevationSchema = Type.Object({
+  stepup: Type.Literal(true),
+  stepup_method: stepupMethodsSchema,
+});
+export type JWTElevation = Static<typeof JWTElevationSchema>;
+
+// Full elevated JWT schema
+export const ElevatedJWTPayloadSchema = Type.Intersect([JWTPayloadSchema, JWTElevationSchema]);
+export type ElevatedJWTPayload = Static<typeof ElevatedJWTPayloadSchema>;
+
+export const stepupRequestSchema = Type.Object({
+  method: stepupMethodsSchema,
+  challenge: Type.String(),
+});
+export type StepupRequest = Static<typeof stepupRequestSchema>;
+
 export const changePasswordSchema = {
   params: Type.Object({
     id: IdParamField,
@@ -111,7 +131,7 @@ export const changePasswordSchema = {
 };
 export type ChangePasswordRequest = Static<typeof changePasswordSchema.body>;
 
-const GOOGLE_FLOW_VALUES = ['login', 'set-password', 'config-change', 'error'] as const;
+const GOOGLE_FLOW_VALUES = ['login', 'set-password', 'error'] as const;
 
 export type GoogleFlows = (typeof GOOGLE_FLOW_VALUES)[number];
 

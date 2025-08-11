@@ -67,6 +67,8 @@ export const AUTH_ROUTES = {
   CHANGE_PASSWORD: '/auth/change-password/:id',
   // DELETE /auth/credentials/:id
   DELETE: '/auth/credentials/:id',
+  // POST /auth/:id/stepup, body as StepupRequest
+  STEPUP: '/auth/:id/stepup',
 
   // GET /auth/google/:flow - Redirects to Google OAuth with state/flow
   GOOGLE_AUTH: '/auth/google/:flow',
@@ -77,8 +79,6 @@ export const AUTH_ROUTES = {
   GOOGLE_LOGIN: '/auth/google/login',
   // POST /auth/google/set-password - Set password for Google user with code
   GOOGLE_SET_PASSWORD: '/auth/google/:id/set-password',
-  // POST /auth/google/verify-config - Verify Google auth for sensitive operations
-  GOOGLE_VERIFY_CONFIG: '/auth/google/:id/verify-config',
 
   // PUT /auth/2fa/:id/enable - Creates or replaces 2FA setup
   TWO_FACTOR_ENABLE: '/auth/2fa/:id/enable',

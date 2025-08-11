@@ -10,6 +10,7 @@ import {
   refreshTokenRequestSchema,
   registerUserSchema,
   standardApiResponses,
+  stepupRequestSchema,
   twoFactorEnableSchema,
   twoFactorVerifySchema,
   userIdParamSchema,
@@ -42,6 +43,20 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.login,
+  );
+
+  app.post(
+    AUTH_ROUTES.STEPUP,
+    {
+      schema: {
+        description: 'Request an elevated token after step-up',
+        tags: ['Auth'],
+        params: userIdParamSchema,
+        body: stepupRequestSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.stepup,
   );
 
   app.get(
@@ -95,19 +110,6 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.googleSetPassword,
-  );
-
-  app.post(
-    AUTH_ROUTES.GOOGLE_VERIFY_CONFIG,
-    {
-      schema: {
-        description: 'Verify Google auth for sensitive operations',
-        tags: ['Auth-google'],
-        params: userIdParamSchema,
-        response: standardApiResponses,
-      },
-    },
-    AuthController.googleVerifyConfig,
   );
 
   app.post(

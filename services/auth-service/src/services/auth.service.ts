@@ -8,6 +8,7 @@ import {
   CreateUserRequest,
   decodeToken,
   DeviceInfo,
+  ElevatedJWTPayload,
   ERROR_CODES,
   GoogleFlows,
   GoogleUserInfo,
@@ -20,6 +21,8 @@ import {
   ResultHelper,
   ServiceError,
   ServiceResult,
+  StepupMethod,
+  StepupRequest,
   twoFactorEntrySchema,
   TwoFactorInsert,
   TwoFactorUpdate,
@@ -145,15 +148,29 @@ export class AuthService {
     });
   }
 
-  private static generateTokenPair(userId: number): AuthData {
-    const payload: JWTPayload = {
-      userId: userId,
+  private static generateTokenPair(userId: number, stepupMethod?: StepupMethod): AuthData {
+    const basePayload: JWTPayload = {
+      userId,
       aud: 'transcenders',
       iss: 'auth-service',
       jti: crypto.randomUUID(),
     };
-    const accessToken = jwt.sign(payload, TokenValidator.getAccessSecret());
-    const refreshToken = jwt.sign(payload, TokenValidator.getRefreshSecret());
+
+    const accessPayload: JWTPayload | ElevatedJWTPayload = stepupMethod
+      ? ({ ...basePayload, stepup: true, stepup_method: stepupMethod } as ElevatedJWTPayload)
+      : basePayload;
+
+    const accessToken = jwt.sign(
+      accessPayload,
+      TokenValidator.getAccessSecret(),
+      { expiresIn: Math.floor(AuthConfig.ACCESS_TOKEN_EXPIRE_MS / 1000) }, // e.g., 900 for 15m
+    );
+
+    const refreshToken = jwt.sign(
+      basePayload,
+      TokenValidator.getRefreshSecret(),
+      { expiresIn: Math.floor(AuthConfig.REFRESH_TOKEN_EXPIRE_MS / 1000) }, // e.g., 2592000 for 30d
+    );
 
     return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS };
   }
@@ -257,6 +274,34 @@ export class AuthService {
         return tokens;
       },
     );
+  }
+
+  static async stepup(userId: number, stepup: StepupRequest): Promise<ServiceResult<string>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return ResultHelper.executeQuery<string>('stepup request', db, async (database) => {
+      const userCreds = await this.userCredsByUserId(database, userId);
+      switch (stepup.method) {
+        case '2fa':
+          // #TODO
+          break;
+        case 'google':
+          const code = stepup.challenge;
+          const googleUser = await this.getGoogleUser(code);
+          await this.validateGoogleUserOwnership(database, googleUser, userId);
+          break;
+        case 'password':
+          const password = stepup.challenge;
+          this.assertPassword(password, userCreds.pw_hash);
+          break;
+        default:
+          throw new ServiceError(ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, {
+            reason: 'stepup default case',
+          });
+      }
+      const tokens = this.generateTokenPair(userId, stepup.method);
+      // only sending access elevated access token
+      return tokens.accessToken;
+    });
   }
 
   private static getGoogleOAuthClient() {

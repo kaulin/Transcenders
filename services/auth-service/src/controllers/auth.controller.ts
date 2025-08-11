@@ -11,6 +11,7 @@ import {
   LogoutUser,
   RefreshTokenRequest,
   RegisterUser,
+  StepupRequest,
   TwoFactorEnable,
   TwoFactorVerify,
   UserIdParam,
@@ -28,6 +29,14 @@ export class AuthController {
   static async login(request: FastifyRequest, reply: FastifyReply) {
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
     const result = await AuthService.login(request.body as LoginUser, deviceInfo);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async stepup(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+    const stepupRequest = request.body as StepupRequest;
+    const result = await AuthService.stepup(userId, stepupRequest);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
@@ -63,10 +72,6 @@ export class AuthController {
     const { code, password } = request.body as GoogleUserSetPassword;
     const result = await AuthService.googleSetPassword(userId, code, password);
     return ApiErrorHandler.handleServiceResult(reply, result);
-  }
-
-  static async googleVerifyConfig(request: FastifyRequest, reply: FastifyReply) {
-    //void
   }
 
   static async logout(request: FastifyRequest, reply: FastifyReply) {
