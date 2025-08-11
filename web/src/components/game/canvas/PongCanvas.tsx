@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { type GameState, GameStatus } from '../models/GameState';
+import { type GameState } from '../models/GameState';
 
 interface PongCanvasProps {
   gameState: GameState;
@@ -38,7 +38,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
           });
         };
 
-        // Load all images (replace these paths with your actual image paths)
+        // Load images
         await Promise.all([
           loadImage(leftPaddleImg, '/images/player1.png'),
           loadImage(rightPaddleImg, '/images/player2.png'),
@@ -54,7 +54,6 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
         setImagesLoaded(true);
       } catch (error) {
         console.error('Failed to load game images:', error);
-        // keep imagesLoaded as false to use shape drawing
       }
     };
     loadImages();
@@ -135,7 +134,7 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
         );
       } else {
         // Fallback to shape drawing if images aren't loaded
-        context.fillStyle = '#8366FF';
+        context.fillStyle = '#FFF';
 
         context.fillRect(
           leftPaddle.position.x,
@@ -166,10 +165,6 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 
     const context = canvas.getContext('2d');
     if (!context) return;
-
-    // Canvas background
-    context.fillStyle = '#B366FF';
-    context.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw the game elements
     drawGame(context, gameState);

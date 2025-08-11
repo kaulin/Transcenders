@@ -77,12 +77,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
     }
     // or fall back to context (for match games)
     if (players[1] && players[2]) {
-      console.log(
-        '🎮 GameContainer using context players:',
-        players[1].username,
-        'vs',
-        players[2].username,
-      );
       return {
         player1: {
           id: players[1].id ?? 1,
@@ -148,34 +142,19 @@ const GameContainer: React.FC<GameContainerProps> = ({
       if (isProcessingGameEnd || !gameStartTime || !currentPlayers) return;
 
       setIsProcessingGameEnd(true);
+
       const leftPlayerWon = finalGameState.leftScore > finalGameState.rightScore;
+      const actualWinner = leftPlayerWon ? currentPlayers.player1 : currentPlayers.player2;
 
-      let actualWinner;
-      let gameResult;
-
-      if (leftPlayerWon) {
-        actualWinner = currentPlayers.player1;
-        gameResult = createGameResult(
-          currentPlayers.player1.id,
-          currentPlayers.player2.id,
-          finalGameState.leftScore,
-          finalGameState.rightScore,
-          gameStartTime,
-          Date.now(),
-          0, // tournament level handled by parent
-        );
-      } else {
-        actualWinner = currentPlayers.player2;
-        gameResult = createGameResult(
-          currentPlayers.player2.id,
-          currentPlayers.player1.id,
-          finalGameState.rightScore, //right player won, so right score is higher
-          finalGameState.leftScore,
-          gameStartTime,
-          Date.now(),
-          0,
-        );
-      }
+      const gameResult = createGameResult(
+        currentPlayers.player1.id,
+        currentPlayers.player2.id,
+        finalGameState.leftScore,
+        finalGameState.rightScore,
+        gameStartTime,
+        Date.now(),
+        0, // tournament level handled by parent
+      );
 
       try {
         onGameComplete?.(gameResult, actualWinner.name);
@@ -271,7 +250,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
     };
   }, [updateGame]);
 
-  // Handle keyboard events - only game controls, not UI controls
+  // Handle keyboard events for game controls, not UI controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['ArrowUp', 'ArrowDown', 'w', 's'].includes(e.key)) {
