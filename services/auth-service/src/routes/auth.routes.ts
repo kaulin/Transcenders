@@ -11,8 +11,6 @@ import {
   registerUserSchema,
   standardApiResponses,
   stepupRequestSchema,
-  twoFactorEnableSchema,
-  twoFactorVerifySchema,
   userIdParamSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
@@ -164,46 +162,5 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.changePassword,
-  );
-
-  app.put(
-    AUTH_ROUTES.TWO_FACTOR_ENABLE,
-    {
-      schema: {
-        description: 'Creates or replaces 2FA setup',
-        tags: ['Auth'],
-        params: userIdParamSchema,
-        body: twoFactorEnableSchema,
-        response: standardApiResponses,
-      },
-    },
-    AuthController.twoFactorEnable,
-  );
-
-  app.patch(
-    AUTH_ROUTES.TWO_FACTOR_VERIFY,
-    {
-      schema: {
-        description: 'Updates status from pending to verified',
-        tags: ['Auth'],
-        params: userIdParamSchema,
-        body: twoFactorVerifySchema,
-        response: standardApiResponses,
-      },
-    },
-    AuthController.twoFactorVerify,
-  );
-
-  app.delete(
-    AUTH_ROUTES.TWO_FACTOR_DISABLE,
-    {
-      schema: {
-        description: 'Removes 2FA (deletes the record)',
-        tags: ['Auth'],
-        params: userIdParamSchema,
-        response: standardApiResponses,
-      },
-    },
-    AuthController.twoFactorDisable,
   );
 }

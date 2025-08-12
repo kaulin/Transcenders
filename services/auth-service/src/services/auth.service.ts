@@ -24,8 +24,6 @@ import {
   StepupMethod,
   StepupRequest,
   twoFactorEntrySchema,
-  TwoFactorInsert,
-  TwoFactorUpdate,
   User,
   UserCredentialsEntry,
   userCredentialsSchema,
@@ -42,6 +40,8 @@ import { google } from 'googleapis';
 import jwt from 'jsonwebtoken';
 import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
+import { TwoFactorService } from './twoFactor.service.js';
+import { TwoFactorChallengeService } from './twoFactorChallenge.service.js';
 
 export class AuthService {
   private static async insertCredentialsLogic(
@@ -282,7 +282,8 @@ export class AuthService {
       const userCreds = await this.userCredsByUserId(database, userId);
       switch (stepup.method) {
         case '2fa':
-          // #TODO
+          const twoFacCode = stepup.challenge;
+          await TwoFactorChallengeService.assertVerify(database, userId, 'stepup', twoFacCode);
           break;
         case 'google':
           const code = stepup.challenge;
@@ -413,7 +414,8 @@ export class AuthService {
           };
           const newUser = await ApiClient.user.createUser(creationData);
           userId = newUser.id;
-          this.insertCredentialsLogic(database, { user_id: userId, pw_hash: '' });
+          await this.insertCredentialsLogic(database, { user_id: userId, pw_hash: '' });
+          await TwoFactorService.initiateDatabaseEntry(database, userId, googleUser.email, true);
         } else {
           userId = await this.userIdByEmail(database, googleUser.email);
         }
@@ -422,7 +424,6 @@ export class AuthService {
         // generate and save new tokens
         const newTokens = this.generateTokenPair(userId);
         await this.storeRefreshToken(database, newTokens.refreshToken, deviceInfo);
-        await this.twoFactorGoogle(userId, googleUser.email);
         return newTokens;
       },
     );
@@ -602,115 +603,5 @@ export class AuthService {
         );
       },
     );
-  }
-
-  private static async twoFactorGoogle(
-    userId: number,
-    email: string,
-  ): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await DatabaseManager.for('AUTH').open();
-    return ResultHelper.executeQuery<BooleanOperationResult>(
-      '2fa google verified',
-      db,
-      async (database) => {
-        const verifiedAt = new Date(Date.now());
-        const twoFactorInsert: TwoFactorInsert = {
-          user_id: userId,
-          email: email,
-          code_hash: null,
-          status: 'verified',
-          verified_at: verifiedAt.toISOString(),
-          code_expires_at: null,
-        };
-        const { sql, values } = QueryBuilder.insertReplace('two_factor', twoFactorInsert);
-        await database.run(sql, values);
-
-        return BooleanResultHelper.success('2fa google verified');
-      },
-    );
-  }
-
-  static async twoFactorEnable(
-    userId: number,
-    email: string,
-  ): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await DatabaseManager.for('AUTH').open();
-    return ResultHelper.executeQuery<BooleanOperationResult>('2fa enable', db, async (database) => {
-      // #TODO generate actual different codes
-      const code = '123456';
-      const codeHash = await bcrypt.hash(code, 12);
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-      const twoFactorInsert: TwoFactorInsert = {
-        user_id: userId,
-        email: email,
-        code_hash: codeHash,
-        status: 'pending',
-        verified_at: null,
-        code_expires_at: expiresAt.toISOString(),
-      };
-      const { sql, values } = QueryBuilder.insertReplace('two_factor', twoFactorInsert);
-      await database.run(sql, values);
-
-      // #TODO send email system;
-      console.log(`sending code: ${code} to ${email}`);
-      return BooleanResultHelper.success('2fa pending');
-    });
-  }
-
-  static async twoFactorVerify(
-    userId: number,
-    code: string,
-  ): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await DatabaseManager.for('AUTH').open();
-    return ResultHelper.executeQuery<BooleanOperationResult>('2fa verify', db, async (database) => {
-      const sql = SQL`
-        SELECT * FROM two_factor WHERE user_id = ${userId}
-      `;
-      const result = await database.get(sql.text, sql.values);
-      if (!result) {
-        return BooleanResultHelper.failure('start a 2fa verification first');
-      }
-      Value.Assert(twoFactorEntrySchema, result);
-
-      // Already verified, success anyway
-      if (result.status === 'verified') {
-        return BooleanResultHelper.success('2fa already verified');
-      }
-      // check if code is expired
-      if (new Date() > new Date(result.code_expires_at)) {
-        return BooleanResultHelper.failure('code expired, request new one');
-      }
-
-      // verify code
-      if (await bcrypt.compare(code, result.code_hash)) {
-        const twoFactorUpdate: TwoFactorUpdate = {
-          status: 'verified',
-          code_expires_at: null,
-          code_hash: null,
-        };
-        const { sql, values } = QueryBuilder.update(
-          'two_factor',
-          twoFactorUpdate,
-          `id = ${result.id}`,
-        );
-        await database.run(sql, values);
-        return BooleanResultHelper.success('2fa verified');
-      } else {
-        return BooleanResultHelper.failure('wrong code try again');
-      }
-    });
-  }
-
-  static async twoFactorDisable(userId: number): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await DatabaseManager.for('AUTH').open();
-    return ResultHelper.executeQuery<BooleanOperationResult>('2fa verify', db, async (database) => {
-      const { sql, values } = QueryBuilder.remove('two_factor', `user_id = ${userId}`);
-      const result = await database.run(sql, values);
-      const deleted = (result.changes ?? 0) > 0;
-      if (deleted) {
-        return BooleanResultHelper.success('2fa disabled');
-      }
-      return BooleanResultHelper.failure('2fa not disabled');
-    });
   }
 }

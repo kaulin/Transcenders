@@ -69,6 +69,8 @@ export const AUTH_ROUTES = {
   DELETE: '/auth/credentials/:id',
   // POST /auth/:id/stepup, body as StepupRequest
   STEPUP: '/auth/:id/stepup',
+  // POST /auth/login/verify
+  LOGIN_VERIFY: '/auth/login/verify',
 
   // GET /auth/google/:flow - Redirects to Google OAuth with state/flow
   GOOGLE_AUTH: '/auth/google/:flow',
@@ -79,13 +81,26 @@ export const AUTH_ROUTES = {
   GOOGLE_LOGIN: '/auth/google/login',
   // POST /auth/google/set-password - Set password for Google user with code
   GOOGLE_SET_PASSWORD: '/auth/google/:id/set-password',
+} as const;
 
-  // PUT /auth/2fa/:id/enable - Creates or replaces 2FA setup
-  TWO_FACTOR_ENABLE: '/auth/2fa/:id/enable',
-  // DELETE /auth/2fa/:id/disable - Removes 2FA (deletes the record)
-  TWO_FACTOR_DISABLE: '/auth/2fa/:id/disable',
-  // PATCH /auth/2fa/:id/verify - Updates status from 'pending' to 'verified'
-  TWO_FACTOR_VERIFY: '/auth/2fa/:id/verify',
+export const TWO_FACTOR_ROUTES = {
+  // POST /auth/2fa/:id/enroll/request - Start enrollment (send code to email)
+  REQUEST_ENROLL: '/auth/2fa/:id/enroll/request',
+
+  // POST /auth/2fa/:id/enroll - Verify enrollment code
+  ENROLL: '/auth/2fa/:id/enroll',
+
+  // POST /auth/2fa/:id/stepup/request - Request a step-up (challenge)
+  REQUEST_STEPUP: '/auth/2fa/:id/stepup/request',
+
+  // POST /auth/2fa/:id/login/request - Request a login-time 2FA challenge
+  REQUEST_LOGIN: '/auth/2fa/:id/login/request',
+
+  // POST /auth/2fa/:id/disable/request - Request disable (challenge)
+  REQUEST_DISABLE: '/auth/2fa/:id/disable/request',
+
+  // POST /auth/2fa/:id/disable - Disable 2FA after verifying code
+  DISABLE: '/auth/2fa/:id/disable',
 } as const;
 
 export const SCORE_ROUTES = {

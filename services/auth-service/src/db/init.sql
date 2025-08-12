@@ -41,8 +41,6 @@ CREATE TABLE IF NOT EXISTS two_factor (
   user_id INTEGER UNIQUE NOT NULL,
   email TEXT NOT NULL,
   status TEXT DEFAULT 'pending' CHECK (status IN ('verified', 'pending')),
-  code_hash TEXT,
-  code_expires_at DATETIME,
   verified_at DATETIME DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -61,3 +59,19 @@ BEGIN
   WHERE
     id = NEW.id;
 END;
+
+CREATE TABLE IF NOT EXISTS two_factor_challenges (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  purpose TEXT NOT NULL CHECK (purpose IN ('enroll', 'login', 'stepup', 'disable')),
+  code_hash TEXT NOT NULL,
+  expires_at DATETIME NOT NULL,
+  consumed_at DATETIME NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES two_factor(user_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_2fa_challenges_user ON two_factor_challenges (user_id);
+CREATE INDEX IF NOT EXISTS idx_2fa_challenges_purpose ON two_factor_challenges (purpose);
+CREATE INDEX IF NOT EXISTS idx_2fa_challenges_expires ON two_factor_challenges (expires_at);
+CREATE INDEX IF NOT EXISTS idx_2fa_challenges_consumed ON two_factor_challenges (consumed_at);

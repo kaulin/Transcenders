@@ -10,9 +10,6 @@ import {
 export const PasswordField = Type.String({ minLength: 3 });
 export const PwHashField = Type.String();
 export const TwoFactorStatusField = Type.Union([Type.Literal('verified'), Type.Literal('pending')]);
-export const EmailField = Type.String({
-  pattern: `^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$`,
-});
 
 export const registerUserSchema = Type.Object({
   username: UsernameField,
@@ -172,55 +169,3 @@ export const googleUserSetPasswordSchema = Type.Object({
   password: PasswordField,
 });
 export type GoogleUserSetPassword = Static<typeof googleUserSetPasswordSchema>;
-
-export const twoFactorEntrySchema = Type.Union(
-  [
-    Type.Object({
-      id: IdField,
-      user_id: UserIdField,
-      email: EmailField,
-      status: Type.Literal('pending'),
-      code_hash: Type.String(),
-      code_expires_at: TimestampField,
-      verified_at: Type.Null(),
-      created_at: TimestampField,
-    }),
-    Type.Object({
-      id: IdField,
-      user_id: UserIdField,
-      email: EmailField,
-      status: Type.Literal('verified'),
-      code_hash: Type.Null(),
-      code_expires_at: Type.Null(),
-      verified_at: TimestampField,
-      created_at: TimestampField,
-    }),
-  ],
-  {
-    $id: 'TwoFactorEntry',
-    discriminator: 'status',
-  },
-);
-
-export const twoFactorInsertSchema = Type.Pick(twoFactorEntrySchema, [
-  'user_id',
-  'email',
-  'status',
-  'code_hash',
-  'code_expires_at',
-  'verified_at',
-]);
-
-export type TwoFactorEntry = Static<typeof twoFactorEntrySchema>;
-export type TwoFactorInsert = Static<typeof twoFactorInsertSchema>;
-export type TwoFactorUpdate = Partial<Static<typeof twoFactorInsertSchema>>;
-
-export const twoFactorVerifySchema = Type.Object({
-  code: Type.String(),
-});
-export type TwoFactorVerify = Static<typeof twoFactorVerifySchema>;
-
-export const twoFactorEnableSchema = Type.Object({
-  email: EmailField,
-});
-export type TwoFactorEnable = Static<typeof twoFactorEnableSchema>;

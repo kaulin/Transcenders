@@ -12,6 +12,7 @@ export * from './errors/ServiceError.js';
 export * from './errors/ServiceResult.js';
 export * from './routes.js';
 export * from './score.schemas.js';
+export * from './twoFactor.schemas.js';
 export * from './user.schemas.js';
 export * from './utils/BooleanResultHelper.js';
 export * from './utils/DatabaseHelper.js';

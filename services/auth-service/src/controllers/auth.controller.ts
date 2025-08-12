@@ -12,8 +12,6 @@ import {
   RefreshTokenRequest,
   RegisterUser,
   StepupRequest,
-  TwoFactorEnable,
-  TwoFactorVerify,
   UserIdParam,
 } from '@transcenders/contracts';
 import { DeviceUtils, ENV } from '@transcenders/server-utils';
@@ -102,32 +100,6 @@ export class AuthController {
     const { oldPassword, newPassword } = request.body as ChangePasswordRequest;
 
     const result = await AuthService.changePassword(userId, oldPassword, newPassword);
-    return ApiErrorHandler.handleServiceResult(reply, result);
-  }
-
-  static async twoFactorEnable(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as UserIdParam;
-    const userId = parseInt(id);
-    const { email } = request.body as TwoFactorEnable;
-
-    const result = await AuthService.twoFactorEnable(userId, email);
-    return ApiErrorHandler.handleServiceResult(reply, result);
-  }
-
-  static async twoFactorVerify(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as UserIdParam;
-    const userId = parseInt(id);
-    const { code } = request.body as TwoFactorVerify;
-
-    const result = await AuthService.twoFactorVerify(userId, code);
-    return ApiErrorHandler.handleServiceResult(reply, result);
-  }
-
-  static async twoFactorDisable(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as UserIdParam;
-    const userId = parseInt(id);
-
-    const result = await AuthService.twoFactorDisable(userId);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 }
