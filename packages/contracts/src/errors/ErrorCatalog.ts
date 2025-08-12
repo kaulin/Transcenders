@@ -183,6 +183,64 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     httpStatus: 401,
     category: 'authentication',
   },
+
+  [ERROR_CODES.AUTH.TWO_FACTOR_WRONG_CODE]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_WRONG_CODE,
+    message: 'Wrong code for 2fa verification.',
+    userMessage: 'Wrong code for 2fa verification.',
+    localeKey: 'two_fac_wrong_code',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+
+  [ERROR_CODES.AUTH.TWO_FACTOR_NO_CHALLENGE]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_NO_CHALLENGE,
+    message: 'No 2fa challenge initiated for this action',
+    userMessage: 'No 2fa challenge initiated for this action',
+    localeKey: 'two_fac_no_challenge',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+  [ERROR_CODES.AUTH.TWO_FACTOR_CHALLENGE_EXPIRED]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_CHALLENGE_EXPIRED,
+    message: '2FA challenge has expired',
+    userMessage: 'Your verification code expired. Please request a new one.',
+    localeKey: 'two_fac_code_expired',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+  [ERROR_CODES.AUTH.TWO_FACTOR_CHALLENGE_CONSUMED]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_CHALLENGE_CONSUMED,
+    message: '2FA challenge already used',
+    userMessage: 'The verification code was already used. Request a new code.',
+    localeKey: 'two_fac_code_consumed',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+  [ERROR_CODES.AUTH.TWO_FACTOR_ALREADY_VERIFIED]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_ALREADY_VERIFIED,
+    message: '2FA is already enabled for this user',
+    userMessage: 'Two-factor authentication is already enabled.',
+    localeKey: 'two_fac_already_verified',
+    httpStatus: 409,
+    category: 'conflict',
+  },
+  [ERROR_CODES.AUTH.TWO_FACTOR_NOT_ENABLED]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_NOT_ENABLED,
+    message: '2FA is not enabled for this user',
+    userMessage: 'Two-factor authentication is not enabled.',
+    localeKey: 'two_fac_not_enabled',
+    httpStatus: 400,
+    category: 'validation',
+  },
+  [ERROR_CODES.AUTH.TWO_FACTOR_ENROLL_REQUIRED]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_ENROLL_REQUIRED,
+    message: 'Enrollment is required before verification',
+    userMessage: 'Please start 2FA enrollment first.',
+    localeKey: 'two_fac_enroll_required',
+    httpStatus: 400,
+    category: 'validation',
+  },
 };
 
 const userErrors: Record<Extract<ErrorCode, `USER_${string}`>, ErrorDefinition> = {
