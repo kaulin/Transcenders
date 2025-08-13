@@ -1,16 +1,19 @@
 import { Cat, Home, LayoutDashboard, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { useUser } from '../hooks/useUser';
 import { usePlayers } from '../hooks/usePlayers';
+import { useUser } from '../hooks/useUser';
 
 import LanguageSwitch from '../components/LanguageSwitch';
+import { useAuth } from '../hooks/useAuth';
 
 const Header = () => {
   const { user, setUser } = useUser();
   const { resetAll } = usePlayers();
+  const { clearTokens } = useAuth();
 
   const handleLogout = () => {
+    clearTokens();
     resetAll();
     setUser(null);
   };
