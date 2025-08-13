@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import { AuthProvider } from './contexts/AuthContextProvider';
 import { PlayersProvider } from './contexts/PlayersContextProvider';
 import { UserProvider } from './contexts/UserContextProvider';
 import './i18n/i18n';
@@ -16,11 +17,13 @@ window.utils = Contracts;
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <UserProvider>
-        <PlayersProvider>
-          <App />
-        </PlayersProvider>
-      </UserProvider>
+      <AuthProvider>
+        <UserProvider>
+          <PlayersProvider>
+            <App />
+          </PlayersProvider>
+        </UserProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );
