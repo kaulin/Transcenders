@@ -160,17 +160,13 @@ export class AuthService {
       ? ({ ...basePayload, stepup: true, stepup_method: stepupMethod } as ElevatedJWTPayload)
       : basePayload;
 
-    const accessToken = jwt.sign(
-      accessPayload,
-      TokenValidator.getAccessSecret(),
-      { expiresIn: Math.floor(AuthConfig.ACCESS_TOKEN_EXPIRE_MS / 1000) }, // e.g., 900 for 15m
-    );
+    const accessToken = jwt.sign(accessPayload, TokenValidator.getAccessSecret(), {
+      expiresIn: Math.floor(AuthConfig.ACCESS_TOKEN_EXPIRE_MS / 1000),
+    });
 
-    const refreshToken = jwt.sign(
-      basePayload,
-      TokenValidator.getRefreshSecret(),
-      { expiresIn: Math.floor(AuthConfig.REFRESH_TOKEN_EXPIRE_MS / 1000) }, // e.g., 2592000 for 30d
-    );
+    const refreshToken = jwt.sign(basePayload, TokenValidator.getRefreshSecret(), {
+      expiresIn: Math.floor(AuthConfig.REFRESH_TOKEN_EXPIRE_MS / 1000),
+    });
 
     return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS };
   }
@@ -282,17 +278,14 @@ export class AuthService {
       const userCreds = await this.userCredsByUserId(database, userId);
       switch (stepup.method) {
         case '2fa':
-          const twoFacCode = stepup.challenge;
-          await TwoFactorChallengeService.assertVerify(database, userId, 'stepup', twoFacCode);
+          await TwoFactorChallengeService.assertVerify(database, userId, 'stepup', stepup.code);
           break;
         case 'google':
-          const code = stepup.challenge;
-          const googleUser = await this.getGoogleUser(code);
+          const googleUser = await this.getGoogleUser(stepup.googleCode);
           await this.validateGoogleUserOwnership(database, googleUser, userId);
           break;
         case 'password':
-          const password = stepup.challenge;
-          await this.assertPassword(password, userCreds.pw_hash);
+          await this.assertPassword(stepup.password, userCreds.pw_hash);
           break;
         default:
           throw new ServiceError(ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, {

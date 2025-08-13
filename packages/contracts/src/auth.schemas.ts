@@ -105,16 +105,31 @@ export const JWTElevationSchema = Type.Object({
   stepup: Type.Literal(true),
   stepup_method: stepupMethodsSchema,
 });
-export type JWTElevation = Static<typeof JWTElevationSchema>;
-
 // Full elevated JWT schema
 export const ElevatedJWTPayloadSchema = Type.Intersect([JWTPayloadSchema, JWTElevationSchema]);
 export type ElevatedJWTPayload = Static<typeof ElevatedJWTPayloadSchema>;
 
-export const stepupRequestSchema = Type.Object({
-  method: stepupMethodsSchema,
-  challenge: Type.String(),
+export const stepupPasswordSchema = Type.Object({
+  method: Type.Literal('password'),
+  password: PasswordField,
 });
+
+export const stepup2faSchema = Type.Object({
+  method: Type.Literal('2fa'),
+  code: Type.String(),
+});
+
+export const stepupGoogleSchema = Type.Object({
+  method: Type.Literal('google'),
+  googleCode: Type.String(),
+});
+
+export const stepupRequestSchema = Type.Union([
+  stepupPasswordSchema,
+  stepup2faSchema,
+  stepupGoogleSchema,
+]);
+
 export type StepupRequest = Static<typeof stepupRequestSchema>;
 
 export const changePasswordSchema = {
