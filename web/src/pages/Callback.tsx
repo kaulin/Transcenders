@@ -21,7 +21,7 @@ const Callback = () => {
     switch (type) {
       case 'login':
         return `/login?${new URLSearchParams({ code }).toString()}`;
-      case 'set-password':
+      case 'stepup':
         return `/profile?${new URLSearchParams({ code }).toString()}`;
       default:
         return `/login?error=google_auth_failed`;

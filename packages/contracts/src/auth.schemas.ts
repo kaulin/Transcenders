@@ -128,7 +128,7 @@ export const changePasswordSchema = {
 };
 export type ChangePasswordRequest = Static<typeof changePasswordSchema.body>;
 
-const GOOGLE_FLOW_VALUES = ['login', 'set-password', 'error'] as const;
+const GOOGLE_FLOW_VALUES = ['login', 'stepup', 'error'] as const;
 
 export type GoogleFlows = (typeof GOOGLE_FLOW_VALUES)[number];
 

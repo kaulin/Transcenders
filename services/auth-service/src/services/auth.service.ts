@@ -292,7 +292,7 @@ export class AuthService {
           break;
         case 'password':
           const password = stepup.challenge;
-          this.assertPassword(password, userCreds.pw_hash);
+          await this.assertPassword(password, userCreds.pw_hash);
           break;
         default:
           throw new ServiceError(ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, {

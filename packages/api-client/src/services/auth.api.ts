@@ -94,7 +94,7 @@ export class AuthApiClient extends TypedApiClient {
   }
 
   static async googleAuthSetPassword(): Promise<void> {
-    const state: GoogleFlows = 'set-password';
+    const state: GoogleFlows = 'stepup';
     const endpoint = `${AUTH_ROUTES.GOOGLE_AUTH.replace(':flow', state)}`;
     this.callAuthService(endpoint, BooleanOperationResultSchema);
   }
