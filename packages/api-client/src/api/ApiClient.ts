@@ -19,13 +19,18 @@ export class ApiClient {
   static async call(url: string, options: ApiCallOptions = {}): Promise<ApiResponseType> {
     const { method = 'GET', body, headers = {}, timeout = 20000 } = options;
 
-    const mergedHeaders: Record<string, string> = {
-      ...(authHeader ? { Authorization: authHeader } : {}),
-      ...headers,
-    };
+    const hdrs = new Headers(headers);
+
+    if (authHeader && !hdrs.has('authorization')) {
+      hdrs.set('Authorization', authHeader);
+    }
+    if (!hdrs.has('accept')) {
+      hdrs.set('Accept', 'application/json');
+    }
+
     const requestInit: RequestInit = {
       method,
-      headers: mergedHeaders,
+      headers: hdrs,
       //#TODO temporary disabled timeout for debugging
       // signal: AbortSignal.timeout(timeout),
     };
@@ -34,10 +39,9 @@ export class ApiClient {
       if (body instanceof FormData) {
         requestInit.body = body;
       } else {
-        requestInit.headers = {
-          'Content-Type': 'application/json',
-          ...(requestInit.headers as Record<string, string>),
-        };
+        if (!hdrs.has('content-type')) {
+          hdrs.set('Content-Type', 'application/json');
+        }
         requestInit.body = typeof body === 'string' ? body : JSON.stringify(body);
       }
     }

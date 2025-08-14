@@ -7,7 +7,7 @@ import { getTokens } from '../utils/authTokens';
 
 export default function AuthBootstrap({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
-  const { setAccessToken, clearTokens } = useAuth();
+  const { setAccessToken, clearTokens, setTokens } = useAuth();
   const { setUser } = useUser();
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function AuthBootstrap({ children }: { children: ReactNode }) {
       if (refreshToken) {
         try {
           const tokens = await ApiClient.auth.refreshToken(refreshToken);
-          setAccessToken(tokens.accessToken);
+          setTokens(tokens);
           const { userId } = decodeToken(tokens.accessToken);
           const user = await ApiClient.user.getUserById(userId);
           setUser(user);
@@ -43,7 +43,7 @@ export default function AuthBootstrap({ children }: { children: ReactNode }) {
     }
 
     autoLogin();
-  }, [setAccessToken, clearTokens, setUser]);
+  }, [setAccessToken, clearTokens, setUser, setTokens]);
 
   if (!ready) return null;
   return <>{children}</>;
