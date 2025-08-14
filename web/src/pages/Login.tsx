@@ -1,5 +1,5 @@
 import { ApiClient } from '@transcenders/api-client';
-import { getEnvVar } from '@transcenders/contracts';
+import { ERROR_CODES, getEnvVar, ServiceError } from '@transcenders/contracts';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,6 +12,8 @@ const Login = () => {
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [code, setCode] = useState<string>('');
+  const [needsCode, setNeedsCode] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const hasHandledOAuth = useRef(false);
 
@@ -59,9 +61,16 @@ const Login = () => {
     setError(null);
 
     try {
-      await login(username, password);
+      await login(username, password, code);
     } catch (err: any) {
-      setError(t(err.localeKey) || t('something_went_wrong'));
+      if (err instanceof ServiceError) {
+        if (err.codeOrError === ERROR_CODES.AUTH.TWO_FACTOR_LOGIN_REQUIRED) {
+          setNeedsCode(true);
+          setError(t(err.localeKey ?? 'two_fac_login_required'));
+          return;
+        }
+      }
+      setError(t(err?.localeKey) || t('something_went_wrong'));
     }
   }
 
@@ -88,6 +97,16 @@ const Login = () => {
           className="login-input-field mt-2"
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        {needsCode && (
+          <input
+            type="text"
+            value={code}
+            placeholder={t('code')}
+            className="login-input-field mt-2"
+            onChange={(e) => setCode(e.target.value)}
+          />
+        )}
 
         <div className="h-4">
           {error && <p className="text-[#786647] mt-2 text-xs sm:text-sm">{error}</p>}
