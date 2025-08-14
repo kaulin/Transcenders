@@ -241,6 +241,14 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     httpStatus: 400,
     category: 'validation',
   },
+  [ERROR_CODES.AUTH.TWO_FACTOR_LOGIN_REQUIRED]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_LOGIN_REQUIRED,
+    message: '2FA verification is required before login',
+    userMessage: '2FA verification is required before login',
+    localeKey: 'two_fac_login_required',
+    httpStatus: 201,
+    category: 'validation',
+  },
 };
 
 const userErrors: Record<Extract<ErrorCode, `USER_${string}`>, ErrorDefinition> = {

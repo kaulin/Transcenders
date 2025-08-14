@@ -69,8 +69,6 @@ export const AUTH_ROUTES = {
   DELETE: '/auth/credentials/:id',
   // POST /auth/:id/stepup, body as StepupRequest
   STEPUP: '/auth/:id/stepup',
-  // POST /auth/login/verify
-  LOGIN_VERIFY: '/auth/login/verify',
 
   // GET /auth/google/:flow - Redirects to Google OAuth with state/flow
   GOOGLE_AUTH: '/auth/google/:flow',
@@ -87,14 +85,17 @@ export const TWO_FACTOR_ROUTES = {
   // POST /auth/2fa/:id/enroll/request - Start enrollment (send code to email)
   REQUEST_ENROLL: '/auth/2fa/:id/enroll/request',
 
-  // POST /auth/2fa/:id/enroll - Verify enrollment code
-  ENROLL: '/auth/2fa/:id/enroll',
+  // POST /auth/2fa/:id/enable - Verify enrollment code
+  ENABLE: '/auth/2fa/:id/enable',
 
   // POST /auth/2fa/:id/stepup/request - Request a step-up (challenge)
   REQUEST_STEPUP: '/auth/2fa/:id/stepup/request',
 
   // POST /auth/2fa/:id/login/request - Request a login-time 2FA challenge
   REQUEST_LOGIN: '/auth/2fa/:id/login/request',
+
+  // POST - verify login code
+  LOGIN: '/auth/2fa/:id/login',
 
   // POST /auth/2fa/:id/disable/request - Request disable (challenge)
   REQUEST_DISABLE: '/auth/2fa/:id/disable/request',

@@ -1,6 +1,7 @@
 import { Static, TSchema } from '@sinclair/typebox';
 import {
   AUTH_ROUTES,
+  authDataAccessOnlySchema,
   authDataSchema,
   BooleanOperationResultSchema,
   GoogleFlows,
@@ -8,6 +9,11 @@ import {
   LoginUser,
   RegisterUser,
   SERVICE_URLS,
+  StepupRequest,
+  TWO_FACTOR_ROUTES,
+  twoFactorChallengeRequestedSchema,
+  TwoFactorRequest,
+  TwoFactorVerify,
   userSchema,
 } from '@transcenders/contracts';
 import { TypedApiClient } from '../api/TypedApiClient.js';
@@ -113,6 +119,99 @@ export class AuthApiClient extends TypedApiClient {
     const options: ApiCallOptions = {
       method: 'POST',
       body: googleSetPassword,
+    };
+    return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
+  }
+
+  private static async stepup(userId: number, stepup: StepupRequest) {
+    const endpoint = `${AUTH_ROUTES.STEPUP.replace(':id', userId.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body: stepup,
+    };
+    return this.callAuthService(endpoint, authDataAccessOnlySchema, options);
+  }
+
+  static async stepup2fa(userid: number, code: string) {
+    const stepup: StepupRequest = { method: '2fa', code };
+    return await this.stepup(userid, stepup);
+  }
+
+  static async stepupGoogle(userid: number, googleCode: string) {
+    const stepup: StepupRequest = { method: 'google', googleCode };
+    return await this.stepup(userid, stepup);
+  }
+
+  static async stepupPassword(userid: number, password: string) {
+    const stepup: StepupRequest = { method: 'password', password };
+    return await this.stepup(userid, stepup);
+  }
+
+  static async twoFacEnabled(userId: number) {
+    const endpoint = `${TWO_FACTOR_ROUTES.ENABLED.replace(':id', userId.toString())}`;
+    return this.callAuthService(endpoint, BooleanOperationResultSchema);
+  }
+
+  static async twoFacRequestEnroll(userId: number, email: string) {
+    const endpoint = `${TWO_FACTOR_ROUTES.REQUEST_ENROLL.replace(':id', userId.toString())}`;
+    const body: TwoFactorRequest = { email };
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body,
+    };
+    return this.callAuthService(endpoint, twoFactorChallengeRequestedSchema, options);
+  }
+
+  static async twoFacEnable(userId: number, code: string) {
+    const endpoint = `${TWO_FACTOR_ROUTES.ENABLE.replace(':id', userId.toString())}`;
+    const body: TwoFactorVerify = { code };
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body,
+    };
+    return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
+  }
+
+  static async twoFacRequestStepup(userId: number) {
+    const endpoint = `${TWO_FACTOR_ROUTES.REQUEST_STEPUP.replace(':id', userId.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'POST',
+    };
+    return this.callAuthService(endpoint, twoFactorChallengeRequestedSchema, options);
+  }
+
+  static async twoFacRequestLogin(userId: number) {
+    const endpoint = `${TWO_FACTOR_ROUTES.REQUEST_LOGIN.replace(':id', userId.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'POST',
+    };
+    return this.callAuthService(endpoint, twoFactorChallengeRequestedSchema, options);
+  }
+
+  static async twoFacLogin(userId: number, code: string) {
+    const endpoint = `${TWO_FACTOR_ROUTES.LOGIN.replace(':id', userId.toString())}`;
+    const body: TwoFactorVerify = { code };
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body,
+    };
+    return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
+  }
+
+  static async twoFacRequestDisable(userId: number) {
+    const endpoint = `${TWO_FACTOR_ROUTES.REQUEST_DISABLE.replace(':id', userId.toString())}`;
+    const options: ApiCallOptions = {
+      method: 'POST',
+    };
+    return this.callAuthService(endpoint, twoFactorChallengeRequestedSchema, options);
+  }
+
+  static async twoFacDisable(userId: number, code: string) {
+    const endpoint = `${TWO_FACTOR_ROUTES.DISABLE.replace(':id', userId.toString())}`;
+    const body: TwoFactorVerify = { code };
+    const options: ApiCallOptions = {
+      method: 'POST',
+      body,
     };
     return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
   }

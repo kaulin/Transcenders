@@ -1,6 +1,6 @@
 import {
   ApiErrorHandler,
-  TwoFactorEnable,
+  TwoFactorRequest,
   TwoFactorVerify,
   UserIdParam,
 } from '@transcenders/contracts';
@@ -8,19 +8,19 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { TwoFactorService } from '../services/twoFactor.service.js';
 
 export class TwoFactorController {
-  static async enroll(request: FastifyRequest, reply: FastifyReply) {
+  static async requestEnroll(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
-    const { email } = request.body as TwoFactorEnable;
+    const { email } = request.body as TwoFactorRequest;
     const result = await TwoFactorService.requestEnroll(userId, email);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
-  static async verifyEnroll(request: FastifyRequest, reply: FastifyReply) {
+  static async enable(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
     const { code } = request.body as TwoFactorVerify;
-    const result = await TwoFactorService.enroll(userId, code);
+    const result = await TwoFactorService.enable(userId, code);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
@@ -35,6 +35,14 @@ export class TwoFactorController {
     const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
     const result = await TwoFactorService.requestLogin(userId);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async login(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+    const { code } = request.body as TwoFactorVerify;
+    const result = await TwoFactorService.login(userId, code);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 

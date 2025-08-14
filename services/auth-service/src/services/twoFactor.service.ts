@@ -69,7 +69,10 @@ export class TwoFactorService {
     }
   }
 
-  static async enroll(userId: number, code: string) {
+  static async enable(
+    userId: number,
+    code: string,
+  ): Promise<ServiceResult<BooleanOperationResult>> {
     const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeQuery('2fa verify enroll', db, async (database) => {
       await this.assertRequirements(database, userId, true);
@@ -84,7 +87,7 @@ export class TwoFactorService {
         `user_id = ${userId} AND status = 'pending'`,
       );
       await database.run(sql, values);
-      return BooleanResultHelper.success('2fa verified');
+      return BooleanResultHelper.success('2fa enabled');
     });
   }
 
@@ -140,11 +143,21 @@ export class TwoFactorService {
     return this.requestChallenge(userId, 'disable');
   }
 
-  static async disable(userId: number, code: string) {
+  static async login(userId: number, code: string): Promise<ServiceResult<BooleanOperationResult>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return ResultHelper.executeQuery('2fa verify login code', db, async (database) => {
+      await TwoFactorChallengeService.assertVerify(database, userId, 'login', code);
+      return BooleanResultHelper.success('2fa code correct');
+    });
+  }
+
+  static async disable(
+    userId: number,
+    code: string,
+  ): Promise<ServiceResult<BooleanOperationResult>> {
     const db = await DatabaseManager.for('AUTH').open();
     return ResultHelper.executeQuery('2fa disable', db, async (database) => {
-      const ok = await TwoFactorChallengeService.assertVerify(database, userId, 'disable', code);
-      if (!ok) return BooleanResultHelper.failure('wrong or expired code');
+      await TwoFactorChallengeService.assertVerify(database, userId, 'disable', code);
 
       const { sql, values } = QueryBuilder.remove('two_factor', `user_id = ${userId}`);
       const result = await database.run(sql, values);

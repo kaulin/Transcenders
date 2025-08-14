@@ -20,6 +20,7 @@ export type RegisterUser = Static<typeof registerUserSchema>;
 export const loginUserSchema = Type.Object({
   username: UsernameField,
   password: PasswordField,
+  code: Type.Optional(Type.String()),
 });
 export type LoginUser = Static<typeof loginUserSchema>;
 
@@ -49,6 +50,9 @@ export const authDataSchema = Type.Object({
   expiresIn: Type.Number(),
 });
 export type AuthData = Static<typeof authDataSchema>;
+
+export const authDataAccessOnlySchema = Type.Pick(authDataSchema, ['accessToken']);
+export type authDataAccessOnly = Static<typeof authDataAccessOnlySchema>;
 
 export const refreshTokenRequestSchema = Type.Object({
   refreshToken: Type.String(),

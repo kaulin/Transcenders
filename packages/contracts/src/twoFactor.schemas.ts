@@ -46,10 +46,10 @@ export const twoFactorVerifySchema = Type.Object({
 });
 export type TwoFactorVerify = Static<typeof twoFactorVerifySchema>;
 
-export const twoFactorEnableSchema = Type.Object({
+export const twoFactorRequestSchema = Type.Object({
   email: EmailField,
 });
-export type TwoFactorEnable = Static<typeof twoFactorEnableSchema>;
+export type TwoFactorRequest = Static<typeof twoFactorRequestSchema>;
 
 export const TwoFactorChallengePurposeValues = ['enroll', 'login', 'stepup', 'disable'] as const;
 export type TwoFactorChallengePurpose = (typeof TwoFactorChallengePurposeValues)[number];

@@ -3,6 +3,7 @@ import { ApiClient } from '@transcenders/api-client';
 import {
   AuthConfig,
   AuthData,
+  authDataAccessOnly,
   BooleanOperationResult,
   BooleanResultHelper,
   CreateUserRequest,
@@ -250,31 +251,60 @@ export class AuthService {
     return true;
   }
 
+  static async finalizeLogin(
+    database: Database,
+    userId: number,
+    deviceInfo: DeviceInfo,
+  ): Promise<AuthData> {
+    await this.handleDeviceTokens(database, userId, deviceInfo);
+    const tokens = this.generateTokenPair(userId);
+    await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
+    return tokens;
+  }
+
+  static async preLoginRead(login: LoginUser) {
+    const db = await DatabaseManager.for('AUTH').open();
+    const result = await ResultHelper.executeQuery('prelogin read + gate', db, async (database) => {
+      const user = await ApiClient.user.getUserExact({ username: login.username });
+      const creds = await this.userCredsByUserId(database, user.id);
+      await this.assertPassword(login.password, creds.pw_hash);
+      const twoFacEnabled = (await ApiClient.auth.twoFacEnabled(user.id)).success;
+
+      return { userId: user.id, twoFacEnabled };
+    });
+    if (result.success) return result.data;
+    else throw result.error;
+  }
+
   static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
     const db = await DatabaseManager.for('AUTH').open();
+    const { userId, twoFacEnabled } = await this.preLoginRead(login);
+    if (login.code && twoFacEnabled) {
+      await ApiClient.auth.twoFacLogin(userId, login.code);
+    }
+
+    if (!login.code && twoFacEnabled) {
+      const { expiresAt } = await ApiClient.auth.twoFacRequestLogin(userId);
+      return ResultHelper.error(ERROR_CODES.AUTH.TWO_FACTOR_LOGIN_REQUIRED, '2FA required', {
+        userId,
+        expiresAt,
+      });
+    }
     return await ResultHelper.executeTransaction<AuthData>(
-      'authenticate user',
+      'finalize login',
       db,
       async (database) => {
-        const userData = await ApiClient.user.getUserExact({ username: login.username });
-
-        const userCreds = await this.userCredsByUserId(database, userData.id);
-
-        this.assertPassword(login.password, userCreds.pw_hash);
-
-        this.handleDeviceTokens(database, userData.id, deviceInfo);
-        // generate and save new tokens
-        const tokens = this.generateTokenPair(userData.id);
-        await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
-
-        return tokens;
+        return this.finalizeLogin(database, userId, deviceInfo);
       },
     );
   }
 
-  static async stepup(userId: number, stepup: StepupRequest): Promise<ServiceResult<string>> {
+  static async stepup(
+    userId: number,
+    stepup: StepupRequest,
+  ): Promise<ServiceResult<authDataAccessOnly>> {
     const db = await DatabaseManager.for('AUTH').open();
-    return ResultHelper.executeQuery<string>('stepup request', db, async (database) => {
+    return ResultHelper.executeQuery<authDataAccessOnly>('stepup request', db, async (database) => {
       const userCreds = await this.userCredsByUserId(database, userId);
       switch (stepup.method) {
         case '2fa':
@@ -293,8 +323,9 @@ export class AuthService {
           });
       }
       const tokens = this.generateTokenPair(userId, stepup.method);
+      const accessToken: authDataAccessOnly = { accessToken: tokens.accessToken };
       // only sending access elevated access token
-      return tokens.accessToken;
+      return accessToken;
     });
   }
 

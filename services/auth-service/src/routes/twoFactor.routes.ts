@@ -1,7 +1,7 @@
 import {
   TWO_FACTOR_ROUTES,
   standardApiResponses,
-  twoFactorEnableSchema,
+  twoFactorRequestSchema,
   twoFactorVerifySchema,
   userIdParamSchema,
 } from '@transcenders/contracts';
@@ -16,15 +16,15 @@ export async function registerTwoFactorRoutes(app: FastifyInstance) {
         description: 'Start 2FA enrollment (send code)',
         tags: ['Auth-2FA'],
         params: userIdParamSchema,
-        body: twoFactorEnableSchema,
+        body: twoFactorRequestSchema,
         response: standardApiResponses,
       },
     },
-    TwoFactorController.enroll,
+    TwoFactorController.requestEnroll,
   );
 
   app.post(
-    TWO_FACTOR_ROUTES.ENROLL,
+    TWO_FACTOR_ROUTES.ENABLE,
     {
       schema: {
         description: 'Verify 2FA enrollment code',
@@ -34,7 +34,7 @@ export async function registerTwoFactorRoutes(app: FastifyInstance) {
         response: standardApiResponses,
       },
     },
-    TwoFactorController.verifyEnroll,
+    TwoFactorController.enable,
   );
 
   app.post(
@@ -61,6 +61,20 @@ export async function registerTwoFactorRoutes(app: FastifyInstance) {
       },
     },
     TwoFactorController.requestLogin,
+  );
+
+  app.post(
+    TWO_FACTOR_ROUTES.LOGIN,
+    {
+      schema: {
+        description: 'Verify 2FA login code',
+        tags: ['Auth-2FA'],
+        params: userIdParamSchema,
+        body: twoFactorVerifySchema,
+        response: standardApiResponses,
+      },
+    },
+    TwoFactorController.login,
   );
 
   app.post(
