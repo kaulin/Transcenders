@@ -52,4 +52,11 @@ export class TwoFactorController {
     const result = await TwoFactorService.disable(userId, code);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
+
+  static async enabled(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+    const result = await TwoFactorService.getEnabled(userId);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
 }

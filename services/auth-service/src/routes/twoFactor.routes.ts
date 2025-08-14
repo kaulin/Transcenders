@@ -89,4 +89,17 @@ export async function registerTwoFactorRoutes(app: FastifyInstance) {
     },
     TwoFactorController.disable,
   );
+
+  app.get(
+    TWO_FACTOR_ROUTES.ENABLED,
+    {
+      schema: {
+        description: 'Is 2FA enabled for this user?',
+        tags: ['Auth-2FA'],
+        params: userIdParamSchema,
+        response: standardApiResponses,
+      },
+    },
+    TwoFactorController.enabled,
+  );
 }

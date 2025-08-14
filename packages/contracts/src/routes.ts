@@ -101,6 +101,9 @@ export const TWO_FACTOR_ROUTES = {
 
   // POST /auth/2fa/:id/disable - Disable 2FA after verifying code
   DISABLE: '/auth/2fa/:id/disable',
+
+  // GET - check if user has 2fa enabled
+  ENABLED: '/auth/2fa/:id/enabled',
 } as const;
 
 export const SCORE_ROUTES = {

@@ -1,5 +1,6 @@
 import { Value } from '@sinclair/typebox/value';
 import {
+  BooleanOperationResult,
   BooleanResultHelper,
   ERROR_CODES,
   ResultHelper,
@@ -151,6 +152,22 @@ export class TwoFactorService {
       return deleted
         ? BooleanResultHelper.success('2fa disabled')
         : BooleanResultHelper.failure('2fa not disabled');
+    });
+  }
+
+  static async getEnabled(userId: number) {
+    const db = await DatabaseManager.for('AUTH').open();
+    return ResultHelper.executeQuery<BooleanOperationResult>('2fa status', db, async (database) => {
+      const sql = SQL`
+        SELECT status FROM two_factor 
+        WHERE user_id = ${userId} AND status = 'verified'
+        LIMIT 1
+      `;
+      const row = await database.get(sql.text, sql.values);
+      if (!row) {
+        return BooleanResultHelper.failure('not verified');
+      }
+      return BooleanResultHelper.success('verified');
     });
   }
 }
