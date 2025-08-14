@@ -40,7 +40,7 @@ export class ApiErrorHandler {
     return {
       success: false,
       operation,
-      error: new ServiceError(error).toJSON(),
+      error: error instanceof ServiceError ? error.toJSON() : new ServiceError(error).toJSON(),
       timestamp: new Date().toISOString(),
     };
   }
