@@ -122,7 +122,18 @@ export class TwoFactorService {
 
       const { code, expiresAt } = await TwoFactorChallengeService.create(database, userId, purpose);
       // TODO: email send using stored email in two_factor
-      console.log(`2FA '${purpose}' code for user ${userId}: ${code}`);
+      if (process.env.NODE_ENV !== 'production') {
+        try {
+          const { default: clipboard } = await import('clipboardy');
+          await clipboard.write(code);
+          console.log(`2FA '${purpose}' code for user ${userId} copied to clipboard: ${code}`);
+        } catch (err: any) {
+          console.log(`Could not copy 2FA code to clipboard: ${err?.message ?? err}`);
+        }
+      } else {
+        // In prod, just log minimally or send email/SMS
+        console.log(`2FA '${purpose}' code for user ${userId} generated (not logged in prod).`);
+      }
       return { expiresAt: +expiresAt };
     });
   }
