@@ -243,7 +243,11 @@ export class AuthService {
     return userCredentials;
   }
 
-  private static async assertPassword(password: string, pw_hash: string): Promise<boolean> {
+  private static async assertPassword(password: string, pw_hash: string | null): Promise<boolean> {
+    if (pw_hash === null)
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        reason: 'user password null',
+      });
     const isValidPassword = await bcrypt.compare(password, pw_hash);
     if (!isValidPassword) {
       throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS);
@@ -438,7 +442,7 @@ export class AuthService {
           };
           const newUser = await ApiClient.user.createUser(creationData);
           userId = newUser.id;
-          await this.insertCredentialsLogic(database, { user_id: userId, pw_hash: '' });
+          await this.insertCredentialsLogic(database, { user_id: userId, pw_hash: null });
           await TwoFactorService.initiateDatabaseEntry(database, userId, googleUser.email, true);
         } else {
           userId = await this.userIdByEmail(database, googleUser.email);

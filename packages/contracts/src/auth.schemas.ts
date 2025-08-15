@@ -8,7 +8,7 @@ import {
 } from './user.schemas.js';
 
 export const PasswordField = Type.String({ minLength: 3 });
-export const PwHashField = Type.String();
+export const PwHashField = Type.Union([Type.String(), Type.Null()]);
 export const TwoFactorStatusField = Type.Union([Type.Literal('verified'), Type.Literal('pending')]);
 
 export const registerUserSchema = Type.Object({
