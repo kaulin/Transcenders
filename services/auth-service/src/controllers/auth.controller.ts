@@ -97,9 +97,9 @@ export class AuthController {
   static async changePassword(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
-    const { oldPassword, newPassword } = request.body as ChangePasswordRequest;
+    const { newPassword } = request.body as ChangePasswordRequest;
 
-    const result = await AuthService.changePassword(userId, oldPassword, newPassword);
+    const result = await AuthService.changePassword(userId, newPassword);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 }

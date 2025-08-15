@@ -552,7 +552,6 @@ export class AuthService {
 
   static async changePassword(
     userId: number,
-    oldPassword: string,
     newPassword: string,
   ): Promise<ServiceResult<BooleanOperationResult>> {
     const db = await DatabaseManager.for('AUTH').open();
@@ -560,12 +559,6 @@ export class AuthService {
       'change password',
       db,
       async (database) => {
-        // Get current credentials
-        const userCreds = await this.userCredsByUserId(database, userId);
-
-        // Verify old password
-        this.assertPassword(oldPassword, userCreds.pw_hash);
-
         // Hash new password and update
         const newHashedPassword = await bcrypt.hash(newPassword, 12);
         const updateSql = SQL`

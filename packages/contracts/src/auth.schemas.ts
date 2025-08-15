@@ -141,7 +141,6 @@ export const changePasswordSchema = {
     id: IdParamField,
   }),
   body: Type.Object({
-    oldPassword: PasswordField,
     newPassword: PasswordField,
   }),
 };

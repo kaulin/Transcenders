@@ -4,6 +4,7 @@ import {
   authDataAccessOnlySchema,
   authDataSchema,
   BooleanOperationResultSchema,
+  ChangePasswordRequest,
   GoogleFlows,
   GoogleUserSetPassword,
   LoginUser,
@@ -63,11 +64,12 @@ export class AuthApiClient extends TypedApiClient {
     return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
   }
 
-  static async changePassword(userId: number, oldPassword: string, newPassword: string) {
+  static async changePassword(userId: number, newPassword: string) {
     const endpoint = `${AUTH_ROUTES.CHANGE_PASSWORD.replace(':id', userId.toString())}`;
+    const body: ChangePasswordRequest = { newPassword };
     const options: ApiCallOptions = {
       method: 'PATCH',
-      body: { oldPassword, newPassword },
+      body,
     };
     return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
   }
