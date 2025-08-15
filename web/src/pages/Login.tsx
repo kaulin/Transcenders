@@ -21,7 +21,7 @@ const Login = () => {
     async function handleGoogleAuthFromParams() {
       const sp = new URLSearchParams(window.location.search);
       const errorLocaleKey = sp.get('error');
-      const code = sp.get('code');
+      const googleCode = sp.get('code');
 
       if (errorLocaleKey) {
         setError(t(errorLocaleKey ?? 'something_went_wrong'));
@@ -30,11 +30,11 @@ const Login = () => {
       }
 
       // If code present, treat as Google login attempt
-      if (code) {
+      if (googleCode) {
         if (hasHandledOAuth.current) return;
         hasHandledOAuth.current = true;
         // Copy code once, then strip URL to avoid duplicate handling
-        const codeOnce = code;
+        const codeOnce = googleCode;
         window.history.replaceState({}, '', window.location.pathname);
         try {
           const tokens = await ApiClient.auth.googleLogin(codeOnce);
