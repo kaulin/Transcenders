@@ -323,7 +323,7 @@ export class AuthService {
           break;
         default:
           throw new ServiceError(ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, {
-            reason: 'stepup default case',
+            reason: 'invalid stepup case',
           });
       }
       const tokens = this.generateTokenPair(userId, stepup.method);
