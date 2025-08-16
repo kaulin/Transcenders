@@ -24,10 +24,6 @@ function MatchPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Get current players
-  const player1 = players[1];
-  const player2 = players[2];
-
   const handleStartPause = useCallback(() => {
     if (gameStatus === GameStatus.WAITING || gameStatus === GameStatus.PAUSED) {
       setShouldStart(true);
@@ -100,8 +96,8 @@ function MatchPage() {
 
   return (
     <div className="box">
-      <div className="box-section bg-[#6e5d41]/10">
-        <div className="w-full h-full max-w-full mx-auto px-4 flex flex-col items-center justify-center">
+      <div className="box-section bg-[#6e5d41]/10 ">
+        <div className="w-full h-full mx-auto px-4 flex flex-col items-center justify-center">
           {/* Game Title */}
           <div className="text-center mb-4">
             <h1 className="text-3xl sm:text-3xl lg:text-5xl text-[#fff] font-fascinate">
@@ -109,22 +105,65 @@ function MatchPage() {
             </h1>
           </div>
 
-          {/* Player Names and Scores */}
-          <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-4 px-2 sm:px-8 gap-4 sm:gap-0">
-            <div className="text-center">
-              <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">
-                {player1?.username ?? 'Player 1'}
-              </h2>
-              <div className="text-4xl sm:text-3xl lg:text-5xl font-bold text-white">
+          {/* Player Avatars and Names and Scores */}
+          <div className="w-full flex justify-between items-center mb-4 px-8">
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden flex-shrink-0">
+                  {players[1]?.avatar ? (
+                    <img
+                      src={
+                        players[2].avatar ??
+                        'https://bestfriends.org/sites/default/files/styles/hero_mobile/public/hero-dash/Asana3808_Dashboard_Standard.jpg?h=ebad9ecf&itok=cWevo33k'
+                      }
+                      alt={`${players[1]?.username} avatar`}
+                      className="object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : null}
+                </div>
+
+                <div className="absolute -bottom-4 sm:-bottom-5 lg:-bottom-6 left-1/2 transform -translate-x-1/2">
+                  <div className="text-white text-center">
+                    <span className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+                      {players[1]?.username ?? 'Player 1'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-2xl sm:text-4xl lg:text-6xl font-bold text-white mt-6">
                 {leftScore}
               </div>
             </div>
 
-            <div className="text-center">
-              <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">
-                {player2?.username ?? 'Player 2'}
-              </h2>
-              <div className="text-4xl sm:text-3xl lg:text-5xl font-bold text-white">
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden flex-shrink-0">
+                  {players[2]?.avatar ? (
+                    <img
+                      src={players[2].avatar}
+                      alt={`${players[2]?.username} avatar`}
+                      className="object-contain max-w-[80%]"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : null}
+                </div>
+
+                <div className="absolute -bottom-4 sm:-bottom-5 lg:-bottom-6 left-1/2 transform -translate-x-1/2">
+                  <div className="text-white text-center">
+                    <span className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+                      {players[2]?.username ?? 'Player 2'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-2xl sm:text-4xl lg:text-6xl font-bold text-white mt-6">
                 {rightScore}
               </div>
             </div>
