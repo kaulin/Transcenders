@@ -49,11 +49,8 @@ export class AuthService {
     database: Database,
     userCreds: UserCredentialsEntry,
   ): Promise<boolean> {
-    const sql = SQL`
-        INSERT INTO user_credentials (user_id, pw_hash)
-        VALUES (${userCreds.user_id}, ${userCreds.pw_hash})
-      `;
-    const result = await database.run(sql.text, sql.values);
+    const { sql, values } = QueryBuilder.insert('user_credentials', userCreds);
+    const result = await database.run(sql, values);
     if (!result.lastID) {
       throw new ServiceError(ERROR_CODES.AUTH.REGISTRATION_FAILED, {
         reason: 'Failed to add user credentials',
@@ -143,6 +140,8 @@ export class AuthService {
       const userCredentials: UserCredentialsEntry = {
         user_id: newUser.id,
         pw_hash: await bcrypt.hash(registration.password, 12),
+        google_linked: false,
+        two_fac_enabled: false,
       };
       await this.insertCredentialsLogic(database, userCredentials);
       return newUser;
