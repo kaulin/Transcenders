@@ -6,7 +6,6 @@ import {
   GoogleFlowParam,
   GoogleFlows,
   GoogleUserLogin,
-  GoogleUserSetPassword,
   LoginUser,
   LogoutUser,
   RefreshTokenRequest,
@@ -61,14 +60,6 @@ export class AuthController {
     const { code } = request.body as GoogleUserLogin;
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
     const result = await AuthService.googleLogin(code, deviceInfo);
-    return ApiErrorHandler.handleServiceResult(reply, result);
-  }
-
-  static async googleSetPassword(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as UserIdParam;
-    const userId = parseInt(id);
-    const { code, password } = request.body as GoogleUserSetPassword;
-    const result = await AuthService.googleSetPassword(userId, code, password);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 

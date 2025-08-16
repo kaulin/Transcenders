@@ -4,7 +4,6 @@ import {
   googleAuthCallbackSchema,
   googleFlowParamSchema,
   googleUserLogin,
-  googleUserSetPasswordSchema,
   loginUserSchema,
   logoutUserSchema,
   refreshTokenRequestSchema,
@@ -94,20 +93,6 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.googleLogin,
-  );
-
-  app.post(
-    AUTH_ROUTES.GOOGLE_SET_PASSWORD,
-    {
-      schema: {
-        description: 'Set password for Google user with code',
-        tags: ['Auth-google'],
-        params: userIdParamSchema,
-        body: googleUserSetPasswordSchema,
-        response: standardApiResponses,
-      },
-    },
-    AuthController.googleSetPassword,
   );
 
   app.post(

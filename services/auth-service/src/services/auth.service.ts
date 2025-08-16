@@ -457,41 +457,6 @@ export class AuthService {
     );
   }
 
-  static async googleSetPassword(
-    userId: number,
-    code: string,
-    password: string,
-  ): Promise<ServiceResult<BooleanOperationResult>> {
-    const db = await DatabaseManager.for('AUTH').open();
-    return await ResultHelper.executeTransaction<BooleanOperationResult>(
-      'set google-user password',
-      db,
-      async (database) => {
-        const googleUser = await this.getGoogleUser(code);
-
-        await this.validateGoogleUserOwnership(database, googleUser, userId);
-
-        const pw_hash = await bcrypt.hash(password, 12);
-
-        const updateSql = SQL`
-          UPDATE user_credentials 
-          SET pw_hash = ${pw_hash} 
-          WHERE user_id = ${userId}
-      `;
-
-        const result = await database.run(updateSql.text, updateSql.values);
-        if ((result.changes ?? 0) === 0) {
-          throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_ID, {
-            userId,
-            reason: 'User credentials not found or no changes made',
-          });
-        }
-
-        return BooleanResultHelper.success(`Password successfully set for Google user ${userId}`);
-      },
-    );
-  }
-
   static async logout(
     userId: number,
     refreshToken: string,
