@@ -69,6 +69,15 @@ export class TwoFactorService {
     }
   }
 
+  private static async setTwoFacStatus(database: Database, userId: number, value: boolean) {
+    const updateSql = SQL`
+        UPDATE user_credentials 
+        SET two_fac_enabled = ${value} 
+        WHERE user_id = ${userId}
+      `;
+    await database.run(updateSql.text, updateSql.values);
+  }
+
   static async enable(
     userId: number,
     code: string,
@@ -87,6 +96,7 @@ export class TwoFactorService {
         `user_id = ${userId} AND status = 'pending'`,
       );
       await database.run(sql, values);
+      await this.setTwoFacStatus(database, userId, true);
       return BooleanResultHelper.success('2fa enabled');
     });
   }
@@ -173,6 +183,7 @@ export class TwoFactorService {
       const { sql, values } = QueryBuilder.remove('two_factor', `user_id = ${userId}`);
       const result = await database.run(sql, values);
       const deleted = (result.changes ?? 0) > 0;
+      if (deleted) await this.setTwoFacStatus(database, userId, false);
       return deleted
         ? BooleanResultHelper.success('2fa disabled')
         : BooleanResultHelper.failure('2fa not disabled');

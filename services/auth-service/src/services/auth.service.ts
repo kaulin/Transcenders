@@ -211,12 +211,15 @@ export class AuthService {
     }
   }
 
-  private static async emailExists(database: Database, email: string): Promise<boolean> {
+  private static async emailExists(
+    database: Database,
+    email: string,
+  ): Promise<UserCredentials | undefined> {
     const sql = SQL`
       SELECT 1 FROM 'two_factor' WHERE email = ${email} LIMIT 1
     `;
     const result = await database.get(sql.text, sql.values);
-    return !!result;
+    return result as UserCredentials | undefined;
   }
 
   private static async userIdByEmail(database: Database, email: string): Promise<number> {
@@ -273,7 +276,7 @@ export class AuthService {
       const user = await ApiClient.user.getUserExact({ username: login.username });
       const creds = await this.userCredsByUserId(database, user.id);
       await this.assertPassword(login.password, creds.pw_hash);
-      const twoFacEnabled = (await ApiClient.auth.twoFacEnabled(user.id)).success;
+      const twoFacEnabled = creds.two_fac_enabled;
 
       return { userId: user.id, twoFacEnabled };
     });
@@ -425,6 +428,15 @@ export class AuthService {
       });
     }
   }
+  private static async setGoogleLinked(database: Database, userId: number) {
+    const updateSql = SQL`
+      UPDATE user_credentials 
+      SET google_linked = TRUE 
+      WHERE user_id = ${userId}
+    `;
+    await database.run(updateSql.text, updateSql.values);
+  }
+
   // #TODO handle failed user creations, by syncing user and auth DB entries
   static async googleLogin(code: string, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
     const db = await DatabaseManager.for('AUTH').open();
@@ -443,9 +455,18 @@ export class AuthService {
           };
           const newUser = await ApiClient.user.createUser(creationData);
           userId = newUser.id;
-          await this.insertCredentialsLogic(database, { user_id: userId, pw_hash: null });
+          const CredentialsData: UserCredentialsEntry = {
+            user_id: userId,
+            pw_hash: null,
+            google_linked: true,
+            two_fac_enabled: true,
+          };
+          await this.insertCredentialsLogic(database, CredentialsData);
           await TwoFactorService.initiateDatabaseEntry(database, userId, googleUser.email, true);
         } else {
+          if (!userExists.google_linked) {
+            await this.setGoogleLinked(database, userExists.user_id);
+          }
           userId = await this.userIdByEmail(database, googleUser.email);
         }
 
