@@ -171,13 +171,19 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
   }, [gameState, drawGame]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={gameState.canvasWidth}
-      height={gameState.canvasHeight}
-      className="box bg-[#6e5d41]/5"
-    />
+    <div className="w-full h-full flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        width={gameState.canvasWidth}
+        height={gameState.canvasHeight}
+        className="w-full h-full max-w-full max-h-full object-contain box"
+        style={{
+          imageRendering: 'pixelated', //prevents blurry scaling
+        }}
+      />
+    </div>
   );
 };
 
 export default PongCanvas;
+  

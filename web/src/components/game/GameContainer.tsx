@@ -280,7 +280,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
   }, []);
 
   return (
-    <div className="flex justify-center">
+    <div className="w-full h-full max-w-4xl mx-auto">
       <PongCanvas gameState={gameState} />
     </div>
   );
