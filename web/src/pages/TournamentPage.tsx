@@ -295,133 +295,120 @@ function TournamentPage() {
   };
 
   return (
-    <div className="h-full pt-8 relative">
-      <div className="container mx-auto px-4">
-        {/*Tournament Title*/}
-        <div className="text-center mb-4">
-          <h1 className="text-6xl text-white font-fascinate mb-4">
-            {t('pawPawPongTournament', 'Paw-Paw Pong Tournament')}
-          </h1>
-          <h2 className="text=5xl font-bold text-white mb-2">{getMatchTitle()}</h2>
-        </div>
-
-        {/*Player names anad scores */}
-        <div className="flex justify-between items-center mb-4 px-8">
-          <div className="text-center">
-            <h2 className="text-5xl font-bold text-white mb-2">
-              {currentMatchPlayers.player1?.username ?? 'Player 1'}
+    <div className="box">
+      <div className="box-section bg-[#6e5d41]/10">
+        <div className="w-full h-full max-w-full mx-auto px-4 flex flex-col items-center justify-center">
+          {/*Tournament Title*/}
+          <div className="text-center mb-4">
+            <h1 className="text-3xl sm:text-3xl lg:text-5xl text-[#fff] font-fascinate">
+              {t('pawPawPongTournament', 'Paw-Paw Pong Tournament')}
+            </h1>
+            <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white pt-4 mb-2">
+              {getMatchTitle()}
             </h2>
-            <div className="text-6xl font-bold text-white">{leftScore}</div>
           </div>
 
-          <div className="text-center">
-            <h2 className="text-5xl font-bold text-white mb-2">
-              {currentMatchPlayers.player2?.username ?? 'Player 2'}
-            </h2>
-            <div className="text-6xl font-bold text-white">{rightScore}</div>
+          {/*Player names and scores */}
+          <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-4 px-2 sm:px-8 gap-4 sm:gap-0">
+            <div className="text-center">
+              <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">
+                {currentMatchPlayers.player1?.username ?? 'Player 1'}
+              </h2>
+              <div className="text-4xl sm:text-3xl lg:text-5xl font-bold text-white">
+                {leftScore}
+              </div>
+            </div>
+
+            <div className="text-center">
+              <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">
+                {currentMatchPlayers.player2?.username ?? 'Player 2'}
+              </h2>
+              <div className="text-4xl sm:text-3xl lg:text-5xl font-bold text-white">
+                {rightScore}
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Game Canvas */}
-        <div className="flex justify-center relative">
-          <GameContainer
-            key={tournamentState.gameKey}
-            width={1000}
-            height={800}
-            onGameComplete={handleTGameComplete}
-            onStatusChange={handleStatusChange}
-            onScoreChange={handleScoreChange}
-            shouldStart={shouldStart}
-            shouldPause={shouldPause}
-            onStartHandled={() => setShouldStart(false)}
-            onPauseHandled={() => setShouldPause(false)}
-            player1={currentMatchPlayers.player1}
-            player2={currentMatchPlayers.player2}
-          />
+          {/* Game Canvas */}
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-[1000px] aspect-[5/4] overflow-hidden">
+              <GameContainer
+                key={tournamentState.gameKey}
+                width={1000}
+                height={800}
+                onGameComplete={handleTGameComplete}
+                onStatusChange={handleStatusChange}
+                onScoreChange={handleScoreChange}
+                shouldStart={shouldStart}
+                shouldPause={shouldPause}
+                onStartHandled={() => setShouldStart(false)}
+                onPauseHandled={() => setShouldPause(false)}
+                player1={currentMatchPlayers.player1}
+                player2={currentMatchPlayers.player2}
+              />
 
-          {/* Overlay Messages */}
-          {gameStatus === GameStatus.WAITING && (
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white"
-              style={{
-                width: '1000px',
-                height: '800px',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <div className="text-3xl font-bold mb-4">
-                {t('pressSpaceToStart', 'Press Space to Start')}
-              </div>
-              <div className="text-lg mb-2">
-                {t('player1Controls', 'Player 1: W (up) and S (down)')}
-              </div>
-              <div className="text-lg">{t('player2Controls', 'Player 2: ↑ (up) and ↓ (down)')}</div>
+              {/* Overlay Messages */}
+              {gameStatus === GameStatus.WAITING && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white">
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center px-4">
+                    {t('pressSpaceToStart')}
+                  </div>
+                  <div className="text-sm sm:text-base lg:text-lg mb-2 text-center px-4">
+                    {t('player1Controls')}
+                  </div>
+                  <div className="text-sm sm:text-base lg:text-lg text-center px-4">
+                    {t('player2Controls')}
+                  </div>
+                </div>
+              )}
+
+              {gameStatus === GameStatus.PAUSED && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white pointer-events-none">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 pointer-events-auto">
+                    {t('paused')}
+                  </div>
+                  <div className="text-sm sm:text-base lg:text-lg">{t('pressSpaceToResume')}</div>
+                </div>
+              )}
+
+              {gameStatus === GameStatus.ENDED && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center px-4">
+                    {t('playerWins', '{{player}} Wins!', { player: winner })}
+                  </div>
+                  <div className="text-lg sm:text-xl mb-8 text-center px-4">
+                    {t('clawsomeVictory')}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
-          {gameStatus === GameStatus.PAUSED && (
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white"
-              style={{
-                width: '1000px',
-                height: '800px',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <div className="text-4xl font-bold mb-4">{t('paused', 'PAW-SED')}</div>
-              <div className="text-lg">{t('pressSpaceToResume', 'Press Space to Resume')}</div>
-            </div>
-          )}
-
-          {gameStatus === GameStatus.ENDED && (
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white"
-              style={{
-                width: '1000px',
-                height: '800px',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <div className="text-4xl font-bold mb-4">
-                {t('playerWins', '{{player}} Wins!', { player: winner })}
-              </div>
-              <div className="text-xl mb-8">
-                {t('clawsomeVictory', 'What a Claw-some victory!')}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Control Buttons */}
-        <div className="flex w-full justify-center gap-10 mt-6">
-          {gameStatus === GameStatus.ENDED && tournamentState.roundComplete ? (
-            <button
-              className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-lg"
-              disabled={isProcessingGameEnd}
-              onClick={() => {
-                if (tournamentState.currentMatch === 3) {
-                  navigate('/');
-                } else {
-                  handleContinueToNextRound();
-                }
-              }}
-            >
-              {tournamentState.currentMatch === 3 ? t('backToHome') : t('continueToNextRound')}
-            </button>
-          ) : gameStatus !== GameStatus.ENDED ? (
-            <button
-              className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-lg"
-              onClick={handleStartPause}
-            >
-              {gameStatus === GameStatus.RUNNING ? t('pause') : t('start')}
-            </button>
-          ) : null}
+          {/* Control Buttons */}
+          <div className="flex w-full justify-center gap-4 sm:gap-10 mt-6 px-4">
+            {gameStatus === GameStatus.ENDED && tournamentState.roundComplete ? (
+              <button
+                className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-sm sm:text-lg"
+                disabled={isProcessingGameEnd}
+                onClick={() => {
+                  if (tournamentState.currentMatch === 3) {
+                    navigate('/');
+                  } else {
+                    handleContinueToNextRound();
+                  }
+                }}
+              >
+                {tournamentState.currentMatch === 3 ? t('backToHome') : t('continueToNextRound')}
+              </button>
+            ) : gameStatus !== GameStatus.ENDED ? (
+              <button
+                className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-sm sm:text-lg"
+                onClick={handleStartPause}
+              >
+                {gameStatus === GameStatus.RUNNING ? t('pause') : t('start')}
+              </button>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>

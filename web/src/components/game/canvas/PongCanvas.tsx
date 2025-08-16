@@ -177,9 +177,6 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
         width={gameState.canvasWidth}
         height={gameState.canvasHeight}
         className="w-full h-full max-w-full max-h-full object-contain box"
-        style={{
-          imageRendering: 'pixelated', //prevents blurry scaling
-        }}
       />
     </div>
   );

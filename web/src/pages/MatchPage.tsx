@@ -104,7 +104,7 @@ function MatchPage() {
         <div className="w-full h-full max-w-full mx-auto px-4 flex flex-col items-center justify-center">
           {/* Game Title */}
           <div className="text-center mb-4">
-            <h1 className="text-3xl sm:text-4xl lg:text-6xl text-[#fff] font-fascinate">
+            <h1 className="text-3xl sm:text-3xl lg:text-5xl text-[#fff] font-fascinate">
               {t('pawPawPong')}
             </h1>
           </div>
@@ -112,19 +112,19 @@ function MatchPage() {
           {/* Player Names and Scores */}
           <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-4 px-2 sm:px-8 gap-4 sm:gap-0">
             <div className="text-center">
-              <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-2">
+              <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">
                 {player1?.username ?? 'Player 1'}
               </h2>
-              <div className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white">
+              <div className="text-4xl sm:text-3xl lg:text-5xl font-bold text-white">
                 {leftScore}
               </div>
             </div>
 
             <div className="text-center">
-              <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-2">
+              <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">
                 {player2?.username ?? 'Player 2'}
               </h2>
-              <div className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white">
+              <div className="text-4xl sm:text-3xl lg:text-5xl font-bold text-white">
                 {rightScore}
               </div>
             </div>
@@ -148,7 +148,7 @@ function MatchPage() {
 
               {/* Overlay Messages */}
               {gameStatus === GameStatus.WAITING && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white rounded-lg">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center px-4">
                     {t('pressSpaceToStart')}
                   </div>
@@ -162,7 +162,7 @@ function MatchPage() {
               )}
 
               {gameStatus === GameStatus.PAUSED && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white rounded-lg">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
                     {t('paused')}
                   </div>
@@ -171,7 +171,7 @@ function MatchPage() {
               )}
 
               {gameStatus === GameStatus.ENDED && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white rounded-lg">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center px-4">
                     {t('playerWins', '{{player}} Wins!', { player: winner })}
                   </div>
