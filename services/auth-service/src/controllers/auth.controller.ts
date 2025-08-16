@@ -93,4 +93,12 @@ export class AuthController {
     const result = await AuthService.changePassword(userId, newPassword);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
+
+  static async getUserCredsInfo(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+
+    const result = await AuthService.getUserCredsInfo(userId);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
 }

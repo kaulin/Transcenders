@@ -148,4 +148,17 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     },
     AuthController.changePassword,
   );
+
+  app.get(
+    AUTH_ROUTES.CREDS,
+    {
+      schema: {
+        description: 'get user creds info',
+        tags: ['Auth'],
+        params: userIdParamSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.getUserCredsInfo,
+  );
 }

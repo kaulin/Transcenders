@@ -69,6 +69,8 @@ export const AUTH_ROUTES = {
   DELETE: '/auth/credentials/:id',
   // POST /auth/:id/stepup, body as StepupRequest
   STEPUP: '/auth/:id/stepup',
+  // GET - get user creds info UserCredentialsInfo format
+  CREDS: '/auth/:id/creds',
 
   // GET /auth/google/:flow - Redirects to Google OAuth with state/flow
   GOOGLE_AUTH: '/auth/google/:flow',

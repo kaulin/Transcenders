@@ -15,6 +15,7 @@ import {
   twoFactorChallengeRequestedSchema,
   TwoFactorRequest,
   TwoFactorVerify,
+  userCredentialsInfoSchema,
   userSchema,
 } from '@transcenders/contracts';
 import { TypedApiClient } from '../api/TypedApiClient.js';
@@ -72,6 +73,11 @@ export class AuthApiClient extends TypedApiClient {
       body,
     };
     return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
+  }
+
+  static async getUserCredsInfo(userId: number) {
+    const endpoint = `${AUTH_ROUTES.CREDS.replace(':id', userId.toString())}`;
+    return this.callAuthService(endpoint, userCredentialsInfoSchema);
   }
 
   static async refreshToken(refreshToken: string) {

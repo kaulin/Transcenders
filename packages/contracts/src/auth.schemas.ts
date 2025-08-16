@@ -10,6 +10,12 @@ import {
 export const PasswordField = Type.String({ minLength: 3 });
 export const PwHashField = Type.Union([Type.String(), Type.Null()]);
 export const TwoFactorStatusField = Type.Union([Type.Literal('verified'), Type.Literal('pending')]);
+export const OptionalBooleanNullField = Type.Union([
+  Type.Literal(1),
+  Type.Literal(0),
+  Type.Boolean(),
+  Type.Null(),
+]);
 
 export const registerUserSchema = Type.Object({
   username: UsernameField,
@@ -32,13 +38,25 @@ export type LogoutUser = Static<typeof logoutUserSchema>;
 export const userCredentialsEntrySchema = Type.Object({
   user_id: UserIdField,
   pw_hash: PwHashField,
+  google_linked: OptionalBooleanNullField,
+  two_fac_enabled: OptionalBooleanNullField,
 });
 export type UserCredentialsEntry = Static<typeof userCredentialsEntrySchema>;
+
+export const userCredentialsInfoSchema = Type.Object({
+  userId: UserIdField,
+  hasPassword: OptionalBooleanNullField,
+  googleLinked: OptionalBooleanNullField,
+  twoFacEnabled: OptionalBooleanNullField,
+});
+export type UserCredentialsInfo = Static<typeof userCredentialsInfoSchema>;
 
 export const userCredentialsSchema = Type.Object({
   id: IdField,
   user_id: UserIdField,
   pw_hash: PwHashField,
+  google_linked: OptionalBooleanNullField,
+  two_fac_enabled: OptionalBooleanNullField,
   created_at: TimestampField,
   updated_at: TimestampField,
 });

@@ -26,7 +26,9 @@ import {
   StepupRequest,
   twoFactorEntrySchema,
   User,
+  UserCredentials,
   UserCredentialsEntry,
+  UserCredentialsInfo,
   userCredentialsSchema,
 } from '@transcenders/contracts';
 import {
@@ -539,6 +541,24 @@ export class AuthService {
         }
 
         return BooleanResultHelper.success(`Password successfully changed for user ${userId}`);
+      },
+    );
+  }
+
+  static async getUserCredsInfo(userId: number): Promise<ServiceResult<UserCredentialsInfo>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return await ResultHelper.executeQuery<UserCredentialsInfo>(
+      'Update creds',
+      db,
+      async (database) => {
+        const userCreds = await this.userCredsByUserId(database, userId);
+        const userCredsData: UserCredentialsInfo = {
+          userId,
+          googleLinked: userCreds.google_linked,
+          hasPassword: !!userCreds.pw_hash,
+          twoFacEnabled: userCreds.two_fac_enabled,
+        };
+        return userCredsData;
       },
     );
   }
