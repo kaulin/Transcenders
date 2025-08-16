@@ -99,124 +99,117 @@ function MatchPage() {
   };
 
   return (
-    <div className="h-full pt-8 relative">
-      <div className="container mx-auto px-4">
-        {/* Game Title */}
-        <div className="text-center mb-4">
-          <h1 className="text-6xl text-[#fff] font-fascinate mb-4">{t('pawPawPong')}</h1>
-        </div>
-
-        {/* Player Names and Scores */}
-        <div className="flex justify-between items-center mb-4 px-8">
-          <div className="text-center">
-            <h2 className="text-5xl font-bold text-white mb-2">
-              {player1?.username ?? 'Player 1'}
-            </h2>
-            <div className="text-7xl font-bold text-white">{leftScore}</div>
+    <div className="box">
+      <div className="box-section bg-[#6e5d41]/10">
+        <div className="w-full h-full max-w-full mx-auto px-4 flex flex-col items-center justify-center">
+          {/* Game Title */}
+          <div className="text-center mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl text-[#fff] font-fascinate">
+              {t('pawPawPong')}
+            </h1>
           </div>
 
-          <div className="text-center">
-            <h2 className="text-5xl font-bold text-white mb-2">
-              {player2?.username ?? 'Player 2'}
-            </h2>
-            <div className="text-7xl font-bold text-white">{rightScore}</div>
-          </div>
-        </div>
-
-        {/* Game Canvas */}
-        <div className="flex justify-center relative">
-          <GameContainer
-            key={gameKey}
-            width={1000}
-            height={800}
-            onGameComplete={handleGameComplete}
-            onStatusChange={handleStatusChange}
-            onScoreChange={handleScoreChange}
-            shouldStart={shouldStart}
-            shouldPause={shouldPause}
-            onStartHandled={() => setShouldStart(false)}
-            onPauseHandled={() => setShouldPause(false)}
-          />
-
-          {/* Overlay Messages */}
-          {gameStatus === GameStatus.WAITING && (
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white"
-              style={{
-                width: '1000px',
-                height: '800px',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <div className="text-3xl font-bold mb-4">{t('pressSpaceToStart')}</div>
-              <div className="text-lg mb-2">{t('player1Controls')}</div>
-              <div className="text-lg">{t('player2Controls')}</div>
-            </div>
-          )}
-
-          {gameStatus === GameStatus.PAUSED && (
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white"
-              style={{
-                width: '1000px',
-                height: '800px',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <div className="text-4xl font-bold mb-4">{t('paused')}</div>
-              <div className="text-lg">{t('pressSpaceToResume')}</div>
-            </div>
-          )}
-
-          {gameStatus === GameStatus.ENDED && (
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white"
-              style={{
-                width: '1000px',
-                height: '800px',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <div className="text-4xl font-bold mb-4">
-                {t('playerWins', '{{player}} Wins!', { player: winner })}
+          {/* Player Names and Scores */}
+          <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-4 px-2 sm:px-8 gap-4 sm:gap-0">
+            <div className="text-center">
+              <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-2">
+                {player1?.username ?? 'Player 1'}
+              </h2>
+              <div className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white">
+                {leftScore}
               </div>
-              <div className="text-xl mb-8">{t('clawsomeVictory')}</div>
             </div>
-          )}
-        </div>
 
-        {/* Control Buttons */}
-        <div className="flex w-full justify-center gap-10 mt-6">
-          {gameStatus === GameStatus.ENDED ? (
-            <div className="flex gap-4">
-              <button
-                className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-lg"
-                disabled={isProcessingGameEnd}
-                onClick={handleNewGame}
-              >
-                {t('startNewGame')}
-              </button>
-              <button
-                className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-lg"
-                onClick={() => navigate('/')}
-              >
-                {t('backToHome')}
-              </button>
+            <div className="text-center">
+              <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-2">
+                {player2?.username ?? 'Player 2'}
+              </h2>
+              <div className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white">
+                {rightScore}
+              </div>
             </div>
-          ) : (
-            <button
-              className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-lg"
-              onClick={handleStartPause}
-            >
-              {gameStatus === GameStatus.RUNNING ? t('pause') : t('start')}
-            </button>
-          )}
+          </div>
+
+          {/* Game Canvas */}
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-[1000px] aspect-[5/4] rounded-lg overflow-hidden">
+              <GameContainer
+                key={gameKey}
+                width={1000}
+                height={800}
+                onGameComplete={handleGameComplete}
+                onStatusChange={handleStatusChange}
+                onScoreChange={handleScoreChange}
+                shouldStart={shouldStart}
+                shouldPause={shouldPause}
+                onStartHandled={() => setShouldStart(false)}
+                onPauseHandled={() => setShouldPause(false)}
+              />
+
+              {/* Overlay Messages */}
+              {gameStatus === GameStatus.WAITING && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white rounded-lg">
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center px-4">
+                    {t('pressSpaceToStart')}
+                  </div>
+                  <div className="text-sm sm:text-base lg:text-lg mb-2 text-center px-4">
+                    {t('player1Controls')}
+                  </div>
+                  <div className="text-sm sm:text-base lg:text-lg text-center px-4">
+                    {t('player2Controls')}
+                  </div>
+                </div>
+              )}
+
+              {gameStatus === GameStatus.PAUSED && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white rounded-lg">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
+                    {t('paused')}
+                  </div>
+                  <div className="text-sm sm:text-base lg:text-lg">{t('pressSpaceToResume')}</div>
+                </div>
+              )}
+
+              {gameStatus === GameStatus.ENDED && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white rounded-lg">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center px-4">
+                    {t('playerWins', '{{player}} Wins!', { player: winner })}
+                  </div>
+                  <div className="text-lg sm:text-xl mb-8 text-center px-4">
+                    {t('clawsomeVictory')}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Control Buttons */}
+          <div className="flex w-full justify-center gap-4 sm:gap-10 mt-6 px-4">
+            {gameStatus === GameStatus.ENDED ? (
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-sm sm:text-lg"
+                  disabled={isProcessingGameEnd}
+                  onClick={handleNewGame}
+                >
+                  {t('startNewGame')}
+                </button>
+                <button
+                  className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-sm sm:text-lg"
+                  onClick={() => navigate('/')}
+                >
+                  {t('backToHome')}
+                </button>
+              </div>
+            ) : (
+              <button
+                className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-sm sm:text-lg"
+                onClick={handleStartPause}
+              >
+                {gameStatus === GameStatus.RUNNING ? t('pause') : t('start')}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
