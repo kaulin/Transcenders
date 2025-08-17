@@ -1,12 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { usePlayers } from '../hooks/usePlayers';
-import GameContainer from '../components/game/GameContainer';
 import { ApiClient } from '@transcenders/api-client';
 import { type CreateScoreRequest } from '@transcenders/contracts';
-import { type GameResult } from '../components/game/models/GameState';
-import { GameStatus } from '../components/game/models/GameState';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import GameContainer from '../components/game/GameContainer';
+import { GameStatus, type GameResult } from '../components/game/models/GameState';
+import { usePlayers } from '../hooks/usePlayers';
 
 interface TournamentState {
   currentMatch: 1 | 2 | 3;
@@ -296,8 +295,8 @@ function TournamentPage() {
 
   return (
     <div className="box">
-      <div className="box-section bg-[#6e5d41]/10">
-        <div className="w-full h-full max-w-full mx-auto px-4 flex flex-col items-center justify-center">
+      <div className="box-section bg-[#6e5d41]/10 min-h-screen">
+        <div className="w-full h-full mx-auto px-4 flex flex-col items-center justify-center">
           {/*Tournament Title*/}
           <div className="text-center mb-4">
             <h1 className="text-3xl sm:text-3xl lg:text-5xl text-[#fff] font-fascinate">
@@ -308,22 +307,62 @@ function TournamentPage() {
             </h2>
           </div>
 
-          {/*Player names and scores */}
-          <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-4 px-2 sm:px-8 gap-4 sm:gap-0">
-            <div className="text-center">
-              <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">
-                {currentMatchPlayers.player1?.username ?? 'Player 1'}
-              </h2>
-              <div className="text-4xl sm:text-3xl lg:text-5xl font-bold text-white">
+          {/*Player avatars and names and scores */}
+          <div className="w-full flex justify-between items-center mb-4 px-8">
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden flex-shrink-0">
+                  {currentMatchPlayers.player1?.avatar ? (
+                    <img
+                      src={ApiClient.user.getFullAvatarURL(currentMatchPlayers.player1.avatar)}
+                      alt={`${currentMatchPlayers.player1.username} avatar`}
+                      className="object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : null}
+                </div>
+
+                <div className="absolute -bottom-4 sm:-bottom-5 lg:-bottom-6 left-1/2 transform -translate-x-1/2">
+                  <div className="text-white text-center">
+                    <span className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+                      {currentMatchPlayers.player1?.username ?? 'Player 1'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-2xl sm:text-4xl lg:text-6xl font-bold text-white mt-6">
                 {leftScore}
               </div>
             </div>
 
-            <div className="text-center">
-              <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">
-                {currentMatchPlayers.player2?.username ?? 'Player 2'}
-              </h2>
-              <div className="text-4xl sm:text-3xl lg:text-5xl font-bold text-white">
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden flex-shrink-0">
+                  {currentMatchPlayers.player2?.avatar ? (
+                    <img
+                      src={ApiClient.user.getFullAvatarURL(currentMatchPlayers.player2.avatar)}
+                      alt={`${currentMatchPlayers.player2.username} avatar`}
+                      className="object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : null}
+                </div>
+
+                <div className="absolute -bottom-4 sm:-bottom-5 lg:-bottom-6 left-1/2 transform -translate-x-1/2">
+                  <div className="text-white text-center">
+                    <span className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+                      {currentMatchPlayers.player2?.username ?? 'Player 2'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-2xl sm:text-4xl lg:text-6xl font-bold text-white mt-6">
                 {rightScore}
               </div>
             </div>

@@ -112,10 +112,7 @@ function MatchPage() {
                 <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden flex-shrink-0">
                   {players[1]?.avatar ? (
                     <img
-                      src={
-                        players[2].avatar ??
-                        'https://bestfriends.org/sites/default/files/styles/hero_mobile/public/hero-dash/Asana3808_Dashboard_Standard.jpg?h=ebad9ecf&itok=cWevo33k'
-                      }
+                      src={ApiClient.user.getFullAvatarURL(players[1].avatar)}
                       alt={`${players[1]?.username} avatar`}
                       className="object-contain"
                       onError={(e) => {
@@ -144,7 +141,7 @@ function MatchPage() {
                 <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden flex-shrink-0">
                   {players[2]?.avatar ? (
                     <img
-                      src={players[2].avatar}
+                      src={ApiClient.user.getFullAvatarURL(players[2].avatar)}
                       alt={`${players[2]?.username} avatar`}
                       className="object-contain max-w-[80%]"
                       onError={(e) => {
@@ -171,7 +168,7 @@ function MatchPage() {
 
           {/* Game Canvas */}
           <div className="flex justify-center">
-            <div className="relative w-full max-w-[1000px] aspect-[5/4] rounded-lg overflow-hidden">
+            <div className="relative w-full max-w-[1000px] aspect-[5/4] overflow-hidden">
               <GameContainer
                 key={gameKey}
                 width={1000}
