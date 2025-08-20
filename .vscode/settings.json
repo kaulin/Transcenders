@@ -144,5 +144,6 @@
       "source.fixAll.eslint": "explicit",
       "source.organizeImports": "explicit"
     }
-  }
+  },
+  "i18n-ally.localesPaths": ["web/public/locales", "web/src/i18n"]
 }

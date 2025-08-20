@@ -13,13 +13,14 @@
   },
   "dependencies": {
     "@fastify/oauth2": "^8.1.2",
+    "@sinclair/typebox": "^0.34.39",
     "@transcenders/api-client": "*",
     "@transcenders/contracts": "*",
     "@transcenders/fastify-server": "*",
     "@transcenders/server-utils": "*",
     "bcrypt": "6.0.0",
-    "fastify": "^5.4.0",
-    "googleapis": "^154.1.0",
+    "fastify": "^5.5.0",
+    "googleapis": "^156.0.0",
     "jsonwebtoken": "^9.0.2",
     "sql-template-strings": "^2.2.2",
     "sqlite": "^5.1.1"
@@ -27,8 +28,8 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.1.0",
-    "tsx": "^4.20.3",
-    "typescript": "~5.8.3"
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.4",
+    "typescript": "~5.9.2"
   }
 }
