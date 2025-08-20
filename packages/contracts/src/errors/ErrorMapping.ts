@@ -28,6 +28,16 @@ const ERROR_MAPPINGS: ErrorMap[] = [
   { pattern: 'missing', errorCode: ERROR_CODES.COMMON.VALIDATION_REQUIRED_FIELD },
   { pattern: 'empty', errorCode: ERROR_CODES.COMMON.VALIDATION_REQUIRED_FIELD },
 
+  // specific typebox stuff
+  {
+    pattern: 'must not have',
+    errorCode: ERROR_CODES.COMMON.VALIDATION_FAILED,
+  },
+  {
+    pattern: 'must match pattern',
+    errorCode: ERROR_CODES.COMMON.VALIDATION_FAILED,
+  },
+
   // Authentication/Authorization errors
   { pattern: 'unauthorized', errorCode: ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS },
   { pattern: 'forbidden', errorCode: ERROR_CODES.COMMON.FORBIDDEN_ACCESS },
