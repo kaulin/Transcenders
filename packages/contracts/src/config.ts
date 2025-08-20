@@ -35,6 +35,8 @@ export const UserConfig = {
 export const AuthConfig = {
   ACCESS_TOKEN_EXPIRE_MS: 2 * 60 * 1000, // 2 min
   REFRESH_TOKEN_EXPIRE_MS: 7 * 24 * 60 * 60 * 1000, // 7 days
+  TWO_FACTOR_CODE_EXPIRE_MS: 10 * 60 * 1000, // 10 min
+  // TWO_FACTOR_CODE_EXPIRE_MS: 20 * 1000, // 20 sec
 } as const;
 
 export const AvatarConfig = {
@@ -42,11 +44,11 @@ export const AvatarConfig = {
   UPLOADED_AVATARS: 'avatars/',
   DEFAULT_AVATARS: 'defaults/',
 
-  MAX_FILE_SIZE: 10 * 1024 * 1024, //10 mb
+  MAX_FILE_SIZE: 20 * 1024 * 1024, //20 mb
 
   // Dimensions
-  WIDTH: 300 as const,
-  HEIGHT: 300 as const,
+  WIDTH: 400 as const,
+  HEIGHT: 400 as const,
 
   // Sharp resize options (directly from Sharp types)
   RESIZE_OPTIONS: {
@@ -75,7 +77,7 @@ export const AvatarConfig = {
   RANDOM_CATS: {
     DEFAULT_LIMIT: 10 as const,
     DEFAULT_IMAGE_SIZE: 'med' as const, // 'small', 'med', 'full'
-    DEFAULT_MIME_TYPES: 'jpeg,jpg,avif,png' as const,
+    DEFAULT_MIME_TYPES: 'jpeg,jpg,avif,png,gif' as const,
     API_URL: 'https://api.thecatapi.com/v1/images/search' as const,
   },
 } as const;
