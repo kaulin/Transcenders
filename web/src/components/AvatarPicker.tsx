@@ -1,0 +1,340 @@
+// src/components/AvatarPicker.tsx
+import { ApiClient } from '@transcenders/api-client';
+import { AvatarConfig, DefaultAvatar, RandomAvatar, ServiceError } from '@transcenders/contracts';
+import { ChevronLeft, ChevronRight, Dice5, Upload } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useTokenElevation } from '../hooks/useTokenElevation';
+import { useUser } from '../hooks/useUser';
+import LoadingSpinner from './LoadingSpinner';
+
+interface AvatarPickerProps {
+  className?: string;
+}
+
+export default function AvatarPicker({ className }: AvatarPickerProps) {
+  const { t } = useTranslation();
+  const { user, setUser } = useUser();
+  const { isElevated } = useTokenElevation();
+  const [error, setError] = useState<string | null>(null);
+
+  // Default avatar setup
+  const [avatars, setAvatars] = useState<DefaultAvatar[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // load defaults once
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const { avatars } = await ApiClient.user.getDefaultAvatars();
+        setAvatars(avatars);
+      } catch (err) {
+        if (err instanceof ServiceError) setError(t(err.localeKey ?? 'something_went_wrong'));
+        else setError(t('something_went_wrong'));
+      } finally {
+        setLoading(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const currentIdx = useMemo(() => {
+    if (!user || avatars.length === 0) return -1;
+    return avatars.findIndex((a) => a.url === user.avatar);
+  }, [user, avatars]);
+
+  const getNameFromUrl = (url: string) => {
+    try {
+      const parts = url.split('/');
+      return parts[parts.length - 1] || url;
+    } catch {
+      return url;
+    }
+  };
+
+  const classForAvatar = useMemo(() => {
+    if (!user) return;
+    const defaultTransform = 'object-cover';
+    const avatarTransforms: Record<string, string> = {
+      // filename (from server) => default image className for transforms
+      'avatarCat1.avif': 'object-contain max-w-[65%] object-bottom',
+      'avatarCat2.avif': 'object-contain max-w-[85%] object-bottom',
+      'avatarCat3.avif': 'object-contain max-w-[98%] object-bottom',
+      'avatarCat4.avif': 'object-contain max-w-[80%] object-bottom',
+      'avatarCat5.avif': 'object-contain max-w-[80%] object-bottom',
+      'avatarCat6.avif': 'object-contain max-w-[70%] object-bottom',
+      'avatarCat7.webp': 'object-contain max-w-[100%] object-bottom',
+      'avatarCat8.gif': 'object-cover h-[180%]',
+    };
+    const match = currentIdx >= 0 && currentIdx < avatars.length ? avatars[currentIdx] : null;
+    const key = match ? match.name : getNameFromUrl(user.avatar);
+    return avatarTransforms[key] ?? defaultTransform;
+  }, [currentIdx, avatars, user]);
+
+  const previewUrl = useMemo(() => {
+    if (!user) return '';
+    const defaultMatch = avatars[currentIdx];
+    const url = defaultMatch ? defaultMatch.url : user.avatar;
+    return ApiClient.user.getFullAvatarURL(url);
+  }, [user, avatars, currentIdx]);
+
+  const setDefaultByIndex = async (idx: number) => {
+    setError(null);
+    if (!user) return;
+    try {
+      const res = await ApiClient.user.setDefaultAvatar(user.id, avatars[idx].name);
+      setUser((prev) => (prev ? { ...prev, avatar: res.url } : prev));
+    } catch (err) {
+      if (err instanceof ServiceError) setError(t(err.localeKey ?? 'something_went_wrong'));
+      else setError(t('something_went_wrong'));
+    }
+  };
+
+  const next = async () => {
+    if (!user || avatars.length === 0) return;
+    const idx = ((currentIdx ?? -1) + 1 + avatars.length) % avatars.length;
+    await setDefaultByIndex(idx);
+  };
+
+  const prev = async () => {
+    if (!user || avatars.length === 0) return;
+    const idx = ((currentIdx ?? -1) - 1 + avatars.length) % avatars.length;
+    await setDefaultByIndex(idx);
+  };
+
+  // Random cat picking and preloading
+
+  const LOW_ON_CATS = 12;
+  const BATCH_SIZE = 10;
+
+  const [queue, setQueue] = useState<RandomAvatar[]>([]);
+  const [randomBusy, setRandomBusy] = useState(false);
+  const prefetchingRef = useRef(false);
+
+  // Preload images to warm browser cache
+  const preloadImages = useCallback(async (cats: RandomAvatar[]) => {
+    await Promise.allSettled(
+      cats.map(
+        (c) =>
+          new Promise<void>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error('preload failed'));
+            img.src = c.url;
+          }),
+      ),
+    );
+  }, []);
+
+  const fetchBatchAppend = useCallback(async () => {
+    if (prefetchingRef.current) return;
+    prefetchingRef.current = true;
+    try {
+      const cats = await ApiClient.user.getRandomCats({ limit: BATCH_SIZE });
+      await preloadImages(cats);
+      setQueue((prev) => [...prev, ...cats]);
+    } finally {
+      prefetchingRef.current = false;
+    }
+  }, [preloadImages]);
+
+  // Prime once
+  useEffect(() => {
+    if (queue.length === 0) {
+      void fetchBatchAppend();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const maybePrefetch = useCallback(
+    (futureLength: number) => {
+      if (futureLength < LOW_ON_CATS && !prefetchingRef.current) {
+        void fetchBatchAppend();
+      }
+    },
+    [fetchBatchAppend],
+  );
+
+  const handleRandomCat = async () => {
+    setError(null);
+    if (!user) return;
+    setRandomBusy(true);
+
+    try {
+      let picked: RandomAvatar | undefined;
+
+      if (queue.length === 0) {
+        const cats = await ApiClient.user.getRandomCats({ limit: BATCH_SIZE });
+        picked = cats[0];
+        if (picked) {
+          setQueue((prev) => [...prev, ...cats.slice(1)]);
+          void preloadImages(cats.slice(1));
+        }
+      } else {
+        // Normal case, should mostly go here
+        picked = queue[0];
+        setQueue((prev) => prev.slice(1));
+        // Predict future length to decide topping up
+        const futureLen = queue.length - 1;
+        maybePrefetch(futureLen);
+      }
+
+      if (!picked) return;
+
+      const updated = await ApiClient.user.setWebAvatar(user.id, picked.url);
+      setUser(updated);
+    } catch (err) {
+      if (err instanceof ServiceError) setError(t(err.localeKey ?? 'something_went_wrong'));
+      else setError(t('something_went_wrong'));
+    } finally {
+      setRandomBusy(false);
+    }
+  };
+
+  // custom upload
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const onUploadClick = () => {
+    if (!isElevated) return;
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+    setError(null);
+    if (!user) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError(t('invalid_file_type'));
+      return;
+    }
+    if (file.size > AvatarConfig.MAX_FILE_SIZE) {
+      setError(t('file_too_large'));
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const res = await ApiClient.user.uploadAvatar(user.id, file);
+      const cacheBusted = `${res.url}?t=${Date.now()}`;
+      setUser((prev) => (prev ? { ...prev, avatar: cacheBusted } : prev));
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch (err) {
+      if (err instanceof ServiceError) setError(t(err.localeKey ?? 'something_went_wrong'));
+      else setError(t('something_went_wrong'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // loading spinner handling for browser encoding etc
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const [browserLoading, setBrowserLoading] = useState(false);
+  const imgLoading = uploading || browserLoading;
+
+  useEffect(() => {
+    if (!previewUrl) return;
+
+    setBrowserLoading(true);
+
+    const el = imgRef.current;
+    if (!el) {
+      setBrowserLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    const done = () => {
+      if (!cancelled) setBrowserLoading(false);
+    };
+
+    if (el.complete && el.naturalWidth > 0) {
+      done();
+      return;
+    }
+
+    if (el.decode) {
+      el.decode().then(done, done);
+    } else {
+      el.addEventListener('load', done);
+      el.addEventListener('error', done);
+    }
+
+    return () => {
+      cancelled = true;
+      if (!el.decode) {
+        el.removeEventListener('load', done);
+        el.removeEventListener('error', done);
+      }
+    };
+  }, [previewUrl]);
+
+  return (
+    <div className={className}>
+      <div className="bubble relative bg-white/50 w-56 h-56 sm:w-80 sm:h-80 xl:!w-[500px] xl:!h-[500px] flex justify-center overflow-hidden">
+        {!loading && (
+          <img
+            ref={imgRef}
+            src={previewUrl}
+            alt={t('avatar_preview')}
+            className={`${classForAvatar}`}
+          />
+        )}
+        {imgLoading && <LoadingSpinner />}
+      </div>
+
+      <div className="flex flex-col items-center mt-2">
+        <div className="w-full flex justify-center">
+          <div className="relative inline-flex items-center">
+            <div className="flex min-w-[200px] justify-center gap-2 items-center p-2 rounded-full border-white hover:border-[#786647] bg-white/10 text-white">
+              <button
+                onClick={prev}
+                disabled={!isElevated || avatars.length === 0}
+                aria-label={t('previous')}
+              >
+                <ChevronLeft />
+              </button>
+              <p>{t('select_avatar')}</p>
+              <button
+                onClick={next}
+                disabled={!isElevated || avatars.length === 0}
+                aria-label={t('next')}
+              >
+                <ChevronRight />
+              </button>
+              {/* random cat */}
+            </div>
+            <button
+              onClick={handleRandomCat}
+              disabled={!isElevated || randomBusy}
+              aria-label={t('random_cat')}
+              title={t('random_cat')}
+              className="absolute left-full top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
+            >
+              <Dice5 className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full border-white hover:border-[#786647] bg-white/10 text-white">
+          <p className="pt-1">{t('upload_avatar')}</p>
+          <button onClick={onUploadClick} disabled={!isElevated} aria-label={t('upload_avatar')}>
+            <Upload className="h-5 w-5" />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onFileChange}
+          />
+        </div>
+
+        {error && <p className="tsc-error-message mt-2">{error}</p>}
+      </div>
+    </div>
+  );
+}
