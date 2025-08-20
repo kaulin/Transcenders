@@ -80,7 +80,9 @@ export class AvatarService {
     const filename = `${userId}.${AvatarConfig.OUTPUT_FORMAT}`;
     const filePath = path.join(uploadDir, filename);
 
-    await sharp(inputBuffer)
+    const image = sharp(inputBuffer, { animated: true });
+
+    await image
       .resize(AvatarConfig.WIDTH, AvatarConfig.HEIGHT, AvatarConfig.RESIZE_OPTIONS)
       .webp(AvatarConfig.WEBP_OPTIONS)
       .toFile(filePath);
