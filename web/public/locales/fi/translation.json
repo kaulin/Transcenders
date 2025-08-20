@@ -25,6 +25,7 @@
   "friends": "Kaverit",
   "games_played": "Pelatut ottelut",
   "go_back": "Takaisin",
+  "google_auth_failed": "Google-kirjautuminen epäonnistui",
   "hello": "Hei",
   "history": "Otteluhistoria",
   "home": "Etusivu",
