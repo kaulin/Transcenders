@@ -4,15 +4,28 @@ import { Link } from 'react-router-dom';
 import { usePlayers } from '../hooks/usePlayers';
 import { useUser } from '../hooks/useUser';
 
+import { ApiClient } from '@transcenders/api-client';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import LanguageSwitch from '../components/LanguageSwitch';
 import { useAuth } from '../hooks/useAuth';
+import { getTokens } from '../utils/authTokens';
 
 const Header = () => {
   const { user, setUser } = useUser();
   const { resetAll } = usePlayers();
   const { clearTokens } = useAuth();
+  const { i18n } = useTranslation();
 
-  const handleLogout = () => {
+  useEffect(() => {
+    i18n.changeLanguage(user?.lang);
+  }, [user, i18n]);
+
+  const handleLogout = async () => {
+    const refreshToken = getTokens().refreshToken;
+    if (user && refreshToken) {
+      await ApiClient.auth.logout(user.id, refreshToken);
+    }
     clearTokens();
     resetAll();
     setUser(null);
