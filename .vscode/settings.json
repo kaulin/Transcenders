@@ -30,6 +30,9 @@
     "**/.svn": false,
     "**/Thumbs.db": false
   },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
 
   // Language-specific settings
   "[typescript]": {
@@ -40,6 +43,9 @@
     }
   },
   "[typescriptreact]": {
+    "editor.quickSuggestions": {
+      "strings": "on"
+    },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true,
@@ -145,5 +151,6 @@
       "source.organizeImports": "explicit"
     }
   },
-  "i18n-ally.localesPaths": ["web/public/locales", "web/src/i18n"]
+  "i18n-ally.localesPaths": ["web/public/locales", "web/src/i18n"],
+  "i18n-ally.keystyle": "nested"
 }
