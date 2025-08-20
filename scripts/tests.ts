@@ -30,34 +30,35 @@ async function apiCall<T>(method: string, endpoint: string, data?: any): Promise
 const SAMPLE_USERS: (CreateUserRequest & { password: string })[] = [
   {
     username: 'alice',
-    email: 'alice@test.com',
     password: '123',
   },
-  { username: 'bob', email: 'bob@test.com', password: '123' },
+  {
+    username: 'bob',
+    password: '123',
+  },
   {
     username: 'charlie',
-    email: 'charlie@test.com',
     password: '123',
   },
   {
     username: 'diana',
-    email: 'diana@test.com',
     password: '123',
   },
-  { username: 'eve', email: 'eve@test.com', display_name: 'Eve Adams', password: '123' },
+  {
+    username: 'eve',
+    display_name: 'Eve Adams',
+    password: '123',
+  },
   {
     username: 'frank',
-    email: 'frank@test.com',
     password: '123',
   },
   {
     username: 'grace',
-    email: 'grace@test.com',
     password: '123',
   },
   {
     username: 'henry',
-    email: 'henry@test.com',
     password: '123',
   },
 ];
@@ -68,28 +69,19 @@ async function createUsers(): Promise<User[]> {
 
   for (const userData of SAMPLE_USERS) {
     try {
-      const response = await ApiClient.auth.register({
+      const user = await ApiClient.auth.register({
         username: userData.username,
         password: userData.password,
       });
-
-      if (response.success) {
-        const userResponse = await ApiClient.user.getUserExact({ username: userData.username });
-        if (userResponse.success) {
-          users.push(userResponse.data as User);
-          console.log(`Created user: ${userData.username} (ID: ${(userResponse.data as User).id})`);
-        }
-      } else {
-        console.log(`Failed to create user: ${userData.username} | error: ${response.error}`);
-        // Try to get existing user
-        const existing_user = await ApiClient.user.getUserExact({ username: userData.username });
-        if (existing_user.success) {
-          users.push(existing_user.data as User);
-          console.log(`User already exists: ${userData.username}`);
-        }
-      }
+      users.push(user);
+      console.log(`Created user: ${userData.username} (ID: ${user.id})`);
     } catch (error) {
-      console.log(`Error creating user ${userData.username}:`, error);
+      try {
+        const existingUser = await ApiClient.user.getUserExact({ username: userData.username });
+        users.push(existingUser);
+      } catch (error) {
+        console.log(`Error creating user ${userData.username}:`, error);
+      }
     }
   }
 
@@ -218,10 +210,8 @@ async function testEndpoints(users: User[]): Promise<void> {
 
   try {
     // Use ApiClient for user operations
-    const allUsersResponse = await ApiClient.user.getUsers();
-    console.log(
-      `Total users in database: ${allUsersResponse.success ? ((allUsersResponse.data as User[])?.length ?? 0) : 0}`,
-    );
+    const users = await ApiClient.user.getUsers();
+    console.log(`Total users in database: ${users.length}`);
 
     // Test get friends for first user
     const aliceId = users[0].id;
