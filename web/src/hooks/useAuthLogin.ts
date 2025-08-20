@@ -7,8 +7,8 @@ const useAuthLogin = () => {
   const { setUser } = useUser();
   const { setTokens } = useAuth();
 
-  async function login(username: string, password: string) {
-    const loginInfo: LoginUser = { username, password };
+  async function login(username: string, password: string, code?: string) {
+    const loginInfo: LoginUser = { username, password, code };
     const tokens = await ApiClient.auth.login(loginInfo);
     setTokens(tokens);
     const payload = decodeToken(tokens.accessToken);
