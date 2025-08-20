@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
-  email TEXT UNIQUE,
   display_name TEXT NOT NULL,
   avatar TEXT,
   lang TEXT,
@@ -12,8 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
-
-CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 
 CREATE INDEX IF NOT EXISTS idx_users_created_at ON users (created_at);
 
@@ -48,28 +45,24 @@ CREATE INDEX IF NOT EXISTS idx_friend_requests_recipient ON friend_requests (rec
 CREATE INDEX IF NOT EXISTS idx_friendships_user2 ON friendships (user2_id);
 
 CREATE TRIGGER IF NOT EXISTS users_updated_at
-AFTER
-UPDATE
-  ON users BEGIN
-UPDATE
-  users
-SET
-  updated_at = CURRENT_TIMESTAMP,
-  last_activity = CURRENT_TIMESTAMP
-WHERE
-  id = NEW.id;
+AFTER UPDATE ON users
+BEGIN
+  UPDATE users
+  SET
+    updated_at = CURRENT_TIMESTAMP,
+    last_activity = CURRENT_TIMESTAMP
+  WHERE
+    id = NEW.id;
 
 END;
 
 CREATE TRIGGER IF NOT EXISTS friend_requests_updated_at
-AFTER
-UPDATE
-  ON friend_requests BEGIN
-UPDATE
-  friend_requests
-SET
-  updated_at = CURRENT_TIMESTAMP
-WHERE
-  id = NEW.id;
+AFTER UPDATE ON friend_requests
+BEGIN
+  UPDATE friend_requests
+  SET
+    updated_at = CURRENT_TIMESTAMP
+  WHERE
+    id = NEW.id;
 
 END;
