@@ -22,6 +22,7 @@
     "fastify": "^5.5.0",
     "googleapis": "^156.0.0",
     "jsonwebtoken": "^9.0.2",
+    "resend": "^6.0.1",
     "sql-template-strings": "^2.2.2",
     "sqlite": "^5.1.1"
   },
