@@ -2,18 +2,19 @@ import {
   AUTH_ROUTES,
   changePasswordSchema,
   googleAuthCallbackSchema,
+  googleFlowParamSchema,
+  googleUserLogin,
   loginUserSchema,
   logoutUserSchema,
   refreshTokenRequestSchema,
   registerUserSchema,
   standardApiResponses,
-  userByIdSchema,
+  stepupRequestSchema,
+  userIdParamSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
 import { AuthController } from '../controllers/auth.controller.js';
 
-// #TODO api-client helpers for setting up refresh token cycling
-// #TODO google sign in
 export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.REGISTER,
@@ -41,12 +42,27 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     AuthController.login,
   );
 
+  app.post(
+    AUTH_ROUTES.STEPUP,
+    {
+      schema: {
+        description: 'Request an elevated token after step-up',
+        tags: ['Auth'],
+        params: userIdParamSchema,
+        body: stepupRequestSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.stepup,
+  );
+
   app.get(
     AUTH_ROUTES.GOOGLE_AUTH,
     {
       schema: {
-        description: 'Initiate Google OAuth flow',
-        tags: ['Auth'],
+        description: 'Redirects to Google OAuth with state',
+        params: googleFlowParamSchema,
+        tags: ['Auth-google'],
         response: standardApiResponses,
       },
     },
@@ -58,12 +74,38 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     {
       schema: {
         description: 'Handle Google OAuth callback',
-        tags: ['Auth'],
+        tags: ['Auth-google'],
         querystring: googleAuthCallbackSchema,
         response: standardApiResponses,
       },
     },
     AuthController.googleCallback,
+  );
+
+  app.post(
+    AUTH_ROUTES.GOOGLE_LOGIN,
+    {
+      schema: {
+        description: 'Complete Google login with code',
+        tags: ['Auth-google'],
+        body: googleUserLogin,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.googleLogin,
+  );
+
+  app.post(
+    AUTH_ROUTES.GOOGLE_CONNECT,
+    {
+      schema: {
+        description: 'Complete Google login with code',
+        tags: ['Auth-google'],
+        body: googleUserLogin,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.googleConnect,
   );
 
   app.post(
@@ -73,7 +115,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         description: 'logout user',
         tags: ['Auth'],
         body: logoutUserSchema,
-        param: userByIdSchema,
+        params: userIdParamSchema,
         response: standardApiResponses,
       },
     },
@@ -99,7 +141,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       schema: {
         description: 'remove user credentials',
         tags: ['Internal ONLY'],
-        params: userByIdSchema.params,
+        params: userIdParamSchema,
         response: standardApiResponses,
       },
     },
@@ -118,5 +160,18 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       },
     },
     AuthController.changePassword,
+  );
+
+  app.get(
+    AUTH_ROUTES.CREDS,
+    {
+      schema: {
+        description: 'get user creds info',
+        tags: ['Auth'],
+        params: userIdParamSchema,
+        response: standardApiResponses,
+      },
+    },
+    AuthController.getUserCredsInfo,
   );
 }
