@@ -1,10 +1,15 @@
 import { useTranslation } from 'react-i18next';
+import { useUser } from '../hooks/useUser';
 
 function LanguageSwitch() {
   const { i18n } = useTranslation();
+  const { user, updateUser } = useUser();
 
-  const handleLanguageChange = (lang: string) => {
+  const handleLanguageChange = async (lang: string) => {
     i18n.changeLanguage(lang);
+    if (user) {
+      updateUser({ lang });
+    }
   };
 
   return (
