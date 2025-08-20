@@ -4,7 +4,6 @@ import { Static, Type } from '@sinclair/typebox';
  *
   id INTEGER PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
-  email TEXT UNIQUE,
   display_name TEXT,
   avatar, TEXT
   language, TEXT
@@ -14,9 +13,6 @@ import { Static, Type } from '@sinclair/typebox';
  */
 export const UserIdField = Type.Number();
 export const UsernameField = Type.String({ minLength: 3, maxLength: 36 });
-export const EmailField = Type.String({
-  pattern: `^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$`,
-});
 export const DisplayNameField = Type.String({ maxLength: 50 });
 export const AvatarField = Type.String();
 export const LangField = Type.String({ maxLength: 2 });
@@ -31,7 +27,6 @@ export const IdentifierField = Type.String({ minLength: 3, maxLength: 50 });
 export const userSchema = Type.Object({
   id: UserIdField,
   username: UsernameField,
-  email: Type.Union([EmailField, Type.Null()]),
   display_name: DisplayNameField,
   avatar: AvatarField,
   lang: LangField,
@@ -45,7 +40,6 @@ export type UserArray = Static<typeof userArraySchema>;
 
 const userModifiableFields = Type.Object({
   username: UsernameField,
-  email: EmailField,
   display_name: DisplayNameField,
   avatar: AvatarField,
   lang: LangField,
@@ -57,7 +51,6 @@ const userModifiableFields = Type.Object({
 export const createUserSchema = {
   body: Type.Object({
     username: UsernameField,
-    email: Type.Optional(EmailField),
     display_name: Type.Optional(DisplayNameField),
     lang: Type.Optional(LangField),
   }),
@@ -93,23 +86,19 @@ export type GetUsersQuery = Static<typeof getUsersSchema.querystring>;
 export const getUserSchema = {
   querystring: Type.Object(
     {
-      username: Type.Optional(Type.String()),
-      email: Type.Optional(Type.String()),
+      username: Type.String(),
     },
     {
-      minProperties: 1,
       additionalProperties: false,
     },
   ),
 };
 export type GetUserRequest = Static<typeof getUserSchema.querystring>;
 
-export const userByIdSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-};
-export type userByIdRequest = Static<typeof userByIdSchema.params>;
+export const userIdParamSchema = Type.Object({
+  id: IdParamField,
+});
+export type UserIdParam = Static<typeof userIdParamSchema>;
 
 export const acceptFriendSchema = {
   params: Type.Object({

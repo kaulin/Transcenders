@@ -31,8 +31,8 @@ export class UserService {
     userData: CreateUserRequest,
   ): Promise<User> {
     const sql = SQL`
-        INSERT INTO users (username, email, display_name, lang, avatar)
-        VALUES (${userData.username}, ${userData.email ?? null}, ${
+        INSERT INTO users (username, display_name, lang, avatar)
+        VALUES (${userData.username}, ${
           userData.display_name ?? userData.username
         }, ${userData.lang ?? 'en'}, ${AvatarService.getDefaultAvatarURL()})
       `;
@@ -104,29 +104,13 @@ export class UserService {
     });
   }
 
-  static async getUserByEmail(email: string): Promise<ServiceResult<User>> {
-    const db = await DatabaseManager.for('USER').open();
-    return ResultHelper.executeQuery<User>('get user by email', db, async (database) => {
-      const sql = SQL`
-        SELECT * FROM users WHERE email = ${email}
-      `;
-      const user = await database.get(sql.text, sql.values);
-      if (!user) {
-        throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_EMAIL, { email });
-      }
-      return user;
-    });
-  }
-
   static async getAllUsers(query: GetUsersQuery): Promise<ServiceResult<User[]>> {
     const db = await DatabaseManager.for('USER').open();
     return ResultHelper.executeQuery<User[]>('get all users', db, async (database) => {
       const sql = SQL`SELECT * FROM users`;
       if (query.search) {
         const searchTerm = `%${query.search}%`;
-        sql.append(
-          SQL` WHERE username LIKE ${searchTerm} OR email LIKE ${searchTerm} OR display_name LIKE ${searchTerm}`,
-        );
+        sql.append(SQL` WHERE username LIKE ${searchTerm} OR display_name LIKE ${searchTerm}`);
       }
 
       sql.append(SQL` ORDER BY created_at DESC`);
@@ -142,14 +126,14 @@ export class UserService {
       db,
       async (database) => {
         const sql = SQL`
-        SELECT 1 FROM users WHERE username = ${identifier} OR email = ${identifier} LIMIT 1
+        SELECT 1 FROM users WHERE username = ${identifier} LIMIT 1
       `;
         const user = await database.get(sql.text, sql.values);
         const exists = !!user;
         if (exists) {
           return BooleanResultHelper.success(`Identifier '${identifier}' exists in the database`);
         }
-        return BooleanResultHelper.failure(`No user found with username or email '${identifier}'`);
+        return BooleanResultHelper.failure(`No user found with username '${identifier}'`);
       },
     );
   }

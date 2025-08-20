@@ -64,9 +64,5 @@ export class UserController {
       const result = await UserService.getUserByUsername(query.username);
       return ApiErrorHandler.handleServiceResult(reply, result);
     }
-    if ('email' in query && query.email) {
-      const result = await UserService.getUserByEmail(query.email);
-      return ApiErrorHandler.handleServiceResult(reply, result);
-    }
   }
 }
