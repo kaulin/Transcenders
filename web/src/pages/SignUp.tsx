@@ -1,5 +1,5 @@
 import { ApiClient } from '@transcenders/api-client';
-import { decodeToken, type RegisterUser, type LoginUser } from '@transcenders/contracts';
+import { type RegisterUser } from '@transcenders/contracts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -65,9 +65,7 @@ const SignUp = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
-        <div className="h-4">
-          {error && <p className="text-[#786647] mt-2 text-xs sm:text-sm">{error}</p>}
-        </div>
+        <div className="h-4">{error && <p className="tsc-error-message">{error}</p>}</div>
 
         <button type="submit" className="mt-4">
           {t('sign_up')}
