@@ -62,7 +62,7 @@ export class UserApiClient extends TypedApiClient {
   /**
    * Updates a user's information
    */
-  static async updateUser(id: number, userData: UpdateUserRequest) {
+  static async updateUser(id: number, userData: UpdateUserRequest = {}) {
     const endpoint = USER_ROUTES.USER_BY_ID.replace(':id', id.toString());
     const options: ApiCallOptions = { method: 'PATCH', body: userData };
     return this.callUserService(endpoint, userSchema, options);
