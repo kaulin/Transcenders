@@ -2,6 +2,7 @@ import { FastifyError, FastifyReply } from 'fastify';
 import { ApiResponseType } from '../user.schemas.js';
 import { getErrorDefinition } from './ErrorCatalog.js';
 import { ERROR_CODES, ErrorCode } from './ErrorCodes.js';
+import { mapExceptionToErrorCode } from './ErrorMapping.js';
 import { ServiceError } from './ServiceError.js';
 import { ServiceResult } from './ServiceResult.js';
 
@@ -36,11 +37,18 @@ export class ApiErrorHandler {
     error: FastifyError,
     operation: string,
   ): ApiResponseType {
+    let myServiceError: ServiceError;
+    if (!(error instanceof ServiceError)) {
+      const mappedErrorCode = mapExceptionToErrorCode(error, ERROR_CODES.COMMON.FASTIFY_ERROR);
+      myServiceError = new ServiceError(mappedErrorCode, { message: String(error) });
+    } else {
+      myServiceError = error;
+    }
     reply.code(error.statusCode ?? 500);
     return {
       success: false,
       operation,
-      error: new ServiceError(error).toJSON(),
+      error: myServiceError.toJSON(),
       timestamp: new Date().toISOString(),
     };
   }
