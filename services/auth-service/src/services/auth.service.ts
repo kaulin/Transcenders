@@ -1,13 +1,16 @@
+import { Value } from '@sinclair/typebox/value';
 import { ApiClient } from '@transcenders/api-client';
 import {
   AuthConfig,
   AuthData,
+  authDataAccessOnly,
   BooleanOperationResult,
   BooleanResultHelper,
   CreateUserRequest,
   decodeToken,
   DeviceInfo,
   ERROR_CODES,
+  GoogleFlows,
   GoogleUserInfo,
   googleUserInfoSchema,
   JWTPayload,
@@ -18,8 +21,14 @@ import {
   ResultHelper,
   ServiceError,
   ServiceResult,
+  StepupMethod,
+  StepupRequest,
+  twoFactorEntrySchema,
   User,
+  UserCredentials,
   UserCredentialsEntry,
+  UserCredentialsInfo,
+  userCredentialsSchema,
 } from '@transcenders/contracts';
 import {
   DatabaseManager,
@@ -33,17 +42,16 @@ import { google } from 'googleapis';
 import jwt from 'jsonwebtoken';
 import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
+import { TwoFactorService } from './twoFactor.service.js';
+import { TwoFactorChallengeService } from './twoFactorChallenge.service.js';
 
 export class AuthService {
   private static async insertCredentialsLogic(
     database: Database,
     userCreds: UserCredentialsEntry,
   ): Promise<boolean> {
-    const sql = SQL`
-        INSERT INTO user_credentials (user_id, pw_hash)
-        VALUES (${userCreds.user_id}, ${userCreds.pw_hash})
-      `;
-    const result = await database.run(sql.text, sql.values);
+    const { sql, values } = QueryBuilder.insert('user_credentials', userCreds);
+    const result = await database.run(sql, values);
     if (!result.lastID) {
       throw new ServiceError(ERROR_CODES.AUTH.REGISTRATION_FAILED, {
         reason: 'Failed to add user credentials',
@@ -133,21 +141,33 @@ export class AuthService {
       const userCredentials: UserCredentialsEntry = {
         user_id: newUser.id,
         pw_hash: await bcrypt.hash(registration.password, 12),
+        google_linked: false,
+        two_fac_enabled: false,
       };
       await this.insertCredentialsLogic(database, userCredentials);
       return newUser;
     });
   }
 
-  private static generateTokenPair(userId: number): AuthData {
-    const payload: JWTPayload = {
-      userId: userId,
+  private static generateTokenPair(userId: number, stepupMethod?: StepupMethod): AuthData {
+    const basePayload: JWTPayload = {
+      userId,
       aud: 'transcenders',
       iss: 'auth-service',
       jti: crypto.randomUUID(),
     };
-    const accessToken = jwt.sign(payload, TokenValidator.getAccessSecret());
-    const refreshToken = jwt.sign(payload, TokenValidator.getRefreshSecret());
+
+    const accessPayload: JWTPayload = stepupMethod
+      ? { ...basePayload, stepup: true, stepup_method: stepupMethod }
+      : basePayload;
+
+    const accessToken = jwt.sign(accessPayload, TokenValidator.getAccessSecret(), {
+      expiresIn: Math.floor(AuthConfig.ACCESS_TOKEN_EXPIRE_MS / 1000),
+    });
+
+    const refreshToken = jwt.sign(basePayload, TokenValidator.getRefreshSecret(), {
+      expiresIn: Math.floor(AuthConfig.REFRESH_TOKEN_EXPIRE_MS / 1000),
+    });
 
     return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS };
   }
@@ -190,41 +210,130 @@ export class AuthService {
     }
   }
 
+  private static async emailExists(
+    database: Database,
+    email: string,
+  ): Promise<UserCredentials | undefined> {
+    const sql = SQL`
+      SELECT * FROM 'two_factor' WHERE email = ${email} LIMIT 1
+    `;
+    const result = await database.get(sql.text, sql.values);
+    return result as UserCredentials | undefined;
+  }
+
+  private static async userIdByEmail(database: Database, email: string): Promise<number> {
+    const sql = SQL`
+      SELECT * FROM 'two_factor' WHERE email = ${email}
+    `;
+    const result = await database.get(sql.text, sql.values);
+    Value.Assert(twoFactorEntrySchema, result);
+    return result.user_id;
+  }
+
+  private static async userCredsByUserId(
+    database: Database,
+    userId: number,
+  ): Promise<UserCredentialsEntry> {
+    const sql = SQL`
+        SELECT * FROM user_credentials WHERE user_id = ${userId}
+      `;
+    const userCredentials = await database.get(sql.text, sql.values);
+    if (!Value.Check(userCredentialsSchema, userCredentials)) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        username: userId,
+      });
+    }
+    return userCredentials;
+  }
+
+  private static async assertPassword(password: string, pw_hash: string | null): Promise<boolean> {
+    if (pw_hash === null)
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        reason: 'user password null',
+      });
+    const isValidPassword = await bcrypt.compare(password, pw_hash);
+    if (!isValidPassword) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS);
+    }
+    return true;
+  }
+
+  static async finalizeLogin(
+    database: Database,
+    userId: number,
+    deviceInfo: DeviceInfo,
+  ): Promise<AuthData> {
+    await this.handleDeviceTokens(database, userId, deviceInfo);
+    const tokens = this.generateTokenPair(userId);
+    await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
+    return tokens;
+  }
+
+  static async preLoginRead(login: LoginUser) {
+    const db = await DatabaseManager.for('AUTH').open();
+    const result = await ResultHelper.executeQuery('prelogin read + gate', db, async (database) => {
+      const user = await ApiClient.user.getUserExact({ username: login.username });
+      const creds = await this.userCredsByUserId(database, user.id);
+      await this.assertPassword(login.password, creds.pw_hash);
+      const twoFacEnabled = creds.two_fac_enabled;
+
+      return { userId: user.id, twoFacEnabled };
+    });
+    if (result.success) return result.data;
+    else throw result.error;
+  }
+
   static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
     const db = await DatabaseManager.for('AUTH').open();
+    const { userId, twoFacEnabled } = await this.preLoginRead(login);
+    if (login.code && twoFacEnabled) {
+      await ApiClient.auth.twoFacLogin(userId, login.code);
+    }
+
+    if (!login.code && twoFacEnabled) {
+      const { expiresAt } = await ApiClient.auth.twoFacRequestLogin(userId);
+      return ResultHelper.error(ERROR_CODES.AUTH.TWO_FACTOR_CODE_SENT, '2FA required', {
+        userId,
+        expiresAt,
+      });
+    }
     return await ResultHelper.executeTransaction<AuthData>(
-      'authenticate user',
+      'finalize login',
       db,
       async (database) => {
-        const userData = await ApiClient.user.getUserExact({ username: login.username });
-
-        // get the matching user credentials entry
-        const sql = SQL`
-        SELECT * FROM user_credentials WHERE user_id = ${userData.id}
-      `;
-        const userCredentials = await database.get(sql.text, sql.values);
-        if (!userCredentials) {
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-            username: login.username,
-          });
-        }
-
-        const userCreds = userCredentials as UserCredentialsEntry;
-        const isValidPassword = await bcrypt.compare(login.password, userCreds.pw_hash);
-        if (!isValidPassword) {
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-            username: login.username,
-          });
-        }
-
-        this.handleDeviceTokens(database, userData.id, deviceInfo);
-        // generate and save new tokens
-        const tokens = this.generateTokenPair(userData.id);
-        await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
-
-        return tokens;
+        return this.finalizeLogin(database, userId, deviceInfo);
       },
     );
+  }
+
+  static async stepup(
+    userId: number,
+    stepup: StepupRequest,
+  ): Promise<ServiceResult<authDataAccessOnly>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return ResultHelper.executeQuery<authDataAccessOnly>('stepup request', db, async (database) => {
+      const userCreds = await this.userCredsByUserId(database, userId);
+      switch (stepup.method) {
+        case '2fa':
+          await TwoFactorChallengeService.assertVerify(database, userId, 'stepup', stepup.code);
+          break;
+        case 'google':
+          const googleUser = await this.getGoogleUser(stepup.googleCode);
+          await this.validateGoogleUserOwnership(database, googleUser, userId);
+          break;
+        case 'password':
+          await this.assertPassword(stepup.password, userCreds.pw_hash);
+          break;
+        default:
+          throw new ServiceError(ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR, {
+            reason: 'invalid stepup case',
+          });
+      }
+      const tokens = this.generateTokenPair(userId, stepup.method);
+      const accessToken: authDataAccessOnly = { accessToken: tokens.accessToken };
+      // only sending access elevated access token
+      return accessToken;
+    });
   }
 
   private static getGoogleOAuthClient() {
@@ -236,18 +345,21 @@ export class AuthService {
     });
   }
 
-  static getGoogleAuthUrl() {
-    const oauth2Client = this.getGoogleOAuthClient();
-    const scopes = [
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'https://www.googleapis.com/auth/userinfo.email',
-    ];
+  static getGoogleAuthUrl(flow: GoogleFlows) {
+    return ResultHelper.executeOperation('get google auth url', async () => {
+      const oauth2Client = this.getGoogleOAuthClient();
+      const scopes = [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email',
+      ];
 
-    const url = oauth2Client.generateAuthUrl({
-      access_type: 'online',
-      scope: scopes,
+      const url = oauth2Client.generateAuthUrl({
+        access_type: 'online',
+        scope: scopes,
+        state: flow,
+      });
+      return url;
     });
-    return url;
   }
 
   private static async generateUsername(googleUser: GoogleUserInfo): Promise<string> {
@@ -281,38 +393,119 @@ export class AuthService {
     // Fallback on some crazy bad luck
     return `user_${Date.now()}`;
   }
-  // #TODO handle failed user creations, by syncing user and auth DB entries
-  static async handleGoogleCallback(
-    code: string,
-    deviceInfo: DeviceInfo,
-  ): Promise<ServiceResult<AuthData>> {
+
+  private static async getGoogleUser(code: string): Promise<GoogleUserInfo> {
+    const authClient = this.getGoogleOAuthClient();
+    const { tokens } = await authClient.getToken(code);
+    if (!tokens?.id_token) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        reason: 'Invalid or expired OAuth code',
+      });
+    }
+    return decodeToken(tokens.id_token, googleUserInfoSchema);
+  }
+
+  private static async validateGoogleUserOwnership(
+    database: Database,
+    googleUser: GoogleUserInfo,
+    expectedUserId: number,
+  ): Promise<void> {
+    const userExists = await this.emailExists(database, googleUser.email);
+    if (!userExists) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        reason: 'Google account not linked to this user',
+        userId: expectedUserId,
+      });
+    }
+
+    const linkedUserId = await this.userIdByEmail(database, googleUser.email);
+    if (linkedUserId !== expectedUserId) {
+      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+        reason: 'Google account linked to different user',
+        userId: expectedUserId,
+        linkedUserId,
+      });
+    }
+  }
+  static async setGoogleLinkedStatus(database: Database, userId: number, value = true) {
+    const updateSql = SQL`
+      UPDATE user_credentials 
+      SET google_linked = ${value} 
+      WHERE user_id = ${userId}
+    `;
+    await database.run(updateSql.text, updateSql.values);
+  }
+
+  static async setTwoFacStatus(database: Database, userId: number, value = true) {
+    const updateSql = SQL`
+      UPDATE user_credentials 
+      SET two_fac_enabled = ${value} 
+      WHERE user_id = ${userId}
+    `;
+    await database.run(updateSql.text, updateSql.values);
+  }
+
+  static async googleConnect(userId: number, code: string) {
     const db = await DatabaseManager.for('AUTH').open();
-    return await ResultHelper.executeTransaction<AuthData>(
-      'google auth callback',
+    return await ResultHelper.executeTransaction<BooleanOperationResult>(
+      'connect a google email',
       db,
       async (database) => {
-        const authClient = this.getGoogleOAuthClient();
-        const { tokens } = await authClient.getToken(code);
-        if (!tokens?.id_token) {
-          throw new Error('failed to google authenticate user');
-        }
-        const googleUser = decodeToken(tokens.id_token, googleUserInfoSchema);
-        let userData: User;
-        try {
-          userData = await ApiClient.user.getUserExact({ email: googleUser.email });
-        } catch {
-          const creationData: CreateUserRequest = {
-            username: await this.generateUsername(googleUser),
-            email: googleUser.email,
-            display_name: googleUser.given_name,
-          };
-          userData = await ApiClient.user.createUser(creationData);
-          this.insertCredentialsLogic(database, { user_id: userData.id, pw_hash: '' });
+        const googleUser = await this.getGoogleUser(code);
+        const existingUser = await this.emailExists(database, googleUser.email);
+        if (existingUser && existingUser.id === userId) {
+          await this.setGoogleLinkedStatus(database, userId);
+        } else if (!existingUser) {
+          await TwoFactorService.initiateDatabaseEntry(database, userId, googleUser.email, true);
+          await this.setGoogleLinkedStatus(database, userId);
+          await this.setTwoFacStatus(database, userId);
+        } else {
+          throw new ServiceError(ERROR_CODES.AUTH.GOOGLE_AUTH_FAILED, {
+            reason: 'email is already linked to a different user',
+          });
         }
 
-        this.handleDeviceTokens(database, userData.id, deviceInfo);
+        return BooleanResultHelper.success('google email connected');
+      },
+    );
+  }
+
+  // #TODO handle failed user creations, by syncing user and auth DB entries
+  static async googleLogin(code: string, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return await ResultHelper.executeTransaction<AuthData>(
+      'login or create google user',
+      db,
+      async (database) => {
+        const googleUser = await this.getGoogleUser(code);
+        let userId: number;
+
+        const userExists = await this.emailExists(database, googleUser.email);
+        if (!userExists) {
+          const creationData: CreateUserRequest = {
+            username: await this.generateUsername(googleUser),
+            display_name: googleUser.given_name,
+          };
+          const newUser = await ApiClient.user.createUser(creationData);
+          userId = newUser.id;
+          const CredentialsData: UserCredentialsEntry = {
+            user_id: userId,
+            pw_hash: null,
+            google_linked: true,
+            two_fac_enabled: true,
+          };
+          await this.insertCredentialsLogic(database, CredentialsData);
+          await TwoFactorService.initiateDatabaseEntry(database, userId, googleUser.email, true);
+        } else {
+          if (!userExists.google_linked) {
+            await this.setGoogleLinkedStatus(database, userExists.user_id);
+          }
+          userId = await this.userIdByEmail(database, googleUser.email);
+        }
+
+        this.handleDeviceTokens(database, userId, deviceInfo);
         // generate and save new tokens
-        const newTokens = this.generateTokenPair(userData.id);
+        const newTokens = this.generateTokenPair(userId);
         await this.storeRefreshToken(database, newTokens.refreshToken, deviceInfo);
         return newTokens;
       },
@@ -383,7 +576,6 @@ export class AuthService {
 
   static async changePassword(
     userId: number,
-    oldPassword: string,
     newPassword: string,
   ): Promise<ServiceResult<BooleanOperationResult>> {
     const db = await DatabaseManager.for('AUTH').open();
@@ -391,28 +583,6 @@ export class AuthService {
       'change password',
       db,
       async (database) => {
-        // Get current credentials
-        const sql = SQL`
-          SELECT * FROM user_credentials WHERE user_id = ${userId}
-        `;
-        const userCredentials = await database.get(sql.text, sql.values);
-        if (!userCredentials) {
-          throw new ServiceError(ERROR_CODES.USER.NOT_FOUND_BY_ID, {
-            userId,
-          });
-        }
-
-        const userCreds = userCredentials as UserCredentialsEntry;
-
-        // Verify old password
-        const isValidPassword = await bcrypt.compare(oldPassword, userCreds.pw_hash);
-        if (!isValidPassword) {
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
-            userId,
-            reason: 'Current password is incorrect',
-          });
-        }
-
         // Hash new password and update
         const newHashedPassword = await bcrypt.hash(newPassword, 12);
         const updateSql = SQL`
@@ -425,6 +595,24 @@ export class AuthService {
         }
 
         return BooleanResultHelper.success(`Password successfully changed for user ${userId}`);
+      },
+    );
+  }
+
+  static async getUserCredsInfo(userId: number): Promise<ServiceResult<UserCredentialsInfo>> {
+    const db = await DatabaseManager.for('AUTH').open();
+    return await ResultHelper.executeQuery<UserCredentialsInfo>(
+      'Update creds',
+      db,
+      async (database) => {
+        const userCreds = await this.userCredsByUserId(database, userId);
+        const userCredsData: UserCredentialsInfo = {
+          userId,
+          googleLinked: !!userCreds.google_linked,
+          hasPassword: !!userCreds.pw_hash,
+          twoFacEnabled: !!userCreds.two_fac_enabled,
+        };
+        return userCredsData;
       },
     );
   }
