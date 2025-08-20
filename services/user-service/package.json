@@ -18,14 +18,14 @@
     "@transcenders/contracts": "*",
     "@transcenders/fastify-server": "*",
     "@transcenders/server-utils": "*",
-    "fastify": "^5.4.0",
+    "fastify": "^5.5.0",
     "sharp": "^0.34.3",
     "sql-template-strings": "^2.2.2",
     "sqlite": "^5.1.1"
   },
   "devDependencies": {
-    "@types/node": "^24.1.0",
-    "tsx": "^4.20.3",
-    "typescript": "~5.8.3"
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.4",
+    "typescript": "~5.9.2"
   }
 }
