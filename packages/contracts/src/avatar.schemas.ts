@@ -52,8 +52,8 @@ export type AvatarResult = Static<typeof avatarResultSchema>;
 export const randomAvatarSchema = Type.Object({
   id: Type.String(),
   url: Type.String(),
-  width: Type.String(),
-  height: Type.String(),
+  width: Type.Number(),
+  height: Type.Number(),
 });
 export const randomAvatarArraySchema = Type.Array(randomAvatarSchema);
 export type RandomAvatar = Static<typeof randomAvatarSchema>;
