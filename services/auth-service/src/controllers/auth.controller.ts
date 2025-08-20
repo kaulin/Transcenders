@@ -1,12 +1,17 @@
 import {
   ApiErrorHandler,
   ChangePasswordRequest,
+  ERROR_CODES,
   GoogleAuthCallback,
+  GoogleFlowParam,
+  GoogleFlows,
+  GoogleUserLogin,
   LoginUser,
   LogoutUser,
   RefreshTokenRequest,
   RegisterUser,
-  userByIdRequest,
+  StepupRequest,
+  UserIdParam,
 } from '@transcenders/contracts';
 import { DeviceUtils, ENV } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -24,25 +29,50 @@ export class AuthController {
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
+  static async stepup(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+    const stepupRequest = request.body as StepupRequest;
+    const result = await AuthService.stepup(userId, stepupRequest);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
   static async googleAuth(request: FastifyRequest, reply: FastifyReply) {
-    const url = AuthService.getGoogleAuthUrl();
-    reply.redirect(url);
+    const { flow } = request.params as GoogleFlowParam;
+    const result = await AuthService.getGoogleAuthUrl(flow as GoogleFlows);
+    if (result.success) {
+      return reply.redirect(result.data);
+    }
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async googleCallback(request: FastifyRequest, reply: FastifyReply) {
-    const { code } = request.query as GoogleAuthCallback;
+    const { code, state, error } = request.query as GoogleAuthCallback;
+    const params = new URLSearchParams();
+    params.set('type', state);
+
+    if (code) params.set('code', code);
+    if (error) params.set('error', ERROR_CODES.AUTH.GOOGLE_AUTH_FAILED);
+    return reply.redirect(`${ENV.FRONTEND_URL}/callback?${params.toString()}`);
+  }
+
+  static async googleLogin(request: FastifyRequest, reply: FastifyReply) {
+    const { code } = request.body as GoogleUserLogin;
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-    const result = await AuthService.handleGoogleCallback(code, deviceInfo);
-    if (result.success) {
-      const tokens = encodeURIComponent(JSON.stringify(result.data));
-      reply.redirect(`${ENV.FRONTEND_URL}/login?tokens=${tokens}`);
-    } else {
-      reply.redirect(`${ENV.FRONTEND_URL}/login?error=auth_failed`);
-    }
+    const result = await AuthService.googleLogin(code, deviceInfo);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async googleConnect(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+    const { code } = request.body as GoogleUserLogin;
+    const result = await AuthService.googleConnect(userId, code);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async logout(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
     const { refreshToken } = request.body as LogoutUser;
     const result = await AuthService.logout(userId, refreshToken);
@@ -57,18 +87,26 @@ export class AuthController {
   }
 
   static async delete(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
     const result = await AuthService.deleteCredentials(userId);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async changePassword(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as userByIdRequest;
+    const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
-    const { oldPassword, newPassword } = request.body as ChangePasswordRequest;
+    const { newPassword } = request.body as ChangePasswordRequest;
 
-    const result = await AuthService.changePassword(userId, oldPassword, newPassword);
+    const result = await AuthService.changePassword(userId, newPassword);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async getUserCredsInfo(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as UserIdParam;
+    const userId = parseInt(id);
+
+    const result = await AuthService.getUserCredsInfo(userId);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 }
