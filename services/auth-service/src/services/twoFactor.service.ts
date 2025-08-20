@@ -13,10 +13,11 @@ import {
   TwoFactorUpdate,
   twoFactorEntrySchema,
 } from '@transcenders/contracts';
-import { DatabaseManager, QueryBuilder } from '@transcenders/server-utils';
+import { DatabaseManager, ENV, QueryBuilder } from '@transcenders/server-utils';
 import { SQL } from 'sql-template-strings';
 import { Database } from 'sqlite';
 import { AuthService } from './auth.service.js';
+import { sendTwoFacCode } from './mail.service.js';
 import { TwoFactorChallengeService } from './twoFactorChallenge.service.js';
 
 export class TwoFactorService {
@@ -49,6 +50,15 @@ export class TwoFactorService {
         reason: 'Failed to init two_factor entry',
       });
     }
+  }
+
+  private static async getUserEmail(database: Database, userId: number): Promise<string> {
+    const sql = SQL`
+        SELECT * FROM two_factor WHERE user_id = ${userId}
+    `;
+    const row = await database.get(sql.text, sql.values);
+    Value.Assert(twoFactorEntrySchema, row);
+    return row.email;
   }
 
   private static async assertRequirements(
@@ -124,8 +134,22 @@ export class TwoFactorService {
       }
 
       const { code, expiresAt } = await TwoFactorChallengeService.create(database, userId, purpose);
-      // TODO: email send using stored email in two_factor
-      if (process.env.NODE_ENV !== 'production') {
+
+      const recipient = email ?? (await this.getUserEmail(database, userId));
+
+      try {
+        if (!recipient) {
+          // If somehow missing, treat as server error
+          throw new ServiceError(ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR);
+        }
+        await sendTwoFacCode({ to: recipient, code, expiresAt, purpose });
+      } catch (err) {
+        throw new ServiceError(ERROR_CODES.AUTH.TWO_FACTOR_EMAIL_SENDING_FAILED, {
+          reason: `Failed to send 2FA email: ${String((err as any)?.message ?? err)}`,
+        });
+      }
+
+      if (ENV.NODE_ENV !== 'production') {
         try {
           const { default: clipboard } = await import('clipboardy');
           await clipboard.write(code);

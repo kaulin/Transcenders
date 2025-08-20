@@ -259,6 +259,14 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     httpStatus: 201,
     category: 'validation',
   },
+  [ERROR_CODES.AUTH.TWO_FACTOR_EMAIL_SENDING_FAILED]: {
+    code: ERROR_CODES.AUTH.TWO_FACTOR_EMAIL_SENDING_FAILED,
+    message: 'Failed to send email, try again later',
+    userMessage: 'Failed to send email, try again later',
+    localeKey: 'two_fac_sending_failed',
+    httpStatus: 500,
+    category: 'internal',
+  },
 };
 
 const userErrors: Record<Extract<ErrorCode, `USER_${string}`>, ErrorDefinition> = {
