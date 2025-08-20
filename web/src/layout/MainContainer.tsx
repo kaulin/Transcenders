@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { useUser } from '../hooks/useUser';
 
+import Callback from '../pages/Callback';
 import Dashboard from '../pages/Dashboard';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
@@ -27,6 +28,7 @@ const MainContainer = () => {
             <Route path="/matchpage" element={<MatchPage />} />
             <Route path="/tournamentpage" element={<TournamentPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/callback" element={<Callback />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
@@ -34,6 +36,7 @@ const MainContainer = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/callback" element={<Callback />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
