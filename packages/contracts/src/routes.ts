@@ -16,10 +16,10 @@ export const USER_ROUTES = {
   // DELETE /users/:id - Delete user by ID
   USER_BY_ID: '/users/:id',
 
-  // GET /users/:identifier/exists - Check if username/email exists
+  // GET /users/:identifier/exists - Check if username exists
   USER_EXISTS: '/users/:identifier/exists',
 
-  // GET /users/match - find user by name or email (query params: ?username=, ?email=)
+  // GET /users/match - find user by name or (query params: ?username=)
   USERS_EXACT: '/users/exact',
 } as const;
 
@@ -67,10 +67,46 @@ export const AUTH_ROUTES = {
   CHANGE_PASSWORD: '/auth/change-password/:id',
   // DELETE /auth/credentials/:id
   DELETE: '/auth/credentials/:id',
-  // GET /auth/google
-  GOOGLE_AUTH: '/auth/google',
-  // GET /auth/google/callback
+  // POST /auth/:id/stepup, body as StepupRequest
+  STEPUP: '/auth/:id/stepup',
+  // GET - get user creds info UserCredentialsInfo format
+  CREDS: '/auth/:id/creds',
+
+  // GET /auth/google/:flow - Redirects to Google OAuth with state/flow
+  GOOGLE_AUTH: '/auth/google/:flow',
+  // GET /auth/google/callback - Handles OAuth callback, redirects to frontend
   GOOGLE_CALLBACK: '/auth/google/callback',
+
+  // POST /auth/google/login - Complete Google login with code
+  GOOGLE_LOGIN: '/auth/google/login',
+  // POST - Connect google verified email
+  GOOGLE_CONNECT: '/auth/:id/google/connect',
+} as const;
+
+export const TWO_FACTOR_ROUTES = {
+  // POST /auth/2fa/:id/enroll/request - Start enrollment (send code to email)
+  REQUEST_ENROLL: '/auth/2fa/:id/enroll/request',
+
+  // POST /auth/2fa/:id/enable - Verify enrollment code
+  ENABLE: '/auth/2fa/:id/enable',
+
+  // POST /auth/2fa/:id/stepup/request - Request a step-up (challenge)
+  REQUEST_STEPUP: '/auth/2fa/:id/stepup/request',
+
+  // POST /auth/2fa/:id/login/request - Request a login-time 2FA challenge
+  REQUEST_LOGIN: '/auth/2fa/:id/login/request',
+
+  // POST - verify login code
+  LOGIN: '/auth/2fa/:id/login',
+
+  // POST /auth/2fa/:id/disable/request - Request disable (challenge)
+  REQUEST_DISABLE: '/auth/2fa/:id/disable/request',
+
+  // POST /auth/2fa/:id/disable - Disable 2FA after verifying code
+  DISABLE: '/auth/2fa/:id/disable',
+
+  // GET - check if user has 2fa enabled
+  ENABLED: '/auth/2fa/:id/enabled',
 } as const;
 
 export const SCORE_ROUTES = {
