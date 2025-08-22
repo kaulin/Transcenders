@@ -430,11 +430,10 @@ function TournamentPage() {
                 className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-sm sm:text-lg"
                 disabled={isProcessingGameEnd}
                 onClick={() => {
+                  handleContinueToNextRound();
                   if (tournamentState.currentMatch === 3) {
                     navigate('/');
-                  } else {
-                    handleContinueToNextRound();
-                  }
+                  } 
                 }}
               >
                 {tournamentState.currentMatch === 3 ? t('backToHome') : t('continueToNextRound')}
