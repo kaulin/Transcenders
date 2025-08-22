@@ -15,7 +15,6 @@ export * from './score.schemas.js';
 export * from './twoFactor.schemas.js';
 export * from './user.schemas.js';
 export * from './utils/BooleanResultHelper.js';
-export * from './utils/DatabaseHelper.js';
 export { decodeToken } from './utils/decodeToken.js';
 export { getEnvVar } from './utils/getEnvVar.js';
 export { toQueryString } from './utils/query.js';
