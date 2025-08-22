@@ -8,7 +8,7 @@ import { FastifyInstance } from 'fastify';
 import { AdminController } from '../controllers/AdminController.js';
 
 export async function registerAdminRoutes(app: FastifyInstance) {
-  app.get('/health', AdminController.getHealth);
+  app.get('/admin/health', AdminController.getHealth);
   app.post(
     ADMIN_ROUTES.ACTIVITY,
     {
@@ -34,4 +34,21 @@ export async function registerAdminRoutes(app: FastifyInstance) {
     },
     AdminController.cleanupOfflineUsers,
   );
+
+  app.get('/admin/ip', (req, reply) => {
+    reply.send({
+      ip: req.ip,
+      ips: req.ips,
+      rawRemote: req.socket.remoteAddress,
+      headers: {
+        'x-forwarded-for': req.headers['x-forwarded-for'],
+        'x-real-ip': req.headers['x-real-ip'],
+        'cf-connecting-ip': req.headers['cf-connecting-ip'],
+        'true-client-ip': req.headers['true-client-ip'],
+        forwarded: req.headers.forwarded,
+        via: req.headers.via,
+        'user-agent': req.headers['user-agent'],
+      },
+    });
+  });
 }

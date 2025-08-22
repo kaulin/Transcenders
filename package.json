@@ -21,7 +21,7 @@
     "dev:compiled": "turbo dev:compiled --filter=./services/*",
     "build": "turbo build",
     "build:packages": "turbo build --filter='./packages/*'",
-    "build:frontend": "turbo build --filter=web",
+    "build:frontend": "turbo build --filter='./packages/contracts' --filter='./packages/api-client' --filter=web",
     "build:backend": "turbo build --filter=./services/**",
     "build:watch": "turbo dev:compiled",
     "clean": "turbo clean && find . -name 'tsconfig.tsbuildinfo' -delete",

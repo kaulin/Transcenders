@@ -1,0 +1,81 @@
+name: transcendence-stack
+services:
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile-pruned
+      target: service
+      args:
+        SVC: user-service
+    env_file: [.env]
+    environment:
+      - PORT=3000
+    volumes:
+      - user_avatars:/repo/media/avatars
+      - user_data:/repo/database
+    expose: ['3000']
+    restart: unless-stopped
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile-pruned
+      target: service
+      args:
+        SVC: auth-service
+    env_file: [.env]
+    environment:
+      - PORT=3000
+    volumes:
+      - auth_data:/repo/database
+    expose: ['3000']
+    restart: unless-stopped
+    depends_on:
+      - user-service
+
+  score-service:
+    build:
+      context: .
+      dockerfile: Dockerfile-pruned
+      target: service
+      args:
+        SVC: score-service
+    env_file: [.env]
+    environment:
+      - PORT=3000
+    volumes:
+      - score_data:/repo/database
+    expose: ['3000']
+    restart: unless-stopped
+
+  # --- Caddy reverse proxy + HTTPS ---
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile-pruned
+      target: web
+      args:
+        SVC: web
+        VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
+        VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+        VITE_SCORE_SERVICE_URL: ${VITE_SCORE_SERVICE_URL}
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - user-service
+      - auth-service
+      - score-service
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  user_avatars:
+  user_data:
+  auth_data:
+  score_data:
+  caddy_data:
+  caddy_config:
+  web_build:
