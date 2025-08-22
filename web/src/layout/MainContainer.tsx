@@ -21,7 +21,7 @@ const MainContainer = () => {
         <div className="absolute inset-0 bg-black/5" />
       </div>
 
-      <div className="relative h-full z-10 p-24 pt-32">
+      <div className="relative h-full z-10 p-4 pt-24 sm:p-24 sm:pt-32">
         {user ? (
           <Routes>
             <Route path="/" element={<Home />} />
