@@ -249,7 +249,7 @@ function TournamentPage() {
       setPlayer(3, emptyPlayer);
       setPlayer(4, emptyPlayer);
     }
-    //reseet game for new round
+    //reset game for new round
     setGameStatus(GameStatus.WAITING);
     setLeftScore(0);
     setRightScore(0);
