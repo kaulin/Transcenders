@@ -119,7 +119,7 @@ function TournamentPage() {
         e.preventDefault();
         if (
           gameStatus === GameStatus.WAITING ||
-          gameStatus == GameStatus.PAUSED ||
+          gameStatus === GameStatus.PAUSED ||
           gameStatus === GameStatus.RUNNING
         ) {
           handleStartPause();
