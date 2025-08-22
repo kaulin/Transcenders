@@ -108,7 +108,7 @@ const Login = () => {
           />
         )}
 
-        <div className="h-4">{error && <p className="h-4 tsc-error-message">{error}</p>}</div>
+        <div className="h-4">{error && <p className="tsc-error-message">{error}</p>}</div>
 
         <button type="submit" className="mt-4">
           {t('log_in')}
