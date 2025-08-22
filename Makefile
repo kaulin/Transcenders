@@ -6,16 +6,16 @@ all: local
 # SETUP
 ################################################################################
 
-setup-check: env-local
+setup-check:
 		@./scripts/docker-deps-check.sh
 
-env-local: setup-check
+env-local:
 		@scripts/env-gen.js local
 
-env-docker: setup-check
+env-docker:
 		@scripts/env-gen.js docker
 
-env-prod: setup-check
+env-prod:
 		@scripts/env-gen.js production
 
 .PHONY: setup-check env-local env-docker env-prod
@@ -24,20 +24,20 @@ env-prod: setup-check
 # DEVELOPMENT
 ################################################################################
 
-docker: env-docker
+docker: setup-check env-docker
 		docker compose up -d
 		$(MAKE) dev-web
 
-local: env-local
+local: setup-check env-local
 		npm run dev
 
-dev-web: env-local
+dev-web: setup-check env-local
 		npm run dev:frontend
 
-dev-backend: env-local
+dev-backend: setup-check env-local
 		npm run dev:backend
 
-dev-compiled: env-local
+dev-compiled: setup-check env-local
 		npm run build
 		npm run dev:compiled
 
@@ -47,6 +47,14 @@ dev-logs:
 stop:
 		docker compose down
 
+dev-exec:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "Usage: make dev-exec <service>"; \
+	else \
+		SVC=$(filter-out $@,$(MAKECMDGOALS)) && \
+		docker compose exec -it $$SVC ash; \
+	fi
+
 restart: stop dev
 
 .PHONY: dev dev-local dev-web dev-backend dev-compiled dev-logs dev-stop dev-restart
@@ -55,14 +63,11 @@ restart: stop dev
 # BUILD & TESTING
 ################################################################################
 
-build: env-local
+build: setup-check env-local
 		npm run build
 
 build-clean:
 		npm run clean
-
-build-prod:
-		docker compose -f docker-compose.prod.yml build --parallel
 
 check-types:
 		npm run type-check
@@ -82,41 +87,53 @@ fix-lint:
 fix-deps:
 		npx npm-check-updates --interactive --workspaces
 
-test: env-local
+test: setup-check env-local
 		npm run test
 
 install-clean:
 		rm -rf node_modules package-lock.json
 		npm install
 
-.PHONY: build build-clean build-prod check-types check-lint check-outdated check-audit fix-lint fix-deps test install-clean
+.PHONY: build build-clean check-types check-lint check-outdated check-audit fix-lint fix-deps test install-clean
 
 ################################################################################
 # PRODUCTION
 ################################################################################
+PROD_DOCKER_COMPOSE := docker compose -f docker-compose.pruned.yml
 
-prod: env-prod build-prod
-		docker compose -f docker-compose.prod.yml up -d
-
-prod-local: env-prod build
-		npm run start
+prod: env-prod
+		$(PROD_DOCKER_COMPOSE) build --parallel
+		$(PROD_DOCKER_COMPOSE) up -d
 
 prod-stop:
-		docker compose -f docker-compose.prod.yml down
-
-prod-logs:
-		docker compose -f docker-compose.prod.yml logs -f
+		$(PROD_DOCKER_COMPOSE) down
 
 prod-clean:
-		docker compose -f docker-compose.prod.yml down --rmi all --volumes
+		$(PROD_DOCKER_COMPOSE) down --rmi all
 
-.PHONY: prod prod-local prod-stop prod-logs prod-clean
+prod-logs:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		$(PROD_DOCKER_COMPOSE) logs -f; \
+	else \
+		SVC=$(filter-out $@,$(MAKECMDGOALS)) && \
+		$(PROD_DOCKER_COMPOSE) logs $$SVC -f; \
+	fi
+
+prod-exec:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "Usage: make prod-exec <service>"; \
+	else \
+		SVC=$(filter-out $@,$(MAKECMDGOALS)) && \
+		$(PROD_DOCKER_COMPOSE) exec -it $$SVC ash; \
+	fi
+
+.PHONY: prod prod-local prod-stop prod-logs prod-clean prod-clean-data
 
 ################################################################################
 # CLEAN
 ################################################################################
 
-clean: dev-stop prod-stop
+clean: dev-stop
 		docker compose down --remove-orphans --rmi all
 		docker system prune -f
 		npm run clean
@@ -161,7 +178,6 @@ help:
 		@echo "Build & Testing:"
 		@echo "  build           Build all packages and services"
 		@echo "  build-clean     Clean all build artifacts"
-		@echo "  build-prod      Build production Docker images"
 		@echo "  check-types     Run TypeScript type checking"
 		@echo "  check-lint      Run linting"
 		@echo "  check-outdated  Check for outdated dependencies"

@@ -1,0 +1,85 @@
+FROM node:22-alpine AS base
+############################
+# 1) PRUNE STAGE
+############################
+FROM base AS pruner
+WORKDIR /repo
+RUN apk add --no-cache ca-certificates
+# Copy full repo; prune needs the graph
+COPY . .
+RUN npm i -g turbo@^2
+ARG SVC
+RUN turbo prune "$SVC" --docker
+# -> /repo/out/json (manifests), /repo/out/full (sources), pruned lockfile
+
+############################
+# 2) INSTALL STAGE (build tools for native deps)
+############################
+FROM base AS installer
+WORKDIR /repo
+
+# buildtime env for web version
+ARG VITE_USER_SERVICE_URL
+ARG VITE_AUTH_SERVICE_URL
+ARG VITE_SCORE_SERVICE_URL
+ENV VITE_USER_SERVICE_URL=$VITE_USER_SERVICE_URL
+ENV VITE_AUTH_SERVICE_URL=$VITE_AUTH_SERVICE_URL
+ENV VITE_SCORE_SERVICE_URL=$VITE_SCORE_SERVICE_URL
+
+# node-gyp toolchain on Alpine (musl)
+# build-base = gcc g++ make; pkgconf provides pkg-config
+RUN apk add --no-cache \
+  python3 \
+  build-base \
+  pkgconf \
+  ca-certificates
+  
+COPY --from=pruner /repo/out/json/ ./
+RUN --mount=type=cache,target=/root/.npm npm ci --include=dev
+
+############################
+# 3) BUILD STAGE
+############################
+FROM installer AS builder
+WORKDIR /repo
+ARG SVC
+
+COPY --from=pruner /repo/out/full/ ./
+COPY --from=pruner /repo/tsconfig.json ./tsconfig.json
+# cache turbo artifacts between builds
+RUN --mount=type=cache,target=/repo/.turbo npx turbo run build --filter="$SVC"
+# trim dev deps for runtime
+RUN npm prune --omit=dev
+
+############################
+# 4a) SERVICE RUNTIME (Node)
+############################
+FROM base AS service
+WORKDIR /repo
+ENV NODE_ENV=production
+ARG SVC
+
+# SQLite runtime libs; add sqlite (CLI) if you need the shell
+RUN apk add --no-cache sqlite-libs sqlite
+
+# copy default avatars, but keep only for user-service
+COPY --from=pruner /repo/media/defaults ./media/defaults
+RUN mkdir -p /repo/media/avatars
+RUN if [ "$SVC" != "user-service" ]; then rm -rf /repo/media; fi
+
+COPY --from=builder /repo/node_modules ./node_modules
+COPY --from=builder /repo/services/${SVC}/dist ./services/${SVC}/dist
+COPY --from=builder /repo/packages ./packages
+
+WORKDIR /repo/services/${SVC}
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
+
+############################
+# 4b) WEB RUNTIME (Caddy)
+############################
+FROM caddy:2 AS web
+# Caddy serves from /usr/share/caddy by default
+COPY --from=builder /repo/web/dist /usr/share/caddy
+# SPA fallback & caching
+COPY Caddyfile /etc/caddy/Caddyfile

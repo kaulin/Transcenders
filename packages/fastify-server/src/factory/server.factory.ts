@@ -41,7 +41,10 @@ export async function createFastifyServer(
 
   // Register plugins in order
   await setupGracefulShutdown(fastify, config);
-  await registerCors(fastify);
+  // TODO register cors in dev until we get gateway in dev also
+  if (ENV.NODE_ENV === 'development') {
+    await registerCors(fastify);
+  }
   await registerSwagger(fastify, config, swaggerConfig);
   registerDevelopmentHooks(fastify);
   registerOnCloseHook(fastify);
