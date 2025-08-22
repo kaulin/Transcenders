@@ -94,7 +94,6 @@ export default function TwoFactorSection() {
     } finally {
       end();
     }
-    console.log('Send 2FA code to:', email);
   }
   async function onVerifyCode() {
     if (!isElevated) return;
@@ -113,7 +112,6 @@ export default function TwoFactorSection() {
     } finally {
       end();
     }
-    console.log('Verify 2FA code:', code, 'for email:', email);
   }
   function onCancel() {
     setError(null);
