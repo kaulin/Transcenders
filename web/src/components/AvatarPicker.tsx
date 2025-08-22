@@ -44,20 +44,18 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
     return avatars.findIndex((a) => a.url === user.avatar);
   }, [user, avatars]);
 
-  const getNameFromUrl = (url: string) => {
+  function getNameFromUrl(url: string) {
     try {
-      const parts = url.split('/');
+      const parts = url.split('?')[0].split('/');
       return parts[parts.length - 1] || url;
     } catch {
       return url;
     }
-  };
+  }
 
-  const classForAvatar = useMemo(() => {
-    if (!user) return;
+  const transformFromUrl = useCallback((fullUrl?: string) => {
     const defaultTransform = 'object-cover';
-    const avatarTransforms: Record<string, string> = {
-      // filename (from server) => default image className for transforms
+    const defaultAvatarTransforms: Record<string, string> = {
       'avatarCat1.avif': 'object-contain max-w-[65%] object-bottom',
       'avatarCat2.avif': 'object-contain max-w-[85%] object-bottom',
       'avatarCat3.avif': 'object-contain max-w-[98%] object-bottom',
@@ -67,10 +65,10 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
       'avatarCat7.webp': 'object-contain max-w-[100%] object-bottom',
       'avatarCat8.gif': 'object-cover h-[180%]',
     };
-    const match = currentIdx >= 0 && currentIdx < avatars.length ? avatars[currentIdx] : null;
-    const key = match ? match.name : getNameFromUrl(user.avatar);
-    return avatarTransforms[key] ?? defaultTransform;
-  }, [currentIdx, avatars, user]);
+    if (!fullUrl) return defaultTransform;
+    const key = getNameFromUrl(fullUrl);
+    return defaultAvatarTransforms[key] ?? defaultTransform;
+  }, []);
 
   const previewUrl = useMemo(() => {
     if (!user) return '';
@@ -232,45 +230,32 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
 
   // loading spinner handling for browser encoding etc
   const imgRef = useRef<HTMLImageElement | null>(null);
-  const [browserLoading, setBrowserLoading] = useState(false);
-  const imgLoading = uploading || browserLoading;
+
+  const [displayUrl, setDisplayUrl] = useState(previewUrl);
+  const [displayClass, setDisplayClass] = useState(transformFromUrl(previewUrl));
+  const [loadingNext, setLoadingNext] = useState(false);
+  const imgLoading = uploading || loadingNext;
 
   useEffect(() => {
-    if (!previewUrl) return;
+    if (!previewUrl || previewUrl === displayUrl) return;
 
-    setBrowserLoading(true);
+    setLoadingNext(true);
 
-    const el = imgRef.current;
-    if (!el) {
-      setBrowserLoading(false);
-      return;
-    }
+    const img = new Image();
+    img.src = previewUrl;
 
-    let cancelled = false;
-    const done = () => {
-      if (!cancelled) setBrowserLoading(false);
+    const apply = () => {
+      setDisplayUrl(previewUrl);
+      setDisplayClass(transformFromUrl(previewUrl));
+      setLoadingNext(false);
     };
 
-    if (el.complete && el.naturalWidth > 0) {
-      done();
-      return;
+    if (img.decode) img.decode().then(apply, apply);
+    else {
+      img.onload = apply;
+      img.onerror = apply;
     }
-
-    if (el.decode) {
-      el.decode().then(done, done);
-    } else {
-      el.addEventListener('load', done);
-      el.addEventListener('error', done);
-    }
-
-    return () => {
-      cancelled = true;
-      if (!el.decode) {
-        el.removeEventListener('load', done);
-        el.removeEventListener('error', done);
-      }
-    };
-  }, [previewUrl]);
+  }, [previewUrl, displayUrl, transformFromUrl]);
 
   return (
     <div className={className}>
@@ -280,7 +265,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
             ref={imgRef}
             src={previewUrl}
             alt={t('avatar_preview')}
-            className={`${classForAvatar}`}
+            className={`${displayClass}`}
           />
         )}
         {imgLoading && <LoadingSpinner />}
