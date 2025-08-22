@@ -11,7 +11,7 @@ export function getEnvVar(name: string, fallback: string): string {
   } catch {}
 
   if (typeof process !== 'undefined' && process.env) {
-    const v = process.env[`VITE_${name}`] ?? process.env[name];
+    const v = process.env[`${name}`] ?? process.env[name];
     if (v !== undefined) return v;
   }
   return fallback;
