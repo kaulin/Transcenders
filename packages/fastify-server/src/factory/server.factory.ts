@@ -15,6 +15,7 @@ export async function createFastifyServer(
   swaggerConfig?: SwaggerConfig,
 ): Promise<FastifyInstance> {
   const fastify = Fastify({
+    trustProxy: (addr, hop) => hop < 1,
     logger: {
       level: 'info',
       transport:
