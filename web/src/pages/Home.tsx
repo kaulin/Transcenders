@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { useTranslation } from 'react-i18next';
 import PlayerLoginForm from '../components/PlayerLoginForm';
-import { useUser } from '../hooks/useUser';
 import { usePlayers } from '../hooks/usePlayers';
+import { useUser } from '../hooks/useUser';
 // import curiousCat from "/images/curiousCat.avif"
 
 const Home = () => {
@@ -43,7 +43,7 @@ const Home = () => {
   return (
     <div className="relative w-full h-full">
       <div className="box relative bg-[#6e5d41]/10 xl:bg-[#6e5d41]/5">
-        <div className="flex flex-col xl:flex-1 flex-shrink-0 w-full min-h-[1106px] h-full p-10 items-center justify-center text-center xl:bg-transparent backdrop-blur-sm">
+        <div className="flex flex-col xl:flex-1 shrink-0 w-full min-h-[1106px] h-full p-10 items-center justify-center text-center xl:bg-transparent backdrop-blur-sm">
           <h1 className="text-6xl font-fascinate">
             {t('hello')} {user?.username}
           </h1>
@@ -66,7 +66,7 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="relative flex flex-col xl:flex-1 flex-shrink-0 min-h-[1106px] w-full h-full items-center justify-center gap-2 backdrop-blur-sm">
+        <div className="relative flex flex-col xl:flex-1 shrink-0 min-h-[1106px] w-full h-full items-center justify-center gap-2 backdrop-blur-sm">
           {gameMode === 'match' && (
             <div
               ref={playerFormRef}
