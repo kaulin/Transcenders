@@ -108,12 +108,12 @@ function MatchPage() {
           <div className="w-full flex justify-between items-center mb-4 px-8">
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden shrink-0">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex justify-center overflow-hidden shrink-0">
                   {players[1]?.avatar ? (
                     <img
                       src={ApiClient.user.getFullAvatarURL(players[1].avatar)}
                       alt={`${players[1]?.username} avatar`}
-                      className="object-contain"
+                      className="object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
@@ -137,12 +137,12 @@ function MatchPage() {
 
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden shrink-0">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex justify-center overflow-hidden shrink-0">
                   {players[2]?.avatar ? (
                     <img
                       src={ApiClient.user.getFullAvatarURL(players[2].avatar)}
                       alt={`${players[2]?.username} avatar`}
-                      className="object-contain max-w-[80%]"
+                      className="object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}

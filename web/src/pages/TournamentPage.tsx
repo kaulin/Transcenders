@@ -310,12 +310,12 @@ function TournamentPage() {
           <div className="w-full flex justify-between items-center mb-4 px-8">
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden shrink-0">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex justify-center overflow-hidden shrink-0">
                   {currentMatchPlayers.player1?.avatar ? (
                     <img
                       src={ApiClient.user.getFullAvatarURL(currentMatchPlayers.player1.avatar)}
                       alt={`${currentMatchPlayers.player1.username} avatar`}
-                      className="object-contain"
+                      className="object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
@@ -339,12 +339,12 @@ function TournamentPage() {
 
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden shrink-0">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex justify-center overflow-hidden shrink-0">
                   {currentMatchPlayers.player2?.avatar ? (
                     <img
                       src={ApiClient.user.getFullAvatarURL(currentMatchPlayers.player2.avatar)}
                       alt={`${currentMatchPlayers.player2.username} avatar`}
-                      className="object-contain"
+                      className="object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
