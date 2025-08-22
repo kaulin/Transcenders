@@ -76,7 +76,6 @@ function TournamentPage() {
 
     setPlayer(1, shuffledPlayers[0]);
     setPlayer(2, shuffledPlayers[1]);
-    console.log('Player 1 type:', typeof players[1], players[1]);
   }, [players, setPlayer]);
 
   // Get current players for rendering the page from the SHUFFLED tournament order
