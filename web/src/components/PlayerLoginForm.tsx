@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useVerifyLogin from '../hooks/useVerifyLogin';
-import { usePlayers } from '../hooks/usePlayers';
 import { ApiClient } from '@transcenders/api-client';
+import { usePlayers } from '../hooks/usePlayers';
+import useVerifyLogin from '../hooks/useVerifyLogin';
 import type { Player } from '../types/types';
 
 interface Props {
@@ -54,6 +54,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
       id: 0,
       username: username,
       ready: true,
+      avatar: await ApiClient.user.getOneRandomCat(),
     });
   };
 

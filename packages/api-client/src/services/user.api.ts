@@ -206,6 +206,20 @@ export class UserApiClient extends TypedApiClient {
   }
 
   /**
+   * Get one random cat avatar from TheCatApi
+   */
+  static async getOneRandomCat(query?: RandomCatsQuery) {
+    let catUrl;
+    try {
+      const cats = await this.getRandomCats({ limit: 1 });
+      catUrl = cats[0]?.url;
+    } catch {
+      // ignore catApi errors and just let it be undefined
+    }
+    return catUrl;
+  }
+
+  /**
    * Hard set an avatar URL for the user
    */
   static async setWebAvatar(userId: number, avatarUrl: string) {
