@@ -1,12 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import GameContainer from '../components/game/GameContainer';
 import { ApiClient } from '@transcenders/api-client';
 import { type CreateScoreRequest } from '@transcenders/contracts';
-import { type GameResult } from '../components/game/models/GameState';
-import { GameStatus } from '../components/game/models/GameState';
-import { usePlayers } from '../hooks/usePlayers';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import GameContainer from '../components/game/GameContainer';
+import { GameStatus, type GameResult } from '../components/game/models/GameState';
+import { usePlayers } from '../hooks/usePlayers';
 
 function MatchPage() {
   const [gameKey, setGameKey] = useState(0);
@@ -109,7 +108,7 @@ function MatchPage() {
           <div className="w-full flex justify-between items-center mb-4 px-8">
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden flex-shrink-0">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden shrink-0">
                   {players[1]?.avatar ? (
                     <img
                       src={ApiClient.user.getFullAvatarURL(players[1].avatar)}
@@ -138,7 +137,7 @@ function MatchPage() {
 
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden flex-shrink-0">
+                <div className="bubble bg-white/50 w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-end justify-center overflow-hidden shrink-0">
                   {players[2]?.avatar ? (
                     <img
                       src={ApiClient.user.getFullAvatarURL(players[2].avatar)}
@@ -184,7 +183,7 @@ function MatchPage() {
 
               {/* Overlay Messages */}
               {gameStatus === GameStatus.WAITING && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c]/50 text-white">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center px-4">
                     {t('pressSpaceToStart')}
                   </div>
@@ -198,7 +197,7 @@ function MatchPage() {
               )}
 
               {gameStatus === GameStatus.PAUSED && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c]/50 text-white">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
                     {t('paused')}
                   </div>
@@ -207,7 +206,7 @@ function MatchPage() {
               )}
 
               {gameStatus === GameStatus.ENDED && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c] bg-opacity-50 text-white">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c]/50 text-white">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center px-4">
                     {t('playerWins', '{{player}} Wins!', { player: winner })}
                   </div>
