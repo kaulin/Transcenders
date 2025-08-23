@@ -1,4 +1,4 @@
-name: transcendence-stack
+name: transcendence-prod
 services:
   user-service:
     build:

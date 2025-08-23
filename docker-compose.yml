@@ -20,8 +20,9 @@ x-service-base: &service-base
 x-service-build: &service-build
   context: .
   dockerfile: Dockerfile-dev
-  target: development
+  target: service
 
+name: transcendence-dev
 services:
   user-service:
     container_name: user-service
@@ -99,7 +100,7 @@ services:
       - '80:80'
       - '443:443'
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped
