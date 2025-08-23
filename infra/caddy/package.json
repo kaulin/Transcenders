@@ -2,6 +2,6 @@
   "name": "@infra/caddy",
   "private": true,
   "scripts": {
-    "dev": "caddy run --config ./Caddyfile.local --adapter caddyfile --watch"
+    "dev": "caddy run --config=./Caddyfile.local"
   }
 }
