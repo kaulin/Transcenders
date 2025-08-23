@@ -93,13 +93,8 @@ Object.entries(PORTS).forEach(([service, port]) => {
   const serviceUrl =
     env === 'local' ? `http://localhost:${port}` : `http://${serviceLower}-service:${port}`;
 
-  let viteUrl = `http://localhost:${port}`;
-  if (env === 'production') {
-    viteUrl = `https://api.transcenders.online`;
-  }
-
   setEnvVar(`${service}_SERVICE_URL`, serviceUrl);
-  setEnvVar(`VITE_${service}_SERVICE_URL`, viteUrl);
+  setEnvVar(`VITE_${service}_SERVICE_URL`, `/api`);
 });
 
 // Write the .env file
