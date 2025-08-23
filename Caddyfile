@@ -1,18 +1,3 @@
-(routing) {
-  handle_path /api/* {
-    @auth path /auth*
-    @users path /users* /friendships* /avatars* /admin* /media*
-    @score path /score*
-    
-    reverse_proxy @auth auth-service:3000
-    reverse_proxy @users user-service:3000
-    reverse_proxy @score score-service:3000
-
-    # default (404) if no match:
-    respond "Unknown API route" 404
-  }
-}
-
 (logging) {
   log {
     output file /var/log/caddy.log
@@ -25,15 +10,22 @@ app.transcenders.online {
   import logging
   @skip path_regexp \.(js|css|png|jpe?g|gif|ico|woff|otf|ttf|eot|svg|txt|pdf|docx?|xlsx?)$
   log_skip @skip
-  
+
   tls prod@transcenders.online {
     ca https://acme.zerossl.com/v2/DV90
   }
-  
+
   encode gzip zstd
   
-  import routing
-  
+  handle_path /api/* {
+    @auth path /auth*
+    @users path /users* /friendships* /avatars* /admin* /media*
+    @score path /score*
+    reverse_proxy @users user-service:3000
+    reverse_proxy @auth auth-service:3000
+    reverse_proxy @score score-service:3000
+  }
+
   handle {
     root * /usr/share/caddy
     try_files {path} /index.html
@@ -44,15 +36,21 @@ app.transcenders.online {
 # Serve on localhost
 localhost {
   import logging
-  
+
   tls internal
 
    encode gzip zstd
 
-  import routing
+  handle_path /api/* {
+    @auth path /auth*
+    @users path /users* /friendships* /avatars* /admin* /media*
+    @score path /score*
 
-    # --- Fallback: everything else to Vite dev server ---
-  handle {
-    reverse_proxy /* 127.0.0.1:5173    
+    reverse_proxy @users user-service:3001
+    reverse_proxy @auth auth-service:3002
+    reverse_proxy @score score-service:3003
   }
+
+  reverse_proxy /* web:5173
+  
 }

@@ -26,7 +26,6 @@ env-prod:
 
 docker: setup-check env-docker
 		docker compose up -d
-		$(MAKE) dev-web
 
 local: setup-check env-local
 		npm run dev
