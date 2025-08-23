@@ -69,6 +69,7 @@ RUN if [ "$SVC" != "user-service" ]; then rm -rf /repo/media; fi
 
 COPY --from=builder /repo/node_modules ./node_modules
 COPY --from=builder /repo/services/${SVC}/dist ./services/${SVC}/dist
+COPY --from=builder /repo/services/${SVC}/src/db/init.sql ./services/${SVC}/src/db/init.sql
 COPY --from=builder /repo/packages ./packages
 
 WORKDIR /repo/services/${SVC}
