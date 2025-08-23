@@ -1,17 +1,16 @@
 {
 	local_certs
-}
-
-(logging) {
-	log {
-		output file /var/log/caddy.log
-		format json
+	storage file_system {
+		root ./caddy-data
 	}
 }
 
 # Serve on localhost
 localhost {
-	import logging
+	log {
+		output file ./caddy-data/logs/caddy.log
+		format json
+	}
 
 	encode gzip zstd
 

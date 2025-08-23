@@ -1,13 +1,9 @@
-(logging) {
+# serve on app.transcenders.online domain
+app.transcenders.online {
 	log {
 		output file /var/log/caddy.log
 		format json
 	}
-}
-
-# serve on app.transcenders.online domain
-app.transcenders.online {
-	import logging
 	@skip path_regexp \.(js|css|png|jpe?g|gif|ico|woff|otf|ttf|eot|svg|txt|pdf|docx?|xlsx?)$
 	log_skip @skip
 
@@ -21,6 +17,7 @@ app.transcenders.online {
 		@auth path /auth*
 		@users path /users* /friendships* /avatars* /admin* /media*
 		@score path /score*
+
 		reverse_proxy @users user-service:3000
 		reverse_proxy @auth auth-service:3000
 		reverse_proxy @score score-service:3000

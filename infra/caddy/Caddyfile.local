@@ -1,0 +1,28 @@
+{
+	local_certs
+	storage file_system {
+		root ./caddy-data
+	}
+}
+
+# Serve on localhost
+localhost {
+	log {
+		output file ./caddy-data/logs/caddy.log
+		format json
+	}
+
+	encode gzip zstd
+
+	handle_path /api/* {
+		@auth path /auth*
+		@users path /users* /friendships* /avatars* /admin* /media*
+		@score path /score*
+
+		reverse_proxy @users localhost:3001
+		reverse_proxy @auth localhost:3002
+		reverse_proxy @score localhost:3003
+	}
+
+	reverse_proxy /* localhost:5173
+}

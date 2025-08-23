@@ -81,5 +81,5 @@ CMD ["node", "dist/server.js"]
 FROM caddy:2 AS web
 # Caddy serves from /usr/share/caddy by default
 COPY --from=builder /repo/web/dist /usr/share/caddy
-# SPA fallback & caching
-COPY Caddyfile /etc/caddy/Caddyfile
+
+COPY infra/caddy/Caddyfile.prod /etc/caddy/Caddyfile
