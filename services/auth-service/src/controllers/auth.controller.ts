@@ -40,9 +40,6 @@ export class AuthController {
   static async googleAuth(request: FastifyRequest, reply: FastifyReply) {
     const { flow } = request.params as GoogleFlowParam;
     const result = await AuthService.getGoogleAuthUrl(flow as GoogleFlows);
-    if (result.success) {
-      return reply.redirect(result.data);
-    }
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
