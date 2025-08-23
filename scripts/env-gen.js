@@ -83,7 +83,7 @@ setEnvVar('MAIL_FROM', '"Transcenders Auth <auth@transcenders.online>"');
 // prod overrides
 if (env === 'production') {
   setEnvVar('FRONTEND_URL', 'http://app.transcenders.online');
-  setEnvVar('GOOGLE_REDIRECT_URI', `http://api.transcenders.online/auth/google/callback`);
+  setEnvVar('GOOGLE_REDIRECT_URI', `http://app.transcenders.online/api/auth/google/callback`);
 }
 
 // Set service URLs
