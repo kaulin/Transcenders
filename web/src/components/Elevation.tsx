@@ -48,7 +48,7 @@ export default function ElevationSection() {
       <h2 className="text-xl font-fascinate mb-2">
         {t('verify_identity') ?? 'Verify your identity'}
       </h2>
-      <p className="text-sm mb-4 text-white/80">
+      <p className="text-sm mb-4 text-white/80 text-center">
         {t('profile_requires_elevation') ??
           'To edit sensitive settings, verify using one of the methods below.'}
       </p>

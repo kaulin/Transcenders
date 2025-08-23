@@ -17,6 +17,7 @@
 @layer base {
   button {
     @apply text-white hover:text-[#786647];
+    @apply disabled:hover:text-white disabled:cursor-default;
     cursor: pointer;
   }
 
@@ -78,6 +79,7 @@
 
 @utility link-color {
   @apply text-white hover:text-[#786647];
+  @apply disabled:hover:text-white;
 }
 
 @utility login-bubble {
