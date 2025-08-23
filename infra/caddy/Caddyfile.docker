@@ -1,8 +1,5 @@
 {
 	local_certs
-	storage file_system {
-		root ./caddy-data
-	}
 }
 
 # Serve on localhost
