@@ -34,7 +34,7 @@ const SignUp = () => {
 
   return (
     <div className="relative w-full h-full flex justify-center items-center pb-28">
-      <form onSubmit={handleSignUp} className="login-bubble bg-[#ffe6d5]/20">
+      <form onSubmit={handleSignUp} className="login-bubble bg-[#6e5d41]/5">
         <h1 className="text-2xl sm:text-3xl font-fascinate mb-3">{t('sign_up')}</h1>
 
         <input

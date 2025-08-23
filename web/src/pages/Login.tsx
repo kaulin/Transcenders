@@ -76,7 +76,7 @@ const Login = () => {
 
   return (
     <div className="relative w-full h-full flex justify-center items-center pb-28">
-      <form onSubmit={handleLogin} className="login-bubble">
+      <form onSubmit={handleLogin} className="login-bubble bg-[#6e5d41]/5">
         <h1 className="text-2xl sm:text-3xl font-fascinate py-3">{t('log_in')}</h1>
 
         <input
@@ -98,15 +98,14 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {needsCode && (
-          <input
-            type="text"
-            value={code}
-            placeholder={t('code')}
-            className="login-input-field mt-2"
-            onChange={(e) => setCode(e.target.value)}
-          />
-        )}
+        <input
+          type="text"
+          value={code}
+          placeholder={t('verification_code')}
+          className="login-input-field mt-2 disabled:placeholder-white/60"
+          onChange={(e) => setCode(e.target.value)}
+          disabled={!needsCode}
+        />
 
         <div className="h-4">{error && <p className="tsc-error-message">{error}</p>}</div>
 
