@@ -192,76 +192,70 @@ export default function TwoFactorSection() {
           </svg>
         </button>
       </div>
-      {credsError && <p className="tsc-error-message">{t(credsError)}</p>}
-      {error && <p className="tsc-error-message">{t(error)}</p>}
 
-      {/* Step: email entry */}
-      {step === 'email' && (
-        <div className="flex flex-col gap-2">
-          <label className="text-xs">{t('enter_email_for_2fa') ?? 'Enter email for 2FA'}</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('email') ?? 'Email'}
-            className="input-field text-sm"
-            disabled={disabled}
-          />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onSendCode}
-              disabled={disabled || email.length === 0}
-              className="rounded-button bg-[#6e5d41]/15 text-sm px-4 py-2"
-            >
-              {loading ? (t('sending') ?? 'Sending...') : (t('send_code') ?? 'Send code')}
-            </button>
-            <button type="button" onClick={onCancel} className="rounded-button text-sm px-4 py-2">
-              {t('cancel') ?? 'Cancel'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step: code entry */}
-      {step === 'code' && (
-        <div className="flex flex-col gap-2">
-          <label className="text-xs">
-            {t('enter_code_sent') ?? 'Enter the code sent to your email'}
-          </label>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder={t('verification_code') ?? 'Verification code'}
-            className="input-field text-sm"
-            disabled={disabled}
-          />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onVerifyCode}
-              disabled={disabled || code.length === 0}
-              className="rounded-button bg-[#6e5d41]/15 text-sm px-4 py-2"
-            >
-              {loading ? (t('verifying') ?? 'Verifying...') : (t('verify') ?? 'Verify')}
-            </button>
-            {!twoFacEnabled && (
+      <div className="h-14">
+        {/* Step: email entry */}
+        {step === 'email' && (
+          <div className="flex flex-col gap-2 mt-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t('email') ?? 'Email'}
+              className="input-field"
+              disabled={disabled}
+              />
+            <div className="flex gap-4">
+              <button type="button" onClick={onCancel} className="text-sm">
+                {t('cancel') ?? 'Cancel'}
+              </button>
               <button
                 type="button"
-                onClick={onBackToEmail}
-                className="rounded-button text-sm px-4 py-2"
-              >
-                {t('edit_email') ?? 'Edit email'}
+                onClick={onSendCode}
+                disabled={disabled || email.length === 0}
+                className="text-sm disabled:text-white/60"
+                >
+                {loading ? (t('sending') ?? 'Sending...') : (t('send_code') ?? 'Send code')}
               </button>
-            )}
-            <button type="button" onClick={onCancel} className="rounded-button text-sm px-4 py-2">
-              {t('cancel') ?? 'Cancel'}
-            </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Step: code entry */}
+        {step === 'code' && (
+          <div className="flex flex-col gap-2 mt-2">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder={t('verification_code') ?? 'Verification code'}
+              className="input-field"
+              disabled={disabled}
+              />
+            <div className="flex gap-4">
+              {!twoFacEnabled && (
+                <button type="button" onClick={onBackToEmail} className="text-sm pr-4">
+                  {t('edit_email') ?? 'Edit email'}
+                </button>
+              )}
+              <button type="button" onClick={onCancel} className="text-sm">
+                {t('cancel') ?? 'Cancel'}
+              </button>
+              <button
+                type="button"
+                onClick={onVerifyCode}
+                disabled={disabled || code.length === 0}
+                className="text-sm disabled:text-white/60"
+                >
+                {loading ? (t('verifying') ?? 'Verifying...') : (t('verify') ?? 'Verify')}
+              </button>
+            </div>
+          </div>
+        )}
+        {credsError && <p className="tsc-error-message">{t(credsError)}</p>}
+        {error && <p className="tsc-error-message text-sm">{t(error)}</p>}
+      </div>
     </div>
   );
 }

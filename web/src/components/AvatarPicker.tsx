@@ -271,7 +271,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
         {imgLoading && <LoadingSpinner />}
       </div>
 
-      <div className="flex flex-col items-center mt-2">
+      <div className="flex flex-col items-center mt-4">
         <div className="w-full flex justify-center">
           <div className="relative inline-flex items-center">
             <div className="flex min-w-[200px] justify-center gap-2 items-center p-2 rounded-full border-white hover:border-[#786647] bg-white/10 text-white">
@@ -297,7 +297,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
               disabled={!isElevated || randomBusy}
               aria-label={t('random_cat')}
               title={t('random_cat')}
-              className="absolute left-full top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
+              className="absolute left-full top-1/2 -translate-y-1/2 p-2 ml-2 rounded-full bg-white/10"
             >
               <Dice5 className="h-5 w-5" />
             </button>

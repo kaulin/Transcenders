@@ -22,6 +22,7 @@ const Profile = () => {
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [language, setLanguage] = useState(user?.lang ?? '');
+  const [deleteUser, setDeleteUser] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,7 +95,7 @@ const Profile = () => {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
           <div className="absolute inset-0 backdrop-blur-xs transition-opacity duration-200" />
 
-          <div className="relative z-10 w-full max-w-2xl p-6 rounded-full bg-[#e29760]/55 backdrop-blur-xs border border-white/60 shadow-md shadow-white">
+          <div className="relative z-10 w-full max-w-2xl p-6 rounded-xl bg-[#e29760]/35 backdrop-blur-xs border-3 border-white/60 ">
             <ElevationSection />
           </div>
         </div>
@@ -106,7 +107,7 @@ const Profile = () => {
         <AvatarPicker className="flex flex-col items-center" />
       </div>
       <div
-        className={`box-section ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center gap-10`}
+        className={`box-section ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center gap-12`}
       >
         {/* User Info section */}
         <div className="w-full max-w-md">
@@ -178,20 +179,38 @@ const Profile = () => {
           </select>
         </div>
         {error && <p className="tsc-error-message">{t(error)}</p>}
-        <button
-          onClick={handleConfirm}
-          className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase"
-          disabled={!isElevated}
-        >
-          {t('confirm')}
-        </button>
-        <button
-          onClick={handleDelete}
-          className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase"
-          disabled={!isElevated}
-        >
-          {t('delete_account')}
-        </button>
+        <div className="flex flex-col gap-4 items-center">
+          <button
+            onClick={handleConfirm}
+            className="rounded-button w-[282px] bg-[#6e5d41]/15 font-fascinate uppercase"
+            disabled={!isElevated}
+          >
+            {t('confirm')}
+          </button>
+          <button
+            onClick={() => setDeleteUser(true)}
+            className="rounded-button w-[282px] bg-[#6e5d41]/15 font-fascinate uppercase"
+            disabled={!isElevated}
+          >
+            {t('delete_account')}
+          </button>
+
+          <div className="h-6 w-full text-sm">
+            {deleteUser && (
+              <div className="flex flex-col items-center gap-2">
+                <p className="">{t('confirm_acc_del')}</p>
+                <div className="flex gap-4">
+                  <button onClick={handleDelete} >
+                    {t('yes')}
+                  </button>
+                  <button onClick={() => setDeleteUser(false)} >
+                    {t('no')}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
