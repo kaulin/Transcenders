@@ -284,11 +284,11 @@ function TournamentPage() {
       case 1:
         return t('firstRound');
       case 2:
-        return t('secondRound');
+        return t('second_round');
       case 3:
         return t('final');
       default:
-        return t('tournamentComplete');
+        return t('tournament_complete');
     }
   };
 
@@ -299,7 +299,7 @@ function TournamentPage() {
           {/*Tournament Title*/}
           <div className="text-center mb-4">
             <h1 className="text-3xl sm:text-3xl lg:text-5xl text-[#fff] font-fascinate">
-              {t('pawPawPongTournament', 'Paw-Paw Pong Tournament')}
+              {t('paw_paw_pong_tournament', 'Paw-Paw Pong Tournament')}
             </h1>
             <h2 className="text-2xl sm:text-2xl lg:text-4xl font-bold text-white pt-4 mb-2">
               {getMatchTitle()}
@@ -389,13 +389,13 @@ function TournamentPage() {
               {gameStatus === GameStatus.WAITING && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c]/50 text-white">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center px-4">
-                    {t('pressSpaceToStart')}
+                    {t('press_space_to_start')}
                   </div>
                   <div className="text-sm sm:text-base lg:text-lg mb-2 text-center px-4">
-                    {t('player1Controls')}
+                    {t('player_1_controls')}
                   </div>
                   <div className="text-sm sm:text-base lg:text-lg text-center px-4">
-                    {t('player2Controls')}
+                    {t('player_2_controls')}
                   </div>
                 </div>
               )}
@@ -405,17 +405,19 @@ function TournamentPage() {
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 pointer-events-auto">
                     {t('paused')}
                   </div>
-                  <div className="text-sm sm:text-base lg:text-lg">{t('pressSpaceToResume')}</div>
+                  <div className="text-sm sm:text-base lg:text-lg">
+                    {t('press_space_to_resume')}
+                  </div>
                 </div>
               )}
 
               {gameStatus === GameStatus.ENDED && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c]/50 text-white">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center px-4">
-                    {t('playerWins', '{{player}} Wins!', { player: winner })}
+                    {t('player_wins', '{{player}} Wins!', { player: winner })}
                   </div>
                   <div className="text-lg sm:text-xl mb-8 text-center px-4">
-                    {t('clawsomeVictory')}
+                    {t('clawsome_victory')}
                   </div>
                 </div>
               )}
@@ -435,7 +437,9 @@ function TournamentPage() {
                   }
                 }}
               >
-                {tournamentState.currentMatch === 3 ? t('backToHome') : t('continueToNextRound')}
+                {tournamentState.currentMatch === 3
+                  ? t('back_to_home')
+                  : t('continue_to_next_round')}
               </button>
             ) : gameStatus !== GameStatus.ENDED ? (
               <button
