@@ -68,6 +68,7 @@ services:
 
   web:
     container_name: web
+    user: ${HOST_UID:-1000}
     image: node:22-alpine
     working_dir: /workspace
     command: sh -c "npm run dev:frontend"
@@ -100,7 +101,7 @@ services:
       - '80:80'
       - '443:443'
     volumes:
-      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - ./infra/caddy/Caddyfile.docker:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped
@@ -109,9 +110,9 @@ services:
     image: busybox
     env_file:
       - .env
-    entrypoint:
-      [
+    entrypoint: [
         'sh',
+        node_modules/toad-cache
         '-c',
         'mkdir -p /workspace/node_modules && chown ${HOST_UID}:${HOST_GID} /workspace/node_modules',
       ]

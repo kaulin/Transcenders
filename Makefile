@@ -59,6 +59,50 @@ restart: stop dev
 .PHONY: dev dev-local dev-web dev-backend dev-compiled dev-logs dev-stop dev-restart
 
 ################################################################################
+# DEV CERTS
+################################################################################
+# Windows (Admin PowerShell) trust:
+#		certutil -addstore -f Root caddy-docker-root.crt
+#		certutil -addstore -f Root caddy-local-root.crt
+#
+# Windows untrust:
+#		certutil -delstore Root "Caddy Local Authority - 2025 ECC Root"
+#		certutil -delstore CA   "Caddy Local Authority - ECC Intermediate"
+################################################################################
+
+CA_DOCKER_CERT=./caddy-docker-root.crt
+CA_LOCAL_CERT=./caddy-local-root.crt
+CA_DOCKER_ROOT=/data/caddy/pki/authorities/local/root.crt
+CA_LOCAL_ROOT=./infra/caddy/caddy-data/pki/authorities/local/root.crt
+
+get-ca:
+	@echo "Exporting dev CA roots (docker + local if present)..."
+	-@docker cp caddy:$(CA_DOCKER_ROOT) $(CA_DOCKER_CERT)
+	-@cp "$(CA_LOCAL_ROOT)" "$(CA_LOCAL_CERT)"
+	@echo "Exported (if present): $(CA_DOCKER_CERT) $(CA_LOCAL_CERT)"
+	@echo "Next: 'make trust-ca' to install; or on Windows use Admin PowerShell:"
+	@echo "    certutil -addstore -f Root $(CA_DOCKER_CERT)"
+	@echo "    certutil -addstore -f Root $(CA_LOCAL_CERT)"
+
+trust-ca:
+	@OS=$$(uname); \
+	echo "Installing CA(s) on $$OS..."; \
+	if [ "$$OS" = "Darwin" ]; then \
+		[ -f "$(CA_LOCAL_CERT)" ]  && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$(CA_LOCAL_CERT)" || true; \
+		[ -f "$(CA_DOCKER_CERT)" ] && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$(CA_DOCKER_CERT)" || true; \
+	elif [ "$$OS" = "Linux" ]; then \
+		[ -f "$(CA_LOCAL_CERT)" ]  && sudo cp "$(CA_LOCAL_CERT)"  /usr/local/share/ca-certificates/ || true; \
+		[ -f "$(CA_DOCKER_CERT)" ] && sudo cp "$(CA_DOCKER_CERT)" /usr/local/share/ca-certificates/ || true; \
+		sudo update-ca-certificates || true; \
+	else \
+		echo "Windows detected. Use elevated PowerShell:"; \
+		[ -f "$(CA_LOCAL_CERT)" ]  && echo "  certutil -addstore -f Root $$(pwd)\\$(notdir $(CA_LOCAL_CERT))"; \
+		[ -f "$(CA_DOCKER_CERT)" ] && echo "  certutil -addstore -f Root $$(pwd)\\$(notdir $(CA_DOCKER_CERT))"; \
+	fi
+	@echo "✅ Done. Restart your browser."
+	-@rm -f $(CA_DOCKER_CERT) $(CA_LOCAL_CERT)
+
+################################################################################
 # BUILD & TESTING
 ################################################################################
 
