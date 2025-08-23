@@ -1,18 +1,17 @@
-/**
- * Cross-platform environment variable access for both Node.js and browser
- */
-export function getEnvVar(name: string, fallback: string): string {
-  try {
-    const viteEnv = (import.meta as any).env;
-    if (viteEnv) {
-      const v = viteEnv[`VITE_${name}`] ?? viteEnv[name];
-      if (v !== undefined) return v;
-    }
-  } catch {}
+export function getEnvVar(key: string, fallback: string): string {
+  // Vite/browser build: import.meta.env is available
+  const viteEnv = (typeof import.meta !== 'undefined' && (import.meta as any).env) ?? {};
 
-  if (typeof process !== 'undefined' && process.env) {
-    const v = process.env[`${name}`] ?? process.env[name];
-    if (v !== undefined) return v;
+  // Prefer Vite vars in the browser (must be prefixed with VITE_)
+  const viteKey = `VITE_${key}`;
+  if (viteEnv && viteKey in viteEnv && viteEnv[viteKey]) {
+    return String(viteEnv[viteKey]);
   }
+
+  // Node / service side
+  if (typeof process !== 'undefined' && process.env && key in process.env && process.env[key]) {
+    return String(process.env[key]);
+  }
+
   return fallback;
 }

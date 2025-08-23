@@ -1,66 +1,58 @@
-{
-  email you@transcenders.online
-  acme_ca https://acme.zerossl.com/v2/DV90
+(routing) {
+  handle_path /api/* {
+    @auth path /auth*
+    @users path /users* /friendships* /avatars* /admin* /media*
+    @score path /score*
+    
+    reverse_proxy @auth auth-service:3000
+    reverse_proxy @users user-service:3000
+    reverse_proxy @score score-service:3000
+
+    # default (404) if no match:
+    respond "Unknown API route" 404
+  }
 }
 
-# -------- Frontend (must exist so Caddy gets a cert for app.*) --------
+(logging) {
+  log {
+    output file /var/log/caddy.log
+    format json
+  }
+}
+
+# serve on app.transcenders.online domain
 app.transcenders.online {
-  log {
-    output stdout
-    format json
-  }
-  # less noise on logs
-  @static path_regexp \.(js|css|png|jpe?g|gif|ico|woff2?|otf|ttf|svg|map)$
-  log_skip @static
+  import logging
+  @skip path_regexp \.(js|css|png|jpe?g|gif|ico|woff|otf|ttf|eot|svg|txt|pdf|docx?|xlsx?)$
+  log_skip @skip
   
-  root * /usr/share/caddy
-  try_files {path} /index.html
-  file_server
+  tls prod@transcenders.online {
+    ca https://acme.zerossl.com/v2/DV90
+  }
+  
   encode gzip zstd
+  
+  import routing
+  
+  handle {
+    root * /usr/share/caddy
+    try_files {path} /index.html
+    file_server
+  }
 }
 
-# -------- API with CORS on Caddy --------
-api.transcenders.online {
-  log {
-    output stdout
-    format json
-  } 
-  # don’t log CORS preflights
-  log_skip @preflight_app
+# Serve on localhost
+localhost {
+  import logging
+  
+  tls internal
 
-  # Allow only the SPA origin
-  @from_app header Origin https://app.transcenders.online
+   encode gzip zstd
 
-  # --- Preflight (OPTIONS) ---
-  @preflight_app {
-    method OPTIONS
-    header Origin https://app.transcenders.online
-    header Access-Control-Request-Method *
+  import routing
+
+    # --- Fallback: everything else to Vite dev server ---
+  handle {
+    reverse_proxy /* 127.0.0.1:5173    
   }
-  handle @preflight_app {
-    header {
-      Access-Control-Allow-Origin {http.request.header.Origin}
-      Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-      Access-Control-Allow-Headers {http.request.header.Access-Control-Request-Headers}
-      Access-Control-Allow-Credentials true
-      Access-Control-Max-Age 86400
-      Vary "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
-    }
-    respond "" 204
-  }
-
-  # --- Actual requests: reflect allowed origin ---
-  header @from_app {
-    Access-Control-Allow-Origin {http.request.header.Origin}
-    Access-Control-Allow-Credentials true
-    Vary Origin
-  }
-
-  # --- Routing ---
-  @auth  path /auth* /2fa*
-  @user  path /users* /avatars* /media* /admin* /friendships*
-  @score path /score*
-  reverse_proxy @auth  auth-service:3000
-  reverse_proxy @user  user-service:3000
-  reverse_proxy @score score-service:3000
 }
