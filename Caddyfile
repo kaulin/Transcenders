@@ -1,56 +1,34 @@
 (logging) {
-  log {
-    output file /var/log/caddy.log
-    format json
-  }
+	log {
+		output file /var/log/caddy.log
+		format json
+	}
 }
 
 # serve on app.transcenders.online domain
 app.transcenders.online {
-  import logging
-  @skip path_regexp \.(js|css|png|jpe?g|gif|ico|woff|otf|ttf|eot|svg|txt|pdf|docx?|xlsx?)$
-  log_skip @skip
+	import logging
+	@skip path_regexp \.(js|css|png|jpe?g|gif|ico|woff|otf|ttf|eot|svg|txt|pdf|docx?|xlsx?)$
+	log_skip @skip
 
-  tls prod@transcenders.online {
-    ca https://acme.zerossl.com/v2/DV90
-  }
+	tls prod@transcenders.online {
+		ca https://acme.zerossl.com/v2/DV90
+	}
 
-  encode gzip zstd
-  
-  handle_path /api/* {
-    @auth path /auth*
-    @users path /users* /friendships* /avatars* /admin* /media*
-    @score path /score*
-    reverse_proxy @users user-service:3000
-    reverse_proxy @auth auth-service:3000
-    reverse_proxy @score score-service:3000
-  }
+	encode gzip zstd
 
-  handle {
-    root * /usr/share/caddy
-    try_files {path} /index.html
-    file_server
-  }
-}
+	handle_path /api/* {
+		@auth path /auth*
+		@users path /users* /friendships* /avatars* /admin* /media*
+		@score path /score*
+		reverse_proxy @users user-service:3000
+		reverse_proxy @auth auth-service:3000
+		reverse_proxy @score score-service:3000
+	}
 
-# Serve on localhost
-localhost {
-  import logging
-
-  tls internal
-
-   encode gzip zstd
-
-  handle_path /api/* {
-    @auth path /auth*
-    @users path /users* /friendships* /avatars* /admin* /media*
-    @score path /score*
-
-    reverse_proxy @users user-service:3001
-    reverse_proxy @auth auth-service:3002
-    reverse_proxy @score score-service:3003
-  }
-
-  reverse_proxy /* web:5173
-  
+	handle {
+		root * /usr/share/caddy
+		try_files {path} /index.html
+		file_server
+	}
 }

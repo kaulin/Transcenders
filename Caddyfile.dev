@@ -1,0 +1,29 @@
+{
+	local_certs
+}
+
+(logging) {
+	log {
+		output file /var/log/caddy.log
+		format json
+	}
+}
+
+# Serve on localhost
+localhost {
+	import logging
+
+	encode gzip zstd
+
+	handle_path /api/* {
+		@auth path /auth*
+		@users path /users* /friendships* /avatars* /admin* /media*
+		@score path /score*
+
+		reverse_proxy @users user-service:3001
+		reverse_proxy @auth auth-service:3002
+		reverse_proxy @score score-service:3003
+	}
+
+	reverse_proxy /* web:5173
+}
