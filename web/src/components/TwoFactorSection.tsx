@@ -1,5 +1,4 @@
 import { ApiClient } from '@transcenders/api-client';
-import { AUTH_ROUTES, getEnvVar } from '@transcenders/contracts';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -55,13 +54,14 @@ export default function TwoFactorSection() {
   };
   const end = () => setLoading(false);
 
-  function onConnectGoogle() {
+  async function onGoogleConnect() {
     if (!isElevated) return;
     setError(null);
-    const authUrl = getEnvVar('AUTH_SERVICE_URL', '');
-    const googleEnable = AUTH_ROUTES.GOOGLE_AUTH.replace(':flow', 'enable');
-    window.location.href = `${authUrl}${googleEnable}`;
+    await ApiClient.auth.googleAuthConnect();
+    const googleLink = await ApiClient.auth.googleAuthConnect();
+    window.location.href = googleLink.url;
   }
+
   function onStartEmail2FA() {
     if (!isElevated) return;
     setError(null);
@@ -133,7 +133,7 @@ export default function TwoFactorSection() {
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={onConnectGoogle}
+          onClick={onGoogleConnect}
           disabled={disabled || googleLinked}
           className="rounded-button inline-flex items-center text-sm px-4 py-2"
           >

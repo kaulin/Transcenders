@@ -1,5 +1,5 @@
 import { ApiClient } from '@transcenders/api-client';
-import { ERROR_CODES, getEnvVar, ServiceError } from '@transcenders/contracts';
+import { ERROR_CODES, ServiceError } from '@transcenders/contracts';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -52,8 +52,8 @@ const Login = () => {
 
   async function handleGoogleLogin(e: React.FormEvent) {
     e.preventDefault();
-    const authGoogleLoginURL = getEnvVar('AUTH_SERVICE_URL', '');
-    window.location.href = `${authGoogleLoginURL}/auth/google/login`;
+    const googleLink = await ApiClient.auth.googleAuthLogin();
+    window.location.href = googleLink.url;
   }
 
   async function handleLogin(e: React.FormEvent) {
