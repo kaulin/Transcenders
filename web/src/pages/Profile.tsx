@@ -130,7 +130,7 @@ const Profile = () => {
           />
         </div>
         <div className="w-full max-w-md">
-          <label className="fascinate-label">{t('two-factor_auth')}</label>
+          <label className="fascinate-label">{t('two_fac_auth')}</label>
           <TwoFactorSection />
         </div>
         <div className="w-full max-w-md">

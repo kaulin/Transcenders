@@ -100,7 +100,7 @@ function MatchPage() {
           {/* Game Title */}
           <div className="text-center mb-4">
             <h1 className="text-3xl sm:text-3xl lg:text-5xl text-[#fff] font-fascinate">
-              {t('pawPawPong')}
+              {t('paw_paw_pong')}
             </h1>
           </div>
 
@@ -185,13 +185,13 @@ function MatchPage() {
               {gameStatus === GameStatus.WAITING && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c]/50 text-white">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center px-4">
-                    {t('pressSpaceToStart')}
+                    {t('press_space_to_start')}
                   </div>
                   <div className="text-sm sm:text-base lg:text-lg mb-2 text-center px-4">
-                    {t('player1Controls')}
+                    {t('player_1_controls')}
                   </div>
                   <div className="text-sm sm:text-base lg:text-lg text-center px-4">
-                    {t('player2Controls')}
+                    {t('player_2_controls')}
                   </div>
                 </div>
               )}
@@ -201,17 +201,19 @@ function MatchPage() {
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
                     {t('paused')}
                   </div>
-                  <div className="text-sm sm:text-base lg:text-lg">{t('pressSpaceToResume')}</div>
+                  <div className="text-sm sm:text-base lg:text-lg">
+                    {t('press_space_to_resume')}
+                  </div>
                 </div>
               )}
 
               {gameStatus === GameStatus.ENDED && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c2410c]/50 text-white">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center px-4">
-                    {t('playerWins', '{{player}} Wins!', { player: winner })}
+                    {t('player_wins', '{{player}} Wins!', { player: winner })}
                   </div>
                   <div className="text-lg sm:text-xl mb-8 text-center px-4">
-                    {t('clawsomeVictory')}
+                    {t('clawsome_victory')}
                   </div>
                 </div>
               )}
@@ -227,13 +229,13 @@ function MatchPage() {
                   disabled={isProcessingGameEnd}
                   onClick={handleNewGame}
                 >
-                  {t('startNewGame')}
+                  {t('start_new_game')}
                 </button>
                 <button
                   className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-sm sm:text-lg"
                   onClick={() => navigate('/')}
                 >
-                  {t('backToHome')}
+                  {t('back_to_home')}
                 </button>
               </div>
             ) : (
