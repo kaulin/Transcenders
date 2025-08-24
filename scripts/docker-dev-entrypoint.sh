@@ -21,5 +21,9 @@ done
 
 echo "✅ Dependencies are ready! Starting ${SERVICE_NAME}..."
 
+# package-service case
+if [[ $SERVICE_NAME == package-service ]]; then
+  cd /workspace && exec npx turbo dev:package
+fi
 # Start the service
 exec npx tsx watch --inspect=0.0.0.0:${DEBUG_PORT} src/server.ts

@@ -66,6 +66,15 @@ services:
         DEBUG_PORT: 9229
     <<: *service-base
 
+  package-service:
+    container_name: package-service
+    image: package-service:hive
+    build:
+      <<: *service-build
+      args:
+        SERVICE_NAME: package-service
+    <<: *service-base
+
   web:
     container_name: web
     user: ${HOST_UID:-1000}
