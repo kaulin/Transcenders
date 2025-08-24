@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "tsc --watch --preserveWatchOutput",
+    "dev:package": "tsc --watch --preserveWatchOutput",
     "build": "tsc",
     "build:package": "tsc",
     "lint": "eslint src",
