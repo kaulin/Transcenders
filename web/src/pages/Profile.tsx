@@ -40,7 +40,7 @@ const Profile = () => {
     setDeleteUser(false);
     setSuccess(null);
     setError(null);
-    
+
     if (!user) return;
 
     if (password !== repeatPassword) {
@@ -60,9 +60,8 @@ const Profile = () => {
         await ApiClient.auth.changePassword(user.id, password);
         window.dispatchEvent(new Event('userCredsChanged'));
       }
-      
+
       setSuccess(t('changes_saved'));
-      
     } catch (err: unknown) {
       if (err instanceof ServiceError) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -76,19 +75,18 @@ const Profile = () => {
     setDeleteUser(false);
     setSuccess(null);
     setError(null);
-    
+
     if (!user) return;
 
     try {
       await ApiClient.user.deleteUser(user.id);
-      
+
       setSuccess(t('deletion_successful'));
 
       setTimeout(() => {
         setUser(null);
         navigate('/login');
       }, 2000);
-      
     } catch (err: unknown) {
       if (err instanceof ServiceError) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -192,7 +190,7 @@ const Profile = () => {
             onClick={handleConfirm}
             className="rounded-button w-[282px] bg-[#6e5d41]/15 font-fascinate uppercase"
             disabled={!isElevated}
-            >
+          >
             {t('confirm')}
           </button>
           <button
@@ -203,7 +201,7 @@ const Profile = () => {
             }}
             className="rounded-button w-[282px] bg-[#6e5d41]/15 font-fascinate uppercase"
             disabled={!isElevated}
-            >
+          >
             {t('delete_account')}
           </button>
 
@@ -214,12 +212,8 @@ const Profile = () => {
               <div className="flex flex-col items-center gap-2">
                 <p className="tsc-info-message">{t('confirm_acc_del')}</p>
                 <div className="flex gap-4">
-                  <button onClick={handleDelete} >
-                    {t('yes')}
-                  </button>
-                  <button onClick={() => setDeleteUser(false)} >
-                    {t('no')}
-                  </button>
+                  <button onClick={handleDelete}>{t('yes')}</button>
+                  <button onClick={() => setDeleteUser(false)}>{t('no')}</button>
                 </div>
               </div>
             )}
