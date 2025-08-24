@@ -29,7 +29,7 @@ services:
     image: user-service:hive
     ports:
       - '3001:3001'
-      - '9228:9228'
+      - '9227:9227'
     build:
       <<: *service-build
       args:
@@ -43,7 +43,7 @@ services:
     image: auth-service:hive
     ports:
       - '3002:3002'
-      - '9227:9227'
+      - '9228:9228'
     build:
       <<: *service-build
       args:
