@@ -130,14 +130,13 @@ export default function TwoFactorSection() {
   return (
     <div className="w-full max-w-sm flex flex-col gap-2">
       {/* Google + Email 2FA buttons */}
-      {!hasPassword && <p className="tsc-info-message">{t('set_password_before_disable')}</p>}
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={onConnectGoogle}
           disabled={disabled || googleLinked}
           className="rounded-button inline-flex items-center text-sm px-4 py-2"
-        >
+          >
           {/* Simple Google icon (inline) */}
           <svg
             className="w-4 h-4 mr-2"
@@ -145,12 +144,12 @@ export default function TwoFactorSection() {
             xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"
             viewBox="0 0 18 19"
-          >
+            >
             <path
               fillRule="evenodd"
               d="M8.842 18.083a8.8 8.8 0 0 1-8.65-8.948 8.841 8.841 0 0 1 8.8-8.652h.153a8.464 8.464 0 0 1 5.7 2.257l-2.193 2.038A5.27 5.27 0 0 0 9.09 3.4a5.882 5.882 0 0 0-.2 11.76h.124a5.091 5.091 0 0 0 5.248-4.057L14.3 11H9V8h8.34c.066.543.095 1.09.088 1.636-.086 5.053-3.463 8.449-8.4 8.449l-.186-.002Z"
               clipRule="evenodd"
-            />
+              />
           </svg>
           {t('google') ?? 'Google'}
           <svg
@@ -160,12 +159,12 @@ export default function TwoFactorSection() {
             strokeWidth={1.5}
             stroke="currentColor"
             className={`size-6 ${googleLinked ? 'fill-green-700' : 'fill-red-700'} ml-2`}
-          >
+            >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
+              />
           </svg>
         </button>
 
@@ -174,7 +173,7 @@ export default function TwoFactorSection() {
           onClick={!twoFacEnabled ? onStartEmail2FA : onDisable2FA}
           disabled={disabled}
           className="rounded-button inline-flex items-center text-sm px-4 py-2"
-        >
+          >
           {twoFacEnabled ? (t('disable_2fa') ?? 'Disable 2FA') : (t('enable_2fa') ?? 'Enable 2FA')}
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -183,12 +182,12 @@ export default function TwoFactorSection() {
             strokeWidth={1.5}
             stroke="currentColor"
             className={`size-6 ${twoFacEnabled ? 'fill-green-700' : 'fill-red-700'} ml-2`}
-          >
+            >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
+              />
           </svg>
         </button>
       </div>
@@ -253,8 +252,9 @@ export default function TwoFactorSection() {
             </div>
           </div>
         )}
+        {!hasPassword && <p className="tsc-info-message">{t('set_password_before_disable')}</p>}
         {credsError && <p className="tsc-error-message">{t(credsError)}</p>}
-        {error && <p className="tsc-error-message text-sm">{t(error)}</p>}
+        {error && <p className="tsc-error-message">{t(error)}</p>}
       </div>
     </div>
   );
