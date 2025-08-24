@@ -25,14 +25,10 @@ const GoalCharts = () => {
             <linearGradient id="scored" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#a7d4373c" stopOpacity={1} />
               <stop offset="95%" stopColor="#fffb82" stopOpacity={0.2} />
-              {/* <stop offset="5%" stopColor="#ff8ba860" stopOpacity={1} />
-                <stop offset="95%" stopColor="#ff8bcb82" stopOpacity={0.2} /> */}
             </linearGradient>
             <linearGradient id="conceded" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#5d6b2f52" stopOpacity={0.6} />
               <stop offset="95%" stopColor="#5d6b2f52" stopOpacity={0} />
-              {/* <stop offset="5%" stopColor="#741c4d" stopOpacity={0.6} />
-                <stop offset="95%" stopColor="#741c4d" stopOpacity={0} /> */}
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#ffffff33" />
