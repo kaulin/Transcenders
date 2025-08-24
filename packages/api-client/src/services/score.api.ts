@@ -5,6 +5,7 @@ import {
   SCORE_ROUTES,
   scoreArraySchema,
   ScoreSchema,
+  StatsSchema,
   SERVICE_URLS,
   toQueryString,
 } from '@transcenders/contracts';
@@ -55,6 +56,6 @@ export class ScoreApiClient extends TypedApiClient {
    */
   static async getStatsForUser(userId: number) {
     const endpoint = SCORE_ROUTES.STATS_BY_ID.replace(':id', userId.toString());
-    return this.callScoreService(endpoint, scoreArraySchema);
+    return this.callScoreService(endpoint, StatsSchema);
   }
 }
