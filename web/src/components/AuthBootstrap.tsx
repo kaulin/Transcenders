@@ -7,43 +7,32 @@ import { getTokens } from '../utils/authTokens';
 
 export default function AuthBootstrap({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
-  const { setAccessToken, clearTokens, setTokens } = useAuth();
+  const { clearTokens, setTokens } = useAuth();
   const { setUser } = useUser();
 
   useEffect(() => {
     async function autoLogin() {
-      const { accessToken, refreshToken } = getTokens();
-      if (accessToken) {
-        try {
-          setAccessToken(accessToken);
-          const { userId } = decodeToken(accessToken);
-          const user = await ApiClient.user.getUserById(userId);
-          setUser(user);
-          setReady(true);
-          return;
-        } catch {
-          // fall through to refresh if available
-        }
-      }
+      const { refreshToken } = getTokens();
 
       if (refreshToken) {
         try {
           const tokens = await ApiClient.auth.refreshToken(refreshToken);
-          setTokens(tokens);
           const { userId } = decodeToken(tokens.accessToken);
           const user = await ApiClient.user.getUserById(userId);
           setUser(user);
-          setReady(true);
-          return;
+          setTokens(tokens);
         } catch {
           clearTokens();
+        } finally {
+          setReady(true);
         }
+      } else {
+        setReady(true);
       }
-      setReady(true);
     }
 
     autoLogin();
-  }, [setAccessToken, clearTokens, setUser, setTokens]);
+  }, [clearTokens, setUser, setTokens]);
 
   if (!ready) return null;
   return <>{children}</>;
