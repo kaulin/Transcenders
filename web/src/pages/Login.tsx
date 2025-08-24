@@ -24,7 +24,7 @@ const Login = () => {
       const googleCode = sp.get('code');
 
       if (errorLocaleKey) {
-        setError(t(errorLocaleKey ?? 'something_went_wrong'));
+        setError(errorLocaleKey ?? 'something_went_wrong');
         window.history.replaceState({}, '', window.location.pathname);
         return;
       }
@@ -41,14 +41,14 @@ const Login = () => {
           await loginWithTokens(tokens);
           navigate('/', { replace: true });
         } catch (err: any) {
-          setError(t(err?.localeKey ?? 'google_auth_failed'));
+          setError(err?.localeKey ?? 'google_auth_failed');
           window.history.replaceState({}, '', window.location.pathname);
         }
       }
     }
 
     handleGoogleAuthFromParams();
-  }, [navigate, t, loginWithTokens]);
+  }, [navigate, loginWithTokens]);
 
   async function handleGoogleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -66,11 +66,11 @@ const Login = () => {
       if (err instanceof ServiceError) {
         if (err.codeOrError === ERROR_CODES.AUTH.TWO_FACTOR_CODE_SENT) {
           setNeedsCode(true);
-          setError(t(err.localeKey ?? 'two_fac_login_required'));
+          setError(err.localeKey ?? 'two_fac_login_required');
           return;
         }
       }
-      setError(t(err?.localeKey) || t('something_went_wrong'));
+      setError(err?.localeKey ?? 'something_went_wrong');
     }
   }
 
@@ -107,7 +107,7 @@ const Login = () => {
           disabled={!needsCode}
         />
 
-        <div className="h-4">{error && <p className="tsc-error-message">{error}</p>}</div>
+        <div className="h-4">{error && <p className="tsc-error-message">{t(error)}</p>}</div>
 
         <button type="submit" className="mt-4">
           {t('log_in')}
