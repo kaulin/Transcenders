@@ -62,12 +62,12 @@ export class DeviceUtils {
     return 'unknown';
   }
 
-  static isSameDeviceAndLocation(stored: DeviceInfo, current: DeviceInfo): boolean {
-    return this.isSameDevice(stored, current) && stored.ipAddress === current.ipAddress;
+  static async isSameDeviceAndLocation(stored: DeviceInfo, current: DeviceInfo): Promise<boolean> {
+    return (await this.isSameDevice(stored, current)) && stored.ipAddress === current.ipAddress;
   }
 
-  static isSameDevice(stored: DeviceInfo, current: DeviceInfo): boolean {
-    const comparison = bcrypt.compareSync(stored.deviceFingerprint, current.deviceFingerprint);
+  static async isSameDevice(stored: DeviceInfo, current: DeviceInfo): Promise<boolean> {
+    const comparison = await bcrypt.compare(current.deviceFingerprint, stored.deviceFingerprint);
     return comparison;
   }
 
