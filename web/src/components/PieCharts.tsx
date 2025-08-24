@@ -1,5 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTranslation } from 'react-i18next';
+import { ApiClient } from '@transcenders/api-client';
 
 const COLORS = ['#a7d4373c', '#5d6b2f52'];
 
@@ -22,7 +23,7 @@ const PieCharts = () => {
   ];
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full max-w-[400px]">
       {[
         { title: t('mode'), data: matchTypeData },
         { title: t('one_v_one'), data: singleMatchData },
