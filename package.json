@@ -27,7 +27,7 @@
     "clean": "turbo clean && find . -name 'tsconfig.tsbuildinfo' -delete",
     "start": "turbo start",
     "start:backend": "turbo start --filter='!web'",
-    "test:env": "scripts/env-gen.sh local && dotenv -e .env --",
+    "test:env": "scripts/env-gen.js local && dotenv -e .env --",
     "test": "npm run test:env tsx scripts/tests.ts",
     "test:api": "npm run test:env tsx scripts/api-client-test.ts",
     "reglogin": "tsx scripts/reglogin.ts",
