@@ -71,6 +71,8 @@ export const AUTH_ROUTES = {
   STEPUP: '/auth/:id/stepup',
   // GET - get user creds info UserCredentialsInfo format
   CREDS: '/auth/:id/creds',
+  // GET - Get authenticated user's profile (validates token)
+  ME: '/auth/me',
 
   // GET /auth/google/:flow - Redirects to Google OAuth with state/flow
   GOOGLE_AUTH: '/auth/google/:flow',

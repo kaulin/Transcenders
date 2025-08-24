@@ -13,7 +13,7 @@ import {
   StepupRequest,
   UserIdParam,
 } from '@transcenders/contracts';
-import { DeviceUtils, ENV } from '@transcenders/server-utils';
+import { DeviceUtils, ENV, TokenValidator } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from '../services/auth.service.js';
 
@@ -108,5 +108,23 @@ export class AuthController {
 
     const result = await AuthService.getUserCredsInfo(userId);
     return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  // #TODO validation middleware later
+  static async getCurrentUser(request: FastifyRequest, reply: FastifyReply) {
+    const authHeader = request.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return ApiErrorHandler.error(reply, ERROR_CODES.AUTH.INVALID_CREDENTIALS, 'get current user');
+    }
+    const accessToken = authHeader.substring(7);
+    let userId: number;
+    try {
+      const payload = TokenValidator.verifyAccessToken(accessToken);
+      userId = payload.userId;
+      const result = await AuthService.getCurrentUser(userId);
+      return ApiErrorHandler.handleServiceResult(reply, result);
+    } catch (error: any) {
+      ApiErrorHandler.errorFromFastify(reply, error, 'get current user');
+    }
   }
 }

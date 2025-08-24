@@ -79,6 +79,11 @@ export class AuthApiClient extends TypedApiClient {
     return this.callAuthService(endpoint, userCredentialsInfoSchema);
   }
 
+  static async getCurrentUser() {
+    const endpoint = `${AUTH_ROUTES.ME}`;
+    return this.callAuthService(endpoint, userSchema);
+  }
+
   static async refreshToken(refreshToken: string) {
     const endpoint = `${AUTH_ROUTES.REFRESH}`;
     const options: ApiCallOptions = {
