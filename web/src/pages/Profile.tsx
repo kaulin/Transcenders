@@ -23,7 +23,7 @@ const Profile = () => {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [language, setLanguage] = useState(user?.lang ?? '');
   const [deleteUser, setDeleteUser] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -37,7 +37,10 @@ const Profile = () => {
   }, [user]);
 
   const handleConfirm = async () => {
+    setDeleteUser(false);
+    setSuccess(null);
     setError(null);
+    
     if (!user) return;
 
     if (password !== repeatPassword) {
@@ -57,6 +60,9 @@ const Profile = () => {
         await ApiClient.auth.changePassword(user.id, password);
         window.dispatchEvent(new Event('userCredsChanged'));
       }
+      
+      setSuccess(t('changes_saved'));
+      
     } catch (err: unknown) {
       if (err instanceof ServiceError) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -67,19 +73,22 @@ const Profile = () => {
   };
 
   const handleDelete = async () => {
+    setDeleteUser(false);
+    setSuccess(null);
     setError(null);
+    
+    if (!user) return;
 
     try {
-      if (user?.id == null) {
-        throw new Error('User ID is undefined');
-      }
-
       await ApiClient.user.deleteUser(user.id);
+      
+      setSuccess(t('deletion_successful'));
 
       setTimeout(() => {
         setUser(null);
         navigate('/login');
       }, 2000);
+      
     } catch (err: unknown) {
       if (err instanceof ServiceError) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -178,27 +187,32 @@ const Profile = () => {
             </option>
           </select>
         </div>
-        {error && <p className="tsc-error-message">{t(error)}</p>}
         <div className="flex flex-col gap-4 items-center">
           <button
             onClick={handleConfirm}
             className="rounded-button w-[282px] bg-[#6e5d41]/15 font-fascinate uppercase"
             disabled={!isElevated}
-          >
+            >
             {t('confirm')}
           </button>
           <button
-            onClick={() => setDeleteUser(true)}
+            onClick={() => {
+              setDeleteUser(true);
+              setSuccess(null);
+              setError(null);
+            }}
             className="rounded-button w-[282px] bg-[#6e5d41]/15 font-fascinate uppercase"
             disabled={!isElevated}
-          >
+            >
             {t('delete_account')}
           </button>
 
-          <div className="h-6 w-full text-sm">
+          <div className="h-6 w-full text-center">
+            {success && <p className="tsc-info-message">{t(success)}</p>}
+            {error && <p className="tsc-error-message">{t(error)}</p>}
             {deleteUser && (
               <div className="flex flex-col items-center gap-2">
-                <p className="">{t('confirm_acc_del')}</p>
+                <p className="tsc-info-message">{t('confirm_acc_del')}</p>
                 <div className="flex gap-4">
                   <button onClick={handleDelete} >
                     {t('yes')}
