@@ -100,6 +100,14 @@ export class UserApiClient extends TypedApiClient {
     return this.callUserService(endpoint, userArraySchema);
   }
 
+  static async checkFriendshipExists(id1: number, id2: number) {
+    const endpoint = FRIENDSHIP_ROUTES.FRIENDSHIP_EXISTS.replace(':id1', id1.toString()).replace(
+      ':id2',
+      id2.toString(),
+    );
+    return this.callUserService(endpoint, BooleanOperationResultSchema);
+  }
+  
   static async sendFriendRequest(userId: number, recipientId: number) {
     const endpoint = FRIENDSHIP_ROUTES.SEND_FRIEND_REQUEST.replace(
       ':id',
