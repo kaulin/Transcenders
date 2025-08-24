@@ -174,4 +174,16 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     },
     AuthController.getUserCredsInfo,
   );
+
+  app.get(
+    AUTH_ROUTES.ME,
+    {
+      schema: {
+        description: 'Get current authenticated user profile',
+        tags: ['Auth'],
+        response: standardApiResponses,
+      },
+    },
+    AuthController.getCurrentUser,
+  );
 }

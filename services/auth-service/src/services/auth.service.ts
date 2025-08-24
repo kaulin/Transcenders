@@ -667,4 +667,11 @@ export class AuthService {
       },
     );
   }
+
+  static async getCurrentUser(userId: number): Promise<ServiceResult<User>> {
+    return ResultHelper.executeOperation('get current authenticated user', async () => {
+      const user = await ApiClient.user.getUserById(userId);
+      return user;
+    });
+  }
 }
