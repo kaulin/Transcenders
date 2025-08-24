@@ -44,7 +44,8 @@ CREATE TABLE IF NOT EXISTS two_factor (
   email TEXT NOT NULL,
   status TEXT DEFAULT 'pending' CHECK (status IN ('verified', 'pending')),
   verified_at DATETIME DEFAULT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES user_credentials(id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS idx_two_factor_user_id ON two_factor (user_id);
