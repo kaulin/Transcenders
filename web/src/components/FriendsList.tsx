@@ -35,7 +35,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
         {t('friends')}
       </p>
       <div className="relative h-[80%] px-2 overflow-y-auto custom-scrollbar">
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="tsc-error-message text-center">{error}</p>}
         {friends.map((friend) => (
           <div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
             <span>{friend.display_name ?? friend.username}</span>
