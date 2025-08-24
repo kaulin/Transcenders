@@ -62,26 +62,8 @@ const Dashboard = () => {
       </div>
 
       <div className="box-section bg-[#6e5d41]/10 justify-between gap-24">
-        <UserStats />
-        {/* <div className="flex flex-col font-fascinate uppercase text-center">
-          <p className="text-2xl text-[#fff] mb-2">{t('games_played')}</p>
-          <div className="flex justify-between text-md">
-            <p>{t('total')}</p>
-            <p className="font-sans">{wins + losses}</p>
-          </div>
-          <div className="flex justify-between text-md">
-            <p>{t('wins')}</p>
-            <p className="font-sans">{wins}</p>
-          </div>
-          <div className="flex justify-between text-md">
-            <p>{t('losses')}</p>
-            <p className="font-sans">{losses}</p>
-          </div>
-        </div> */}
-
-        <div className="flex w-full max-w-[400px]">
-          <PieCharts />
-        </div>
+        <UserStats userId={viewedUser?.id}/>
+        <PieCharts />
 
         <div className="flex flex-col items-center w-full">
           <p className="text-center text-[#fff] font-fascinate text-xl uppercase">Latest matches</p>
