@@ -30,6 +30,8 @@ export const userSchema = Type.Object({
   display_name: DisplayNameField,
   avatar: AvatarField,
   lang: LangField,
+  status: Type.Union([Type.Literal('offline'), Type.Literal('online')]),
+  last_activity: TimestampField,
   created_at: TimestampField,
   updated_at: TimestampField,
 });
