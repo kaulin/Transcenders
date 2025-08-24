@@ -73,7 +73,10 @@ export class AuthService {
       AND device_fingerprint = ${deviceInfo.deviceFingerprint}
     `;
 
-    const results = await database.all(sql.text, sql.values);
+    const results: RefreshToken[] = await database.all(sql.text, sql.values);
+    results.filter((res) =>
+      bcrypt.compareSync(deviceInfo.deviceFingerprint, res.device_fingerprint),
+    );
     return results as RefreshToken[];
   }
 
@@ -178,12 +181,13 @@ export class AuthService {
     deviceInfo: DeviceInfo,
   ): Promise<void> {
     const { userId, jti } = jwt.decode(refreshToken) as JWTPayload;
+    const deviceFingerprintHash = bcrypt.hashSync(deviceInfo.deviceFingerprint, 10);
     const entry: RefreshTokenInsert = {
       user_id: userId,
       token_hash: await bcrypt.hash(refreshToken, 12),
       expires_at: new Date(Date.now() + AuthConfig.REFRESH_TOKEN_EXPIRE_MS).toISOString(),
       jti,
-      device_fingerprint: deviceInfo.deviceFingerprint,
+      device_fingerprint: deviceFingerprintHash,
       ip_address: deviceInfo.ipAddress,
       user_agent: deviceInfo.userAgent,
     };

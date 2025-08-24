@@ -1,4 +1,5 @@
 import { DeviceInfo, RefreshToken } from '@transcenders/contracts';
+import * as bcrypt from 'bcrypt';
 import { FastifyRequest } from 'fastify';
 
 export class DeviceUtils {
@@ -21,7 +22,8 @@ export class DeviceUtils {
     const os = this.extractOS(userAgent);
     const architecture = this.extractArchitecture(userAgent);
 
-    return `${browserInfo}-${os}-${architecture}-${acceptLanguage.slice(0, 20)}-${acceptEncoding.slice(0, 20)}`;
+    const magicString = `${browserInfo}-${os}-${architecture}-${acceptLanguage.slice(4, 12)}-${acceptEncoding.slice(3, 8)}`;
+    return magicString;
   }
 
   private static extractBrowserFromClientHints(secChUa: string, userAgent: string): string {
@@ -61,14 +63,12 @@ export class DeviceUtils {
   }
 
   static isSameDeviceAndLocation(stored: DeviceInfo, current: DeviceInfo): boolean {
-    return (
-      stored.deviceFingerprint === current.deviceFingerprint &&
-      stored.ipAddress === current.ipAddress
-    );
+    return this.isSameDevice(stored, current) && stored.ipAddress === current.ipAddress;
   }
 
   static isSameDevice(stored: DeviceInfo, current: DeviceInfo): boolean {
-    return stored.deviceFingerprint === current.deviceFingerprint;
+    const comparison = bcrypt.compareSync(stored.deviceFingerprint, current.deviceFingerprint);
+    return comparison;
   }
 
   /**
