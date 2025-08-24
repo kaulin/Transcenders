@@ -1,5 +1,4 @@
 import { ApiClient } from '@transcenders/api-client';
-import { decodeToken } from '@transcenders/contracts';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
@@ -12,15 +11,27 @@ export default function AuthBootstrap({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function autoLogin() {
-      const { refreshToken } = getTokens();
+      const { accessToken, refreshToken } = getTokens();
 
+      // First, try to validate existing access token
+      if (accessToken) {
+        try {
+          const user = await ApiClient.auth.getCurrentUser();
+          setUser(user);
+          setReady(true);
+          return;
+        } catch {
+          // Access token invalid/expired, fall through to refresh
+        }
+      }
+
+      // Fall back to refresh token flow
       if (refreshToken) {
         try {
           const tokens = await ApiClient.auth.refreshToken(refreshToken);
-          const { userId } = decodeToken(tokens.accessToken);
-          const user = await ApiClient.user.getUserById(userId);
-          setUser(user);
           setTokens(tokens);
+          const user = await ApiClient.auth.getCurrentUser();
+          setUser(user);
         } catch {
           clearTokens();
         } finally {

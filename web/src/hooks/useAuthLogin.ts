@@ -19,10 +19,7 @@ const useAuthLogin = () => {
 
   async function loginWithTokens(tokens: AuthData) {
     setTokens(tokens);
-    const { refreshToken } = tokens;
-    const { userId } = decodeToken(refreshToken);
-    const user = await ApiClient.user.getUserById(userId);
-    console.log('logging in with tokens I think?');
+    const user = await ApiClient.auth.getCurrentUser();
     setUser(user);
   }
 
