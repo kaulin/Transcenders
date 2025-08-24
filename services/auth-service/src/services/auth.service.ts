@@ -70,14 +70,12 @@ export class AuthService {
       SELECT * FROM refresh_tokens 
       WHERE user_id = ${userId}
       AND revoked_at IS NULL
-      AND device_fingerprint = ${deviceInfo.deviceFingerprint}
     `;
 
     const results: RefreshToken[] = await database.all(sql.text, sql.values);
-    results.filter((res) =>
-      bcrypt.compareSync(deviceInfo.deviceFingerprint, res.device_fingerprint),
+    return results.filter(
+      async (res) => await bcrypt.compare(deviceInfo.deviceFingerprint, res.device_fingerprint),
     );
-    return results as RefreshToken[];
   }
 
   private static async revokeRefreshTokens(
@@ -181,7 +179,7 @@ export class AuthService {
     deviceInfo: DeviceInfo,
   ): Promise<void> {
     const { userId, jti } = jwt.decode(refreshToken) as JWTPayload;
-    const deviceFingerprintHash = bcrypt.hashSync(deviceInfo.deviceFingerprint, 10);
+    const deviceFingerprintHash = await bcrypt.hash(deviceInfo.deviceFingerprint, 10);
     const entry: RefreshTokenInsert = {
       user_id: userId,
       token_hash: await bcrypt.hash(refreshToken, 12),
@@ -559,7 +557,7 @@ export class AuthService {
         );
 
         const storedDeviceInfo = DeviceUtils.fromDatabaseValues(storedToken);
-        if (!DeviceUtils.isSameDevice(storedDeviceInfo, currentDeviceInfo)) {
+        if (!(await DeviceUtils.isSameDevice(storedDeviceInfo, currentDeviceInfo))) {
           // SECURITY EVENT: Token used from different device - revoke ALL user tokens
           await this.revokeRefreshTokens(database, { userId }, 'security_device_change');
           throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
@@ -570,7 +568,7 @@ export class AuthService {
         }
         // generate and store new tokens
         const newTokens = this.generateTokenPair(userId);
-        await this.storeRefreshToken(database, newTokens.refreshToken, storedDeviceInfo);
+        await this.storeRefreshToken(database, newTokens.refreshToken, currentDeviceInfo);
         // revoke old token
         this.revokeRefreshTokens(database, { jti }, 'token_rotation');
         return newTokens;
