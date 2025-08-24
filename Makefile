@@ -177,8 +177,8 @@ prod-exec:
 ################################################################################
 
 clean: dev-stop
-		docker compose down --remove-orphans --rmi all
-		docker system prune -f
+		-docker compose down --remove-orphans --rmi all
+		-docker system prune -f
 		npm run clean
 
 clean-volumes: dev-stop prod-stop

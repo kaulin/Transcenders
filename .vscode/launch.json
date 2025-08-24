@@ -13,7 +13,9 @@
       "restart": true,
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "timeout": 10000,
+      "continueOnAttach": true
     },
     {
       "name": "Attach to Auth Service (Docker)",
@@ -26,7 +28,9 @@
       "restart": true,
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "timeout": 10000,
+      "continueOnAttach": true
     },
     {
       "name": "Attach to Score Service (Docker)",
@@ -39,7 +43,9 @@
       "restart": true,
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "timeout": 10000,
+      "continueOnAttach": true
     },
     {
       "name": "Attach to User Service (Local)",
@@ -51,7 +57,9 @@
       "restart": true,
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "timeout": 10000,
+      "continueOnAttach": true
     },
     {
       "name": "Attach to Auth Service (Local)",
@@ -63,7 +71,9 @@
       "restart": true,
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "timeout": 10000,
+      "continueOnAttach": true
     },
     {
       "name": "Attach to Score Service (Local)",
@@ -75,7 +85,9 @@
       "restart": true,
       "autoAttachChildProcesses": true,
       "internalConsoleOptions": "neverOpen",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "timeout": 10000,
+      "continueOnAttach": true
     },
 
     // ===== FRONTEND BROWSER DEBUGGING =====
@@ -83,7 +95,7 @@
       "name": "Debug Frontend (Chrome)",
       "type": "chrome",
       "request": "launch",
-      "webRoot": "${workspaceFolder}/web/src",
+      "webRoot": "${workspaceFolder}",
       "sourceMaps": true,
       "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile",
       "runtimeArgs": [
@@ -97,7 +109,7 @@
     }
   ],
   "compounds": [
-    // ===== FULL STACK DEBUGGING COMPOUNDS =====
+    // ===== SEQUENTIAL DEBUGGING COMPOUNDS =====
     {
       "name": "🚀 Debug Full Stack (Docker + Chrome)",
       "configurations": [
@@ -106,7 +118,6 @@
         "Attach to Auth Service (Docker)",
         "Attach to Score Service (Docker)"
       ],
-      "stopAll": true,
       "presentation": {
         "group": "fullstack",
         "order": 1
@@ -120,7 +131,6 @@
         "Attach to Auth Service (Local)",
         "Attach to Score Service (Local)"
       ],
-      "stopAll": true,
       "presentation": {
         "group": "fullstack",
         "order": 2
@@ -133,7 +143,6 @@
         "Attach to Auth Service (Docker)",
         "Attach to Score Service (Docker)"
       ],
-      "stopAll": true,
       "presentation": {
         "group": "fullstack",
         "order": 3
@@ -146,7 +155,6 @@
         "Attach to Auth Service (Local)",
         "Attach to Score Service (Local)"
       ],
-      "stopAll": true,
       "presentation": {
         "group": "fullstack",
         "order": 4
