@@ -20,6 +20,8 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.get(
     FRIENDSHIP_ROUTES.USER_FRIENDSHIPS,
     {
+      // TODO maybe just required, so that others can see your friends if needed?
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Get all friends for a user',
         tags: ['friendship'],
@@ -34,6 +36,7 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.delete(
     FRIENDSHIP_ROUTES.FRIENDSHIP,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Remove a friendship',
         tags: ['friendship'],
@@ -47,6 +50,7 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.get(
     FRIENDSHIP_ROUTES.USER_FRIEND_REQUESTS,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Get incoming friend requests for a user',
         tags: ['friendship'],
@@ -60,6 +64,7 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.post(
     FRIENDSHIP_ROUTES.SEND_FRIEND_REQUEST,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Send friend request to specific user',
         tags: ['friendship'],
@@ -72,6 +77,7 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.put(
     FRIENDSHIP_ROUTES.FRIEND_REQUEST,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Accept a friend request',
         tags: ['friendship'],
@@ -84,6 +90,7 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.delete(
     FRIENDSHIP_ROUTES.FRIEND_REQUEST,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Decline/cancel a friend request',
         tags: ['friendship'],
@@ -97,6 +104,7 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.get(
     FRIENDSHIP_ROUTES.FRIENDSHIP_EXISTS,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Check if friendship exists between two users',
         tags: ['friendship'],
