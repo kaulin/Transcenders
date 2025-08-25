@@ -1,4 +1,5 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { ApiClient } from '@transcenders/api-client';
 import { ApiResponseSchema } from '@transcenders/contracts';
 import { ENV } from '@transcenders/server-utils';
 import Fastify, { FastifyInstance } from 'fastify';
@@ -36,6 +37,8 @@ export async function createFastifyServer(
     },
   }).withTypeProvider<TypeBoxTypeProvider>();
 
+  // User ID 0 = service calls (doesn't exist in database)
+  ApiClient.setAuthBypass(0);
   registerErrorHandler(fastify);
 
   fastify.addSchema(ApiResponseSchema);

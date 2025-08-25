@@ -4,14 +4,17 @@ import { ScoreApiClient } from '../services/score.api.js';
 import { UserApiClient } from '../services/user.api.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
-let authHeader: string | undefined;
 export class ApiClient {
-  // Set or clear the Authorization header globally
+  private static authHeader?: string;
+  private static bypassUserId?: number;
+
   static setAuthToken(token?: string) {
-    authHeader = token ? `Bearer ${token}` : undefined;
+    this.authHeader = token ? `Bearer ${token}` : undefined;
   }
-  static getAuthToken(): string | undefined {
-    return authHeader;
+
+  // For development/testing
+  static setAuthBypass(userId?: number) {
+    this.bypassUserId = userId;
   }
   /**
    * Simple HTTP client for helpers
@@ -21,8 +24,11 @@ export class ApiClient {
 
     const hdrs = new Headers(headers);
 
-    if (authHeader && !hdrs.has('authorization')) {
-      hdrs.set('Authorization', authHeader);
+    if (this.bypassUserId !== undefined) {
+      hdrs.set('x-auth-bypass', this.bypassUserId.toString());
+    }
+    if (this.authHeader && !hdrs.has('authorization')) {
+      hdrs.set('Authorization', this.authHeader);
     }
     if (!hdrs.has('accept')) {
       hdrs.set('Accept', 'application/json');
