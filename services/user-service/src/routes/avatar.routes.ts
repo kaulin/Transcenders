@@ -13,6 +13,7 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
   app.put(
     AVATAR_ROUTES.USER_AVATAR,
     {
+      preHandler: app.authenticate.owner('userId'),
       schema: {
         description: 'Upload or update user avatar image',
         tags: ['Avatar'],
@@ -30,6 +31,7 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
   app.delete(
     AVATAR_ROUTES.USER_AVATAR,
     {
+      preHandler: app.authenticate.owner('userId'),
       schema: {
         description: 'Remove user avatar',
         tags: ['Avatar'],
@@ -43,6 +45,7 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
   app.get(
     AVATAR_ROUTES.AVATARS_DEFAULTS,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Get list of default avatar options',
         tags: ['Avatar'],
@@ -55,6 +58,7 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
   app.post(
     AVATAR_ROUTES.USER_AVATAR_DEFAULT,
     {
+      preHandler: app.authenticate.owner('userId'),
       schema: {
         description: 'Set a default avatar for user',
         tags: ['Avatar'],
@@ -69,6 +73,7 @@ export async function registerAvatarRoutes(app: FastifyInstance) {
   app.get(
     AVATAR_ROUTES.AVATARS_RANDOM,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Get random cat avatars from TheCatApi',
         tags: ['Avatar'],
