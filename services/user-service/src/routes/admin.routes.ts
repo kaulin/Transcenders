@@ -35,7 +35,7 @@ export async function registerAdminRoutes(app: FastifyInstance) {
     AdminController.cleanupOfflineUsers,
   );
 
-  app.get('/admin/ip', (req, reply) => {
+  app.get('/admin/ip', { preHandler: app.authenticate.required() }, (req, reply) => {
     reply.send({
       ip: req.ip,
       ips: req.ips,
