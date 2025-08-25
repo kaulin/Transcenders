@@ -19,6 +19,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.REGISTER,
     {
+      preHandler: app.authenticate.none(),
       schema: {
         description: 'Authenticate something',
         tags: ['Auth'],
@@ -32,6 +33,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.LOGIN,
     {
+      preHandler: app.authenticate.none(),
       schema: {
         description: 'Authenticate something',
         tags: ['Auth'],
@@ -45,6 +47,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.STEPUP,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Request an elevated token after step-up',
         tags: ['Auth'],
@@ -59,6 +62,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.get(
     AUTH_ROUTES.GOOGLE_AUTH,
     {
+      preHandler: app.authenticate.none(),
       schema: {
         description: 'Redirects to Google OAuth with state',
         params: googleFlowParamSchema,
@@ -72,6 +76,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.get(
     AUTH_ROUTES.GOOGLE_CALLBACK,
     {
+      preHandler: app.authenticate.none(),
       schema: {
         description: 'Handle Google OAuth callback',
         tags: ['Auth-google'],
@@ -85,6 +90,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.GOOGLE_LOGIN,
     {
+      preHandler: app.authenticate.none(),
       schema: {
         description: 'Complete Google login with code',
         tags: ['Auth-google'],
@@ -98,6 +104,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.GOOGLE_CONNECT,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Complete Google login with code',
         tags: ['Auth-google'],
@@ -111,6 +118,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.LOGOUT,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'logout user',
         tags: ['Auth'],
@@ -125,6 +133,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.REFRESH,
     {
+      preHandler: app.authenticate.none(),
       schema: {
         description: 'Refresh Access Token',
         tags: ['Auth'],
@@ -138,6 +147,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.delete(
     AUTH_ROUTES.DELETE,
     {
+      preHandler: app.authenticate.stepup('id'),
       schema: {
         description: 'remove user credentials',
         tags: ['Internal ONLY'],
@@ -151,6 +161,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.patch(
     AUTH_ROUTES.CHANGE_PASSWORD,
     {
+      preHandler: app.authenticate.stepup('id'),
       schema: {
         description: 'change user password',
         tags: ['Auth'],
@@ -165,6 +176,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.get(
     AUTH_ROUTES.CREDS,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'get user creds info',
         tags: ['Auth'],
@@ -178,6 +190,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.get(
     AUTH_ROUTES.ME,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Get current authenticated user profile',
         tags: ['Auth'],

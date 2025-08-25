@@ -8,10 +8,11 @@ import { FastifyInstance } from 'fastify';
 import { AdminController } from '../controllers/AdminController.js';
 
 export async function registerAdminRoutes(app: FastifyInstance) {
-  app.get('/admin/health', AdminController.getHealth);
+  app.get('/admin/health', { preHandler: app.authenticate.none() }, AdminController.getHealth);
   app.post(
     ADMIN_ROUTES.ACTIVITY,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Update user activity',
         tags: ['Admin'],
@@ -25,6 +26,7 @@ export async function registerAdminRoutes(app: FastifyInstance) {
   app.post(
     ADMIN_ROUTES.CLEANUP_OFFLINE,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Set offline/idle users offline',
         tags: ['Admin'],
