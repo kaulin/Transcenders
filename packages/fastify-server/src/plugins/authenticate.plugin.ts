@@ -1,14 +1,34 @@
+import { ApiClient } from '@transcenders/api-client';
 import { ERROR_CODES, ServiceError, StepupMethod } from '@transcenders/contracts';
 import { TokenValidator } from '@transcenders/server-utils';
-import {
+import type {
   FastifyInstance,
   FastifyPluginCallback,
   FastifyReply,
   FastifyRequest,
-  HookHandlerDoneFunction,
+  preHandlerHookHandler,
 } from 'fastify';
 import fp from 'fastify-plugin';
 
+// The shape of the object we will decorate onto Fastify as "authenticate"
+interface AuthenticateDecorators {
+  // No authentication.
+  none: () => preHandlerHookHandler;
+
+  // Requires a valid access token.
+  required: () => preHandlerHookHandler;
+
+  // Requires a valid access token AND ownership of the given route param (default: "id").
+  owner: (paramName: string) => preHandlerHookHandler;
+
+  // Requires token + ownership + elevated (step-up) flag (default: "id").
+  stepup: (paramName: string) => preHandlerHookHandler;
+
+  // Meant for internal use only - requires bypass header, no fallback
+  admin: () => preHandlerHookHandler;
+}
+
+// Module augmentation: add `user` and `authenticate` to Fastify
 declare module 'fastify' {
   interface FastifyRequest {
     user?: {
@@ -20,55 +40,40 @@ declare module 'fastify' {
   }
 
   interface FastifyInstance {
-    authenticate: {
-      none: () => (
-        request: FastifyRequest,
-        reply: FastifyReply,
-        done: HookHandlerDoneFunction,
-      ) => void;
-      required: () => (
-        request: FastifyRequest,
-        reply: FastifyReply,
-        done: HookHandlerDoneFunction,
-      ) => Promise<void>;
-      owner: (
-        paramName: string,
-      ) => (
-        request: FastifyRequest,
-        reply: FastifyReply,
-        done: HookHandlerDoneFunction,
-      ) => Promise<void>;
-      stepup: (
-        paramName: string,
-      ) => (
-        request: FastifyRequest,
-        reply: FastifyReply,
-        done: HookHandlerDoneFunction,
-      ) => Promise<void>;
-    };
+    authenticate: AuthenticateDecorators;
   }
 }
 
+// TODO change all error codes
+
 const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done) {
-  // Helper functions
-  const authenticateToken = async (request: FastifyRequest, _reply: FastifyReply) => {
-    // Check for auth bypass header
+  // Helpers
+  const hasBypass = (request: FastifyRequest): boolean => {
     const authBypass = request.headers['x-auth-bypass'] as string | undefined;
     if (authBypass) {
-      const bypassUserId = parseInt(authBypass);
+      const bypassUserId = parseInt(authBypass, 10);
       if (!isNaN(bypassUserId)) {
-        console.log(`[AUTH BYPASS] Using mock user ID: ${bypassUserId}`);
         request.user = {
           userId: bypassUserId,
           jti: 'mock-jti',
           stepup: true,
           stepupMethod: 'password',
         };
-        return;
+        return true;
       }
     }
+    return false;
+  };
 
-    // Regular token validation
+  const requireBypassToken = async (request: FastifyRequest) => {
+    if (!hasBypass(request)) {
+      throw new ServiceError(ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS, {
+        reason: 'Internal route access requires bypass token',
+      });
+    }
+  };
+
+  const authenticateToken = async (request: FastifyRequest) => {
     const authHeader = request.headers.authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
@@ -86,7 +91,7 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
       stepupMethod: payload.stepup_method,
     };
   };
-  // TODO change all error codes
+
   const checkOwnership = async (
     request: FastifyRequest,
     _reply: FastifyReply,
@@ -106,7 +111,7 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
       });
     }
 
-    const requestedUserId = parseInt(requestedUserIdStr);
+    const requestedUserId = parseInt(requestedUserIdStr, 10);
     if (isNaN(requestedUserId) || requestedUserId !== request.user.userId) {
       throw new ServiceError(ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS, {
         reason: 'You can only access your own resources',
@@ -122,54 +127,58 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
     }
   };
 
-  fastify.decorate('authenticate', {
+  // Decorator implementation
+
+  const authenticate: AuthenticateDecorators = {
     // No authentication required
-    none: () => {
-      return (_request: FastifyRequest, _reply: FastifyReply, done: HookHandlerDoneFunction) => {
-        done();
+    none: (): preHandlerHookHandler => {
+      return async (request) => {
+        //done
       };
     },
 
     // Requires valid token
-    required: () => {
-      return async (
-        request: FastifyRequest,
-        reply: FastifyReply,
-        done: HookHandlerDoneFunction,
-      ) => {
-        await authenticateToken(request, reply);
-        done();
+    required: (): preHandlerHookHandler => {
+      return async (request) => {
+        if (hasBypass(request)) return;
+
+        await authenticateToken(request);
+        if (request.user) {
+          ApiClient.admin.activityPing(request.user.userId);
+        }
       };
     },
 
     // Requires token + ownership of paramName
-    owner: (paramName = 'id') => {
-      return async (
-        request: FastifyRequest,
-        reply: FastifyReply,
-        done: HookHandlerDoneFunction,
-      ) => {
-        await authenticateToken(request, reply);
+    owner: (paramName = 'id'): preHandlerHookHandler => {
+      return async (request, reply) => {
+        if (hasBypass(request)) return;
+
+        await authenticateToken(request);
         await checkOwnership(request, reply, paramName);
-        done();
       };
     },
 
-    // Requires token + stepup authentication
-    stepup: (paramName = 'id') => {
-      return async (
-        request: FastifyRequest,
-        reply: FastifyReply,
-        done: HookHandlerDoneFunction,
-      ) => {
-        await authenticateToken(request, reply);
+    // Requires token + ownership + step-up authentication
+    stepup: (paramName = 'id'): preHandlerHookHandler => {
+      return async (request, reply) => {
+        if (hasBypass(request)) return;
+
+        await authenticateToken(request);
         await checkOwnership(request, reply, paramName);
         await checkStepup(request, reply);
-        done();
       };
     },
-  });
 
+    // Meant for internal use only - requires bypass token
+    admin: (): preHandlerHookHandler => {
+      return async (request) => {
+        await requireBypassToken(request);
+      };
+    },
+  };
+
+  fastify.decorate('authenticate', authenticate);
   done();
 };
 
