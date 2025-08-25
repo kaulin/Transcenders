@@ -20,15 +20,16 @@ x-service-base: &service-base
 x-service-build: &service-build
   context: .
   dockerfile: Dockerfile-dev
-  target: development
+  target: service
 
+name: transcendence-dev
 services:
   user-service:
     container_name: user-service
     image: user-service:hive
     ports:
       - '3001:3001'
-      - '9228:9228'
+      - '9227:9227'
     build:
       <<: *service-build
       args:
@@ -42,7 +43,7 @@ services:
     image: auth-service:hive
     ports:
       - '3002:3002'
-      - '9227:9227'
+      - '9228:9228'
     build:
       <<: *service-build
       args:
@@ -65,15 +66,65 @@ services:
         DEBUG_PORT: 9229
     <<: *service-base
 
+  package-service:
+    container_name: package-service
+    user: ${HOST_UID:-1000}
+    image: package-service:hive
+    build:
+      <<: *service-build
+      args:
+        SERVICE_NAME: package-service
+    <<: *service-base
+
+  web:
+    container_name: web
+    user: ${HOST_UID:-1000}
+    image: node:22-alpine
+    working_dir: /workspace
+    command: sh -c "npm run dev:frontend"
+    ports:
+      - '5173:5173'
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - deps-service
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+      - type: volume
+        source: shared_node_modules
+        target: /workspace/node_modules
+        volume:
+          nocopy: true
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    depends_on:
+      - user-service
+      - auth-service
+      - score-service
+      - web
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infra/caddy/Caddyfile.docker:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
   preflight:
     image: busybox
     env_file:
       - .env
-    entrypoint:
-      [
+    entrypoint: [
         'sh',
+        node_modules/toad-cache
         '-c',
-        'mkdir -p /workspace/node_modules && mkdir -p /workspace/web/node_modules && chown ${HOST_UID}:${HOST_GID} /workspace/web/node_modules /workspace/node_modules',
+        'mkdir -p /workspace/node_modules && chown ${HOST_UID}:${HOST_GID} /workspace/node_modules',
       ]
     restart: 'no'
     volumes:
@@ -101,11 +152,8 @@ services:
         target: /workspace/node_modules
         volume:
           nocopy: true
-      - type: volume
-        source: shared_node_modules
-        target: /workspace/web/node_modules
-        volume:
-          nocopy: true
 
 volumes:
   shared_node_modules:
+  caddy_data:
+  caddy_config:

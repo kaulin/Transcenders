@@ -10,6 +10,7 @@ import {
   decodeToken,
   DeviceInfo,
   ERROR_CODES,
+  GoogleAuthUrl,
   GoogleFlows,
   GoogleUserInfo,
   googleUserInfoSchema,
@@ -347,7 +348,7 @@ export class AuthService {
     });
   }
 
-  static getGoogleAuthUrl(flow: GoogleFlows) {
+  static getGoogleAuthUrl(flow: GoogleFlows): Promise<ServiceResult<GoogleAuthUrl>> {
     return ResultHelper.executeOperation('get google auth url', async () => {
       const oauth2Client = this.getGoogleOAuthClient();
       const scopes = [
@@ -360,7 +361,7 @@ export class AuthService {
         scope: scopes,
         state: flow,
       });
-      return url;
+      return { url };
     });
   }
 

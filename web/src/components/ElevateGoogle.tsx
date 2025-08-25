@@ -1,12 +1,12 @@
-import { getEnvVar } from '@transcenders/contracts';
+import { ApiClient } from '@transcenders/api-client';
 import { useTranslation } from 'react-i18next';
 
 export default function ElevateGoogle() {
   const { t } = useTranslation();
 
-  function handleGoogle() {
-    const authUrl = getEnvVar('AUTH_SERVICE_URL', '');
-    window.location.href = `${authUrl}/auth/google/stepup`;
+  async function handleGoogle() {
+    const googleLink = await ApiClient.auth.googleAuthStepup();
+    window.location.href = googleLink.url;
   }
 
   return (

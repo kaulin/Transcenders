@@ -4,6 +4,7 @@ node_modules/
 
 # Ignore build artifacts
 dist/
+**/dist
 build/
 
 # Ignore logs
@@ -32,3 +33,9 @@ coverage/
 # Ignore temporary files
 *.tmp
 *.temp
+
+
+database/*.db
+docker-compose*.yml
+.vscode
+.DS_Store

@@ -45,7 +45,7 @@ export default function Callback() {
         return;
       }
 
-      if (type === 'enable') {
+      if (type === 'connect') {
         try {
           if (!user) throw '';
           const userId = user.id;

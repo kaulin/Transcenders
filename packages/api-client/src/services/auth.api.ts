@@ -5,6 +5,7 @@ import {
   authDataSchema,
   BooleanOperationResultSchema,
   ChangePasswordRequest,
+  googleAuthUrlSchema,
   GoogleFlows,
   LoginUser,
   RegisterUser,
@@ -105,16 +106,22 @@ export class AuthApiClient extends TypedApiClient {
   // reroutes to google-auth picker, and then to the /callback with /callback?type=${state}&code=${code}
   // type is just a string value of what google auth was initiated with GoogleFlows type
   // code is the 1-time use code that google returns on successful auth that can be used for our google code based endpoints
-  static async googleAuthLogin(): Promise<void> {
+  static async googleAuthLogin() {
     const state: GoogleFlows = 'login';
     const endpoint = `${AUTH_ROUTES.GOOGLE_AUTH.replace(':flow', state)}`;
-    this.callAuthService(endpoint, BooleanOperationResultSchema);
+    return this.callAuthService(endpoint, googleAuthUrlSchema);
   }
 
-  static async googleAuthSetPassword(): Promise<void> {
+  static async googleAuthStepup() {
     const state: GoogleFlows = 'stepup';
     const endpoint = `${AUTH_ROUTES.GOOGLE_AUTH.replace(':flow', state)}`;
-    this.callAuthService(endpoint, BooleanOperationResultSchema);
+    return this.callAuthService(endpoint, googleAuthUrlSchema);
+  }
+
+  static async googleAuthConnect() {
+    const state: GoogleFlows = 'connect';
+    const endpoint = `${AUTH_ROUTES.GOOGLE_AUTH.replace(':flow', state)}`;
+    return this.callAuthService(endpoint, googleAuthUrlSchema);
   }
 
   static async googleLogin(code: string) {

@@ -12,6 +12,10 @@
       "persistent": true,
       "cache": false
     },
+    "dev:package": {
+      "persistent": true,
+      "outputs": ["dist/**"]
+    },
     "dev:compiled": {
       "persistent": true,
       "cache": false

@@ -17,7 +17,6 @@ RUN chmod +x ./scripts/docker-deps-check.sh
 
 # Create volume mount point and set permissions
 RUN mkdir -p /workspace/node_modules
-RUN mkdir -p /workspace/web/node_modules
 
 # Set environment
 ENV NODE_ENV=development

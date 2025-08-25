@@ -152,5 +152,8 @@
     }
   },
   "i18n-ally.localesPaths": ["web/public/locales", "web/src/i18n"],
-  "i18n-ally.keystyle": "nested"
+  "i18n-ally.keystyle": "nested",
+  "[caddyfile]": {
+    "editor.defaultFormatter": "matthewpi.caddyfile-support"
+  }
 }

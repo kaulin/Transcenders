@@ -6,7 +6,7 @@ export class DeviceUtils {
   static extractDeviceInfo(request: FastifyRequest): DeviceInfo {
     return {
       userAgent: request.headers['user-agent'],
-      ipAddress: request.ip || request.socket.remoteAddress,
+      ipAddress: request.ips?.join(','),
       deviceFingerprint: this.generateDeviceFingerprint(request),
     };
   }

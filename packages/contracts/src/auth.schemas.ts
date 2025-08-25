@@ -158,7 +158,7 @@ export const changePasswordSchema = {
 };
 export type ChangePasswordRequest = Static<typeof changePasswordSchema.body>;
 
-const GOOGLE_FLOW_VALUES = ['login', 'stepup', 'error', 'enable'] as const;
+const GOOGLE_FLOW_VALUES = ['login', 'stepup', 'error', 'connect'] as const;
 
 export type GoogleFlows = (typeof GOOGLE_FLOW_VALUES)[number];
 
@@ -170,6 +170,11 @@ export const googleFlowParamSchema = Type.Object({
   }),
 });
 export type GoogleFlowParam = Static<typeof googleFlowParamSchema>;
+
+export const googleAuthUrlSchema = Type.Object({
+  url: Type.String(),
+});
+export type GoogleAuthUrl = Static<typeof googleAuthUrlSchema>;
 
 export const googleAuthCallbackSchema = Type.Object({
   code: Type.Optional(Type.String()),

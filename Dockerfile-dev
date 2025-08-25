@@ -4,7 +4,7 @@ WORKDIR /workspace
 RUN apk add --no-cache sqlite
 
 # Development stage
-FROM base AS development
+FROM base AS service
 
 ARG SERVICE_NAME
 ARG SERVICE_PORT=3000

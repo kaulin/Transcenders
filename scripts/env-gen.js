@@ -3,14 +3,14 @@
 import { execSync } from 'child_process';
 import { readFileSync, writeFileSync } from 'fs';
 
-const PORTS = {
-  USER: 3001,
-  AUTH: 3002,
-  SCORE: 3003,
-};
-
 const env = process.argv[2] || 'local';
 const outFile = '.env';
+
+const PORTS = {
+  USER: env === 'production' ? 3000 : 3001,
+  AUTH: env === 'production' ? 3000 : 3002,
+  SCORE: env === 'production' ? 3000 : 3003,
+};
 
 function usage() {
   console.log('Usage: node env-gen.js <local|docker|production>');
@@ -73,12 +73,18 @@ function getGid() {
 }
 
 // Set basic environment variables
-setEnvVar('NODE_ENV', nodeEnv);
+// setEnvVar('NODE_ENV', nodeEnv);
 setEnvVar('HOST_UID', getUid());
 setEnvVar('HOST_GID', getGid());
 setEnvVar('GOOGLE_REDIRECT_URI', `http://localhost:${PORTS.AUTH}/auth/google/callback`);
-setEnvVar('FRONTEND_URL', 'http://localhost:5173');
-setEnvVar('MAIL_FROM', 'Transcenders Auth <auth@transcenders.online>');
+setEnvVar('FRONTEND_URL', 'http://localhost');
+setEnvVar('MAIL_FROM', '"Transcenders Auth <auth@transcenders.online>"');
+
+// prod overrides
+if (env === 'production') {
+  setEnvVar('FRONTEND_URL', 'http://app.transcenders.online');
+  setEnvVar('GOOGLE_REDIRECT_URI', `http://app.transcenders.online/api/auth/google/callback`);
+}
 
 // Set service URLs
 Object.entries(PORTS).forEach(([service, port]) => {
@@ -87,11 +93,8 @@ Object.entries(PORTS).forEach(([service, port]) => {
   const serviceUrl =
     env === 'local' ? `http://localhost:${port}` : `http://${serviceLower}-service:${port}`;
 
-  // Vite URLs are always localhost for now
-  const viteUrl = `http://localhost:${port}`;
-
   setEnvVar(`${service}_SERVICE_URL`, serviceUrl);
-  setEnvVar(`VITE_${service}_SERVICE_URL`, viteUrl);
+  setEnvVar(`VITE_${service}_SERVICE_URL`, `/api`);
 });
 
 // Write the .env file
