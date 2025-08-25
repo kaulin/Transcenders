@@ -14,6 +14,11 @@ localhost {
 
 	encode gzip zstd
 
+	header {
+		# Remove internal / dev-only auth bypass header
+		-x-auth-bypass
+	}
+
 	handle_path /api/* {
 		@auth path /auth*
 		@users path /users* /friendships* /avatars* /admin* /media*
