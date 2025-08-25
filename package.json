@@ -26,6 +26,7 @@
     "build:backend": "turbo build --filter=./services/**",
     "build:watch": "turbo dev:compiled",
     "clean": "turbo clean && find . -name 'tsconfig.tsbuildinfo' -delete",
+    "clean-turbo": "find . -name '.turbo' -print -exec rm -rf {} +",
     "start": "turbo start",
     "start:backend": "turbo start --filter='!web'",
     "test:env": "scripts/env-gen.js local && dotenv -e .env --",

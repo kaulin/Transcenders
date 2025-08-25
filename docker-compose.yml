@@ -68,6 +68,7 @@ services:
 
   package-service:
     container_name: package-service
+    user: ${HOST_UID:-1000}
     image: package-service:hive
     build:
       <<: *service-build
