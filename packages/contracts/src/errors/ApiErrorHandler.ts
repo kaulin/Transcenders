@@ -44,7 +44,7 @@ export class ApiErrorHandler {
     } else {
       myServiceError = error;
     }
-    reply.code(error.statusCode ?? 500);
+    reply.code(myServiceError.httpStatus ?? 500);
     return {
       success: false,
       operation,
