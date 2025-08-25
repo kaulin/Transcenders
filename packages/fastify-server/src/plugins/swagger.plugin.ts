@@ -24,6 +24,34 @@ export async function registerSwagger(
           description: 'Development server',
         },
       ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+          authBypass: {
+            type: 'apiKey',
+            in: 'header',
+            name: 'x-auth-bypass',
+            description: 'Bypass authentication with user ID (development only)',
+          },
+        },
+        parameters: {
+          authBypassHeader: {
+            name: 'x-auth-bypass',
+            in: 'header',
+            required: false,
+            description: 'User ID for auth bypass (development only)',
+            schema: {
+              type: 'integer',
+              example: 1,
+            },
+          },
+        },
+      },
+      security: [{ bearerAuth: [] }, { authBypass: [] }],
     },
   });
 
@@ -33,6 +61,7 @@ export async function registerSwagger(
     uiConfig: {
       docExpansion: 'list',
       deepLinking: false,
+      // Enable request interceptor for custom headers
     },
     staticCSP: ENV.NODE_ENV !== 'development',
     transformStaticCSP: swaggerConfig?.transformStaticCSP,
