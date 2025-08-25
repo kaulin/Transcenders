@@ -24,19 +24,24 @@ interface AuthenticateDecorators {
   // Requires token + ownership + elevated (step-up) flag (default: "id").
   stepup: (paramName: string) => preHandlerHookHandler;
 
-  // Meant for internal use only - requires bypass header, no fallback
+  // Meant for internal use only - requires bypass header, no fallback, no activity ping
+  internal: () => preHandlerHookHandler;
+
+  // Admin access - requires bypass or valid token
   admin: () => preHandlerHookHandler;
+}
+
+interface FastifyRequestUser {
+  userId: number;
+  jti: string;
+  stepup: boolean;
+  stepupMethod?: StepupMethod;
 }
 
 // Module augmentation: add `user` and `authenticate` to Fastify
 declare module 'fastify' {
   interface FastifyRequest {
-    user?: {
-      userId: number;
-      jti: string;
-      stepup: boolean;
-      stepupMethod?: StepupMethod;
-    };
+    user?: FastifyRequestUser;
   }
 
   interface FastifyInstance {
@@ -45,7 +50,6 @@ declare module 'fastify' {
 }
 
 // TODO change all error codes
-
 const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done) {
   // Helpers
   const hasBypass = (request: FastifyRequest): boolean => {
@@ -74,9 +78,11 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
   };
 
   const authenticateToken = async (request: FastifyRequest) => {
+    // Check for bypass first
+    if (hasBypass(request)) return;
+
     const authHeader = request.headers.authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
-
     if (!token) {
       throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
         reason: 'Authorization token required',
@@ -84,12 +90,13 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
     }
 
     const payload = TokenValidator.verifyAccessToken(token);
-    request.user = {
+    const user: FastifyRequestUser = {
       userId: payload.userId,
       jti: payload.jti,
       stepup: payload.stepup ?? false,
       stepupMethod: payload.stepup_method,
     };
+    request.user = user;
   };
 
   const checkOwnership = async (
@@ -127,53 +134,60 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
     }
   };
 
-  // Decorator implementation
+  const pingActivity = async (request: FastifyRequest) => {
+    if (request.user) {
+      await ApiClient.admin.activityPing(request.user.userId);
+    }
+  };
 
+  // Decorator implementation
   const authenticate: AuthenticateDecorators = {
     // No authentication required
     none: (): preHandlerHookHandler => {
-      return async (request) => {
-        //done
+      return async () => {
+        // No authentication needed
       };
     },
 
     // Requires valid token
     required: (): preHandlerHookHandler => {
       return async (request) => {
-        if (hasBypass(request)) return;
-
         await authenticateToken(request);
-        if (request.user) {
-          ApiClient.admin.activityPing(request.user.userId);
-        }
+        await pingActivity(request);
       };
     },
 
     // Requires token + ownership of paramName
     owner: (paramName = 'id'): preHandlerHookHandler => {
       return async (request, reply) => {
-        if (hasBypass(request)) return;
-
         await authenticateToken(request);
         await checkOwnership(request, reply, paramName);
+        await pingActivity(request);
       };
     },
 
     // Requires token + ownership + step-up authentication
     stepup: (paramName = 'id'): preHandlerHookHandler => {
       return async (request, reply) => {
-        if (hasBypass(request)) return;
-
         await authenticateToken(request);
         await checkOwnership(request, reply, paramName);
         await checkStepup(request, reply);
+        await pingActivity(request);
       };
     },
 
-    // Meant for internal use only - requires bypass token
+    // Meant for internal use only - requires bypass token, NO activity ping
+    internal: (): preHandlerHookHandler => {
+      return async (request) => {
+        await requireBypassToken(request);
+      };
+    },
+
+    // Admin access - requires bypass or valid token
     admin: (): preHandlerHookHandler => {
       return async (request) => {
         await requireBypassToken(request);
+        await pingActivity(request);
       };
     },
   };

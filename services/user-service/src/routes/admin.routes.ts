@@ -12,7 +12,7 @@ export async function registerAdminRoutes(app: FastifyInstance) {
   app.post(
     ADMIN_ROUTES.ACTIVITY,
     {
-      preHandler: app.authenticate.required(),
+      preHandler: app.authenticate.internal(),
       schema: {
         description: 'Update user activity',
         tags: ['Admin'],
@@ -26,7 +26,7 @@ export async function registerAdminRoutes(app: FastifyInstance) {
   app.post(
     ADMIN_ROUTES.CLEANUP_OFFLINE,
     {
-      preHandler: app.authenticate.required(),
+      preHandler: app.authenticate.internal(),
       schema: {
         description: 'Set offline/idle users offline',
         tags: ['Admin'],
