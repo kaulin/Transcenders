@@ -5,6 +5,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import { registerDevelopmentHooks } from '../hooks/development.hooks.js';
 import { registerErrorHandler } from '../hooks/error.hook.js';
 import { registerOnCloseHook } from '../hooks/onClose.hook.js';
+import { registerAuthenticate } from '../plugins/authenticate.plugin.js';
 import { setupGracefulShutdown } from '../plugins/shutdown-plugin.js';
 import { registerSwagger } from '../plugins/swagger.plugin.js';
 import { ServerConfig, SwaggerConfig } from '../types/server.config.js';
@@ -40,6 +41,7 @@ export async function createFastifyServer(
   fastify.addSchema(ApiResponseSchema);
 
   // Register plugins in order
+  await registerAuthenticate(fastify);
   await setupGracefulShutdown(fastify, config);
   await registerSwagger(fastify, config, swaggerConfig);
   registerDevelopmentHooks(fastify);
