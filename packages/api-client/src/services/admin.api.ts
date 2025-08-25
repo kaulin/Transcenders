@@ -21,6 +21,7 @@ export class AdminApiClient extends TypedApiClient {
    */
   static async activityPing(userId: number) {
     const endpoint = `${SERVICE_URLS.USER}${ADMIN_ROUTES.ACTIVITY.replace(':id', userId.toString())}`;
-    return this.callAdminRoute(endpoint, BooleanOperationResultSchema);
+    const options: ApiCallOptions = { method: 'POST' };
+    return this.callAdminRoute(endpoint, BooleanOperationResultSchema, options);
   }
 }
