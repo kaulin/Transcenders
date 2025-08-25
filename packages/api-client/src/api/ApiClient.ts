@@ -1,4 +1,5 @@
 import { ApiResponseType } from '@transcenders/contracts';
+import { AdminApiClient } from '../services/admin.api.js';
 import { AuthApiClient } from '../services/auth.api.js';
 import { ScoreApiClient } from '../services/score.api.js';
 import { UserApiClient } from '../services/user.api.js';
@@ -61,4 +62,5 @@ export class ApiClient {
   static user = UserApiClient;
   static auth = AuthApiClient;
   static score = ScoreApiClient;
+  static admin = AdminApiClient;
 }
