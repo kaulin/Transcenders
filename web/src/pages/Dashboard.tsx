@@ -11,7 +11,7 @@ import SearchSection from '../components/SearchSection';
 import UserStats from '../components/UserStats';
 import AreaCharts from '../components/AreaCharts';
 import MatchHistory from '../components/MatchHistory';
-import PieCharts from '../components/PieCharts';
+import PieChartSection from '../components/PieChartSection';
 import { useUser } from '../hooks/useUser';
 
 const Dashboard = () => {
@@ -37,9 +37,6 @@ const Dashboard = () => {
     }
   };
 
-  const wins = 42;
-  const losses = 13;
-
   return (
     <div className="box xl:gap-4">
       <div className="box-section bg-[#6e5d41]/10 justify-between">
@@ -49,7 +46,7 @@ const Dashboard = () => {
           {user?.id === viewedUser?.id ? (
             <FriendsList userId={viewedUser?.id} />
           ) : (
-            <FriendActions viewedId={viewedUser?.id}/>
+            <FriendActions viewedId={viewedUser?.id} />
           )}
         </div>
 
@@ -62,8 +59,8 @@ const Dashboard = () => {
       </div>
 
       <div className="box-section bg-[#6e5d41]/10 justify-between gap-24">
-        <UserStats userId={viewedUser?.id}/>
-        <PieCharts />
+        <UserStats userId={viewedUser?.id} />
+        <PieChartSection userId={viewedUser?.id} />
 
         <div className="flex flex-col items-center w-full">
           <p className="text-center text-[#fff] font-fascinate text-xl uppercase">Latest matches</p>
