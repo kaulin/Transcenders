@@ -49,7 +49,6 @@ declare module 'fastify' {
   }
 }
 
-// TODO change all error codes
 const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done) {
   // Helpers
   const hasBypass = (request: FastifyRequest): boolean => {
@@ -71,8 +70,8 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
 
   const requireBypassToken = async (request: FastifyRequest) => {
     if (!hasBypass(request)) {
-      throw new ServiceError(ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS, {
-        reason: 'Internal route access requires bypass token',
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_BYPASS_REQUIRED, {
+        reason: 'route access requires admin bypass',
       });
     }
   };
@@ -84,19 +83,26 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
     const authHeader = request.headers.authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
     if (!token) {
-      throw new ServiceError(ERROR_CODES.AUTH.INVALID_CREDENTIALS, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_TOKEN_REQUIRED, {
         reason: 'Authorization token required',
       });
     }
 
-    const payload = TokenValidator.verifyAccessToken(token);
-    const user: FastifyRequestUser = {
-      userId: payload.userId,
-      jti: payload.jti,
-      stepup: payload.stepup ?? false,
-      stepupMethod: payload.stepup_method,
-    };
-    request.user = user;
+    try {
+      const payload = TokenValidator.verifyAccessToken(token);
+      const user: FastifyRequestUser = {
+        userId: payload.userId,
+        jti: payload.jti,
+        stepup: payload.stepup ?? false,
+        stepupMethod: payload.stepup_method,
+      };
+      request.user = user;
+    } catch (error) {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_TOKEN_INVALID, {
+        reason: 'Invalid or expired token',
+        originalError: error,
+      });
+    }
   };
 
   const checkOwnership = async (
@@ -113,14 +119,14 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
     const params = request.params as Record<string, string>;
     const requestedUserIdStr = params[paramName];
     if (!requestedUserIdStr) {
-      throw new ServiceError(ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_MISSING_PARAMETER, {
         reason: `Missing required parameter: ${paramName}`,
       });
     }
 
     const requestedUserId = parseInt(requestedUserIdStr, 10);
     if (isNaN(requestedUserId) || requestedUserId !== request.user.userId) {
-      throw new ServiceError(ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_OWNERSHIP_REQUIRED, {
         reason: 'You can only access your own resources',
       });
     }
@@ -128,7 +134,7 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
 
   const checkStepup = async (request: FastifyRequest, _reply: FastifyReply) => {
     if (!request.user?.stepup) {
-      throw new ServiceError(ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_STEPUP_REQUIRED, {
         reason: 'Elevated authentication required',
       });
     }

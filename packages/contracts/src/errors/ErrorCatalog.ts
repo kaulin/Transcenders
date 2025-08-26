@@ -108,6 +108,70 @@ const commonErrors: Record<Extract<ErrorCode, `COMMON_${string}`>, ErrorDefiniti
     httpStatus: 403,
     category: 'authorization',
   },
+
+  // Authentication plugin errors (used across all services)
+  [ERROR_CODES.COMMON.AUTH_TOKEN_REQUIRED]: {
+    code: ERROR_CODES.COMMON.AUTH_TOKEN_REQUIRED,
+    message: 'Authorization token is required for this request',
+    userMessage: 'Please log in to access this resource',
+    localeKey: 'auth_token_required',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+
+  [ERROR_CODES.COMMON.AUTH_TOKEN_INVALID]: {
+    code: ERROR_CODES.COMMON.AUTH_TOKEN_INVALID,
+    message: 'Authorization token is invalid or malformed',
+    userMessage: 'Your session is invalid. Please log in again.',
+    localeKey: 'auth_token_invalid',
+    httpStatus: 401,
+    category: 'authentication',
+  },
+
+  [ERROR_CODES.COMMON.AUTH_MISSING_PARAMETER]: {
+    code: ERROR_CODES.COMMON.AUTH_MISSING_PARAMETER,
+    message: 'Required authentication parameter is missing',
+    userMessage: 'Invalid request format',
+    localeKey: 'auth_missing_parameter',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.COMMON.AUTH_OWNERSHIP_REQUIRED]: {
+    code: ERROR_CODES.COMMON.AUTH_OWNERSHIP_REQUIRED,
+    message: 'You can only access your own resources',
+    userMessage: 'You can only access your own resources',
+    localeKey: 'auth_ownership_required',
+    httpStatus: 403,
+    category: 'authorization',
+  },
+
+  [ERROR_CODES.COMMON.AUTH_STEPUP_REQUIRED]: {
+    code: ERROR_CODES.COMMON.AUTH_STEPUP_REQUIRED,
+    message: 'Elevated authentication is required for this action',
+    userMessage: 'Please verify your identity to continue',
+    localeKey: 'auth_stepup_required',
+    httpStatus: 403,
+    category: 'authorization',
+  },
+
+  [ERROR_CODES.COMMON.AUTH_BYPASS_REQUIRED]: {
+    code: ERROR_CODES.COMMON.AUTH_BYPASS_REQUIRED,
+    message: 'Administrative bypass is required for this action',
+    userMessage: 'Administrative access required',
+    localeKey: 'auth_bypass_required',
+    httpStatus: 403,
+    category: 'authorization',
+  },
+
+  [ERROR_CODES.COMMON.AUTH_SESSION_INVALID]: {
+    code: ERROR_CODES.COMMON.AUTH_SESSION_INVALID,
+    message: 'Session invalid due to security event - full re-authentication required',
+    userMessage: 'Your session is no longer valid. Please log in again.',
+    localeKey: 'auth_session_invalid',
+    httpStatus: 410,
+    category: 'authentication',
+  },
 };
 
 const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> = {
@@ -116,16 +180,8 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     message: 'Invalid username or password provided',
     userMessage: 'Invalid login credentials',
     localeKey: 'invalid_credentials',
-    httpStatus: 401,
-    category: 'authentication',
-  },
-
-  [ERROR_CODES.AUTH.TOKEN_EXPIRED]: {
-    code: ERROR_CODES.AUTH.TOKEN_EXPIRED,
-    message: 'Authentication token has expired',
-    userMessage: 'Your session has expired. Please log in again.',
-    httpStatus: 401,
-    category: 'authentication',
+    httpStatus: 400,
+    category: 'validation',
   },
 
   [ERROR_CODES.AUTH.USER_ALREADY_EXISTS]: {
@@ -152,36 +208,12 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     category: 'internal',
   },
 
-  [ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE]: {
-    code: ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE,
-    message: 'Invalid token structure.',
-    userMessage: 'Invalid token structure.',
-    httpStatus: 401,
-    category: 'authentication',
-  },
-
-  [ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN]: {
-    code: ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN,
-    message: 'Refresh token is invalid, expired, or revoked',
-    userMessage: 'Refresh token is invalid, expired, or revoked',
-    httpStatus: 401,
-    category: 'authentication',
-  },
-
-  [ERROR_CODES.AUTH.DEVICE_CHANGED]: {
-    code: ERROR_CODES.AUTH.DEVICE_CHANGED,
-    message: 'Device information has changed, please log in again',
-    userMessage: 'Device information has changed, please log in again',
-    httpStatus: 401,
-    category: 'authentication',
-  },
-
   [ERROR_CODES.AUTH.GOOGLE_AUTH_FAILED]: {
     code: ERROR_CODES.AUTH.GOOGLE_AUTH_FAILED,
     message: 'Google authentication process failed or was cancelled',
     userMessage: 'Google sign-in failed. Please try again.',
     localeKey: 'google_auth_failed',
-    httpStatus: 401,
+    httpStatus: 422,
     category: 'authentication',
   },
 
@@ -190,8 +222,8 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     message: 'User has no password set-up',
     userMessage: 'Set a new password for your account',
     localeKey: 'set_password_before_disable',
-    httpStatus: 401,
-    category: 'authentication',
+    httpStatus: 400,
+    category: 'validation',
   },
 
   [ERROR_CODES.AUTH.TWO_FACTOR_WRONG_CODE]: {
@@ -199,8 +231,8 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     message: 'Wrong code for 2fa verification.',
     userMessage: 'Wrong code for 2fa verification.',
     localeKey: 'two_fac_wrong_code',
-    httpStatus: 401,
-    category: 'authentication',
+    httpStatus: 400,
+    category: 'validation',
   },
 
   [ERROR_CODES.AUTH.TWO_FACTOR_NO_CHALLENGE]: {
@@ -208,24 +240,24 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     message: 'No 2fa challenge initiated for this action',
     userMessage: 'No 2fa challenge initiated for this action',
     localeKey: 'two_fac_no_challenge',
-    httpStatus: 401,
-    category: 'authentication',
+    httpStatus: 409,
+    category: 'conflict',
   },
   [ERROR_CODES.AUTH.TWO_FACTOR_CHALLENGE_EXPIRED]: {
     code: ERROR_CODES.AUTH.TWO_FACTOR_CHALLENGE_EXPIRED,
     message: '2FA challenge has expired',
     userMessage: 'Your verification code expired. Please request a new one.',
     localeKey: 'two_fac_code_expired',
-    httpStatus: 401,
-    category: 'authentication',
+    httpStatus: 409,
+    category: 'conflict',
   },
   [ERROR_CODES.AUTH.TWO_FACTOR_CHALLENGE_CONSUMED]: {
     code: ERROR_CODES.AUTH.TWO_FACTOR_CHALLENGE_CONSUMED,
     message: '2FA challenge already used',
     userMessage: 'The verification code was already used. Request a new code.',
     localeKey: 'two_fac_code_consumed',
-    httpStatus: 401,
-    category: 'authentication',
+    httpStatus: 409,
+    category: 'conflict',
   },
   [ERROR_CODES.AUTH.TWO_FACTOR_ALREADY_VERIFIED]: {
     code: ERROR_CODES.AUTH.TWO_FACTOR_ALREADY_VERIFIED,

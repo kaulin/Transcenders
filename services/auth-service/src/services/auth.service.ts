@@ -561,7 +561,7 @@ export class AuthService {
         if (!(await DeviceUtils.isSameDevice(storedDeviceInfo, currentDeviceInfo))) {
           // SECURITY EVENT: Token used from different device - revoke ALL user tokens
           await this.revokeRefreshTokens(database, { userId }, 'security_device_change');
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+          throw new ServiceError(ERROR_CODES.COMMON.AUTH_SESSION_INVALID, {
             jti,
             userId,
             reason: 'Token used from different device - all sessions revoked for security',
