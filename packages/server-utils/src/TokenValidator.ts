@@ -32,7 +32,7 @@ export class TokenValidator {
       Value.Assert(JWTPayloadSchema, payload);
 
       if (expectedUser && payload.userId !== expectedUser) {
-        throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+        throw new ServiceError(ERROR_CODES.COMMON.AUTH_SESSION_INVALID, {
           jti: payload.jti,
           reason: 'Token does not belong to the authenticated user',
           expectedUserId: expectedUser,
@@ -49,25 +49,27 @@ export class TokenValidator {
       // Handle JWT library errors
       if (error instanceof jwt.TokenExpiredError) {
         throw new ServiceError(
-          ERROR_CODES.AUTH.TOKEN_EXPIRED,
+          ERROR_CODES.COMMON.AUTH_TOKEN_INVALID,
           {
             originalMessage: error.message,
             expiredAt: error.expiredAt,
+            reason: 'Token expired',
           },
           error,
         );
       }
       if (error instanceof Error) {
         throw new ServiceError(
-          ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE,
-          { originalMessage: error.message },
+          ERROR_CODES.COMMON.AUTH_TOKEN_INVALID,
+          { originalMessage: error.message, reason: 'Invalid token structure' },
           error,
         );
       }
 
       // rest of the errors with some context
-      throw new ServiceError(ERROR_CODES.AUTH.INVALID_TOKEN_STRUCTURE, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_TOKEN_INVALID, {
         originalMessage: String(error),
+        reason: 'Unknown token validation error',
       });
     }
   }
@@ -77,19 +79,19 @@ export class TokenValidator {
     storedToken: unknown,
   ): Promise<RefreshToken> {
     if (!storedToken) {
-      throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_SESSION_INVALID, {
         reason: 'Refresh token not found in database',
       });
     }
 
     if (!Value.Check(refreshTokenSchema, storedToken)) {
-      throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_SESSION_INVALID, {
         reason: 'Invalid refresh token database structure',
       });
     }
 
     if (storedToken.revoked_at !== null) {
-      throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_SESSION_INVALID, {
         jti: storedToken.jti,
         reason: 'Refresh token has been revoked',
         revokedAt: storedToken.revoked_at,
@@ -98,7 +100,7 @@ export class TokenValidator {
 
     const isValidToken = await bcrypt.compare(refreshToken, storedToken.token_hash);
     if (!isValidToken) {
-      throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+      throw new ServiceError(ERROR_CODES.COMMON.AUTH_SESSION_INVALID, {
         jti: storedToken.jti,
         reason: 'Refresh token hash mismatch',
       });

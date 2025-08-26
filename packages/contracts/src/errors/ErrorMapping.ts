@@ -46,7 +46,8 @@ const ERROR_MAPPINGS: ErrorMap[] = [
 
   // Auth service specific
   { pattern: 'invalid credentials', errorCode: ERROR_CODES.AUTH.INVALID_CREDENTIALS },
-  { pattern: 'token expired', errorCode: ERROR_CODES.AUTH.TOKEN_EXPIRED },
+  { pattern: 'token expired', errorCode: ERROR_CODES.COMMON.AUTH_TOKEN_INVALID },
+  { pattern: 'invalid token', errorCode: ERROR_CODES.COMMON.AUTH_TOKEN_INVALID },
   { pattern: 'password too weak', errorCode: ERROR_CODES.AUTH.PASSWORD_TOO_WEAK },
 
   // User service specific
