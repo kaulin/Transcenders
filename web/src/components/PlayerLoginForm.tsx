@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ApiClient } from '@transcenders/api-client';
+import { useApiClient } from '../hooks/useApiClient';
 import { usePlayers } from '../hooks/usePlayers';
 import useVerifyLogin from '../hooks/useVerifyLogin';
 import type { Player } from '../types/types';
@@ -15,6 +16,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
   const { players, setPlayer, resetPlayer } = usePlayers();
   const { login } = useVerifyLogin();
   const { t } = useTranslation();
+  const api = useApiClient();
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -45,7 +47,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
     if (!handleUsernameCheck()) return;
 
     try {
-      await ApiClient.user.getUserExact({ username: username });
+      await api(() => ApiClient.user.getUserExact({ username: username }));
       setError(t('username_taken'));
       return;
     } catch (err: any) {}

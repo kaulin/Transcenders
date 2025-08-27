@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import GameContainer from '../components/game/GameContainer';
 import { GameStatus, type GameResult } from '../components/game/models/GameState';
+import { useApiClient } from '../hooks/useApiClient';
 import { usePlayers } from '../hooks/usePlayers';
 
 function MatchPage() {
@@ -22,6 +23,8 @@ function MatchPage() {
   const { players } = usePlayers();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const api = useApiClient();
 
   const handleStartPause = useCallback(() => {
     if (gameStatus === GameStatus.WAITING || gameStatus === GameStatus.PAUSED) {
@@ -84,7 +87,7 @@ function MatchPage() {
         game_end: result.game_end,
       };
 
-      const response = await ApiClient.score.createScore(scoreData);
+      const response = await api(() => ApiClient.score.createScore(scoreData));
       console.log('SUCCESS: sent score data to backend', response);
     } catch (error) {
       console.error('Failed to send score data:', error);
