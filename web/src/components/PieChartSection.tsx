@@ -107,7 +107,7 @@ export default function PieChartSection({userId}: PieChartsProps) {
     ApiClient.score
       .getStatsForUser(userId)
       .then(setUserStats)
-      .catch(() => setError(t('something_went_wrong')));
+      .catch((err: any) => setError(err?.localeKey ?? 'something_went_wrong'));
   }, [userId, t]);
 
   const chartsData: ChartConfig[] = useMemo(() => {
@@ -139,8 +139,8 @@ export default function PieChartSection({userId}: PieChartsProps) {
       ];
   }, [userStats, t]);
   
-  if (error) return <div className="tsc-error-message">{t(error)}</div>;
-  if (!userStats) return <div className="tsc-info-message">{t('loading')}</div>;
+  if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
+  if (!userStats) return <div className="tsc-info-message text-center">{t('loading')}</div>;
   
   return (
     <div className="flex flex-col w-full max-w-[400px]">
