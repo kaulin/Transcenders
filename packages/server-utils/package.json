@@ -18,6 +18,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "@sinclair/typebox": "^0.34.39",
     "@transcenders/contracts": "*",
     "bcrypt": "^6.0.0",
