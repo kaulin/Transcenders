@@ -8,8 +8,8 @@ import ProfileSection from '../components/ProfileSection';
 import FriendsList from '../components/FriendsList';
 import FriendActions from '../components/FriendActions';
 import SearchSection from '../components/SearchSection';
-import UserStats from '../components/UserStats';
-import AreaCharts from '../components/AreaCharts';
+import UserStatsSection from '../components/UserStatsSection';
+import AreaChartSection from '../components/AreaChartSection';
 import MatchHistory from '../components/MatchHistory';
 import PieChartSection from '../components/PieChartSection';
 import { useUser } from '../hooks/useUser';
@@ -59,20 +59,20 @@ const Dashboard = () => {
       </div>
 
       <div className="box-section bg-[#6e5d41]/10 justify-between gap-24">
-        <UserStats userId={viewedUser?.id} />
+        <UserStatsSection userId={viewedUser?.id} />
         <PieChartSection userId={viewedUser?.id} />
 
         <div className="flex flex-col items-center w-full">
           <p className="text-center text-[#fff] font-fascinate text-xl uppercase">Latest matches</p>
-          <AreaCharts />
+          <AreaChartSection />
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex gap-2 items-center text-white">
               <div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
-              Your Score
+              {t('your_score')}
             </div>
             <div className="flex gap-2 items-center text-white">
               <div className="w-4 h-4 rounded-full bg-[#5d6b2f52] border border-white"></div>
-              Opponent's Score
+              {t('opponent_score')}
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ const Dashboard = () => {
       <div className="box-section bg-[#6e5d41]/10 justify-between">
         <p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
         <div className="relative w-80 h-[823px] px-4 overflow-y-auto custom-scrollbar">
-          <MatchHistory />
+          <MatchHistory userId={viewedUser?.id} />
         </div>
       </div>
     </div>
