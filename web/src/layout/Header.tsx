@@ -1,34 +1,24 @@
 import { Cat, Home, LayoutDashboard, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { usePlayers } from '../hooks/usePlayers';
 import { useUser } from '../hooks/useUser';
 
-import { ApiClient } from '@transcenders/api-client';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitch from '../components/LanguageSwitch';
-import { useAuth } from '../hooks/useAuth';
-import { getTokens } from '../utils/authTokens';
+import { useLogout } from '../hooks/useLogout';
 
 const Header = () => {
-  const { user, setUser } = useUser();
-  const { resetAll } = usePlayers();
-  const { clearTokens } = useAuth();
+  const { user } = useUser();
   const { i18n, t } = useTranslation();
+  const logout = useLogout();
 
   useEffect(() => {
     i18n.changeLanguage(user?.lang);
   }, [user, i18n]);
 
   const handleLogout = async () => {
-    const refreshToken = getTokens().refreshToken;
-    if (user && refreshToken) {
-      await ApiClient.auth.logout(user.id, refreshToken);
-    }
-    clearTokens();
-    resetAll();
-    setUser(null);
+    await logout();
   };
 
   return (
