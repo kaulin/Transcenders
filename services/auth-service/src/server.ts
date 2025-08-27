@@ -1,3 +1,4 @@
+import fastifyCookie from '@fastify/cookie';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import { ENV } from '@transcenders/server-utils';
 import { registerAuthRoutes } from './routes/auth.routes.js';
@@ -11,6 +12,8 @@ const config: ServerConfig = {
 
 async function start() {
   const fastify = await createFastifyServer(config);
+
+  fastify.register(fastifyCookie);
 
   await registerAuthRoutes(fastify);
   await registerTwoFactorRoutes(fastify);
