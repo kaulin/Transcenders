@@ -233,6 +233,14 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     category: 'validation',
   },
 
+  [ERROR_CODES.AUTH.COOKIE_ERROR]: {
+    code: ERROR_CODES.AUTH.COOKIE_ERROR,
+    message: 'Cookie validation failed',
+    httpStatus: 403,
+    category: 'internal',
+    localeKey: ' ', //no user message needed, silent logout screen
+  },
+
   [ERROR_CODES.AUTH.TWO_FACTOR_WRONG_CODE]: {
     code: ERROR_CODES.AUTH.TWO_FACTOR_WRONG_CODE,
     message: 'Wrong code for 2fa verification.',
