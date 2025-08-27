@@ -8,12 +8,17 @@ import { ServiceError, UpdateUserRequest } from '@transcenders/contracts';
 import AvatarPicker from '../components/AvatarPicker';
 import ElevationSection from '../components/Elevation';
 import TwoFactorSection from '../components/TwoFactorSection';
+import { useApiClient } from '../hooks/useApiClient';
 import { useTokenElevation } from '../hooks/useTokenElevation';
+import { useUpdateUser } from '../hooks/useUpdateUser';
 
 const Profile = () => {
   const { t } = useTranslation();
-  const { setUser, user, updateUser } = useUser();
+  const { setUser, user } = useUser();
+  const updateUser = useUpdateUser();
   const { isElevated } = useTokenElevation();
+
+  const api = useApiClient();
 
   const navigate = useNavigate();
 
@@ -57,7 +62,7 @@ const Profile = () => {
     try {
       await updateUser(userData);
       if (password) {
-        await ApiClient.auth.changePassword(user.id, password);
+        await api(() => ApiClient.auth.changePassword(user.id, password));
         window.dispatchEvent(new Event('userCredsChanged'));
       }
 
@@ -79,7 +84,7 @@ const Profile = () => {
     if (!user) return;
 
     try {
-      await ApiClient.user.deleteUser(user.id);
+      await api(() => ApiClient.user.deleteUser(user.id));
 
       setSuccess(t('deletion_successful'));
 

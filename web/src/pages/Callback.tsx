@@ -2,6 +2,7 @@ import { ApiClient } from '@transcenders/api-client';
 import { ErrorCode, getErrorLocaleKey, GoogleFlows } from '@transcenders/contracts';
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useApiClient } from '../hooks/useApiClient';
 import { useUser } from '../hooks/useUser';
 
 export default function Callback() {
@@ -9,6 +10,7 @@ export default function Callback() {
   const { search } = useLocation();
   const { user, setUser } = useUser();
   const handledOAuthOnce = useRef(false);
+  const api = useApiClient();
 
   useEffect(() => {
     if (handledOAuthOnce.current) return;
@@ -49,7 +51,7 @@ export default function Callback() {
         try {
           if (!user) throw '';
           const userId = user.id;
-          await ApiClient.auth.googleConnect(userId, code);
+          await api(() => ApiClient.auth.googleConnect(userId, code));
           go('/profile');
         } catch {
           go(`/profile?error=google_auth_failed`);
@@ -58,7 +60,7 @@ export default function Callback() {
       }
       go(`/login?error=google_auth_failed`);
     })();
-  }, [search, navigate, user]);
+  }, [search, navigate, user, api]);
 
   // Optional: small placeholder while we redirect
   return null;
