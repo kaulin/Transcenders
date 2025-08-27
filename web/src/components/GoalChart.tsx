@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -8,19 +10,44 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const GoalCharts = () => {
-  const goalData = [
-    { match: '', scored: 11, conceded: 2 },
-    { match: '', scored: 7, conceded: 11 },
-    { match: '', scored: 11, conceded: 6 },
-    { match: '', scored: 5, conceded: 11 },
-    { match: '', scored: 11, conceded: 9 },
-  ];
+import { ApiClient } from '@transcenders/api-client';
+import { Score } from '@transcenders/contracts';
 
+type GoalChartProps = {
+  userId: number | undefined;  
+}
+
+export default function GoalChart({userId}: GoalChartProps) {
+  const { t } = useTranslation();
+  
+  const [userScores, setUserScores] = useState<Score[] | undefined>();
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (!userId) return;
+
+    setError(null);
+
+    ApiClient.score
+      .getScoresForUser(userId)
+      .then(setUserScores)
+      .catch((err: any) => setError(err?.localeKey ?? 'something_went_wrong'));
+  }, [userId, t]);
+
+  const chartData = userScores
+    ? [...userScores.slice(0, 10)].reverse().map((s) => ({
+        scored: s.winner_id === userId ? s.winner_score : s.loser_score,
+        conceded: s.winner_id === userId ? s.loser_score : s.winner_score,
+      }))
+    : [];
+
+  if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
+  if (!userScores) return <div className="tsc-info-message text-center">{t('loading')}</div>;
+  
   return (
     <div className="flex w-full justify-center items-center h-40 pr-10">
       <ResponsiveContainer width="80%" height="80%">
-        <AreaChart data={goalData}>
+        <AreaChart data={chartData}>
           <defs>
             <linearGradient id="scored" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#a7d4373c" stopOpacity={1} />
@@ -45,7 +72,7 @@ const GoalCharts = () => {
             stroke="#fff"
             fillOpacity={1}
             fill="url(#conceded)"
-            name="Opponent"
+            name={t('opponent')}
           />
           <Area
             type="monotone"
@@ -53,7 +80,7 @@ const GoalCharts = () => {
             stroke="#fff"
             fillOpacity={1}
             fill="url(#scored)"
-            name="You"
+            name={t('you')}
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -61,4 +88,3 @@ const GoalCharts = () => {
   );
 };
 
-export default GoalCharts;
