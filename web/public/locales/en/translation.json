@@ -143,5 +143,11 @@
   "win_percentage": "Win Percentage",
   "yes": "Yes",
   "you": "You",
-  "your_page": "Your Page"
+  "your_page": "Your Page",
+  "auth_token_required": "Please log in to access this resource",
+  "auth_token_invalid": "Your session is invalid. Please log in again.",
+  "auth_ownership_required": "You can only access your own resources",
+  "auth_stepup_required": "Please verify your identity to continue",
+  "auth_bypass_required": "Admin access required",
+  "session_expired": "Your session is no longer valid. Please log in again."
 }
