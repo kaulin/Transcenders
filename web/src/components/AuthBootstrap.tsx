@@ -1,5 +1,6 @@
 import { ApiClient } from '@transcenders/api-client';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useApiClient } from '../hooks/useApiClient';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
 import { getTokens } from '../utils/authTokens';
@@ -9,6 +10,7 @@ export default function AuthBootstrap({ children }: { children: ReactNode }) {
   const { clearTokens, setTokens, setAccessToken } = useAuth();
   const { setUser } = useUser();
   const hasRunOnce = useRef(false);
+  const api = useApiClient();
 
   useEffect(() => {
     // Prevent double execution in React StrictMode
@@ -22,7 +24,7 @@ export default function AuthBootstrap({ children }: { children: ReactNode }) {
       if (accessToken) {
         try {
           setAccessToken(accessToken);
-          const user = await ApiClient.auth.getCurrentUser();
+          const user = await api(() => ApiClient.auth.getCurrentUser());
           setUser(user);
           setReady(true);
           return;
@@ -36,7 +38,7 @@ export default function AuthBootstrap({ children }: { children: ReactNode }) {
         try {
           const tokens = await ApiClient.auth.refreshToken(refreshToken);
           setTokens(tokens);
-          const user = await ApiClient.auth.getCurrentUser();
+          const user = await api(() => ApiClient.auth.getCurrentUser());
           setUser(user);
         } catch {
           clearTokens();
@@ -49,7 +51,7 @@ export default function AuthBootstrap({ children }: { children: ReactNode }) {
     }
 
     autoLogin();
-  }, [clearTokens, setUser, setTokens, setAccessToken]);
+  }, [clearTokens, setUser, setTokens, setAccessToken, api]);
 
   if (!ready) return null;
   return <>{children}</>;
