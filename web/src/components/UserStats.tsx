@@ -21,9 +21,18 @@ export default function UserStats({userId}: UserStatsProps) {
     ApiClient.score
       .getStatsForUser(userId)
       .then(setUserStats)
-      .catch(() => setError(t('something_went_wrong')));
+      .catch((err: any) => setError(err?.localeKey ?? 'something_went_wrong'));
   }, [userId, t]);
   
+  if (error) {
+    return (
+      <div className="flex flex-col font-fascinate uppercase text-center">
+        <p className="text-xl sm:text-2xl text-[#fff] mb-2">{t('games_played')}</p>
+        <div className="tsc-error-message text-center">{t(error)}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col font-fascinate uppercase text-center">
       <p className="text-xl sm:text-2xl text-[#fff] mb-2">{t('games_played')}</p>
