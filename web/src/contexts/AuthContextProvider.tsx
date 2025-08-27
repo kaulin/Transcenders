@@ -1,25 +1,15 @@
 import { ApiClient } from '@transcenders/api-client';
-import type { AuthData } from '@transcenders/contracts';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { clearAllTokens, getTokens, saveAccessToken, saveTokens } from '../utils/authTokens';
+import { clearAllTokens, getTokens, saveAccessToken } from '../utils/authTokens';
 import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [{ accessToken, refreshToken }, setState] = useState(() => getTokens());
+  const [{ accessToken }, setState] = useState(() => getTokens());
 
   useEffect(() => {
     ApiClient.setAuthToken(accessToken);
   }, [accessToken]);
-
-  const setTokens = useCallback((tokens: AuthData) => {
-    saveTokens(tokens);
-    setState({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    });
-    ApiClient.setAuthToken(tokens.accessToken);
-  }, []);
 
   const setAccessToken = useCallback((token: string) => {
     saveAccessToken(token);
@@ -29,13 +19,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const clearTokens = useCallback(() => {
     clearAllTokens();
-    setState({ accessToken: undefined, refreshToken: undefined });
+    setState({ accessToken: undefined });
     ApiClient.setAuthToken();
   }, []);
 
   const value = useMemo(
-    () => ({ accessToken, refreshToken, setTokens, setAccessToken, clearTokens }),
-    [accessToken, refreshToken, setTokens, setAccessToken, clearTokens],
+    () => ({ accessToken, setAccessToken, clearTokens }),
+    [accessToken, setAccessToken, clearTokens],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
