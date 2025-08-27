@@ -1,7 +1,6 @@
 import { ApiClient } from '@transcenders/api-client';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTokens } from '../utils/authTokens';
 import { useAuth } from './useAuth';
 import { usePlayers } from './usePlayers';
 import { useUser } from './useUser';
@@ -19,13 +18,16 @@ export function useLogout() {
   const { clearTokens } = useAuth();
   const navigate = useNavigate();
 
+  const getCookie = (key: string) => {
+    const cookies = document.cookie.match('(^|;)\\s*' + key + '\\s*=\\s*([^;]+)');
+    return cookies ? cookies.pop() : '';
+  };
+
   const logout = useCallback(
     async (localeKey?: string) => {
       try {
-        // Try to logout backend
-        const refreshToken = getTokens().refreshToken;
-        if (user && refreshToken) {
-          await ApiClient.auth.logout(user.id, refreshToken);
+        if (user) {
+          await ApiClient.auth.logout(user.id, getCookie('csrf'));
         }
       } catch {
         // cleanup local even on failure, so ignore errors
