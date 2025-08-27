@@ -66,6 +66,7 @@
   "online": "Võrgus",
   "online_log_in": "Logi sisse, et mängida võrgus",
   "one_v_one": "Üks ühele",
+  "opponent_score": "",
   "password": "Parool",
   "pause": "Paus",
   "paused": "PAWS-tatud",
@@ -130,5 +131,6 @@
   "welcome": "Tere tulemas Pongi mängima",
   "winner": "Võitja",
   "wins": "Võidud",
-  "yes": "Jah"
+  "yes": "Jah",
+  "your_score": ""
 }
