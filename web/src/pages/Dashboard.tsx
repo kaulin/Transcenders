@@ -42,7 +42,7 @@ const Dashboard = () => {
       <div className="box-section bg-[#6e5d41]/10 justify-between">
         <ProfileSection user={viewedUser} />
 
-        <div className="w-full flex flex-col items-center justify-center">
+        <div className="w-full flex flex-col items-center justify-center gap-6">
           {user?.id === viewedUser?.id ? (
             <FriendsList userId={viewedUser?.id} />
           ) : (
@@ -63,8 +63,10 @@ const Dashboard = () => {
         <PieChartSection userId={viewedUser?.id} />
 
         <div className="flex flex-col items-center w-full">
-          <p className="text-center text-[#fff] font-fascinate text-xl uppercase">{t('latest_outcomes')}</p>
-          <GoalChart userId={viewedUser?.id}/>
+          <p className="text-center text-[#fff] font-fascinate text-xl uppercase">
+            {t('latest_outcomes')}
+          </p>
+          <GoalChart userId={viewedUser?.id} />
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex gap-2 items-center text-white">
               <div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
@@ -80,7 +82,7 @@ const Dashboard = () => {
 
       <div className="box-section bg-[#6e5d41]/10 justify-between">
         <p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
-        <div className="relative w-80 h-[823px] px-4 overflow-y-auto custom-scrollbar">
+        <div className="relative w-80 h-[823px] bg-[#6e5d41]/5 rounded-lg px-4 py-10 overflow-y-auto custom-scrollbar">
           <MatchHistory userId={viewedUser?.id} />
         </div>
       </div>
