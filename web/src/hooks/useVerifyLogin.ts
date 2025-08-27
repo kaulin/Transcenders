@@ -1,16 +1,18 @@
 import { ApiClient } from '@transcenders/api-client';
-import { decodeToken, type AuthData, type LoginUser, type User } from '@transcenders/contracts';
+import { decodeToken, type LoginUser } from '@transcenders/contracts';
 import { usePlayers } from '../hooks/usePlayers';
+import { useApiClient } from './useApiClient';
 
 const useVerifyLogin = () => {
   const { setPlayer } = usePlayers();
+  const api = useApiClient();
 
   async function login(username: string, password: string, playerNumber: number) {
     const loginInfo: LoginUser = { username, password };
-    const authData = await ApiClient.auth.login(loginInfo);
+    const authData = await api(() => ApiClient.auth.login(loginInfo));
     const payload = decodeToken(authData.accessToken);
 
-    const user = await ApiClient.user.getUserById(payload.userId);
+    const user = await api(() => ApiClient.user.getUserById(payload.userId));
 
     setPlayer(playerNumber, {
       id: user.id,
