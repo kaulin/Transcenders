@@ -1,29 +1,70 @@
-const MatchHistory = () => {
+import { ApiClient } from "@transcenders/api-client";
+import { Score } from "@transcenders/contracts";
+import { useUser } from "../hooks/useUser";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+type MatchHistoryProps = {
+  userId: number | undefined;
+};
+
+export default function MatchHistory({userId}: MatchHistoryProps) {
+  const { t } = useTranslation();
+  const { user } = useUser();
+
+  const [userScores, setUserScores] = useState<Score[] | undefined>();
+  const [usernames, setUsernames] = useState<Record<number, string>>({});
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (!userId) return;
+
+    setError(null);
+
+    ApiClient.score
+      .getScoresForUser(userId)
+      .then(async (scores) => {
+        setUserScores(scores);
+
+        const ids = [...new Set(scores.flatMap((s) => [s.winner_id, s.loser_id]))];
+
+        const users = await Promise.all(
+          ids.map((id) =>
+            ApiClient.user
+              .getUserById(id)
+              .then((u) => [id, u.username] as const)
+              .catch(() => [id, `User#${id}`] as const),
+          ),
+        );
+
+        setUsernames(Object.fromEntries(users));
+      })
+      .catch((err: any) => setError(err?.localeKey ?? 'something_went_wrong'));
+  }, [userId, t]);
+  
+  if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
+  if (!userScores) return <div className="tsc-info-message text-center">{t('loading')}</div>;
+  
   return (
     <div className="relative h-full w-full px-2 overflow-y-auto custom-scrollbar flex flex-col gap-12">
-      {[
-        { outcome: 'win', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'loss', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'win', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'loss', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'win', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'win', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'loss', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'win', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'loss', p1: 'Player1', p2: 'Player2', date: '24/05' },
-        { outcome: 'win', p1: 'Player1', p2: 'Player2', date: '24/05' },
-      ].map(({ outcome, p1, p2, date }) => (
+      {userScores?.map(({ winner_id, loser_id, winner_score, loser_score }) => (
         <div className="flex flex-col justify-center items-center">
-          <div className="flex justify-center items-center gap-6">
-            <div className="text-[#fff] font-fascinate uppercase text-xl">{outcome}</div>
-            <div className="text-[#fff]">{date}</div>
+          <div className="w-full flex justify-between text-[#fff] ">
+            <div className="font-fascinate uppercase text-xl">
+              {winner_id === user?.id ? 'win' : 'loss'}
+            </div>
+            <div className="text-[#fff]">26/08</div>
           </div>
-          <div className="text-[#fff]">{p1}</div>
-          <div className="text-[#fff]">{p2}</div>
+          <div className="w-full flex justify-between items-center text-[#fff]">
+            <div>{usernames[winner_id] ?? t('loading')}</div>
+            <div>{winner_score}</div>
+          </div>
+          <div className="w-full flex justify-between items-center text-[#fff]">
+            <div>{usernames[loser_id] ?? t('loading')}</div>
+            <div>{loser_score}</div>
+          </div>
         </div>
       ))}
     </div>
   );
 };
-
-export default MatchHistory;
