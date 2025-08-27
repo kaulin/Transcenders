@@ -1,13 +1,15 @@
 import { ApiClient } from "@transcenders/api-client";
+
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import type { Stats } from "@transcenders/contracts";
 
 type UserStatsProps = {
   userId: number | undefined;
 };
 
-export default function UserStats({userId}: UserStatsProps) {
+export default function UserStatsSection({userId}: UserStatsProps) {
   const { t } = useTranslation();
   
   const [userStats, setUserStats] = useState<Stats | undefined>(undefined);
