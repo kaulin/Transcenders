@@ -52,6 +52,7 @@
   "invalid_file_type": "Väärä tiedostotyyppi",
   "invalid_username": "Käyttäjänimi on liian lyhyt",
   "language": "Kieli",
+  "latest_outcomes": "Viimeisimmät tulokset",
   "loading": "Ladataan...",
   "log_in": "Kirjaudu sisään",
   "log_out": "Kirjaudu ulos",
@@ -66,7 +67,7 @@
   "online": "paikalla",
   "online_log_in": "Kirjaudu sisään",
   "one_v_one": "Kaksinpeli",
-  "opponent_score": "Vastustajan pisteet",
+  "opponent": "Vastustaja",
   "password": "Salasana",
   "pause": "Tauko",
   "paused": "KÄPÄLÄ-TAUKO",
@@ -132,5 +133,5 @@
   "winner": "Voittaja",
   "wins": "Voitot",
   "yes": "Kyllä",
-  "your_score": "Pisteesi"
+  "you": "Sinä"
 }
