@@ -109,6 +109,14 @@ const commonErrors: Record<Extract<ErrorCode, `COMMON_${string}`>, ErrorDefiniti
     category: 'authorization',
   },
 
+  [ERROR_CODES.COMMON.NO_REFRESH_TOKEN]: {
+    code: ERROR_CODES.COMMON.NO_REFRESH_TOKEN,
+    message: 'No refresh token available',
+    userMessage: 'No refresh token available',
+    httpStatus: 404,
+    category: 'not_found',
+  },
+
   // Authentication plugin errors (used across all services)
   [ERROR_CODES.COMMON.AUTH_TOKEN_REQUIRED]: {
     code: ERROR_CODES.COMMON.AUTH_TOKEN_REQUIRED,
@@ -132,7 +140,6 @@ const commonErrors: Record<Extract<ErrorCode, `COMMON_${string}`>, ErrorDefiniti
     code: ERROR_CODES.COMMON.AUTH_MISSING_PARAMETER,
     message: 'Required authentication parameter is missing',
     userMessage: 'Invalid request format',
-    localeKey: 'auth_missing_parameter',
     httpStatus: 400,
     category: 'validation',
   },
@@ -168,7 +175,7 @@ const commonErrors: Record<Extract<ErrorCode, `COMMON_${string}`>, ErrorDefiniti
     code: ERROR_CODES.COMMON.AUTH_SESSION_INVALID,
     message: 'Session invalid due to security event - full re-authentication required',
     userMessage: 'Your session is no longer valid. Please log in again.',
-    localeKey: 'auth_session_invalid',
+    localeKey: 'security_event_detected',
     httpStatus: 410,
     category: 'authentication',
   },
