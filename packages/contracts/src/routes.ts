@@ -64,9 +64,9 @@ export const AUTH_ROUTES = {
   REGISTER: '/auth/register',
   // POST /auth/refresh, body as RefreshTokenRequest
   REFRESH: '/auth/refresh',
-  // POST /auth/login, body as LoginUser
+  // POST - handle token refresh
   LOGIN: '/auth/login',
-  // POST /auth/logout/, body as LogoutUser
+  // POST - handle user logout
   LOGOUT: '/auth/logout/:id',
   // PATCH /auth/change-password/:id
   CHANGE_PASSWORD: '/auth/change-password/:id',
