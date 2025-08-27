@@ -5,14 +5,13 @@ import {
   googleFlowParamSchema,
   googleUserLogin,
   loginUserSchema,
-  logoutUserSchema,
-  refreshTokenRequestSchema,
   registerUserSchema,
   standardApiResponses,
   stepupRequestSchema,
   userIdParamSchema,
 } from '@transcenders/contracts';
 import { FastifyInstance } from 'fastify';
+import { CookieUtils } from '../../../../packages/server-utils/src/CookieUtils.js';
 import { AuthController } from '../controllers/auth.controller.js';
 
 export async function registerAuthRoutes(app: FastifyInstance) {
@@ -118,11 +117,11 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.LOGOUT,
     {
+      preValidation: [CookieUtils.requireCsrf(), CookieUtils.requireRefreshToken()],
       preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'logout user',
         tags: ['Auth'],
-        body: logoutUserSchema,
         params: userIdParamSchema,
         response: standardApiResponses,
       },
@@ -133,11 +132,11 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.REFRESH,
     {
+      preValidation: [CookieUtils.requireCsrf(), CookieUtils.requireRefreshToken()],
       preHandler: app.authenticate.none(),
       schema: {
         description: 'Refresh Access Token',
         tags: ['Auth'],
-        body: refreshTokenRequestSchema,
         response: standardApiResponses,
       },
     },
