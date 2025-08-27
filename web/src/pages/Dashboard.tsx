@@ -9,6 +9,7 @@ import MatchHistory from '../components/MatchHistory';
 import PieCharts from '../components/PieCharts';
 import { useUser } from '../hooks/useUser';
 
+import { useApiClient } from '../hooks/useApiClient';
 import avatarCat1 from '/images/avatarCat1.avif';
 import avatarCat2 from '/images/avatarCat2.avif';
 import avatarCat3 from '/images/avatarCat3.avif';
@@ -52,14 +53,14 @@ const Dashboard = () => {
   const [viewedUser, setViewedUser] = useState<User | null>(user);
   const [searchedUser, setSearchedUser] = useState('');
   const [error, setError] = useState<string | null>(null);
-
+  const api = useApiClient();
   const handleSearch = async () => {
     setError(null);
 
     if (!searchedUser?.trim()) return;
 
     try {
-      const user = await ApiClient.user.getUserExact({ username: searchedUser });
+      const user = await api(() => ApiClient.user.getUserExact({ username: searchedUser }));
       setViewedUser(user);
     } catch (err: any) {
       setError(t(err.localeKey) || t('something_went_wrong'));
