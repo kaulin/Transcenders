@@ -1,25 +1,27 @@
 import { ApiClient } from '@transcenders/api-client';
 import { decodeToken, type AuthData, type LoginUser } from '@transcenders/contracts';
 import { useUser } from '../hooks/useUser';
+import { useApiClient } from './useApiClient';
 import { useAuth } from './useAuth';
 
 const useAuthLogin = () => {
   const { setUser } = useUser();
   const { setTokens } = useAuth();
+  const api = useApiClient();
 
   async function login(username: string, password: string, code?: string) {
     const loginInfo: LoginUser = { username, password, code };
-    const tokens = await ApiClient.auth.login(loginInfo);
+    const tokens = await api(() => ApiClient.auth.login(loginInfo));
     setTokens(tokens);
     const payload = decodeToken(tokens.accessToken);
 
-    const user = await ApiClient.user.getUserById(payload.userId);
+    const user = await api(() => ApiClient.user.getUserById(payload.userId));
     setUser(user);
   }
 
   async function loginWithTokens(tokens: AuthData) {
     setTokens(tokens);
-    const user = await ApiClient.auth.getCurrentUser();
+    const user = await api(() => ApiClient.auth.getCurrentUser());
     setUser(user);
   }
 
