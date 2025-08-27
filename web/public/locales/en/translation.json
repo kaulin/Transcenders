@@ -66,6 +66,7 @@
   "online": "Online",
   "online_log_in": "Log in to play online",
   "one_v_one": "One v One",
+  "opponent_score": "Opponent's score",
   "password": "Password",
   "pause": "Pause",
   "paused": "PAW-SED",
@@ -130,5 +131,6 @@
   "welcome": "Welcome to play Pong",
   "winner": "Winner",
   "wins": "Wins",
-  "yes": "Yes"
+  "yes": "Yes",
+  "your_score": "Your score"
 }
