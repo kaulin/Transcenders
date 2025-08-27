@@ -85,21 +85,25 @@ export class AuthApiClient extends TypedApiClient {
     return this.callAuthService(endpoint, userSchema);
   }
 
-  static async refreshToken(refreshToken: string) {
+  static async refreshToken(csrf?: string) {
     const endpoint = `${AUTH_ROUTES.REFRESH}`;
     const options: ApiCallOptions = {
       method: 'POST',
-      body: { refreshToken },
     };
+    if (csrf) {
+      options.headers = { 'X-CSRF-Token': csrf };
+    }
     return this.callAuthService(endpoint, authDataSchema, options);
   }
 
-  static async logout(userId: number, refreshToken: string) {
+  static async logout(userId: number, csrf?: string) {
     const endpoint = `${AUTH_ROUTES.LOGOUT.replace(':id', userId.toString())}`;
     const options: ApiCallOptions = {
       method: 'POST',
-      body: { refreshToken },
     };
+    if (csrf) {
+      options.headers = { 'X-CSRF-Token': csrf };
+    }
     return this.callAuthService(endpoint, BooleanOperationResultSchema, options);
   }
 
