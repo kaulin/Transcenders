@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { ApiClient } from "@transcenders/api-client";
 import { Score } from "@transcenders/contracts";
 import { useUser } from "../hooks/useUser";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 type MatchHistoryProps = {
   userId: number | undefined;
@@ -44,6 +45,7 @@ export default function MatchHistory({userId}: MatchHistoryProps) {
   
   if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
   if (!userScores) return <div className="tsc-info-message text-center">{t('loading')}</div>;
+  if (userScores.length === 0) return <div className="tsc-info-message text-center">{t('not_available')}</div>;
   
   return (
     <div className="relative h-full w-full px-2 overflow-y-auto custom-scrollbar flex flex-col gap-12">
