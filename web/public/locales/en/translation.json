@@ -52,6 +52,7 @@
   "invalid_file_type": "Invalid file type",
   "invalid_username": "Invalid username",
   "language": "Language",
+  "latest_outcomes": "Latest outcomes",
   "loading": "Loading...",
   "log_in": "Log in",
   "log_out": "Log out",
@@ -66,7 +67,7 @@
   "online": "Online",
   "online_log_in": "Log in to play online",
   "one_v_one": "One v One",
-  "opponent_score": "Opponent's score",
+  "opponent": "Opponent",
   "password": "Password",
   "pause": "Pause",
   "paused": "PAW-SED",
@@ -132,5 +133,5 @@
   "winner": "Winner",
   "wins": "Wins",
   "yes": "Yes",
-  "your_score": "Your score"
+  "you": "You"
 }

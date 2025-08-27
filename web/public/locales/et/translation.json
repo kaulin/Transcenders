@@ -52,6 +52,7 @@
   "invalid_file_type": "vale faili tüüp",
   "invalid_username": "Vigane kasutajanimi",
   "language": "Keel",
+  "latest_outcomes": "",
   "loading": "Laeb...",
   "log_in": "Logi sisse",
   "log_out": "Logi välja",
@@ -66,7 +67,7 @@
   "online": "Võrgus",
   "online_log_in": "Logi sisse, et mängida võrgus",
   "one_v_one": "Üks ühele",
-  "opponent_score": "",
+  "opponent": "",
   "password": "Parool",
   "pause": "Paus",
   "paused": "PAWS-tatud",
@@ -132,5 +133,5 @@
   "winner": "Võitja",
   "wins": "Võidud",
   "yes": "Jah",
-  "your_score": ""
+  "you": ""
 }
