@@ -1,18 +1,18 @@
-import { ChevronRight, HeartMinus, HeartOff, HeartPlus } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useUser } from '../hooks/useUser';
 import { ApiClient } from '@transcenders/api-client';
 import type { User } from '@transcenders/contracts';
+
 import ProfileSection from '../components/ProfileSection';
 import FriendsList from '../components/FriendsList';
 import FriendActions from '../components/FriendActions';
 import SearchSection from '../components/SearchSection';
 import UserStatsSection from '../components/UserStatsSection';
-import AreaChartSection from '../components/AreaChartSection';
+import GoalChart from '../components/GoalChart';
 import MatchHistory from '../components/MatchHistory';
 import PieChartSection from '../components/PieChartSection';
-import { useUser } from '../hooks/useUser';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -63,16 +63,16 @@ const Dashboard = () => {
         <PieChartSection userId={viewedUser?.id} />
 
         <div className="flex flex-col items-center w-full">
-          <p className="text-center text-[#fff] font-fascinate text-xl uppercase">Latest matches</p>
-          <AreaChartSection />
+          <p className="text-center text-[#fff] font-fascinate text-xl uppercase">{t('latest_outcomes')}</p>
+          <GoalChart userId={viewedUser?.id}/>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex gap-2 items-center text-white">
               <div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
-              {t('your_score')}
+              {t('you')}
             </div>
             <div className="flex gap-2 items-center text-white">
               <div className="w-4 h-4 rounded-full bg-[#5d6b2f52] border border-white"></div>
-              {t('opponent_score')}
+              {t('opponent')}
             </div>
           </div>
         </div>
