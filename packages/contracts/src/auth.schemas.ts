@@ -30,11 +30,6 @@ export const loginUserSchema = Type.Object({
 });
 export type LoginUser = Static<typeof loginUserSchema>;
 
-export const logoutUserSchema = Type.Object({
-  refreshToken: Type.String(),
-});
-export type LogoutUser = Static<typeof logoutUserSchema>;
-
 export const userCredentialsEntrySchema = Type.Object({
   user_id: UserIdField,
   pw_hash: PwHashField,
@@ -64,18 +59,18 @@ export type UserCredentials = Static<typeof userCredentialsSchema>;
 
 export const authDataSchema = Type.Object({
   accessToken: Type.String(),
-  refreshToken: Type.String(),
   expiresIn: Type.Number(),
 });
 export type AuthData = Static<typeof authDataSchema>;
 
+export const loginResultSchema = Type.Intersect([
+  authDataSchema,
+  Type.Object({ refreshToken: Type.String() }),
+]);
+export type LoginResult = Static<typeof loginResultSchema>;
+
 export const authDataAccessOnlySchema = Type.Pick(authDataSchema, ['accessToken']);
 export type authDataAccessOnly = Static<typeof authDataAccessOnlySchema>;
-
-export const refreshTokenRequestSchema = Type.Object({
-  refreshToken: Type.String(),
-});
-export type RefreshTokenRequest = Static<typeof refreshTokenRequestSchema>;
 
 export const deviceInfoSchema = Type.Object({
   userAgent: Type.Optional(Type.String()),
