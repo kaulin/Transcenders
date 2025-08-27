@@ -6,13 +6,13 @@ import { useAuth } from './useAuth';
 
 const useAuthLogin = () => {
   const { setUser } = useUser();
-  const { setTokens } = useAuth();
+  const { setAccessToken } = useAuth();
   const api = useApiClient();
 
   async function login(username: string, password: string, code?: string) {
     const loginInfo: LoginUser = { username, password, code };
     const tokens = await api(() => ApiClient.auth.login(loginInfo));
-    setTokens(tokens);
+    setAccessToken(tokens.accessToken);
     const payload = decodeToken(tokens.accessToken);
 
     const user = await api(() => ApiClient.user.getUserById(payload.userId));
@@ -20,7 +20,7 @@ const useAuthLogin = () => {
   }
 
   async function loginWithTokens(tokens: AuthData) {
-    setTokens(tokens);
+    setAccessToken(tokens.accessToken);
     const user = await api(() => ApiClient.auth.getCurrentUser());
     setUser(user);
   }
