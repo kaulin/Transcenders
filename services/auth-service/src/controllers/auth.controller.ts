@@ -7,14 +7,13 @@ import {
   GoogleFlows,
   GoogleUserLogin,
   LoginUser,
-  LogoutUser,
-  RefreshTokenRequest,
   RegisterUser,
   StepupRequest,
   UserIdParam,
 } from '@transcenders/contracts';
 import { DeviceUtils, ENV, TokenValidator } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { CookieUtils } from '../../../../packages/server-utils/src/CookieUtils.js';
 import { AuthService } from '../services/auth.service.js';
 
 export class AuthController {
@@ -25,7 +24,8 @@ export class AuthController {
 
   static async login(request: FastifyRequest, reply: FastifyReply) {
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-    const result = await AuthService.login(request.body as LoginUser, deviceInfo);
+    const loginResult = await AuthService.login(request.body as LoginUser, deviceInfo);
+    const result = CookieUtils.handleLoginResponse(reply, loginResult);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
@@ -56,7 +56,8 @@ export class AuthController {
   static async googleLogin(request: FastifyRequest, reply: FastifyReply) {
     const { code } = request.body as GoogleUserLogin;
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-    const result = await AuthService.googleLogin(code, deviceInfo);
+    const loginResult = await AuthService.googleLogin(code, deviceInfo);
+    const result = CookieUtils.handleLoginResponse(reply, loginResult);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
@@ -71,15 +72,17 @@ export class AuthController {
   static async logout(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
-    const { refreshToken } = request.body as LogoutUser;
+    const refreshToken = request.cookies.rt;
     const result = await AuthService.logout(userId, refreshToken);
+    CookieUtils.clearCookies(reply);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async refresh(request: FastifyRequest, reply: FastifyReply) {
-    const { refreshToken } = request.body as RefreshTokenRequest;
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-    const result = await AuthService.refreshToken(refreshToken, deviceInfo);
+    const refreshToken = request.cookies.rt;
+    const loginResult = await AuthService.refreshToken(refreshToken, deviceInfo);
+    const result = CookieUtils.handleLoginResponse(reply, loginResult);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
