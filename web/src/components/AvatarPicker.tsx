@@ -4,6 +4,7 @@ import { AvatarConfig, DefaultAvatar, RandomAvatar, ServiceError } from '@transc
 import { ChevronLeft, ChevronRight, Dice5, Upload } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useApiClient } from '../hooks/useApiClient';
 import { useAvatarTransform } from '../hooks/useAvatarTransform';
 import { useTokenElevation } from '../hooks/useTokenElevation';
 import { useUser } from '../hooks/useUser';
@@ -19,6 +20,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
   const { isElevated } = useTokenElevation();
   const { getTransformFromUrl } = useAvatarTransform();
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   // Default avatar setup
   const [avatars, setAvatars] = useState<DefaultAvatar[]>([]);
@@ -29,7 +31,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
     (async () => {
       try {
         setLoading(true);
-        const { avatars } = await ApiClient.user.getDefaultAvatars();
+        const { avatars } = await api(() => ApiClient.user.getDefaultAvatars());
         setAvatars(avatars);
       } catch (err) {
         if (err instanceof ServiceError) setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -57,7 +59,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
     setError(null);
     if (!user) return;
     try {
-      const res = await ApiClient.user.setDefaultAvatar(user.id, avatars[idx].name);
+      const res = await api(() => ApiClient.user.setDefaultAvatar(user.id, avatars[idx].name));
       setUser((prev) => (prev ? { ...prev, avatar: res.url } : prev));
     } catch (err) {
       if (err instanceof ServiceError) setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -105,13 +107,13 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
     if (prefetchingRef.current) return;
     prefetchingRef.current = true;
     try {
-      const cats = await ApiClient.user.getRandomCats({ limit: BATCH_SIZE });
+      const cats = await api(() => ApiClient.user.getRandomCats({ limit: BATCH_SIZE }));
       await preloadImages(cats);
       setQueue((prev) => [...prev, ...cats]);
     } finally {
       prefetchingRef.current = false;
     }
-  }, [preloadImages]);
+  }, [preloadImages, api]);
 
   // Prime once
   useEffect(() => {
@@ -139,7 +141,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
       let picked: RandomAvatar | undefined;
 
       if (queue.length === 0) {
-        const cats = await ApiClient.user.getRandomCats({ limit: BATCH_SIZE });
+        const cats = await api(() => ApiClient.user.getRandomCats({ limit: BATCH_SIZE }));
         picked = cats[0];
         if (picked) {
           setQueue((prev) => [...prev, ...cats.slice(1)]);
@@ -156,7 +158,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
 
       if (!picked) return;
 
-      const updated = await ApiClient.user.setWebAvatar(user.id, picked.url);
+      const updated = await api(() => ApiClient.user.setWebAvatar(user.id, picked.url));
       setUser(updated);
     } catch (err) {
       if (err instanceof ServiceError) setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -192,7 +194,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
 
     try {
       setUploading(true);
-      const res = await ApiClient.user.uploadAvatar(user.id, file);
+      const res = await api(() => ApiClient.user.uploadAvatar(user.id, file));
       const cacheBusted = `${res.url}?t=${Date.now()}`;
       setUser((prev) => (prev ? { ...prev, avatar: cacheBusted } : prev));
       if (fileInputRef.current) fileInputRef.current.value = '';
