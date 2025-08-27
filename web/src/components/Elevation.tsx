@@ -2,6 +2,7 @@ import { ApiClient } from '@transcenders/api-client';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import { useApiClient } from '../hooks/useApiClient';
 import { useAuth } from '../hooks/useAuth';
 import { useTokenElevation } from '../hooks/useTokenElevation';
 import { useUser } from '../hooks/useUser';
@@ -20,6 +21,7 @@ export default function ElevationSection() {
   const { search } = useLocation();
   const handledOAuthOnce = useRef(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const api = useApiClient();
 
   // Handle Google step-up callback (?code=...) on /profile
   useEffect(() => {
@@ -33,13 +35,13 @@ export default function ElevationSection() {
     window.history.replaceState({}, '', window.location.pathname);
     (async () => {
       try {
-        const { accessToken } = await ApiClient.auth.stepupGoogle(userId, code);
+        const { accessToken } = await api(() => ApiClient.auth.stepupGoogle(userId, code));
         setAccessToken(accessToken);
       } catch (err: any) {
         setLocalError(err?.localeKey ?? 'google_auth_failed');
       }
     })();
-  }, [search, userId, setAccessToken]);
+  }, [search, userId, setAccessToken, api]);
 
   if (!userId || isElevated.isElevated) return null;
 
