@@ -42,7 +42,7 @@ function PieChartBlock({ title, data}: ChartConfig) {
           ))}
         </div>
 
-        <div className="w-40 text-center">
+        <div className="flex justify-end w-40 text-center">
           <p className="tsc-info-message">{t('not_available')}</p>
         </div>
       </div>
