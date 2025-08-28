@@ -679,8 +679,11 @@ export class AuthService {
     );
   }
 
-  static async getCurrentUser(userId: number): Promise<ServiceResult<User>> {
+  static async getCurrentUser(userId: number | undefined): Promise<ServiceResult<User>> {
     return ResultHelper.executeOperation('get current authenticated user', async () => {
+      if (!userId) {
+        throw new ServiceError(ERROR_CODES.COMMON.AUTH_TOKEN_REQUIRED);
+      }
       const user = await ApiClient.user.getUserById(userId);
       return user;
     });
