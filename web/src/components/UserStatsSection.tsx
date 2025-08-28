@@ -37,6 +37,8 @@ export default function UserStatsSection({userId}: UserStatsProps) {
         label={t('losses')}
         value={(userStats?.total_games ?? 0) - (userStats?.total_wins ?? 0)}
       />
+      <StatRow label={t('average_score')} value={(userStats?.average_score ?? 0).toFixed(1)} />
+      <StatRow label={t('win_percentage')} value={(userStats?.total_win_percentage ?? 0).toFixed(1)} />
     </>
   );
 };

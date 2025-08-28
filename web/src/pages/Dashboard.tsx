@@ -58,9 +58,9 @@ const Dashboard = () => {
         />
       </div>
 
-      <div className="box-section bg-[#6e5d41]/10 justify-between gap-24">
+      <div className="box-section bg-[#6e5d41]/10 justify-between gap-12">
         <div className="flex flex-col text-center">
-          <p className="text-xl sm:text-2xl font-fascinate uppercase text-[#fff] mb-2">
+          <p className="w-[300px] text-xl sm:text-2xl font-fascinate uppercase text-[#fff] mb-2">
             {t('games_played')}
           </p>
           <UserStatsSection userId={viewedUser?.id} />
