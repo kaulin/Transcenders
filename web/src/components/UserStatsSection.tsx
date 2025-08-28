@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { Stats } from "@transcenders/contracts";
+import StatRow from "./StatRow";
 
 type UserStatsProps = {
   userId: number | undefined;
@@ -26,30 +27,16 @@ export default function UserStatsSection({userId}: UserStatsProps) {
       .catch((err: any) => setError(err?.localeKey ?? 'something_went_wrong'));
   }, [userId, t]);
   
-  if (error) {
-    return (
-      <div className="flex flex-col font-fascinate uppercase text-center">
-        <p className="text-xl sm:text-2xl text-[#fff] mb-2">{t('games_played')}</p>
-        <div className="tsc-error-message text-center">{t(error)}</div>
-      </div>
-    );
-  }
+  if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
 
   return (
-    <div className="flex flex-col font-fascinate uppercase text-center">
-      <p className="text-xl sm:text-2xl text-[#fff] mb-2">{t('games_played')}</p>
-      <div className="flex justify-between text-sm sm:text-base">
-        <p>{t('total')}</p>
-        <p className="font-sans">{userStats?.total_games ?? 0}</p>
-      </div>
-      <div className="flex justify-between text-sm sm:text-base">
-        <p>{t('wins')}</p>
-        <p className="font-sans">{userStats?.total_wins ?? 0}</p>
-      </div>
-      <div className="flex justify-between text-sm sm:text-base">
-        <p>{t('losses')}</p>
-        <p className="font-sans">{(userStats?.total_games ?? 0) - (userStats?.total_wins ?? 0)}</p>
-      </div>
-    </div>
+    <>
+      <StatRow label={t('total')} value={userStats?.total_games ?? 0} />
+      <StatRow label={t('wins')} value={userStats?.total_wins ?? 0} />
+      <StatRow
+        label={t('losses')}
+        value={(userStats?.total_games ?? 0) - (userStats?.total_wins ?? 0)}
+      />
+    </>
   );
 };
