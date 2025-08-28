@@ -59,7 +59,12 @@ const Dashboard = () => {
       </div>
 
       <div className="box-section bg-[#6e5d41]/10 justify-between gap-24">
-        <UserStatsSection userId={viewedUser?.id} />
+        <div className="flex flex-col text-center">
+          <p className="text-xl sm:text-2xl font-fascinate uppercase text-[#fff] mb-2">
+            {t('games_played')}
+          </p>
+          <UserStatsSection userId={viewedUser?.id} />
+        </div>
         <PieChartSection userId={viewedUser?.id} />
 
         <div className="flex flex-col items-center w-full">
@@ -82,7 +87,7 @@ const Dashboard = () => {
 
       <div className="box-section bg-[#6e5d41]/10 justify-between">
         <p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
-        <div className="relative w-80 h-[823px] bg-[#6e5d41]/5 rounded-lg px-4 py-10 overflow-y-auto custom-scrollbar">
+        <div className="relative w-80 h-[823px] bg-[#6e5d41]/5 rounded-lg px-4 py-14 overflow-y-auto custom-scrollbar">
           <MatchHistory userId={viewedUser?.id} />
         </div>
       </div>
