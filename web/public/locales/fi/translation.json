@@ -4,6 +4,7 @@
   "add_friend": "Lisää kaveriksi",
   "avatar": "Valitse avatar",
   "avatar_preview": "Avatarin esikatselu",
+  "average_score": "Keskiarvopisteet",
   "back_to_home": "Takaisin Kotiin",
   "block_user": "Estä käyttäjä",
   "cancel": "Peruuta",
@@ -133,6 +134,7 @@
   "welcome": "Tervetuloa pelaamaan Pongia",
   "winner": "Voittaja",
   "wins": "Voitot",
+  "win_percentage": "Voittoprosentti",
   "yes": "Kyllä",
   "you": "Sinä"
 }
