@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApiClient } from '@transcenders/api-client';
 import type { User } from '@transcenders/contracts';
-import { HeartHandshake, MessageCircleHeart } from 'lucide-react';
+import { Heart, HeartHandshake, MessageSquareHeart, MessageCircleHeart } from 'lucide-react';
 
 type FriendsListProps = {
   userId: number | undefined;
@@ -50,10 +50,10 @@ export default function FriendsList({ userId }: FriendsListProps) {
           ))}
         </div>
       </div>
-      <div className="w-80 bg-[#6e5d41]/5 rounded-lg flex justify-around uppercase">
-        <MessageCircleHeart className="h-5"/>
+      <div className="w-80 bg-[#6e5d41]/5 rounded-lg p-2 flex justify-center gap-2 text-sm uppercase">
         {t('friend_requests')}
-        <p>(2)</p>
+        <MessageSquareHeart className="h-5 text-[#daf98cd5]" />
+        {/* <p>(2)</p> */}
       </div>
     </>
   );

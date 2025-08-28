@@ -12,37 +12,82 @@ export default function FriendActions({viewedId}: FriendActionsProps) {
   const { t } = useTranslation();
   const { user } = useUser();
   
-  const [isFriend, setIsFriend] = useState<boolean>(false);
+  const [friendshipStatus, setFriendshipStatus] = useState<boolean>(false);
+  const [requestStatus, setRequestStatus] = useState<"idle" | "sent">("idle");
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {    
       async function verifyFriendshipStatus() {
         if (!user?.id || !viewedId)
         return;
       
-      const friendshipStatus = await ApiClient.user.checkFriendshipExists(user?.id, viewedId);
-      setIsFriend(friendshipStatus.success);
+      const friendship = await ApiClient.user.checkFriendshipExists(user?.id, viewedId);
+      setFriendshipStatus(friendship.success);
     };
     
     verifyFriendshipStatus();
   }, [viewedId]);
   
-  return (    
-      <div className="flex flex-col h-[500px] justify-start p-10">
-        {isFriend ? (
-          <button className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4">
-            <HeartMinus className="text-[#786647]" />
-            {t('remove_friend')}
-          </button>
-        ) : (
-          <button className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4">
-            <HeartPlus className="text-[#786647]" />
-            {t('add_friend')}
-          </button>
-        )}
-      {/* <button className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4">
-        <HeartOff className="text-[#786647]" />
-        {t('block_user')}
-      </button> */}
+  const handleAdd = async () => {
+    if (!user?.id || !viewedId)
+    return;
+  
+    setError(null);
+  
+    try {
+      await ApiClient.user.sendFriendRequest(user.id, viewedId);
+      setRequestStatus("sent");
+      
+      // setTimeout(() => setRequestStatus("pending"), 1000);
+      
+    } catch (err: any) {
+      setError(err?.localeKey || 'something_went_wrong');
+    }
+  }
+  
+  // const handleCancel = async () => {
+  //   setError(null);
+    
+  //   try {
+  //     await ApiClient.user.declineFriendRequest(12, 1);
+  //     setStatus("idle");
+      
+  //   } catch (err: any) {
+  //     setError(err.localeKey || 'something_went_wrong');
+  //   }
+  // }
+  
+  return (
+    <div className="flex flex-col h-[500px] justify-start p-10">
+      {requestStatus === 'idle' && (
+        <button
+          onClick={handleAdd}
+          className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"
+        >
+          <HeartPlus className="text-[#786647]" />
+          {t('add_friend')}
+        </button>
+      )}
+
+      {requestStatus === 'sent' && (
+        <button
+          disabled
+          className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4 cursor-not-allowed"
+        >
+          Friend Request Sent
+        </button>
+      )}
+
+      {/* {requestStatus === 'pending' && (
+        <button
+          onClick={handleCancel}
+          className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"
+        >
+          Cancel Request
+        </button>
+      )} */}
+
+      {error && <div className="tsc-error-message text-center">{error}</div>}
     </div>
-    );
+  );
 };
