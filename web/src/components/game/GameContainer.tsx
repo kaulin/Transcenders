@@ -42,7 +42,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
   player2,
 }) => {
   const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
-  const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
   const [isProcessingGameEnd, setIsProcessingGameEnd] = useState(false);
 
@@ -59,11 +58,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
-  
-  //update ref whenever keys change
-  useEffect (() => {
-    keysPressedRef.current = keysPressed;
-  }, [keysPressed]);
 
   // Get current players
   const getCurrentPlayers = () => {
@@ -148,21 +142,13 @@ const GameContainer: React.FC<GameContainerProps> = ({
       if (isProcessingGameEnd || !gameStartTime) return;
       
       const currentPlayers = getCurrentPlayers();
-      console.log('handleGameEnd - currentPlayers:', currentPlayers);
 
-      if (!currentPlayers) {
-        console.log('No current players found!');
-        return;
-      }
-      
+      if (!currentPlayers) return;
+
       setIsProcessingGameEnd(true);
-      
+
       const leftPlayerWon = finalGameState.leftScore > finalGameState.rightScore;
       const actualWinner = leftPlayerWon ? currentPlayers.player1 : currentPlayers.player2;
-      
-      console.log('leftPlayerWon:', leftPlayerWon);
-      console.log('actualWinner:', actualWinner);
-      console.log('winner name being sent:', actualWinner.name);
       
       const gameResult = createGameResult(
         currentPlayers.player1.id,
@@ -210,9 +196,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
       let newState = { ...currentState };
 
       // Move paddles
-      if (gameStateRef.current.status !== GameStatus.RUNNING) {
-        return;
-      }
       if (keysPressedRef.current[Controls.leftPaddle.up.toLowerCase()]) {
         newState.leftPaddle.position.y = Math.max(
           0,
@@ -267,7 +250,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
       } else {
         newState = stateAfterScoring;
       }
-      setGameState(newState);
+    setGameState(newState);
 
     // Continue animation loop regardless of game state (for smooth rendering)
     animationFrameRef.current = requestAnimationFrame(updateGame);
@@ -292,19 +275,15 @@ const GameContainer: React.FC<GameContainerProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['ArrowUp', 'ArrowDown', 'w', 's'].includes(e.key)) {
         e.preventDefault();
+        keysPressedRef.current[e.key.toLowerCase()] = true;
       }
-
-      setKeysPressed((prevKeys) => ({
-        ...prevKeys,
-        [e.key.toLowerCase()]: true,
-      }));
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      setKeysPressed((prevKeys) => ({
-        ...prevKeys,
-        [e.key.toLowerCase()]: false,
-      }));
+      if (['ArrowUp', 'ArrowDown', 'w', 's'].includes(e.key)) {
+        keysPressedRef.current[e.key.toLowerCase()] = false;
+      }
+
     };
 
     window.addEventListener('keydown', handleKeyDown);
