@@ -4,6 +4,7 @@
   "add_friend": "Lisa sõber",
   "avatar": "Vali avatar",
   "avatar_preview": "Avatari vaade",
+  "average_score": "",
   "back_to_home": "Tagasi koju",
   "block_user": "Blokeeri kasutaja",
   "cancel": "Tühista",
@@ -133,6 +134,7 @@
   "welcome": "Tere tulemas Pongi mängima",
   "winner": "Võitja",
   "wins": "Võidud",
+  "win_percentage": "",
   "yes": "Jah",
   "you": ""
 }
