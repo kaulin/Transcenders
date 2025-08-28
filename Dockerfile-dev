@@ -22,3 +22,18 @@ WORKDIR /workspace/services/${SERVICE_NAME}/
 EXPOSE ${SERVICE_PORT} ${DEBUG_PORT}
 
 ENTRYPOINT ["docker-dev-entrypoint.sh"]
+
+# Web development stage
+FROM base AS web
+
+ENV NODE_ENV=development
+ENV SERVICE_NAME=web
+
+# Copy and setup entrypoint script
+COPY scripts/docker-dev-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-dev-entrypoint.sh
+
+WORKDIR /workspace/web/
+EXPOSE 5173
+
+ENTRYPOINT ["docker-dev-entrypoint.sh"]
