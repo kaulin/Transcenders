@@ -1,4 +1,5 @@
 x-service-base: &service-base
+  user: ${HOST_UID:-1000}
   environment:
     - NODE_ENV=development
   restart: 'unless-stopped'
@@ -7,15 +8,8 @@ x-service-base: &service-base
   env_file:
     - .env
   volumes:
-    - type: bind
-      source: .
-      target: /workspace
-    - type: volume
-      source: shared_node_modules
-      target: /workspace/node_modules
-      volume:
-        nocopy: true
-      read_only: true
+    - .:/workspace
+    - shared_node_modules:/workspace/node_modules
 
 x-service-build: &service-build
   context: .
@@ -66,38 +60,16 @@ services:
         DEBUG_PORT: 9229
     <<: *service-base
 
-  package-service:
-    container_name: package-service
-    user: ${HOST_UID:-1000}
-    image: package-service:hive
-    build:
-      <<: *service-build
-      args:
-        SERVICE_NAME: package-service
-    <<: *service-base
-
   web:
     container_name: web
-    user: ${HOST_UID:-1000}
-    image: node:22-alpine
-    working_dir: /workspace
-    command: sh -c "npm run dev:frontend"
+    image: web:hive
     ports:
       - '5173:5173'
-    environment:
-      - NODE_ENV=development
-    depends_on:
-      - deps-service
-    restart: unless-stopped
-    volumes:
-      - type: bind
-        source: .
-        target: /workspace
-      - type: volume
-        source: shared_node_modules
-        target: /workspace/node_modules
-        volume:
-          nocopy: true
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+      target: web
+    <<: *service-base
 
   caddy:
     image: caddy:2
@@ -120,17 +92,15 @@ services:
     image: busybox
     env_file:
       - .env
-    entrypoint: [
+    entrypoint:
+      [
         'sh',
-        node_modules/toad-cache
         '-c',
         'mkdir -p /workspace/node_modules && chown ${HOST_UID}:${HOST_GID} /workspace/node_modules',
       ]
     restart: 'no'
     volumes:
-      - type: bind
-        source: .
-        target: /workspace
+      - .:/workspace
 
   deps-service:
     container_name: deps-service
@@ -143,15 +113,8 @@ services:
       - NODE_ENV=development
     restart: 'no'
     volumes:
-      - type: bind
-        source: .
-        target: /workspace
-        read_only: true
-      - type: volume
-        source: shared_node_modules
-        target: /workspace/node_modules
-        volume:
-          nocopy: true
+      - .:/workspace:ro
+      - shared_node_modules:/workspace/node_modules
 
 volumes:
   shared_node_modules:
