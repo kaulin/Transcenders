@@ -4,6 +4,7 @@
   "add_friend": "Add Friend",
   "avatar": "Choose an avatar",
   "avatar_preview": "Avatar preview",
+  "average_score": "Average Score",
   "back_to_home": "Back to Home",
   "block_user": "Block User",
   "cancel": "Cancel",
@@ -133,6 +134,7 @@
   "welcome": "Welcome to play Pong",
   "winner": "Winner",
   "wins": "Wins",
+  "win_percentage": "Win Percentage",
   "yes": "Yes",
   "you": "You"
 }
