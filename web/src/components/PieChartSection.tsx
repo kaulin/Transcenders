@@ -4,7 +4,8 @@ import { ApiClient } from '@transcenders/api-client';
 import type { Stats } from '@transcenders/contracts';
 import { useEffect, useState, useMemo } from 'react';
 
-const COLORS = ['#a7d4373c', '#5d6b2f52'];
+const COLORS = ['#a7d4373c', '#8198453c', '#8c986d25', '#f3f4f000'];
+// const COLORS = ['#a7d4373c', '#5d6b2f52'];
 
 type PieChartsProps = {
   userId: number | undefined;
@@ -71,7 +72,7 @@ function PieChartBlock({ title, data}: ChartConfig) {
               data={data}
               dataKey="value"
               nameKey="name"
-              cx="50%"
+              cx="70%"
               cy="50%"
               innerRadius={20}
               outerRadius={45}
@@ -132,8 +133,12 @@ export default function PieChartSection({userId}: PieChartsProps) {
         {
           title: t('tournament'),
           data: [
-            { name: t('wins'), value: userStats?.tournament_wins },
-            { name: t('losses'), value: (userStats?.tournament_games ?? 0) - (userStats?.tournament_wins ?? 0) },
+            { name: "1st", value: 5 },
+            { name: "2nd", value: 2 },
+            { name: "3rd", value: 4 },
+            { name: "4th", value: 1 },
+            // { name: t('wins'), value: userStats?.tournament_wins },
+            // { name: t('losses'), value: (userStats?.tournament_games ?? 0) - (userStats?.tournament_wins ?? 0) },
           ],
         },
       ];
