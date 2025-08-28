@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Heart, HeartHandshake, MessageSquareHeart, MessageCircleHeart } from 'lucide-react';
 
 import { useUser } from '../hooks/useUser';
 import { ApiClient } from '@transcenders/api-client';
@@ -7,6 +8,7 @@ import type { User } from '@transcenders/contracts';
 
 import ProfileSection from '../components/ProfileSection';
 import FriendsList from '../components/FriendsList';
+import FriendRequests from '../components/FriendRequests';
 import FriendActions from '../components/FriendActions';
 import SearchSection from '../components/SearchSection';
 import UserStatsSection from '../components/UserStatsSection';
@@ -20,6 +22,7 @@ const Dashboard = () => {
 
   const [viewedUser, setViewedUser] = useState<User | null>(user);
   const [searchedUser, setSearchedUser] = useState<string>('');
+  const [friendView, setFriendView] = useState<'friends' | 'requests'>('friends');
   const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async () => {
@@ -37,6 +40,10 @@ const Dashboard = () => {
     }
   };
 
+  const toggleFriends = () => {
+    setFriendView((prev) => prev === 'friends' ? 'requests' : 'friends')
+  }
+  
   return (
     <div className="box xl:gap-4">
       <div className="box-section bg-[#6e5d41]/10 justify-between">
@@ -44,9 +51,28 @@ const Dashboard = () => {
 
         <div className="w-full flex flex-col items-center justify-center gap-6">
           {user?.id === viewedUser?.id ? (
-            <FriendsList userId={viewedUser?.id} />
+            <>
+              {friendView === 'friends' && <FriendsList userId={viewedUser?.id} />}
+              {friendView === 'requests' && <FriendRequests />}
+              <button
+                onClick={toggleFriends}
+                className="w-80 bg-[#6e5d41]/5 rounded-lg p-2 flex items-center justify-center gap-2"
+              >
+                {friendView === 'friends' ? (
+                  <>
+                    <span>{t('friend_requests')}</span>
+                    <MessageSquareHeart className="h-5 text-[#daf98cd5]" />
+                  </>
+                ) : (
+                  <>
+                    <span>{t('friends')}</span>
+                    {/* <Heart className="h-4 text-white" /> */}
+                  </>
+                )}
+              </button>
+            </>
           ) : (
-            <FriendActions viewedId={viewedUser?.id} />
+            <FriendActions userId={user?.id} viewedId={viewedUser?.id} />
           )}
         </div>
 
