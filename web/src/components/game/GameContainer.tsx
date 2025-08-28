@@ -50,13 +50,20 @@ const GameContainer: React.FC<GameContainerProps> = ({
   const { players } = usePlayers();
 
   // Ref for game loop to prevent stale closures
+  const lastFrameTimeRef = useRef<number>(0);
   const gameStateRef = useRef(gameState);
   const animationFrameRef = useRef<number>(0);
+  const keysPressedRef = useRef<Record<string, boolean>>({});
 
   // Keep ref in sync with state
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
+  
+  //update ref whenever keys change
+  useEffect (() => {
+    keysPressedRef.current = keysPressed;
+  }, [keysPressed]);
 
   // Get current players
   const getCurrentPlayers = () => {
@@ -92,8 +99,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
     }
     return null;
   };
-
-  const currentPlayers = getCurrentPlayers();
 
   // Handle external control signals
   useEffect(() => {
@@ -136,16 +141,29 @@ const GameContainer: React.FC<GameContainerProps> = ({
     }
   }, [shouldPause, onPauseHandled, onStatusChange]);
 
+  
   // Handle game end and stats submission
   const handleGameEnd = useCallback(
     async (finalGameState: GameState) => {
-      if (isProcessingGameEnd || !gameStartTime || !currentPlayers) return;
+      if (isProcessingGameEnd || !gameStartTime) return;
+      
+      const currentPlayers = getCurrentPlayers();
+      console.log('handleGameEnd - currentPlayers:', currentPlayers);
 
+      if (!currentPlayers) {
+        console.log('No current players found!');
+        return;
+      }
+      
       setIsProcessingGameEnd(true);
-
+      
       const leftPlayerWon = finalGameState.leftScore > finalGameState.rightScore;
       const actualWinner = leftPlayerWon ? currentPlayers.player1 : currentPlayers.player2;
-
+      
+      console.log('leftPlayerWon:', leftPlayerWon);
+      console.log('actualWinner:', actualWinner);
+      console.log('winner name being sent:', actualWinner.name);
+      
       const gameResult = createGameResult(
         currentPlayers.player1.id,
         currentPlayers.player2.id,
@@ -155,7 +173,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
         Date.now(),
         0, // tournament level handled by parent
       );
-
+      
       try {
         onGameComplete?.(gameResult, actualWinner.name);
       } catch (error) {
@@ -164,48 +182,65 @@ const GameContainer: React.FC<GameContainerProps> = ({
         setIsProcessingGameEnd(false);
       }
     },
-    [gameStartTime, currentPlayers, onGameComplete, isProcessingGameEnd],
+    [gameStartTime, isProcessingGameEnd],
   );
-
-  const updateGame = useCallback(() => {
+  
+  useEffect(() => {
+    if (gameState.status === GameStatus.ENDED && !isProcessingGameEnd)
+      handleGameEnd(gameState);
+  }, [gameState.status, isProcessingGameEnd, handleGameEnd]);
+  
+  const updateGame = (currentTime: number) => {
     const currentState = gameStateRef.current;
 
+    const deltaTime = lastFrameTimeRef.current === 0 ? 0 : (currentTime - lastFrameTimeRef.current) / 1000;
+    lastFrameTimeRef.current = currentTime;
+    //skip if coming back from pause and deltatime is too large
+    if (deltaTime > 0.1) {
+      animationFrameRef.current = requestAnimationFrame(updateGame);
+      return;
+    }
+    
     // Only update game physics when running
-    if (currentState.status === GameStatus.RUNNING) {
+    if (currentState.status !== GameStatus.RUNNING) {
+      animationFrameRef.current = requestAnimationFrame(updateGame);
+      return;
+    }
+    
       let newState = { ...currentState };
 
       // Move paddles
       if (gameStateRef.current.status !== GameStatus.RUNNING) {
         return;
       }
-      if (keysPressed[Controls.leftPaddle.up.toLowerCase()]) {
+      if (keysPressedRef.current[Controls.leftPaddle.up.toLowerCase()]) {
         newState.leftPaddle.position.y = Math.max(
           0,
-          newState.leftPaddle.position.y - newState.leftPaddle.speed,
+          newState.leftPaddle.position.y - newState.leftPaddle.speed * deltaTime,
         );
       }
-      if (keysPressed[Controls.leftPaddle.down.toLowerCase()]) {
+      if (keysPressedRef.current[Controls.leftPaddle.down.toLowerCase()]) {
         newState.leftPaddle.position.y = Math.min(
           newState.canvasHeight - newState.leftPaddle.height,
-          newState.leftPaddle.position.y + newState.leftPaddle.speed,
+          newState.leftPaddle.position.y + newState.leftPaddle.speed * deltaTime,
         );
       }
-      if (keysPressed[Controls.rightPaddle.up.toLowerCase()]) {
+      if (keysPressedRef.current[Controls.rightPaddle.up.toLowerCase()]) {
         newState.rightPaddle.position.y = Math.max(
           0,
-          newState.rightPaddle.position.y - newState.rightPaddle.speed,
+          newState.rightPaddle.position.y - newState.rightPaddle.speed * deltaTime,
         );
       }
-      if (keysPressed[Controls.rightPaddle.down.toLowerCase()]) {
+      if (keysPressedRef.current[Controls.rightPaddle.down.toLowerCase()]) {
         newState.rightPaddle.position.y = Math.min(
           newState.canvasHeight - newState.rightPaddle.height,
-          newState.rightPaddle.position.y + newState.rightPaddle.speed,
+          newState.rightPaddle.position.y + newState.rightPaddle.speed * deltaTime,
         );
       }
 
       // Move ball
-      newState.ball.position.x += newState.ball.velocity.dx;
-      newState.ball.position.y += newState.ball.velocity.dy;
+      newState.ball.position.x += newState.ball.velocity.dx * deltaTime;
+      newState.ball.position.y += newState.ball.velocity.dy * deltaTime;
 
       // Check collisions
       newState = checkWallCollision(newState);
@@ -226,9 +261,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
           };
           setGameState(finalState);
           onStatusChange?.(GameStatus.ENDED);
-
-          // Handle game end asynchronously
-          handleGameEnd(finalState);
           return;
         }
         newState = resetBall(stateAfterScoring);
@@ -236,19 +268,24 @@ const GameContainer: React.FC<GameContainerProps> = ({
         newState = stateAfterScoring;
       }
       setGameState(newState);
-    }
 
     // Continue animation loop regardless of game state (for smooth rendering)
     animationFrameRef.current = requestAnimationFrame(updateGame);
-  }, [keysPressed, handleGameEnd, onScoreChange, onStatusChange]);
+  };
 
   // Start the game loop when the component mounts
   useEffect(() => {
-    animationFrameRef.current = requestAnimationFrame(updateGame);
+    lastFrameTimeRef.current = 0;
+    
+    const gameLoop = (currentTime:number) => {
+      updateGame(currentTime);
+    };
+    
+    animationFrameRef.current = requestAnimationFrame(gameLoop);
     return () => {
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [updateGame]);
+  }, []);
 
   // Handle keyboard events for game controls, not UI controls
   useEffect(() => {
