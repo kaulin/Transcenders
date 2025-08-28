@@ -41,6 +41,8 @@
   "first_round": "ESIMENE VOOR",
   "friends": "Sõbrad",
   "friend_requests": "",
+  "friend_request_received": "",
+  "friend_request_sent": "",
   "games_played": "Mänge mängitud",
   "go_back": "Mine tagasi",
   "google_auth_failed": "Google sisselogimine ebaõnnestus",
