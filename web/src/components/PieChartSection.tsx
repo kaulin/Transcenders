@@ -5,7 +5,6 @@ import type { Stats } from '@transcenders/contracts';
 import { useEffect, useState, useMemo } from 'react';
 
 const COLORS = ['#a7d4373c', '#8198453c', '#8c986d25', '#f3f4f000'];
-// const COLORS = ['#a7d4373c', '#5d6b2f52'];
 
 type PieChartsProps = {
   userId: number | undefined;
@@ -119,7 +118,7 @@ export default function PieChartSection({userId}: PieChartsProps) {
         {
           title: t('mode'),
           data: [
-            { name: t('tournament'), value: userStats?.tournament_games },
+            { name: t('tournament'), value: userStats?.tournaments_joined },
             { name: t('one_v_one'), value: userStats?.regular_games },
           ],
         },
@@ -133,12 +132,8 @@ export default function PieChartSection({userId}: PieChartsProps) {
         {
           title: t('tournament'),
           data: [
-            { name: "1st", value: 5 },
-            { name: "2nd", value: 2 },
-            { name: "3rd", value: 4 },
-            { name: "4th", value: 1 },
-            // { name: t('wins'), value: userStats?.tournament_wins },
-            // { name: t('losses'), value: (userStats?.tournament_games ?? 0) - (userStats?.tournament_wins ?? 0) },
+            { name: t('wins'), value: userStats?.tournament_wins },
+            { name: t('losses'), value: (userStats?.tournaments_joined ?? 0) - (userStats?.tournament_wins ?? 0) },
           ],
         },
       ];
