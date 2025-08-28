@@ -38,6 +38,7 @@ export default function GoalChart({userId}: GoalChartProps) {
     ? [...userScores.slice(0, 10)].reverse().map((s) => ({
         scored: s.winner_id === userId ? s.winner_score : s.loser_score,
         conceded: s.winner_id === userId ? s.loser_score : s.winner_score,
+        date: s.game_end
       }))
     : [];
 
@@ -59,7 +60,17 @@ export default function GoalChart({userId}: GoalChartProps) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#ffffff33" />
-          <XAxis stroke="#fff" />
+          <XAxis
+            dataKey="date"
+            stroke="#fff"
+            tick={{ fontSize: 12, fill: '#fff' }}
+            interval="preserveStartEnd"
+            tickFormatter={(value) =>
+              new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit' }).format(
+                new Date(value),
+              )
+            }
+          />
           <YAxis stroke="#fff" />
           <Tooltip
             contentStyle={{ backgroundColor: '#333', border: 'none', color: '#fff' }}
