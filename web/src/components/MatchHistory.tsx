@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ApiClient } from "@transcenders/api-client";
 import { Score } from "@transcenders/contracts";
 import { useUser } from "../hooks/useUser";
+import StatRow from "./StatRow";
 
 type MatchHistoryProps = {
   userId: number | undefined;
@@ -57,14 +58,8 @@ export default function MatchHistory({userId}: MatchHistoryProps) {
             </div>
             <div className="text-[#fff]">26/08</div>
           </div>
-          <div className="w-full flex justify-between items-center text-[#fff]">
-            <div>{usernames[winner_id] ?? t('loading')}</div>
-            <div>{winner_score}</div>
-          </div>
-          <div className="w-full flex justify-between items-center text-[#fff]">
-            <div>{usernames[loser_id] ?? t('loading')}</div>
-            <div>{loser_score}</div>
-          </div>
+          <StatRow label={usernames[winner_id] ?? t('loading')} value={winner_score} />
+          <StatRow label={usernames[loser_id] ?? t('loading')} value={loser_score} />
         </div>
       ))}
     </div>
