@@ -4,7 +4,6 @@ import { TimestampField, UserIdField } from './user.schemas.js';
 /**
  * ENTITY SCHEMAS
  */
-// #TODO naming consistency, PascalCase for types, camelCase for schemas for all schemas
 export const ScoreSchema = Type.Object({
   id: Type.Optional(Type.Number()),
   winner_id: UserIdField,

@@ -33,8 +33,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
   app.post(
     USER_ROUTES.USERS,
     {
-      // #TODO need interanl only handler
-      preHandler: app.authenticate.required(),
+      preHandler: app.authenticate.internal(),
       schema: {
         description: 'Create new user',
         tags: ['Internal ONLY'],
