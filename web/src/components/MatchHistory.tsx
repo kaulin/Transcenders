@@ -50,13 +50,17 @@ export default function MatchHistory({userId}: MatchHistoryProps) {
   
   return (
     <div className="relative h-full w-full px-2 overflow-y-auto custom-scrollbar flex flex-col gap-12">
-      {userScores?.map(({ winner_id, loser_id, winner_score, loser_score }) => (
+      {userScores?.map(({ winner_id, loser_id, winner_score, loser_score, game_end }) => (
         <div className="flex flex-col justify-center items-center">
           <div className="w-full flex justify-between text-[#fff] ">
             <div className="font-fascinate uppercase text-xl">
               {winner_id === user?.id ? 'win' : 'loss'}
             </div>
-            <div className="text-[#fff]">26/08</div>
+            <div className="text-[#fff]">
+              {new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit' }).format(
+                new Date(game_end),
+              )}
+            </div>
           </div>
           <StatRow label={usernames[winner_id] ?? t('loading')} value={winner_score} />
           <StatRow label={usernames[loser_id] ?? t('loading')} value={loser_score} />
