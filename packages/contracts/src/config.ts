@@ -34,6 +34,7 @@ export const UserConfig = {
 
 export const AuthConfig = {
   ACCESS_TOKEN_EXPIRE_MS: 2 * 60 * 1000, // 2 min
+  // ACCESS_TOKEN_EXPIRE_MS: 20 * 1000, // 20 sec
   REFRESH_TOKEN_EXPIRE_MS: 7 * 24 * 60 * 60 * 1000, // 7 days
   TWO_FACTOR_CODE_EXPIRE_MS: 10 * 60 * 1000, // 10 min
   // TWO_FACTOR_CODE_EXPIRE_MS: 20 * 1000, // 20 sec
