@@ -23,11 +23,10 @@ export class FriendshipService {
     direction: 'incoming' | 'outgoing',
   ): Promise<FriendRequestsData[]> {
     const isIncoming = direction === 'incoming';
-    const sql = SQL`
-      SELECT * FROM friend_requests
-      WHERE ${isIncoming ? 'recipient_id' : 'initiator_id'} = ${userId}
-      ORDER BY created_at DESC;
-    `;
+    const sql = isIncoming
+      ? SQL`SELECT * FROM friend_requests WHERE recipient_id = ${userId}`
+      : SQL`SELECT * FROM friend_requests WHERE initiator_id = ${userId}`;
+
     const result = await database.all(sql.text, sql.values);
     return result as FriendRequestsData[];
   }
