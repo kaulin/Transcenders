@@ -41,6 +41,8 @@
   "first_round": "FIRST ROUND",
   "friends": "Friends",
   "friend_requests": "Friend Requests",
+  "friend_request_received": "Friend Request Received",
+  "friend_request_sent": "Friend Request Sent",
   "games_played": "Matches Played",
   "go_back": "Go back",
   "google_auth_failed": "Google authentication failed",
