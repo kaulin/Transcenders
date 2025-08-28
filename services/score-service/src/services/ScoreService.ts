@@ -40,17 +40,21 @@ export class ScoreService {
     let regular_game_wins = 0;
     let regular_game_win_percentage = 0;
     let tournament_games = 0;
-    let tourament_game_wins = 0;
+    let tournament_game_wins = 0;
     let tournament_game_win_percentage = 0;
     let tournament_wins = 0;
     let total_score = 0;
     let total_duration = 0;
     let average_score = 0;
     let average_duration = 0;
+    let tournaments_joined = 0;
+    let tournament_golds = 0;
+    let tournament_silvers = 0;
 
     for (const score of scores) {
       total_games++;
       total_duration += score.game_duration;
+      if (score.tournament_level >= 2) tournaments_joined++;
       if (score.tournament_level === 0) regular_games++;
       else tournament_games++;
       if (id === score.winner_id) {
@@ -61,10 +65,12 @@ export class ScoreService {
         } else {
           if (score.tournament_level === 1) {
             tournament_wins++;
+            tournament_golds++;
           }
-          tourament_game_wins++;
+          tournament_game_wins++;
         }
       } else {
+        if (score.tournament_level === 1) tournament_silvers++;
         total_score += score.loser_score;
       }
     }
@@ -75,7 +81,7 @@ export class ScoreService {
         regular_game_win_percentage = (regular_game_wins / regular_games) * 100;
       }
       if (tournament_games > 0) {
-        tournament_game_win_percentage = (tourament_game_wins / tournament_games) * 100;
+        tournament_game_win_percentage = (tournament_game_wins / tournament_games) * 100;
       }
       average_score = total_score / total_games;
       average_duration = total_duration / total_games;
@@ -88,8 +94,11 @@ export class ScoreService {
       regular_games,
       regular_game_wins,
       regular_game_win_percentage,
+      tournaments_joined,
+      tournament_golds,
+      tournament_silvers,
       tournament_games,
-      tourament_game_wins,
+      tournament_game_wins,
       tournament_game_win_percentage,
       tournament_wins,
       total_score,
