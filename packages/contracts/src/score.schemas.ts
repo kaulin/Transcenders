@@ -13,15 +13,12 @@ export const ScoreSchema = Type.Object({
   loser_score: Type.Number(),
   tournament_level: Type.Number(),
   game_duration: Type.Number(),
-  game_start: Type.Number(),
-  game_end: Type.Number(),
+  game_start: TimestampField,
+  game_end: TimestampField,
 });
 
 export const scoreArraySchema = Type.Array(ScoreSchema);
 export type Score = Static<typeof ScoreSchema>;
-
-export const ScoresArraySchema = Type.Array(ScoreSchema);
-export type ScoresArray = Static<typeof ScoresArraySchema>;
 
 export const StatsSchema = Type.Object({
   total_games: Type.Number(),
@@ -31,7 +28,10 @@ export const StatsSchema = Type.Object({
   regular_game_wins: Type.Number(),
   regular_game_win_percentage: Type.Number(),
   tournament_games: Type.Number(),
-  tourament_game_wins: Type.Number(),
+  tournaments_joined: Type.Number(),
+  tournament_golds: Type.Number(),
+  tournament_silvers: Type.Number(),
+  tournament_game_wins: Type.Number(),
   tournament_game_win_percentage: Type.Number(),
   tournament_wins: Type.Number(),
   total_score: Type.Number(),
