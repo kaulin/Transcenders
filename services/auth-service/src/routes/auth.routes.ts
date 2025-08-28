@@ -10,8 +10,8 @@ import {
   stepupRequestSchema,
   userIdParamSchema,
 } from '@transcenders/contracts';
+import { CookieUtils } from '@transcenders/server-utils';
 import { FastifyInstance } from 'fastify';
-import { CookieUtils } from '../../../../packages/server-utils/src/CookieUtils.js';
 import { AuthController } from '../controllers/auth.controller.js';
 
 export async function registerAuthRoutes(app: FastifyInstance) {
