@@ -1,15 +1,17 @@
-import { Static, TSchema } from '@sinclair/typebox';
+import { Static, TSchema, Type } from '@sinclair/typebox';
 import {
   AVATAR_ROUTES,
   avatarResultSchema,
   BooleanOperationResultSchema,
   CreateUserRequest,
   DefaultAvatarsResultSchema,
+  FriendRequestsDataSchema,
   FRIENDSHIP_ROUTES,
   GetUserRequest,
   GetUsersQuery,
   randomAvatarArraySchema,
   RandomCatsQuery,
+  RelationshipStatusSchema,
   SERVICE_URLS,
   toQueryString,
   UpdateUserRequest,
@@ -100,43 +102,53 @@ export class UserApiClient extends TypedApiClient {
     return this.callUserService(endpoint, userArraySchema);
   }
 
-  static async checkFriendshipExists(id1: number, id2: number) {
-    const endpoint = FRIENDSHIP_ROUTES.FRIENDSHIP_EXISTS.replace(':id1', id1.toString()).replace(
-      ':id2',
-      id2.toString(),
-    );
-    return this.callUserService(endpoint, BooleanOperationResultSchema);
+  static async getRelationshipStatus(userId: number, targetUserId: number) {
+    const endpoint = FRIENDSHIP_ROUTES.RELATIONSHIP_STATUS.replace(
+      ':id',
+      userId.toString(),
+    ).replace(':targetUserId', targetUserId.toString());
+    return this.callUserService(endpoint, RelationshipStatusSchema);
   }
-  
-  static async sendFriendRequest(userId: number, recipientId: number) {
+
+  static async getIncomingFriendRequests(userId: number) {
+    const endpoint = FRIENDSHIP_ROUTES.FRIEND_REQUESTS_INCOMING.replace(':id', userId.toString());
+    return this.callUserService(endpoint, Type.Array(FriendRequestsDataSchema));
+  }
+
+  static async getOutgoingFriendRequests(userId: number) {
+    const endpoint = FRIENDSHIP_ROUTES.FRIEND_REQUESTS_OUTGOING.replace(':id', userId.toString());
+    return this.callUserService(endpoint, Type.Array(FriendRequestsDataSchema));
+  }
+
+  static async sendFriendRequest(userId: number, targetUserId: number) {
     const endpoint = FRIENDSHIP_ROUTES.SEND_FRIEND_REQUEST.replace(
       ':id',
       userId.toString(),
-    ).replace(':recipientId', recipientId.toString());
+    ).replace(':targetUserId', targetUserId.toString());
     const options: ApiCallOptions = { method: 'POST' };
     return this.callUserService(endpoint, BooleanOperationResultSchema, options);
   }
 
-  static async acceptFriendRequest(userId: number, requestId: number) {
-    const endpoint = FRIENDSHIP_ROUTES.FRIEND_REQUEST.replace(':id', userId.toString()).replace(
-      ':requestId',
-      requestId.toString(),
-    );
+  static async acceptFriendRequest(userId: number, requestingUserId: number) {
+    const endpoint = FRIENDSHIP_ROUTES.ACCEPT_FRIEND_REQUEST.replace(
+      ':id',
+      userId.toString(),
+    ).replace(':requestingUserId', requestingUserId.toString());
     const options: ApiCallOptions = { method: 'PUT' };
     return this.callUserService(endpoint, BooleanOperationResultSchema, options);
   }
 
-  static async declineFriendRequest(userId: number, requestId: number) {
-    const endpoint = FRIENDSHIP_ROUTES.FRIEND_REQUEST.replace(':id', userId.toString()).replace(
-      ':requestId',
-      requestId.toString(),
-    );
+  static async declineFriendRequest(userId: number, requestingUserId: number) {
+    const endpoint = FRIENDSHIP_ROUTES.DECLINE_FRIEND_REQUEST.replace(
+      ':id',
+      userId.toString(),
+    ).replace(':requestingUserId', requestingUserId.toString());
     const options: ApiCallOptions = { method: 'DELETE' };
     return this.callUserService(endpoint, BooleanOperationResultSchema, options);
   }
 
   static async removeFriend(userId: number, friendId: number) {
-    const endpoint = FRIENDSHIP_ROUTES.FRIENDSHIP.replace(':id', userId.toString()).replace(
+    const endpoint = FRIENDSHIP_ROUTES.REMOVE_FRIENDSHIP.replace(':id', userId.toString()).replace(
       ':friendId',
       friendId.toString(),
     );

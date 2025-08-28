@@ -1,93 +1,89 @@
 import { HeartMinus, HeartOff, HeartPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { useUser } from '../hooks/useUser';
+
 import { ApiClient } from '@transcenders/api-client';
 
-type FriendActionsProps = {
+interface FriendActionsProps {
+  userId: number | undefined;
   viewedId: number | undefined;
-};
+}
 
-export default function FriendActions({viewedId}: FriendActionsProps) {
+export default function FriendActions({ userId, viewedId }: FriendActionsProps) {
   const { t } = useTranslation();
-  const { user } = useUser();
-  
-  const [friendshipStatus, setFriendshipStatus] = useState<boolean>(false);
-  const [requestStatus, setRequestStatus] = useState<"idle" | "sent">("idle");
+
+  const [friendshipStatus, setFriendshipStatus] = useState<
+    'friends' | 'request_sent' | 'request_received' | 'none'
+  >('none');
   const [error, setError] = useState<string | null>(null);
-  
-  useEffect(() => {    
-      async function verifyFriendshipStatus() {
-        if (!user?.id || !viewedId)
-        return;
-      
-      const friendship = await ApiClient.user.checkFriendshipExists(user?.id, viewedId);
-      setFriendshipStatus(friendship.success);
-    };
-    
-    verifyFriendshipStatus();
-  }, [viewedId]);
-  
-  const handleAdd = async () => {
-    if (!user?.id || !viewedId)
-    return;
-  
-    setError(null);
-  
-    try {
-      await ApiClient.user.sendFriendRequest(user.id, viewedId);
-      setRequestStatus("sent");
-      
-      // setTimeout(() => setRequestStatus("pending"), 1000);
-      
-    } catch (err: any) {
-      setError(err?.localeKey || 'something_went_wrong');
+
+  useEffect(() => {
+    async function verifyFriendshipStatus() {
+      if (!userId || viewedId === undefined) return;
+
+      setError(null);
+
+      try {
+        const friendship = await ApiClient.user.getRelationshipStatus(userId, viewedId);
+        setFriendshipStatus(friendship.status);
+      } catch (err: any) {
+        setError(t(err.localeKey ?? 'something_went_wrong'));
+      }
     }
-  }
-  
-  // const handleCancel = async () => {
-  //   setError(null);
-    
-  //   try {
-  //     await ApiClient.user.declineFriendRequest(12, 1);
-  //     setStatus("idle");
-      
-  //   } catch (err: any) {
-  //     setError(err.localeKey || 'something_went_wrong');
-  //   }
-  // }
-  
+
+    verifyFriendshipStatus();
+  }, [userId, viewedId, t]);
+
+  const handleAdd = async () => {
+    if (!userId || viewedId === undefined) return;
+
+    setError(null);
+
+    try {
+      await ApiClient.user.sendFriendRequest(userId, viewedId);
+      setFriendshipStatus('request_sent');
+    } catch (err: any) {
+      setError(t(err.localeKey ?? 'something_went_wrong'));
+    }
+  };
+
+  const handleRemove = async () => {
+    if (!userId || viewedId === undefined) return;
+
+    setError(null);
+
+    try {
+      await ApiClient.user.removeFriend(userId, viewedId);
+      setFriendshipStatus('none');
+    } catch (err: any) {
+      setError(t(err.localeKey ?? 'something_went_wrong'));
+    }
+  };
+
   return (
     <div className="flex flex-col h-[500px] justify-start p-10">
-      {requestStatus === 'idle' && (
+      {friendshipStatus === 'friends' ? (
+        <button
+          onClick={handleRemove}
+          className="rounded-button bg-white/5 text-center min-w-48 mt-4"
+        >
+          {t('remove_friend')}
+        </button>
+      ) : (
         <button
           onClick={handleAdd}
-          className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"
+          disabled={friendshipStatus === 'request_sent' || friendshipStatus === 'request_received'}
+          className="rounded-button bg-white/5 text-center min-w-48 mt-4"
         >
-          <HeartPlus className="text-[#786647]" />
-          {t('add_friend')}
+          {friendshipStatus === 'request_sent'
+            ? t('friend_request_sent')
+            : friendshipStatus === 'request_received'
+              ? t('friend_request_received')
+              : t('add_friend')}
         </button>
       )}
-
-      {requestStatus === 'sent' && (
-        <button
-          disabled
-          className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4 cursor-not-allowed"
-        >
-          Friend Request Sent
-        </button>
-      )}
-
-      {/* {requestStatus === 'pending' && (
-        <button
-          onClick={handleCancel}
-          className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"
-        >
-          Cancel Request
-        </button>
-      )} */}
 
       {error && <div className="tsc-error-message text-center">{error}</div>}
     </div>
   );
-};
+}
