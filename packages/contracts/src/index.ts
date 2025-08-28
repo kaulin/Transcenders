@@ -10,6 +10,7 @@ export * from './errors/ErrorCodes.js';
 export * from './errors/index.js';
 export * from './errors/ServiceError.js';
 export * from './errors/ServiceResult.js';
+export * from './friend.schemas.js';
 export * from './routes.js';
 export * from './score.schemas.js';
 export * from './twoFactor.schemas.js';

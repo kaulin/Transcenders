@@ -102,73 +102,9 @@ export const userIdParamSchema = Type.Object({
 });
 export type UserIdParam = Static<typeof userIdParamSchema>;
 
-export const acceptFriendSchema = {
-  params: Type.Object({
-    id: IdParamField,
-    requestId: IdParamField,
-  }),
-};
-export type AcceptFriendRequest = Static<typeof acceptFriendSchema.params>;
-
-export const declineFriendSchema = {
-  params: Type.Object({
-    id: IdParamField,
-    requestId: IdParamField,
-  }),
-};
-export type DeclineFriendRequest = Static<typeof declineFriendSchema.params>;
-
-export const getFriendsSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-};
-export type GetFriendsRequest = Static<typeof getFriendsSchema.params>;
-
-export const getRequestsSchema = {
-  params: Type.Object({
-    id: IdParamField,
-  }),
-};
-export type GetsRequestsRequest = Static<typeof getRequestsSchema.params>;
-
-// Add this to your user.schemas.ts
-export const sendFriendRequestSchema = {
-  params: Type.Object({
-    id: IdParamField,
-    recipientId: IdParamField,
-  }),
-};
-export type SendFriendRequestRequest = Static<typeof sendFriendRequestSchema.params>;
-
-export const removeFriendSchema = {
-  params: Type.Object({
-    id: IdParamField,
-    friendId: IdParamField,
-  }),
-};
-export type RemoveFriendRequest = Static<typeof removeFriendSchema.params>;
-
-export const checkFriendshipExistsSchema = {
-  params: Type.Object({
-    id1: IdParamField,
-    id2: IdParamField,
-  }),
-};
-export type CheckFriendshipExistsRequest = Static<typeof checkFriendshipExistsSchema.params>;
-
 /**
  * RESPONSE DATA SCHEMAS
  */
-
-export const FriendRequestsDataSchema = Type.Object({
-  id: UserIdField,
-  initiator_id: UserIdField,
-  recipient_id: UserIdField,
-  created_at: TimestampField,
-  updated_at: TimestampField,
-});
-export type FriendRequestsData = Static<typeof FriendRequestsDataSchema>;
 
 export const BooleanOperationResultSchema = Type.Object({
   success: Type.Boolean(),
