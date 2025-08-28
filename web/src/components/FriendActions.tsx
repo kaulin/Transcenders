@@ -1,6 +1,5 @@
-import { HeartMinus, HeartOff, HeartPlus } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ApiClient } from '@transcenders/api-client';
 
