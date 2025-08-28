@@ -11,9 +11,8 @@ import {
   StepupRequest,
   UserIdParam,
 } from '@transcenders/contracts';
-import { DeviceUtils, ENV } from '@transcenders/server-utils';
+import { CookieUtils, DeviceUtils, ENV } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { CookieUtils } from '../../../../packages/server-utils/src/CookieUtils.js';
 import { AuthService } from '../services/auth.service.js';
 
 export class AuthController {
