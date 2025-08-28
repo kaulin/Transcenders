@@ -38,20 +38,25 @@ export const FRIENDSHIP_ROUTES = {
   USER_FRIENDSHIPS: '/users/:id/friendships',
 
   // DELETE /users/:id/friendships/:friendId - Remove a friendship
-  FRIENDSHIP: '/users/:id/friendships/:friendId',
+  REMOVE_FRIENDSHIP: '/users/:id/friendships/:friendId',
 
-  // GET /users/:id/friend-requests - Get incoming friend requests for a user
-  USER_FRIEND_REQUESTS: '/users/:id/friend-requests',
+  // GET /users/:id/friend-requests/incoming - Get incoming friend requests
+  FRIEND_REQUESTS_INCOMING: '/users/:id/friend-requests/incoming',
 
-  // POST /users/:id/friend-requests - Send friend request to specific user
-  SEND_FRIEND_REQUEST: '/users/:id/friend-requests/:recipientId',
+  // GET /users/:id/friend-requests/outgoing - Get outgoing friend requests
+  FRIEND_REQUESTS_OUTGOING: '/users/:id/friend-requests/outgoing',
 
-  // PUT /users/:id/friend-requests/:requestId - Accept a friend request
-  // DELETE /users/:id/friend-requests/:requestId - Decline/cancel a friend request
-  FRIEND_REQUEST: '/users/:id/friend-requests/:requestId',
+  // POST /users/:id/friend-requests/:targetUserId - Send friend request to specific user
+  SEND_FRIEND_REQUEST: '/users/:id/friend-requests/:targetUserId',
 
-  // GET /friendships/:id1/:id2 - Check if friendship exists between two users
-  FRIENDSHIP_EXISTS: '/friendships/:id1/:id2',
+  // PUT /users/:id/friend-requests/:requestingUserId - Accept friend request from specific user
+  ACCEPT_FRIEND_REQUEST: '/users/:id/friend-requests/:requestingUserId',
+
+  // DELETE /users/:id/friend-requests/:requestingUserId - Decline friend request from specific user
+  DECLINE_FRIEND_REQUEST: '/users/:id/friend-requests/:requestingUserId',
+
+  // GET /users/:id/relationship/:targetUserId - Get relationship status with another user
+  RELATIONSHIP_STATUS: '/users/:id/relationship/:targetUserId',
 } as const;
 
 export const AUTH_ROUTES = {

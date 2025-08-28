@@ -19,8 +19,8 @@ export default function FriendActions({viewedId}: FriendActionsProps) {
         if (!user?.id || !viewedId)
         return;
       
-      const friendshipStatus = await ApiClient.user.checkFriendshipExists(user?.id, viewedId);
-      setIsFriend(friendshipStatus.success);
+      const friendshipStatus = await ApiClient.user.getRelationshipStatus(user?.id, viewedId);
+      setIsFriend(friendshipStatus.status == 'friends');
     };
     
     verifyFriendshipStatus();
