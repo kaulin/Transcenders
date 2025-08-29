@@ -12,9 +12,7 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
   const { t } = useTranslation();
   
   const [friendshipStatus, setFriendshipStatus] = useState<
-    'friends' | 'request_sent' | 'request_received' | 'none'
-  >('none');
-  const [requestStatus, setRequestStatus] = useState<"sent" | "removed" | "none">("none");
+    'friends' | 'request_sent' | 'request_received' | 'none'>('none');
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {    
@@ -32,7 +30,7 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
     };
     
     verifyFriendshipStatus();
-  }, [viewedId, requestStatus, t]);
+  }, [viewedId, t]);
   
   const handleAdd = async () => {
     if (!userId || !viewedId)
@@ -42,7 +40,7 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
   
     try {
       await ApiClient.user.sendFriendRequest(userId, viewedId);
-      setRequestStatus("sent");
+      setFriendshipStatus('request_sent');
       
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -56,7 +54,7 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
 
     try {
       await ApiClient.user.removeFriend(userId, viewedId);
-      setRequestStatus('removed');
+      setFriendshipStatus('none');
 
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -68,7 +66,7 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
       {friendshipStatus === 'friends' ? (
         <button
           onClick={handleRemove}
-          className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"
+          className="rounded-button bg-white/5 text-center min-w-48 mt-4"
         >
           {t('remove_friend')}
         </button>
@@ -76,7 +74,7 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
         <button
           onClick={handleAdd}
           disabled={friendshipStatus === 'request_sent' || friendshipStatus === 'request_received'}
-          className="rounded-button bg-white/5 flex gap-3 min-w-48 justify-start mt-4"
+          className="rounded-button bg-white/5 text-center min-w-48 mt-4"
         >
           {friendshipStatus === 'request_sent'
             ? t('friend_request_sent')
