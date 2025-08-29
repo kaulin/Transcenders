@@ -23,7 +23,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
         setFriends(friendsList);
         
       } catch (err: any) {
-        setError(t(err.localeKey || 'something_went_wrong'));
+        setError(t(err.localeKey ?? 'something_went_wrong'));
       }
     };
 
@@ -35,7 +35,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
       <p className="text-[#fff] text-center font-fascinate uppercase text-xl mb-6">
         {t('friends')}
       </p>
-      <div className="relative h-[80%] px-2 overflow-y-auto custom-scrollbar">
+      <div className="relative h-[80%] px-2 text-sm sm:text-base overflow-y-auto custom-scrollbar">
         {error && <p className="tsc-error-message text-center">{error}</p>}
         {friends.map((friend) => (
           <div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
