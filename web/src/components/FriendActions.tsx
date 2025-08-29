@@ -20,19 +20,19 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
   useEffect(() => {    
     async function verifyFriendshipStatus() {
       if (!userId || !viewedId)
-      return;
+        return;
     
       try {
         const friendship = await ApiClient.user.getRelationshipStatus(userId, viewedId);
         setFriendshipStatus(friendship.status);
 
       } catch (err: any) {
-        setError(err.localeKey || 'something_went_wrong');
+        setError(t(err.localeKey ?? 'something_went_wrong'));
       }
     };
     
     verifyFriendshipStatus();
-  }, [viewedId, requestStatus]);
+  }, [viewedId, requestStatus, t]);
   
   const handleAdd = async () => {
     if (!userId || !viewedId)
@@ -45,7 +45,7 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
       setRequestStatus("sent");
       
     } catch (err: any) {
-      setError(err?.localeKey || 'something_went_wrong');
+      setError(t(err.localeKey ?? 'something_went_wrong'));
     }
   }
   
@@ -59,7 +59,7 @@ export default function FriendActions({userId, viewedId}: FriendActionsProps) {
       setRequestStatus('removed');
 
     } catch (err: any) {
-      setError(err?.localeKey || 'something_went_wrong');
+      setError(t(err.localeKey ?? 'something_went_wrong'));
     }
   }
   

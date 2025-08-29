@@ -28,7 +28,7 @@ const SignUp = () => {
       await ApiClient.auth.register(registrationInfo);
       await login(username, password);
     } catch (err: any) {
-      setError(t(err.localeKey) || t('something_went_wrong'));
+      setError(t(err.localeKey ?? 'something_went_wrong'));
     }
   }
 

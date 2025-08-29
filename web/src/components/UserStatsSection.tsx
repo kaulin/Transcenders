@@ -24,7 +24,7 @@ export default function UserStatsSection({userId}: UserStatsProps) {
     ApiClient.score
       .getStatsForUser(userId)
       .then(setUserStats)
-      .catch((err: any) => setError(err?.localeKey ?? 'something_went_wrong'));
+      .catch((err: any) => setError(t(err.localeKey ?? 'something_went_wrong')));
   }, [userId, t]);
   
   if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;

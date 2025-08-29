@@ -69,7 +69,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
     try {
       await login(username?.trim(), password, playerNumber);
     } catch (err: any) {
-      setError(t(err.localeKey) || t('something_went_wrong'));
+      setError(t(err.localeKey ?? 'something_went_wrong'));
     }
   };
 
