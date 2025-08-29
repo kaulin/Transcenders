@@ -266,8 +266,8 @@ function TournamentPage() {
           loser_score: result.loser_score,
           tournament_level: result.tournament_level,
           game_duration: result.game_duration,
-          game_start: result.game_start.toString(),
-          game_end: result.game_end.toString(),
+          game_start: result.game_start,
+          game_end: result.game_end,
         };
 
         const response = await ApiClient.score.createScore(scoreData);
@@ -282,7 +282,7 @@ function TournamentPage() {
   const getMatchTitle = () => {
     switch (tournamentState.currentMatch) {
       case 1:
-        return t('firstRound');
+        return t('first_round');
       case 2:
         return t('second_round');
       case 3:
