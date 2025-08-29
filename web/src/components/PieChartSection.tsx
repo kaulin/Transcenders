@@ -64,14 +64,14 @@ function PieChartBlock({ title, data}: ChartConfig) {
         ))}
       </div>
 
-      <div className="w-40 h-36">
+      <div className="w-24 h-36">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
               dataKey="value"
               nameKey="name"
-              cx="70%"
+              cx="50%"
               cy="50%"
               innerRadius={20}
               outerRadius={45}
@@ -107,7 +107,7 @@ export default function PieChartSection({userId}: PieChartsProps) {
     ApiClient.score
       .getStatsForUser(userId)
       .then(setUserStats)
-      .catch((err: any) => setError(err?.localeKey ?? 'something_went_wrong'));
+      .catch((err: any) => setError(t(err.localeKey ?? 'something_went_wrong')));
   }, [userId, t]);
 
   const chartsData: ChartConfig[] = useMemo(() => {
