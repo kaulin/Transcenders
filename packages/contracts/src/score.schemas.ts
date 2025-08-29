@@ -13,8 +13,8 @@ export const ScoreSchema = Type.Object({
   loser_score: Type.Number(),
   tournament_level: Type.Number(),
   game_duration: Type.Number(),
-  game_start: TimestampField,
-  game_end: TimestampField,
+  game_start: Type.Number(),
+  game_end: Type.Number(),
 });
 
 export const scoreArraySchema = Type.Array(ScoreSchema);
