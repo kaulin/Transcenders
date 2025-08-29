@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Heart, HeartHandshake, MessageSquareHeart, MessageCircleHeart } from 'lucide-react';
+import { MessageSquareHeart } from 'lucide-react';
 
 import { useUser } from '../hooks/useUser';
 import { ApiClient } from '@transcenders/api-client';
@@ -23,8 +23,28 @@ const Dashboard = () => {
   const [viewedUser, setViewedUser] = useState<User | null>(user);
   const [searchedUser, setSearchedUser] = useState<string>('');
   const [friendView, setFriendView] = useState<'friends' | 'requests'>('friends');
+  const [incomingCount, setIncomingCount] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    async function fetchIncoming() {
+      if (!user?.id)
+        return;
+      
+      setError(null);
+      
+      try {
+        const incoming = await ApiClient.user.getIncomingFriendRequests(user.id);
+        setIncomingCount(incoming.length);
+        
+      } catch (err: any) {
+        setError(t(err.localeKey ?? 'something_went_wrong'));
+      }
+    }
+    
+    fetchIncoming();
+  }, [user?.id]);
+  
   const handleSearch = async () => {
     setError(null);
 
@@ -36,7 +56,7 @@ const Dashboard = () => {
       setViewedUser(user);
 
     } catch (err: any) {
-      setError(t(err.localeKey) || t('something_went_wrong'));
+      setError(t(err.localeKey ?? 'something_went_wrong'));
     }
   };
 
@@ -53,20 +73,25 @@ const Dashboard = () => {
           {user?.id === viewedUser?.id ? (
             <>
               {friendView === 'friends' && <FriendsList userId={viewedUser?.id} />}
-              {friendView === 'requests' && <FriendRequests />}
+              {friendView === 'requests' && <FriendRequests
+                userId={user?.id}
+                onIncomingCountChange={setIncomingCount}
+                />
+              }
               <button
                 onClick={toggleFriends}
-                className="w-80 bg-[#6e5d41]/5 rounded-lg p-2 flex items-center justify-center gap-2"
+                className="w-80 bg-[#6e5d41]/5 rounded-lg p-2 flex items-center justify-center gap-2 text-sm uppercase"
               >
                 {friendView === 'friends' ? (
                   <>
                     <span>{t('friend_requests')}</span>
-                    <MessageSquareHeart className="h-5 text-[#daf98cd5]" />
+                    {incomingCount > 0 && (
+                      <MessageSquareHeart className="h-5 text-[#daf98cd5]" />
+                    )}
                   </>
                 ) : (
                   <>
                     <span>{t('friends')}</span>
-                    {/* <Heart className="h-4 text-white" /> */}
                   </>
                 )}
               </button>
@@ -93,21 +118,11 @@ const Dashboard = () => {
         </div>
         <PieChartSection userId={viewedUser?.id} />
 
-        <div className="flex flex-col items-center w-full">
+        <div className="w-full">
           <p className="text-center text-[#fff] font-fascinate text-xl uppercase">
             {t('latest_outcomes')}
           </p>
           <GoalChart userId={viewedUser?.id} />
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex gap-2 items-center text-white">
-              <div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
-              {t('you')}
-            </div>
-            <div className="flex gap-2 items-center text-white">
-              <div className="w-4 h-4 rounded-full bg-[#5d6b2f52] border border-white"></div>
-              {t('opponent')}
-            </div>
-          </div>
         </div>
       </div>
 
