@@ -41,7 +41,7 @@ export default function MatchHistory({userId}: MatchHistoryProps) {
 
         setUsernames(Object.fromEntries(users));
       })
-      .catch((err: any) => setError(err?.localeKey ?? 'something_went_wrong'));
+      .catch((err: any) => setError(t(err.localeKey ?? 'something_went_wrong')));
   }, [userId, t]);
   
   if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
@@ -52,7 +52,7 @@ export default function MatchHistory({userId}: MatchHistoryProps) {
     <div className="relative h-full w-full px-2 overflow-y-auto custom-scrollbar flex flex-col gap-12">
       {userScores?.map(({ winner_id, loser_id, winner_score, loser_score, game_end }) => (
         <div className="flex flex-col justify-center items-center">
-          <div className="w-full flex justify-between text-[#fff] ">
+          <div className="w-full flex justify-between text-[#fff]">
             <div className="font-fascinate uppercase text-xl">
               {winner_id === user?.id ? 'win' : 'loss'}
             </div>

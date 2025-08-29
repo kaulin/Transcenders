@@ -24,7 +24,7 @@ const Login = () => {
       const googleCode = sp.get('code');
 
       if (errorLocaleKey) {
-        setError(errorLocaleKey ?? 'something_went_wrong');
+        setError(t(errorLocaleKey ?? 'something_went_wrong'));
         window.history.replaceState({}, '', window.location.pathname);
         return;
       }
@@ -66,11 +66,11 @@ const Login = () => {
       if (err instanceof ServiceError) {
         if (err.codeOrError === ERROR_CODES.AUTH.TWO_FACTOR_CODE_SENT) {
           setNeedsCode(true);
-          setError(err.localeKey ?? 'two_fac_login_required');
+          setError(t(err.localeKey ?? 'two_fac_login_required'));
           return;
         }
       }
-      setError(err?.localeKey ?? 'something_went_wrong');
+      setError(t(err.localeKey ?? 'something_went_wrong'));
     }
   }
 
@@ -107,7 +107,7 @@ const Login = () => {
           disabled={!needsCode}
         />
 
-        <div className="h-4">{error && <p className="tsc-error-message">{t(error)}</p>}</div>
+        <div className="h-4">{error && <p className="tsc-error-message">{error}</p>}</div>
 
         <button type="submit" className="mt-4">
           {t('log_in')}
