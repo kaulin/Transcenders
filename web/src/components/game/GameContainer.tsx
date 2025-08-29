@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef} from 'react';
 import PongCanvas from './canvas/PongCanvas';
 import { usePlayers } from '../../hooks/usePlayers';
 import { type GameResult } from './models/GameState';
@@ -161,7 +161,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
       );
       
       try {
-        onGameComplete?.(gameResult, actualWinner.name);
+          onGameComplete?.(gameResult, actualWinner.name);
       } catch (error) {
         console.error('Failed to save game result:', error);
       } finally {
@@ -244,6 +244,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
           };
           setGameState(finalState);
           onStatusChange?.(GameStatus.ENDED);
+          handleGameEnd(finalState);
           return;
         }
         newState = resetBall(stateAfterScoring);
