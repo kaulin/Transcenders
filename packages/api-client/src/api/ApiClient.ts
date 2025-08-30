@@ -1,4 +1,4 @@
-import { ApiResponseType } from '@transcenders/contracts';
+import { ApiResponseType, getEnvVar } from '@transcenders/contracts';
 import { AdminApiClient } from '../services/admin.api.js';
 import { AuthApiClient } from '../services/auth.api.js';
 import { ScoreApiClient } from '../services/score.api.js';
@@ -53,7 +53,9 @@ export class ApiClient {
       }
     }
 
-    console.log(`API Call: ${method} ${url}`);
+    if (getEnvVar('NODE_ENV', 'development') == 'development') {
+      console.log(`API Call: ${method} ${url}`);
+    }
     const response = await fetch(url, requestInit);
     const data = await response.json();
     return data as ApiResponseType;
