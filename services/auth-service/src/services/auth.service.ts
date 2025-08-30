@@ -512,10 +512,7 @@ export class AuthService {
           userId = await this.userIdByEmail(database, googleUser.email);
         }
 
-        this.handleDeviceTokens(database, userId, deviceInfo);
-        // generate and save new tokens
-        const newTokens = this.generateTokenPair(userId);
-        await this.storeRefreshToken(database, newTokens.refreshToken, deviceInfo);
+        const newTokens = await this.finalizeLogin(database, userId, deviceInfo);
         return newTokens;
       },
     );
