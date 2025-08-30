@@ -71,6 +71,16 @@ services:
       target: web
     <<: *service-base
 
+  package-service:
+    container_name: package-service
+    user: ${HOST_UID:-1000}
+    image: package-service:hive
+    build:
+      <<: *service-build
+      args:
+        SERVICE_NAME: package-service
+    <<: *service-base
+
   caddy:
     image: caddy:2
     container_name: caddy
