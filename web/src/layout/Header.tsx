@@ -13,9 +13,14 @@ const Header = () => {
   const { i18n, t } = useTranslation();
   const logout = useLogout();
 
+  const lang = user?.lang;
+
   useEffect(() => {
-    i18n.changeLanguage(user?.lang);
-  }, [user, i18n]);
+    if (!lang) return;
+    if (i18n.language === lang) return;
+
+    i18n.changeLanguage(lang);
+  }, [lang, i18n]);
 
   const handleLogout = async () => {
     await logout();
