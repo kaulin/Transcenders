@@ -27,6 +27,7 @@ export const loginUserSchema = Type.Object({
   username: UsernameField,
   password: PasswordField,
   code: Type.Optional(Type.String()),
+  onlyVerify: Type.Optional(Type.Boolean()),
 });
 export type LoginUser = Static<typeof loginUserSchema>;
 
@@ -60,6 +61,8 @@ export type UserCredentials = Static<typeof userCredentialsSchema>;
 export const authDataSchema = Type.Object({
   accessToken: Type.String(),
   expiresIn: Type.Number(),
+  userId: UserIdField,
+  justVerify: Type.Optional(Type.Boolean()),
 });
 export type AuthData = Static<typeof authDataSchema>;
 
