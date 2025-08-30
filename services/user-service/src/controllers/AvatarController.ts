@@ -1,5 +1,4 @@
 import {
-  ApiErrorHandler,
   DeleteAvatarRequestParams,
   ERROR_CODES,
   RandomCatsQuery,
@@ -8,6 +7,7 @@ import {
   SetDefaultAvatarRequest,
   UploadAvatarRequestParams,
 } from '@transcenders/contracts';
+import { ApiErrorHandler } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AvatarService } from '../services/AvatarService.js';
 

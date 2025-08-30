@@ -1,6 +1,7 @@
 import { FastifyError } from 'fastify';
 import { Database } from 'sqlite';
-import { ERROR_CODES, ErrorCode, mapExceptionToErrorCode } from '../errors/index.js';
+import { ERROR_CODES, ErrorCode } from '../errors/ErrorCodes.js';
+import { mapExceptionToErrorCode } from '../errors/ErrorMapping.js';
 import { ServiceError } from '../errors/ServiceError.js';
 import { ServiceResult } from '../errors/ServiceResult.js';
 
