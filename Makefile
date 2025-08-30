@@ -40,6 +40,9 @@ dev-compiled: setup-check env-local
 		npm run build
 		npm run dev:compiled
 
+dev-build:
+		docker compose build
+
 dev-logs:
 		docker compose logs -f
 
