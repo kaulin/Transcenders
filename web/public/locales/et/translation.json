@@ -143,5 +143,7 @@
   "win_percentage": "Võiduprotsent",
   "yes": "Jah",
   "you": "sina",
-  "your_page": "Sinu leht"
+  "your_page": "Sinu leht",
+  "google": "Google",
+  "session_expired": "Sinu sessioon on aegunud. Logi uuesti sisse."
 }
