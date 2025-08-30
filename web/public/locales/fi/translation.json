@@ -129,5 +129,7 @@
   "welcome": "Tervetuloa pelaamaan Pongia",
   "winner": "Voittaja",
   "wins": "Voitot",
-  "yes": "Kyllä"
+  "yes": "Kyllä",
+  "google": "Google",
+  "session_expired": "Istuntosi on vanhentunut. Kirjaudu sisään uudelleen."
 }

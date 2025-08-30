@@ -65,7 +65,7 @@ export function useApiClient() {
         switch (error.httpStatus) {
           // Security event, logout immediately (no retry)
           case 410:
-            const errorKey = error.localeKey ?? 'auth_security_event_detected';
+            const errorKey = error.localeKey ?? 'session_expired';
             logout(errorKey);
             break;
           // On 401 - refresh once, then retry original call
@@ -75,11 +75,7 @@ export function useApiClient() {
               return await apiCall();
             } catch (refreshError) {
               // If refresh fails, logout user
-              if (ServiceError.isServiceError(refreshError)) {
-                logout(refreshError.localeKey ?? 'session_expired');
-              } else {
-                logout('session_expired');
-              }
+              logout('session_expired');
             }
         }
         // Rethrow any other ServiceError

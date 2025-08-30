@@ -129,5 +129,7 @@
   "welcome": "Tere tulemas Pongi mängima",
   "winner": "Võitja",
   "wins": "Võidud",
-  "yes": "Jah"
+  "yes": "Jah",
+  "google": "Google",
+  "session_expired": "Sinu sessioon on aegunud. Logi uuesti sisse."
 }
