@@ -20,8 +20,7 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.get(
     FRIENDSHIP_ROUTES.USER_FRIENDSHIPS,
     {
-      // TODO maybe just required, so that others can see your friends if needed?
-      preHandler: app.authenticate.owner('id'),
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Get all friends for a user',
         tags: ['friendship'],
