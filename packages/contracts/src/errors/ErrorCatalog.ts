@@ -233,7 +233,7 @@ const authErrors: Record<Extract<ErrorCode, `AUTH_${string}`>, ErrorDefinition> 
     message: 'Cookie validation failed',
     httpStatus: 403,
     category: 'internal',
-    localeKey: ' ', //no user message needed, silent logout screen
+    localeKey: '',
   },
 
   [ERROR_CODES.AUTH.TWO_FACTOR_WRONG_CODE]: {
