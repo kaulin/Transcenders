@@ -74,8 +74,11 @@ export function useApiClient() {
               await ensureRefreshedOnce(setAccessToken);
               return await apiCall();
             } catch (refreshError) {
-              // If refresh fails, logout user
-              logout('session_expired');
+              if (ServiceError.isServiceError(refreshError)) {
+                logout(refreshError.localeKey ?? 'session_expired');
+              } else {
+                logout('session_expired');
+              }
             }
         }
         // Rethrow any other ServiceError
