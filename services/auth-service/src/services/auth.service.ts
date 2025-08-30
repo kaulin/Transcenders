@@ -171,7 +171,7 @@ export class AuthService {
       expiresIn: Math.floor(AuthConfig.REFRESH_TOKEN_EXPIRE_MS / 1000),
     });
 
-    return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS };
+    return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS, userId };
   }
 
   private static async storeRefreshToken(
@@ -292,6 +292,15 @@ export class AuthService {
   ): Promise<ServiceResult<LoginResult>> {
     const db = await DatabaseManager.for('AUTH').open();
     const { userId, twoFacEnabled } = await this.preLoginRead(login);
+
+    // when only checking for password verification (not returning tokens or cookies)
+    if (login.onlyVerify) {
+      return ResultHelper.success(
+        { accessToken: '42', refreshToken: '42', expiresIn: 42, userId, justVerify: true },
+        'verify login',
+      );
+    }
+
     if (login.code && twoFacEnabled) {
       await ApiClient.auth.twoFacLogin(userId, login.code);
     }

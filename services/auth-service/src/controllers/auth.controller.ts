@@ -22,7 +22,8 @@ export class AuthController {
 
   static async login(request: FastifyRequest, reply: FastifyReply) {
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-    const loginResult = await AuthService.login(request.body as LoginUser, deviceInfo);
+    const loginInfo = request.body as LoginUser;
+    const loginResult = await AuthService.login(loginInfo, deviceInfo);
     const result = CookieUtils.handleLoginResponse(reply, loginResult);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }

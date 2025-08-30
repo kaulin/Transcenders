@@ -62,7 +62,7 @@ export class CookieUtils {
     reply: FastifyReply,
     loginResult: ServiceResult<LoginResult>,
   ): ServiceResult<AuthData> {
-    if (isSuccessResult(loginResult)) {
+    if (isSuccessResult(loginResult) && !loginResult.data.justVerify) {
       this.setCookies(reply, loginResult.data.refreshToken);
 
       // return AuthData with removed refreshToken to respond with
@@ -71,6 +71,7 @@ export class CookieUtils {
         data: {
           accessToken: loginResult.data.accessToken,
           expiresIn: loginResult.data.expiresIn,
+          userId: loginResult.data.userId,
         },
       };
     }
