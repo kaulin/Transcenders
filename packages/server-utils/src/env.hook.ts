@@ -18,7 +18,8 @@ function loadEnv(): Env {
     expandEnv: true,
   });
   cached = raw;
-  // #TODO testing lo
-  console.log(raw);
+  if (cached.NODE_ENV === 'development') {
+    console.log(cached);
+  }
   return cached;
 }
