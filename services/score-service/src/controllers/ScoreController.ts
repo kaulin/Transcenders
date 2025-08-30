@@ -1,10 +1,10 @@
 import {
-  ApiErrorHandler,
   CreateScoreRequest,
   GetScoresQuery,
   ScoresByIdRequest,
   StatsByIdRequest,
 } from '@transcenders/contracts';
+import { ApiErrorHandler } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ScoreService } from '../services/ScoreService.js';
 

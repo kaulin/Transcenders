@@ -1,5 +1,4 @@
 import {
-  ApiErrorHandler,
   ChangePasswordRequest,
   ERROR_CODES,
   GoogleAuthCallback,
@@ -11,7 +10,7 @@ import {
   StepupRequest,
   UserIdParam,
 } from '@transcenders/contracts';
-import { CookieUtils, DeviceUtils, ENV } from '@transcenders/server-utils';
+import { ApiErrorHandler, CookieUtils, DeviceUtils, ENV } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from '../services/auth.service.js';
 

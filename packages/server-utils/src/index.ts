@@ -1,3 +1,4 @@
+export { ApiErrorHandler } from './ApiErrorHandler.js';
 export { CookieUtils } from './CookieUtils.js';
 export { DatabaseManager } from './DatabaseManager.js';
 export { DeviceUtils } from './DeviceUtils.js';
