@@ -1,11 +1,11 @@
 import {
-  ApiErrorHandler,
   CreateUserRequest,
   GetUserRequest,
   GetUsersQuery,
   UpdateUserRequest,
   UserIdParam,
 } from '@transcenders/contracts';
+import { ApiErrorHandler } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/UserService.js';
 

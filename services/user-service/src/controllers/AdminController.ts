@@ -1,4 +1,5 @@
-import { ApiErrorHandler, CleanupOfflineQuery } from '@transcenders/contracts';
+import { CleanupOfflineQuery } from '@transcenders/contracts';
+import { ApiErrorHandler } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AdminService } from '../services/AdminService.js';
 import { HealthResponse } from '../types/api.types.js';

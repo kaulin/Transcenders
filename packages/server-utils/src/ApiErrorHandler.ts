@@ -1,10 +1,14 @@
+import {
+  ApiResponseType,
+  ERROR_CODES,
+  ErrorCode,
+  getErrorDefinition,
+  mapExceptionToErrorCode,
+  ServiceError,
+  ServiceResult,
+} from '@transcenders/contracts';
 import { FastifyError, FastifyReply } from 'fastify';
-import { ApiResponseType } from '../user.schemas.js';
-import { getErrorDefinition } from './ErrorCatalog.js';
-import { ERROR_CODES, ErrorCode } from './ErrorCodes.js';
-import { mapExceptionToErrorCode } from './ErrorMapping.js';
-import { ServiceError } from './ServiceError.js';
-import { ServiceResult } from './ServiceResult.js';
+import { CookieUtils } from './CookieUtils.js';
 
 /**
  * ApiErrorHandler replaces ResponseHelper with enhanced error handling
@@ -79,6 +83,9 @@ export class ApiErrorHandler {
     }
 
     reply.code(errorDef.httpStatus);
+    if (errorDef.httpStatus === 410) {
+      CookieUtils.clearCookies(reply);
+    }
     return {
       success: false,
       operation,

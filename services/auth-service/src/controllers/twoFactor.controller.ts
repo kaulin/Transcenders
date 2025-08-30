@@ -1,9 +1,5 @@
-import {
-  ApiErrorHandler,
-  TwoFactorRequest,
-  TwoFactorVerify,
-  UserIdParam,
-} from '@transcenders/contracts';
+import { TwoFactorRequest, TwoFactorVerify, UserIdParam } from '@transcenders/contracts';
+import { ApiErrorHandler } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { TwoFactorService } from '../services/twoFactor.service.js';
 

@@ -1,5 +1,4 @@
-import { ApiErrorHandler } from '@transcenders/contracts';
-import { CookieUtils } from '@transcenders/server-utils';
+import { ApiErrorHandler, CookieUtils } from '@transcenders/server-utils';
 import { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 export function registerErrorHandler(fastify: FastifyInstance) {
