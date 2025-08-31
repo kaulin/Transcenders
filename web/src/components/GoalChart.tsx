@@ -14,30 +14,38 @@ import { ApiClient } from '@transcenders/api-client';
 import { Score } from '@transcenders/contracts';
 
 type GoalChartProps = {
-  userId: number | undefined;  
+  viewedId: number | undefined;  
+  viewedUsername: string | undefined;
 }
 
-export default function GoalChart({userId}: GoalChartProps) {
+export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) {
   const { t } = useTranslation();
   
   const [userScores, setUserScores] = useState<Score[] | undefined>();
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
-    if (!userId) return;
-
-    setError(null);
-
-    ApiClient.score
-      .getScoresForUser(userId)
-      .then(setUserScores)
-      .catch((err: any) => setError(t(err.localeKey ?? 'something_went_wrong')));
-  }, [userId, t]);
+    async function fetchScores() {
+      if (viewedId === undefined) return;
+  
+      setError(null);
+  
+      try {
+        const scores = await ApiClient.score.getScoresForUser(viewedId);
+        setUserScores(scores);
+        
+      } catch(err: any) {
+        setError(t(err.localeKey ?? 'something_went_wrong'));
+      }     
+    }
+    
+    fetchScores();
+  }, [viewedId, t]);
 
   const chartData = userScores
     ? [...userScores.slice(0, 10)].reverse().map((s) => ({
-        scored: s.winner_id === userId ? s.winner_score : s.loser_score,
-        conceded: s.winner_id === userId ? s.loser_score : s.winner_score,
+        scored: s.winner_id === viewedId ? s.winner_score : s.loser_score,
+        conceded: s.winner_id === viewedId ? s.loser_score : s.winner_score,
         date: s.game_end
       }))
     : [];
@@ -47,6 +55,9 @@ export default function GoalChart({userId}: GoalChartProps) {
   
   return (
     <div className="flex flex-col items-center w-full">
+      <p className="text-center text-[#fff] font-fascinate text-xl uppercase">
+        {t('latest_outcomes')}
+      </p>
       <div className="flex w-full justify-center items-center h-40 pr-10">
         <ResponsiveContainer width="80%" height="80%">
           <AreaChart data={chartData}>
@@ -100,7 +111,7 @@ export default function GoalChart({userId}: GoalChartProps) {
       <div className="flex flex-col sm:flex-row text-sm sm:text-base gap-4">
         <div className="flex gap-2 items-center text-white">
           <div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
-          {t('you')}
+          {viewedUsername}
         </div>
         <div className="flex gap-2 items-center text-white">
           <div className="w-4 h-4 rounded-full bg-[#5d6b2f52] border border-white"></div>
@@ -110,4 +121,3 @@ export default function GoalChart({userId}: GoalChartProps) {
     </div>
   );
 };
-
