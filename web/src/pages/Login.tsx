@@ -48,7 +48,7 @@ const Login = () => {
     }
 
     handleGoogleAuthFromParams();
-  }, [navigate, loginWithTokens]);
+  }, [navigate, loginWithTokens, t]);
 
   async function handleGoogleLogin(e: React.FormEvent) {
     e.preventDefault();

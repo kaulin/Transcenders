@@ -1,7 +1,7 @@
-type StatRowProps = {
+interface StatRowProps {
   label: string;
   value: number | string;
-};
+}
 
 export default function StatRow({ label, value }: StatRowProps) {
   return (

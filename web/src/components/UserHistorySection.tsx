@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { ApiClient } from "@transcenders/api-client";
-import { Score } from "@transcenders/contracts";
-import { useUser } from "../hooks/useUser";
+import { ApiClient } from '@transcenders/api-client';
+import { Score } from '@transcenders/contracts';
+import { useUser } from '../hooks/useUser';
 
-import StatRow from "./StatRow";
+import StatRow from './StatRow';
 
-type UserHistoryProps = {
+interface UserHistoryProps {
   viewedId: number | undefined;
-};
+}
 
-export default function UserHistory({viewedId}: UserHistoryProps) {
+export default function UserHistory({ viewedId }: UserHistoryProps) {
   const { t } = useTranslation();
   const { user } = useUser();
 
@@ -22,7 +22,7 @@ export default function UserHistory({viewedId}: UserHistoryProps) {
   useEffect(() => {
     async function fetchScoresAndUsers() {
       if (viewedId === undefined) return;
-      
+
       setError(null);
 
       try {
@@ -41,7 +41,6 @@ export default function UserHistory({viewedId}: UserHistoryProps) {
         );
 
         setUsernames(Object.fromEntries(users));
-
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
       }
@@ -49,7 +48,7 @@ export default function UserHistory({viewedId}: UserHistoryProps) {
 
     fetchScoresAndUsers();
   }, [viewedId, t]);
-  
+
   return (
     <>
       <p className="text-[#fff] text-center text-2xl font-fascinate uppercase">{t('history')}</p>
@@ -83,4 +82,4 @@ export default function UserHistory({viewedId}: UserHistoryProps) {
       </div>
     </>
   );
-};
+}

@@ -1,5 +1,5 @@
-import { ChevronRight } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface UserSearchProps {
   searchedUser: string;
@@ -12,10 +12,10 @@ export default function UserSearch({
   searchedUser,
   setSearchedUser,
   handleSearch,
-  error
+  error,
 }: UserSearchProps) {
-  const { t } = useTranslation(); 
-  
+  const { t } = useTranslation();
+
   return (
     <div className="flex w-full flex-col justify-start items-center">
       <div className="flex flex-col">
@@ -41,4 +41,4 @@ export default function UserSearch({
       </div>
     </div>
   );
-};
+}

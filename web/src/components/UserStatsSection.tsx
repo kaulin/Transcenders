@@ -8,10 +8,10 @@ import StatRow from './StatRow';
 import PieCharts from './PieCharts';
 import GoalChart from './GoalChart';
 
-type UserStatsProps = {
+interface UserStatsProps {
   viewedId: number | undefined;
   viewedUsername: string | undefined;
-};
+}
 
 export default function UserStatsSection({ viewedId, viewedUsername }: UserStatsProps) {
   const { t } = useTranslation();
@@ -22,17 +22,17 @@ export default function UserStatsSection({ viewedId, viewedUsername }: UserStats
   useEffect(() => {
     async function fetchStats() {
       if (viewedId === undefined) return;
-      
+
       setError(null);
-      
+
       try {
         const stats = await ApiClient.score.getStatsForUser(viewedId);
         setUserStats(stats);
-      } catch(err: any) {
+      } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
       }
     }
-    
+
     fetchStats();
   }, [viewedId, t]);
 
@@ -64,7 +64,7 @@ export default function UserStatsSection({ viewedId, viewedUsername }: UserStats
         )}
       </div>
       <PieCharts viewedId={viewedId} />
-      <GoalChart viewedId={viewedId} viewedUsername={viewedUsername}/>
+      <GoalChart viewedId={viewedId} viewedUsername={viewedUsername} />
     </>
   );
 }

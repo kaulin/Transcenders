@@ -12,10 +12,10 @@ import FriendRequests from './FriendRequests';
 import FriendActions from './FriendActions';
 import UserSearch from './UserSearch';
 
-type UserSectionProps = {
+interface UserSectionProps {
   viewedUser: User | null;
   setViewedUser: React.Dispatch<React.SetStateAction<User | null>>;
-};
+}
 
 export default function UserSection({ viewedUser, setViewedUser }: UserSectionProps) {
   const { t } = useTranslation();
@@ -41,11 +41,11 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
     }
 
     fetchIncoming();
-  }, [user?.id]);
+  }, [user?.id, t]);
 
   const handleSearch = async () => {
     if (!searchedUser?.trim()) return;
-    
+
     setError(null);
 
     try {
@@ -68,8 +68,10 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
         {user?.id === viewedUser?.id ? (
           <>
             {friendView === 'friends' && <FriendsList userId={viewedUser?.id} />}
-            {friendView === 'requests' &&  <FriendRequests userId={user?.id} setIncomingCount={setIncomingCount} />}
-            
+            {friendView === 'requests' && (
+              <FriendRequests userId={user?.id} setIncomingCount={setIncomingCount} />
+            )}
+
             <button
               onClick={toggleFriendView}
               className="w-80 bg-[#6e5d41]/5 rounded-lg p-2 flex items-center justify-center gap-2 text-sm uppercase"
