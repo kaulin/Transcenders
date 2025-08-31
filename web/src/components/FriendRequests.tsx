@@ -5,12 +5,12 @@ import { X, Check } from 'lucide-react';
 import { ApiClient } from '@transcenders/api-client';
 import type { FriendRequestsData } from '@transcenders/contracts';
 
-type FriendRequestsProps = {
+interface FriendRequestsProps {
   userId: number | undefined;
   setIncomingCount: React.Dispatch<React.SetStateAction<number>>;
-};
+}
 
-export default function FriendRequests({userId, setIncomingCount}: FriendRequestsProps) {
+export default function FriendRequests({ userId, setIncomingCount }: FriendRequestsProps) {
   const { t } = useTranslation();
 
   const [receivedRequests, setReceivedRequests] = useState<FriendRequestsData[]>([]);
@@ -21,9 +21,9 @@ export default function FriendRequests({userId, setIncomingCount}: FriendRequest
   useEffect(() => {
     async function fetchRequests() {
       if (!userId) return;
-      
+
       setError(null);
-      
+
       try {
         const [sent, received] = await Promise.all([
           ApiClient.user.getOutgoingFriendRequests(userId),
@@ -33,7 +33,7 @@ export default function FriendRequests({userId, setIncomingCount}: FriendRequest
         setSentRequests(sent);
         setReceivedRequests(received);
         setIncomingCount(received.length);
-        
+
         const ids = [
           ...new Set([
             ...sent.map((req) => req.recipient_id),
@@ -51,31 +51,29 @@ export default function FriendRequests({userId, setIncomingCount}: FriendRequest
         );
 
         setUsernames(Object.fromEntries(users));
-        
       } catch (err: any) {
-        setError(t(err.localeKey || 'something_went_wrong'));
+        setError(t(err.localeKey ?? 'something_went_wrong'));
       }
     }
 
     fetchRequests();
-  }, [userId, t]);
+  }, [userId, setIncomingCount, t]);
 
   const handleAccept = async (initiatorId: number) => {
     if (!userId) return;
-    
+
     setError(null);
-    
+
     try {
       await ApiClient.user.acceptFriendRequest(userId, initiatorId);
-      
+
       setReceivedRequests((prev) => prev.filter((req) => req.initiator_id !== initiatorId));
-      setIncomingCount(prev => prev - 1);
-        
+      setIncomingCount((prev) => prev - 1);
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));
     }
-  }
-  
+  };
+
   const handleDecline = async (initiatorId: number) => {
     if (!userId) return;
 
@@ -83,30 +81,28 @@ export default function FriendRequests({userId, setIncomingCount}: FriendRequest
 
     try {
       await ApiClient.user.declineFriendRequest(userId, initiatorId);
-      
+
       setReceivedRequests((prev) => prev.filter((req) => req.initiator_id !== initiatorId));
       setIncomingCount((prev) => prev - 1);
-      
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));
     }
   };
-  
+
   const handleCancel = async (recipientId: number) => {
     if (!userId) return;
-    
+
     setError(null);
-    
+
     try {
       await ApiClient.user.declineFriendRequest(recipientId, userId);
-      
+
       setSentRequests((prev) => prev.filter((req) => req.recipient_id !== recipientId));
-      
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));
     }
-  }
-  
+  };
+
   return (
     <div className="w-80 h-[400px] bg-[#6e5d41]/5 rounded-lg p-6">
       <p className="text-[#fff] text-center font-fascinate uppercase text-xl mb-6">
@@ -145,7 +141,10 @@ export default function FriendRequests({userId, setIncomingCount}: FriendRequest
                 <div key={req.id} className="text-white">
                   {usernames[req.recipient_id]}
                 </div>
-                <button onClick={() => handleCancel(req.recipient_id)} className="text-xs lowercase">
+                <button
+                  onClick={() => handleCancel(req.recipient_id)}
+                  className="text-xs lowercase"
+                >
                   {t('cancel')}
                 </button>
               </div>

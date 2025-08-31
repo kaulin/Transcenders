@@ -183,4 +183,3 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
 };
 
 export default PongCanvas;
-  

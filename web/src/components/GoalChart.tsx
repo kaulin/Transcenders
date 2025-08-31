@@ -13,32 +13,31 @@ import {
 import { ApiClient } from '@transcenders/api-client';
 import { Score } from '@transcenders/contracts';
 
-type GoalChartProps = {
-  viewedId: number | undefined;  
+interface GoalChartProps {
+  viewedId: number | undefined;
   viewedUsername: string | undefined;
 }
 
 export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) {
   const { t } = useTranslation();
-  
+
   const [userScores, setUserScores] = useState<Score[] | undefined>();
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     async function fetchScores() {
       if (viewedId === undefined) return;
-  
+
       setError(null);
-  
+
       try {
         const scores = await ApiClient.score.getScoresForUser(viewedId);
         setUserScores(scores);
-        
-      } catch(err: any) {
+      } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
-      }     
+      }
     }
-    
+
     fetchScores();
   }, [viewedId, t]);
 
@@ -46,13 +45,13 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
     ? [...userScores.slice(0, 10)].reverse().map((s) => ({
         scored: s.winner_id === viewedId ? s.winner_score : s.loser_score,
         conceded: s.winner_id === viewedId ? s.loser_score : s.winner_score,
-        date: s.game_end
+        date: s.game_end,
       }))
     : [];
 
   if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
   if (!userScores) return <div className="tsc-info-message text-center">{t('loading')}</div>;
-  
+
   return (
     <div className="flex flex-col items-center w-full">
       <p className="text-center text-[#fff] font-fascinate text-xl uppercase">
@@ -120,4 +119,4 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
       </div>
     </div>
   );
-};
+}

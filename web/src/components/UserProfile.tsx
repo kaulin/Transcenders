@@ -1,9 +1,9 @@
-import { ApiClient } from "@transcenders/api-client";
-import { User } from "@transcenders/contracts";
+import { ApiClient } from '@transcenders/api-client';
+import { User } from '@transcenders/contracts';
 
-type UserProfileProps = {
+interface UserProfileProps {
   user: User | null;
-};
+}
 
 export default function UserProfile({ user }: UserProfileProps) {
   return (
@@ -23,4 +23,4 @@ export default function UserProfile({ user }: UserProfileProps) {
       <h1 className="pt-6 text-5xl text-[#fff] font-fascinate">{user?.username}</h1>
     </div>
   );
-};
+}

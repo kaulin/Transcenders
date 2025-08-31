@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { ApiClient } from '@transcenders/api-client';
 import type { User } from '@transcenders/contracts';
 
-type FriendsListProps = {
+interface FriendsListProps {
   userId: number | undefined;
-};
+}
 
 export default function FriendsList({ userId }: FriendsListProps) {
   const { t } = useTranslation();
@@ -18,18 +18,17 @@ export default function FriendsList({ userId }: FriendsListProps) {
       if (!userId) return;
 
       setError(null);
-      
+
       try {
         const friendsList = await ApiClient.user.getUserFriends(userId);
         setFriends(friendsList);
-        
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
       }
-    };
+    }
 
     fetchFriends();
-  }, [userId]);
+  }, [userId, t]);
 
   return (
     <div className="w-80 h-[400px] bg-[#6e5d41]/5 rounded-lg p-6">
@@ -54,4 +53,4 @@ export default function FriendsList({ userId }: FriendsListProps) {
       </div>
     </div>
   );
-};
+}
