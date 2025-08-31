@@ -1,44 +1,70 @@
-import { ApiClient } from "@transcenders/api-client";
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { ApiClient } from '@transcenders/api-client';
+import type { Stats } from '@transcenders/contracts';
 
-import type { Stats } from "@transcenders/contracts";
-import StatRow from "./StatRow";
+import StatRow from './StatRow';
+import PieCharts from './PieCharts';
+import GoalChart from './GoalChart';
 
 type UserStatsProps = {
-  userId: number | undefined;
+  viewedId: number | undefined;
+  viewedUsername: string | undefined;
 };
 
-export default function UserStatsSection({userId}: UserStatsProps) {
+export default function UserStatsSection({ viewedId, viewedUsername }: UserStatsProps) {
   const { t } = useTranslation();
-  
+
   const [userStats, setUserStats] = useState<Stats | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
-    if (!userId) return;
-
-    setError(null);
-
-    ApiClient.score
-      .getStatsForUser(userId)
-      .then(setUserStats)
-      .catch((err: any) => setError(t(err.localeKey ?? 'something_went_wrong')));
-  }, [userId, t]);
-  
-  if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
+    async function fetchStats() {
+      if (viewedId === undefined) return;
+      
+      setError(null);
+      
+      try {
+        const stats = await ApiClient.score.getStatsForUser(viewedId);
+        setUserStats(stats);
+      } catch(err: any) {
+        setError(t(err.localeKey ?? 'something_went_wrong'));
+      }
+    }
+    
+    fetchStats();
+  }, [viewedId, t]);
 
   return (
     <>
-      <StatRow label={t('total')} value={userStats?.total_games ?? 0} />
-      <StatRow label={t('wins')} value={userStats?.total_wins ?? 0} />
-      <StatRow
-        label={t('losses')}
-        value={(userStats?.total_games ?? 0) - (userStats?.total_wins ?? 0)}
-      />
-      <StatRow label={t('average_score')} value={(userStats?.average_score ?? 0).toFixed(1)} />
-      <StatRow label={t('win_percentage')} value={(userStats?.total_win_percentage ?? 0).toFixed(1)} />
+      <div className="flex flex-col text-center">
+        <p className="w-[300px] text-xl sm:text-2xl font-fascinate uppercase text-[#fff] mb-2">
+          {t('games_played')}
+        </p>
+        {error ? (
+          <div className="tsc-error-message text-center">{t(error)}</div>
+        ) : (
+          <>
+            <StatRow label={t('total')} value={userStats?.total_games ?? 0} />
+            <StatRow label={t('wins')} value={userStats?.total_wins ?? 0} />
+            <StatRow
+              label={t('losses')}
+              value={(userStats?.total_games ?? 0) - (userStats?.total_wins ?? 0)}
+            />
+            <StatRow
+              label={t('average_score')}
+              value={(userStats?.average_score ?? 0).toFixed(1)}
+            />
+            <StatRow
+              label={t('win_percentage')}
+              value={(userStats?.total_win_percentage ?? 0).toFixed(1)}
+            />
+          </>
+        )}
+      </div>
+      <PieCharts viewedId={viewedId} />
+      <GoalChart viewedId={viewedId} viewedUsername={viewedUsername}/>
     </>
   );
-};
+}
