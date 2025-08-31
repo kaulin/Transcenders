@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { ApiClient } from '@transcenders/api-client';
 import type { User } from '@transcenders/contracts';
-import { Heart, HeartHandshake, MessageSquareHeart, MessageCircleHeart } from 'lucide-react';
 
 type FriendsListProps = {
   userId: number | undefined;
@@ -15,9 +15,10 @@ export default function FriendsList({ userId }: FriendsListProps) {
 
   useEffect(() => {
     async function fetchFriends() {
-      if (!userId)
-        return;
+      if (!userId) return;
 
+      setError(null);
+      
       try {
         const friendsList = await ApiClient.user.getUserFriends(userId);
         setFriends(friendsList);
@@ -36,17 +37,20 @@ export default function FriendsList({ userId }: FriendsListProps) {
         {t('friends')}
       </p>
       <div className="relative h-[80%] px-2 text-sm sm:text-base overflow-y-auto custom-scrollbar">
-        {error && <p className="tsc-error-message text-center">{error}</p>}
-        {friends.map((friend) => (
-          <div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
-            <span>{friend.display_name ?? friend.username}</span>
-            <span
-              className={`w-3 h-3 rounded-full border border-white ${
-                friend.status === 'online' ? 'bg-[#ceff5d]' : 'bg-transparent'
-              }`}
-            />
-          </div>
-        ))}
+        {error ? (
+          <p className="tsc-error-message text-center">{error}</p>
+        ) : (
+          friends.map((friend) => (
+            <div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
+              <span>{friend.display_name ?? friend.username}</span>
+              <span
+                className={`w-3 h-3 rounded-full border border-white ${
+                  friend.status === 'online' ? 'bg-[#ceff5d]' : 'bg-transparent'
+                }`}
+              />
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
