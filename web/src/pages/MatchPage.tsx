@@ -80,8 +80,8 @@ function MatchPage() {
         loser_score: result.loser_score,
         tournament_level: result.tournament_level,
         game_duration: result.game_duration,
-        game_start: result.game_start,
-        game_end: result.game_end,
+        game_start: new Date(result.game_start).toISOString(),
+        game_end: new Date(result.game_end).toISOString(),
       };
 
       const response = await ApiClient.score.createScore(scoreData);
