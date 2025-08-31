@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 
 import { ApiClient } from '@transcenders/api-client';
+import { useUser } from '../hooks/useUser';
 import { Score } from '@transcenders/contracts';
 
 interface GoalChartProps {
@@ -20,6 +21,7 @@ interface GoalChartProps {
 
 export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) {
   const { t } = useTranslation();
+  const { user } = useUser();
 
   const [userScores, setUserScores] = useState<Score[] | undefined>();
   const [error, setError] = useState<string | null>(null);
@@ -110,7 +112,7 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
       <div className="flex flex-col sm:flex-row text-sm sm:text-base gap-4">
         <div className="flex gap-2 items-center text-white">
           <div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
-          {viewedUsername}
+          {viewedUsername === user?.username ? t('you') : viewedUsername}
         </div>
         <div className="flex gap-2 items-center text-white">
           <div className="w-4 h-4 rounded-full bg-[#5d6b2f52] border border-white"></div>
