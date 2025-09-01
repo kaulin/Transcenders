@@ -15,7 +15,7 @@ const Header = () => {
   const { user, setUser } = useUser();
   const { resetAll } = usePlayers();
   const { clearTokens } = useAuth();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   useEffect(() => {
     i18n.changeLanguage(user?.lang);
@@ -39,26 +39,38 @@ const Header = () => {
             <LanguageSwitch />
             <div className="flex justify-center items-center gap-4 uppercase">
               <div className="w-[36px] flex justify-center">
-                <Link to="/home">
+                <Link to="/home" className="relative group">
                   <Home className="link-color h-6 w-6 hover:h-9 hover:w-9" />
+                  <span className="absolute hidden button-label bottom-full left-2/3">
+                    {t('home')}
+                  </span>
                 </Link>
               </div>
               <div className="w-[36px] flex justify-center">
-                <Link to="/dashboard">
+                <Link to="/dashboard" className="relative group">
                   <LayoutDashboard className="link-color h-6 w-6 hover:h-9 hover:w-9" />
+                  <span className="absolute hidden button-label bottom-full left-2/3">
+                    {t('dashboard')}
+                  </span>
                 </Link>
               </div>
               <div className="w-[36px] flex justify-center">
-                <Link to="/profile">
+                <Link to="/profile" className="relative group">
                   <Cat className="link-color h-6 w-6 hover:h-9 hover:w-9" />
+                  <span className="absolute hidden button-label bottom-full left-2/3">
+                    {t('profile')}
+                  </span>
                 </Link>
               </div>
             </div>
           </div>
 
           <div className="flex basis-1/2 justify-end items-center">
-            <button onClick={handleLogout}>
+            <button onClick={handleLogout} className="relative group">
               <LogOut className="h-6 w-6" />
+              <span className="absolute hidden button-label bottom-full left-2/3">
+                {t('log_out')}
+              </span>
             </button>
           </div>
         </>
