@@ -25,7 +25,7 @@ export default function UserProfile({ user, viewedUser }: UserProfileProps) {
       </div>
       <div className="flex pt-6 gap-4">
         <h1 className="text-5xl text-[#fff] font-fascinate">{viewedUser?.username}</h1>
-        {user !== viewedUser && (<FriendActions userId={user?.id} viewedId={viewedUser?.id}/>)}
+        {user !== viewedUser && <FriendActions userId={user?.id} viewedId={viewedUser?.id} />}
       </div>
     </div>
   );
