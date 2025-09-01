@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import GameContainer from '../components/game/GameContainer';
 import { GameStatus, type GameResult } from '../components/game/models/GameState';
+import { useAvatarTransform } from '../hooks/useAvatarTransform';
 import { usePlayers } from '../hooks/usePlayers';
 
 interface TournamentState {
@@ -37,6 +38,7 @@ function TournamentPage() {
   const [rightScore, setRightScore] = useState(0);
   const [isProcessingGameEnd, setIsProcessingGameEnd] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
+  const { getTransformFromUrl } = useAvatarTransform();
 
   //control signals for GameContainer
   const [shouldStart, setShouldStart] = useState(false);
@@ -315,7 +317,7 @@ function TournamentPage() {
                     <img
                       src={ApiClient.user.getFullAvatarURL(currentMatchPlayers.player1.avatar)}
                       alt={`${currentMatchPlayers.player1.username} avatar`}
-                      className="object-cover"
+                      className={getTransformFromUrl(currentMatchPlayers.player1.avatar)}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
@@ -344,7 +346,7 @@ function TournamentPage() {
                     <img
                       src={ApiClient.user.getFullAvatarURL(currentMatchPlayers.player2.avatar)}
                       alt={`${currentMatchPlayers.player2.username} avatar`}
-                      className="object-cover"
+                      className={currentMatchPlayers.player2.avatar}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}

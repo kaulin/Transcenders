@@ -1,6 +1,7 @@
 import { ApiClient } from '@transcenders/api-client';
 import { User } from '@transcenders/contracts';
 
+import { useAvatarTransform } from '../hooks/useAvatarTransform';
 import FriendActions from './FriendActions';
 
 interface UserProfileProps {
@@ -9,14 +10,15 @@ interface UserProfileProps {
 }
 
 export default function UserProfile({ user, viewedUser }: UserProfileProps) {
+  const { getTransformFromUrl } = useAvatarTransform();
   return (
     <div className="flex flex-col items-center">
-      <div className="bubble bg-white/50 w-56 h-56 flex items-end justify-center overflow-hidden">
+      <div className="bubble bg-white/50 w-56 h-56 flex justify-center overflow-hidden">
         {viewedUser?.avatar ? (
           <img
             src={ApiClient.user.getFullAvatarURL(viewedUser.avatar)}
             alt={`${viewedUser.username} avatar`}
-            className="object-cover"
+            className={getTransformFromUrl(viewedUser.avatar)}
             onError={(e) => {
               e.currentTarget.style.display = 'none';
             }}
