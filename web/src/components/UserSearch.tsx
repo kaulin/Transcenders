@@ -30,7 +30,7 @@ export default function UserSearch({
           />
           <button
             onClick={handleSearch}
-            className="ml-4 p-2 rounded-full  border-white hover:border-[#786647] bg-white/15 text-white"
+            className="ml-4 p-1 rounded-full bg-white/10"
           >
             <ChevronRight />
           </button>
