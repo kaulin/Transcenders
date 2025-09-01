@@ -54,6 +54,10 @@
   @apply rounded-full aspect-square border border-white;
 }
 
+@utility button-label {
+  @apply group group-hover:block bg-[#6e5d41]/10 text-white text-xs rounded py-1 px-2 whitespace-nowrap;
+}
+
 @utility container {
   margin-inline: auto;
 }

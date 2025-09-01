@@ -16,7 +16,7 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
     'friends' | 'request_sent' | 'request_received' | 'none'
   >('none');
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     async function verifyFriendshipStatus() {
       if (!userId || viewedId === undefined) return;
@@ -61,7 +61,7 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
   };
 
   if (userId === viewedId) return;
-  
+
   return (
     <>
       {friendshipStatus === 'friends' ? (
@@ -83,7 +83,7 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
             <Heart className="w-6 h-6 text-white/50" />
           )}
 
-          <span className="absolute bottom-2/3 left-2/3 hidden group-hover:block bg-[#6e5d41]/10 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+          <span className="absolute hidden button-label bottom-2/3 left-2/3">
             {friendshipStatus === 'request_sent'
               ? t('friend_request_sent')
               : friendshipStatus === 'request_received'
