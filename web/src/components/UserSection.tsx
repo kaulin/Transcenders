@@ -35,6 +35,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
       try {
         const incoming = await ApiClient.user.getIncomingFriendRequests(user.id);
         setIncomingCount(incoming.length);
+        
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
       }
@@ -51,6 +52,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
     try {
       const user = await ApiClient.user.getUserExact({ username: searchedUser });
       setViewedUser(user);
+      
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));
     }
@@ -62,7 +64,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
 
   return (
     <>
-      <UserProfile user={viewedUser} />
+      <UserProfile user={user} viewedUser={viewedUser} />
 
       <div className="w-full flex flex-col items-center justify-center gap-6">
         {user?.id === viewedUser?.id ? (
@@ -87,7 +89,9 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
             </button>
           </>
         ) : (
-          <FriendActions userId={user?.id} viewedId={viewedUser?.id} />
+          <>
+            <FriendsList userId={viewedUser?.id} />
+          </>
         )}
       </div>
 
