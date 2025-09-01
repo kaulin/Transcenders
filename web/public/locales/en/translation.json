@@ -21,6 +21,7 @@
   "continue_to_next_round": "Continue to Next Round",
   "continue_with_google": "Continue with Google",
   "create_account": "Create an account",
+  "dashboard": "Dashboard",
   "delete_account": "Delete account",
   "delete_friend": "Delete friend",
   "deletion_successful": "Account deleted successfully",
@@ -97,6 +98,7 @@
   "repeat_pw": "Repeat password",
   "reset": "Reset",
   "saving_results": "Saving game results...",
+  "search": "Search",
   "search_user": "Search User",
   "second_round": "SECOND ROUND",
   "select_avatar": "Select an avatar",
@@ -140,5 +142,6 @@
   "wins": "Wins",
   "win_percentage": "Win Percentage",
   "yes": "Yes",
-  "you": "You"
+  "you": "You",
+  "your_page": "Your Page"
 }

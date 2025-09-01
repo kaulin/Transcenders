@@ -21,6 +21,7 @@
   "continue_to_next_round": "Jatka Seuraavaan Kierrokseen",
   "continue_with_google": "Jatka Google-tilillä",
   "create_account": "Luo uusi käyttäjä",
+  "dashboard": "Käyttäjäpaneeli",
   "delete_account": "Poista käyttäjä",
   "delete_friend": "Poista kavereista",
   "deletion_successful": "Käyttäjätili poistettu onnistuneesti",
@@ -97,6 +98,7 @@
   "repeat_pw": "Salasana uudelleen",
   "reset": "Nollaa",
   "saving_results": "Tallennetaan pelitulokset...",
+  "search": "Etsi",
   "search_user": "Etsi käyttäjä",
   "second_round": "TOINEN KIERROS",
   "select_avatar": "Valitse avatar",
@@ -140,5 +142,6 @@
   "wins": "Voitot",
   "win_percentage": "Voittoprosentti",
   "yes": "Kyllä",
-  "you": "Sinä"
+  "you": "Sinä",
+  "your_page": "Oma sivu"
 }

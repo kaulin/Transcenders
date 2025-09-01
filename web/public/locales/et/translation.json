@@ -21,6 +21,7 @@
   "continue_to_next_round": "Järgmine voor",
   "continue_with_google": "Jätkake Google'iga",
   "create_account": "Loo konto",
+  "dashboard": "",
   "delete_account": "Kustuta konto",
   "delete_friend": "Kustuta sõber",
   "deletion_successful": "Konto edukalt kustutatud",
@@ -97,6 +98,7 @@
   "repeat_pw": "Korda parooli",
   "reset": "Alusta uuesti",
   "saving_results": "Salvestan tulemusi...",
+  "search": "",
   "search_user": "Otsi kasutajat",
   "second_round": "TEINE VOOR",
   "select_avatar": "Vali avatar",
@@ -140,5 +142,6 @@
   "wins": "Võidud",
   "win_percentage": "",
   "yes": "Jah",
-  "you": ""
+  "you": "",
+  "your_page": ""
 }
