@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PongCanvas from './canvas/PongCanvas';
 import { usePlayers } from '../../hooks/usePlayers';
 import { type GameResult } from './models/GameState';
@@ -135,12 +135,11 @@ const GameContainer: React.FC<GameContainerProps> = ({
     }
   }, [shouldPause, onPauseHandled, onStatusChange]);
 
-  
   // Handle game end and stats submission
   const handleGameEnd = useCallback(
     async (finalGameState: GameState) => {
       if (isProcessingGameEnd || !gameStartTime) return;
-      
+
       const currentPlayers = getCurrentPlayers();
 
       if (!currentPlayers) return;
@@ -149,7 +148,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
 
       const leftPlayerWon = finalGameState.leftScore > finalGameState.rightScore;
       const actualWinner = leftPlayerWon ? currentPlayers.player1 : currentPlayers.player2;
-      
+
       const gameResult = createGameResult(
         currentPlayers.player1.id,
         currentPlayers.player2.id,
@@ -159,9 +158,9 @@ const GameContainer: React.FC<GameContainerProps> = ({
         Date.now(),
         0, // tournament level handled by parent
       );
-      
+
       try {
-          onGameComplete?.(gameResult, actualWinner.name);
+        onGameComplete?.(gameResult, actualWinner.name);
       } catch (error) {
         console.error('Failed to save game result:', error);
       } finally {
@@ -170,87 +169,87 @@ const GameContainer: React.FC<GameContainerProps> = ({
     },
     [gameStartTime, isProcessingGameEnd],
   );
-  
+
   useEffect(() => {
-    if (gameState.status === GameStatus.ENDED && !isProcessingGameEnd)
-      handleGameEnd(gameState);
+    if (gameState.status === GameStatus.ENDED && !isProcessingGameEnd) handleGameEnd(gameState);
   }, [gameState.status, isProcessingGameEnd, handleGameEnd]);
-  
+
   const updateGame = (currentTime: number) => {
     const currentState = gameStateRef.current;
 
-    const deltaTime = lastFrameTimeRef.current === 0 ? 0 : (currentTime - lastFrameTimeRef.current) / 1000;
+    const deltaTime =
+      lastFrameTimeRef.current === 0 ? 0 : (currentTime - lastFrameTimeRef.current) / 1000;
     lastFrameTimeRef.current = currentTime;
     //skip if coming back from pause and deltatime is too large
     if (deltaTime > 0.1) {
       animationFrameRef.current = requestAnimationFrame(updateGame);
       return;
     }
-    
+
     // Only update game physics when running
     if (currentState.status !== GameStatus.RUNNING) {
       animationFrameRef.current = requestAnimationFrame(updateGame);
       return;
     }
-    
-      let newState = { ...currentState };
 
-      // Move paddles
-      if (keysPressedRef.current[Controls.leftPaddle.up.toLowerCase()]) {
-        newState.leftPaddle.position.y = Math.max(
-          0,
-          newState.leftPaddle.position.y - newState.leftPaddle.speed * deltaTime,
-        );
+    let newState = { ...currentState };
+
+    // Move paddles
+    if (keysPressedRef.current[Controls.leftPaddle.up.toLowerCase()]) {
+      newState.leftPaddle.position.y = Math.max(
+        0,
+        newState.leftPaddle.position.y - newState.leftPaddle.speed * deltaTime,
+      );
+    }
+    if (keysPressedRef.current[Controls.leftPaddle.down.toLowerCase()]) {
+      newState.leftPaddle.position.y = Math.min(
+        newState.canvasHeight - newState.leftPaddle.height,
+        newState.leftPaddle.position.y + newState.leftPaddle.speed * deltaTime,
+      );
+    }
+    if (keysPressedRef.current[Controls.rightPaddle.up.toLowerCase()]) {
+      newState.rightPaddle.position.y = Math.max(
+        0,
+        newState.rightPaddle.position.y - newState.rightPaddle.speed * deltaTime,
+      );
+    }
+    if (keysPressedRef.current[Controls.rightPaddle.down.toLowerCase()]) {
+      newState.rightPaddle.position.y = Math.min(
+        newState.canvasHeight - newState.rightPaddle.height,
+        newState.rightPaddle.position.y + newState.rightPaddle.speed * deltaTime,
+      );
+    }
+
+    // Move ball
+    newState.ball.position.x += newState.ball.velocity.dx * deltaTime;
+    newState.ball.position.y += newState.ball.velocity.dy * deltaTime;
+
+    // Check collisions
+    newState = checkWallCollision(newState);
+    newState = handlePaddleCollisions(newState);
+
+    // Check scoring
+    const { newState: stateAfterScoring, scored } = checkScore(newState);
+
+    if (scored) {
+      // Notify parent of score change
+      onScoreChange?.(stateAfterScoring.leftScore, stateAfterScoring.rightScore);
+
+      if (stateAfterScoring.rightScore >= 3 || stateAfterScoring.leftScore >= 3) {
+        const finalState = {
+          ...stateAfterScoring,
+          status: GameStatus.ENDED,
+          gameEndTime: Date.now(),
+        };
+        setGameState(finalState);
+        onStatusChange?.(GameStatus.ENDED);
+        handleGameEnd(finalState);
+        return;
       }
-      if (keysPressedRef.current[Controls.leftPaddle.down.toLowerCase()]) {
-        newState.leftPaddle.position.y = Math.min(
-          newState.canvasHeight - newState.leftPaddle.height,
-          newState.leftPaddle.position.y + newState.leftPaddle.speed * deltaTime,
-        );
-      }
-      if (keysPressedRef.current[Controls.rightPaddle.up.toLowerCase()]) {
-        newState.rightPaddle.position.y = Math.max(
-          0,
-          newState.rightPaddle.position.y - newState.rightPaddle.speed * deltaTime,
-        );
-      }
-      if (keysPressedRef.current[Controls.rightPaddle.down.toLowerCase()]) {
-        newState.rightPaddle.position.y = Math.min(
-          newState.canvasHeight - newState.rightPaddle.height,
-          newState.rightPaddle.position.y + newState.rightPaddle.speed * deltaTime,
-        );
-      }
-
-      // Move ball
-      newState.ball.position.x += newState.ball.velocity.dx * deltaTime;
-      newState.ball.position.y += newState.ball.velocity.dy * deltaTime;
-
-      // Check collisions
-      newState = checkWallCollision(newState);
-      newState = handlePaddleCollisions(newState);
-
-      // Check scoring
-      const { newState: stateAfterScoring, scored } = checkScore(newState);
-
-      if (scored) {
-        // Notify parent of score change
-        onScoreChange?.(stateAfterScoring.leftScore, stateAfterScoring.rightScore);
-
-        if (stateAfterScoring.rightScore >= 3 || stateAfterScoring.leftScore >= 3) {
-          const finalState = {
-            ...stateAfterScoring,
-            status: GameStatus.ENDED,
-            gameEndTime: Date.now(),
-          };
-          setGameState(finalState);
-          onStatusChange?.(GameStatus.ENDED);
-          handleGameEnd(finalState);
-          return;
-        }
-        newState = resetBall(stateAfterScoring);
-      } else {
-        newState = stateAfterScoring;
-      }
+      newState = resetBall(stateAfterScoring);
+    } else {
+      newState = stateAfterScoring;
+    }
     setGameState(newState);
 
     // Continue animation loop regardless of game state (for smooth rendering)
@@ -260,11 +259,11 @@ const GameContainer: React.FC<GameContainerProps> = ({
   // Start the game loop when the component mounts
   useEffect(() => {
     lastFrameTimeRef.current = 0;
-    
-    const gameLoop = (currentTime:number) => {
+
+    const gameLoop = (currentTime: number) => {
       updateGame(currentTime);
     };
-    
+
     animationFrameRef.current = requestAnimationFrame(gameLoop);
     return () => {
       cancelAnimationFrame(animationFrameRef.current);
@@ -284,7 +283,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
       if (['ArrowUp', 'ArrowDown', 'w', 's'].includes(e.key)) {
         keysPressedRef.current[e.key.toLowerCase()] = false;
       }
-
     };
 
     window.addEventListener('keydown', handleKeyDown);
