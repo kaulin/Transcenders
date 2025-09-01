@@ -56,7 +56,8 @@ export async function registerTwoFactorRoutes(app: FastifyInstance) {
   app.post(
     TWO_FACTOR_ROUTES.REQUEST_LOGIN,
     {
-      preHandler: app.authenticate.owner('id'),
+      // TODO maybe change to owner() again when handling the email sending differently from frontend
+      preHandler: app.authenticate.internal(),
       schema: {
         description: 'Request a login-time 2FA challenge',
         tags: ['Auth-2FA'],
@@ -70,7 +71,8 @@ export async function registerTwoFactorRoutes(app: FastifyInstance) {
   app.post(
     TWO_FACTOR_ROUTES.LOGIN,
     {
-      preHandler: app.authenticate.owner('id'),
+      // TODO maybe change to owner() again when handling the email sending differently from frontend
+      preHandler: app.authenticate.internal(),
       schema: {
         description: 'Verify 2FA login code',
         tags: ['Auth-2FA'],

@@ -152,8 +152,8 @@ export class TwoFactorService {
       if (ENV.NODE_ENV !== 'production') {
         try {
           const { default: clipboard } = await import('clipboardy');
-          await clipboard.write(code);
           console.log(`2FA '${purpose}' code for user ${userId} copied to clipboard: ${code}`);
+          await clipboard.write(code);
         } catch (err: any) {
           console.log(`Could not copy 2FA code to clipboard: ${err?.message ?? err}`);
         }
