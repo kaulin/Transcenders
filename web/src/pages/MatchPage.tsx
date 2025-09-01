@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import GameContainer from '../components/game/GameContainer';
 import { GameStatus, type GameResult } from '../components/game/models/GameState';
+import { useAvatarTransform } from '../hooks/useAvatarTransform';
 import { usePlayers } from '../hooks/usePlayers';
 
 function MatchPage() {
@@ -14,6 +15,7 @@ function MatchPage() {
   const [rightScore, setRightScore] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
   const [isProcessingGameEnd, setIsProcessingGameEnd] = useState(false);
+  const { getTransformFromUrl } = useAvatarTransform();
 
   // Control signals for GameContainer
   const [shouldStart, setShouldStart] = useState(false);
@@ -113,7 +115,7 @@ function MatchPage() {
                     <img
                       src={ApiClient.user.getFullAvatarURL(players[1].avatar)}
                       alt={`${players[1]?.username} avatar`}
-                      className="object-cover"
+                      className={getTransformFromUrl(players[1].avatar)}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
@@ -142,7 +144,7 @@ function MatchPage() {
                     <img
                       src={ApiClient.user.getFullAvatarURL(players[2].avatar)}
                       alt={`${players[2]?.username} avatar`}
-                      className="object-cover"
+                      className={getTransformFromUrl(players[2].avatar)}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}

@@ -4,6 +4,7 @@ import { AvatarConfig, DefaultAvatar, RandomAvatar, ServiceError } from '@transc
 import { ChevronLeft, ChevronRight, Dice5, Upload } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAvatarTransform } from '../hooks/useAvatarTransform';
 import { useTokenElevation } from '../hooks/useTokenElevation';
 import { useUser } from '../hooks/useUser';
 import LoadingSpinner from './LoadingSpinner';
@@ -16,6 +17,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
   const { t } = useTranslation();
   const { user, setUser } = useUser();
   const { isElevated } = useTokenElevation();
+  const { getTransformFromUrl } = useAvatarTransform();
   const [error, setError] = useState<string | null>(null);
 
   // Default avatar setup
@@ -43,32 +45,6 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
     if (!user || avatars.length === 0) return -1;
     return avatars.findIndex((a) => a.url === user.avatar);
   }, [user, avatars]);
-
-  function getNameFromUrl(url: string) {
-    try {
-      const parts = url.split('?')[0].split('/');
-      return parts[parts.length - 1] || url;
-    } catch {
-      return url;
-    }
-  }
-
-  const transformFromUrl = useCallback((fullUrl?: string) => {
-    const defaultTransform = 'object-cover';
-    const defaultAvatarTransforms: Record<string, string> = {
-      'avatarCat1.avif': 'object-contain max-w-[65%] object-bottom',
-      'avatarCat2.avif': 'object-contain max-w-[85%] object-bottom',
-      'avatarCat3.avif': 'object-contain max-w-[98%] object-bottom',
-      'avatarCat4.avif': 'object-contain max-w-[80%] object-bottom',
-      'avatarCat5.avif': 'object-contain max-w-[80%] object-bottom',
-      'avatarCat6.avif': 'object-contain max-w-[70%] object-bottom',
-      'avatarCat7.webp': 'object-contain max-w-[100%] object-bottom',
-      'avatarCat8.gif': 'object-cover h-[180%]',
-    };
-    if (!fullUrl) return defaultTransform;
-    const key = getNameFromUrl(fullUrl);
-    return defaultAvatarTransforms[key] ?? defaultTransform;
-  }, []);
 
   const previewUrl = useMemo(() => {
     if (!user) return '';
@@ -232,7 +208,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   const [displayUrl, setDisplayUrl] = useState(previewUrl);
-  const [displayClass, setDisplayClass] = useState(transformFromUrl(previewUrl));
+  const [displayClass, setDisplayClass] = useState(getTransformFromUrl(previewUrl));
   const [loadingNext, setLoadingNext] = useState(false);
   const imgLoading = uploading || loadingNext;
 
@@ -246,7 +222,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
 
     const apply = () => {
       setDisplayUrl(previewUrl);
-      setDisplayClass(transformFromUrl(previewUrl));
+      setDisplayClass(getTransformFromUrl(previewUrl));
       setLoadingNext(false);
     };
 
@@ -255,7 +231,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
       img.onload = apply;
       img.onerror = apply;
     }
-  }, [previewUrl, displayUrl, transformFromUrl]);
+  }, [previewUrl, displayUrl, getTransformFromUrl]);
 
   return (
     <div className={className}>
