@@ -118,8 +118,8 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
               {t('received')} ({receivedRequests.length ?? 0})
             </p>
             {receivedRequests.map((req) => (
-              <div className="w-full flex justify-between text-[#fff]">
-                <div key={req.id} className="text-white">
+              <div key={req.id} className="w-full flex justify-between text-[#fff]">
+                <div className="text-white">
                   {usernames[req.initiator_id]}
                 </div>
                 <div>
@@ -137,8 +137,8 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
               {t('sent')} ({sentRequests.length ?? 0})
             </p>
             {sentRequests.map((req) => (
-              <div className="w-full flex justify-between text-[#fff]">
-                <div key={req.id} className="text-white">
+              <div key={req.id} className="w-full flex justify-between text-[#fff]">
+                <div className="text-white">
                   {usernames[req.recipient_id]}
                 </div>
                 <button
