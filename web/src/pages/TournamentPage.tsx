@@ -346,7 +346,7 @@ function TournamentPage() {
                     <img
                       src={ApiClient.user.getFullAvatarURL(currentMatchPlayers.player2.avatar)}
                       alt={`${currentMatchPlayers.player2.username} avatar`}
-                      className={currentMatchPlayers.player2.avatar}
+                      className={getTransformFromUrl(currentMatchPlayers.player2.avatar)}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
