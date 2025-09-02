@@ -61,9 +61,12 @@ export default function UserHistory({ viewedId }: UserHistoryProps) {
           <div className="tsc-info-message text-center">{t('not_available')}</div>
         ) : (
           <div className="relative h-full w-full px-2 overflow-y-auto custom-scrollbar flex flex-col gap-12">
-            {userScores?.map(({ winner_id, loser_id, winner_score, loser_score, game_end }) => (
+            {userScores?.map(({ id, winner_id, loser_id, winner_score, loser_score, game_end }) => (
               <div className="flex flex-col justify-center items-center">
-                <div className="w-full flex justify-between text-[#fff]">
+                <div
+                  key={id}
+                  className="w-full flex justify-between text-[#fff]"
+                >
                   <div className="font-fascinate uppercase text-xl">
                     {winner_id === user?.id ? 'win' : 'loss'}
                   </div>
