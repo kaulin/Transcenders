@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { ApiClient } from '@transcenders/api-client';
 import type { Stats } from '@transcenders/contracts';
 
-import StatRow from './StatRow';
-import PieCharts from './PieCharts';
+import { useApiClient } from '../hooks/useApiClient';
 import GoalChart from './GoalChart';
+import PieCharts from './PieCharts';
+import StatRow from './StatRow';
 
 interface UserStatsProps {
   viewedId: number | undefined;
@@ -18,6 +19,7 @@ export default function UserStatsSection({ viewedId, viewedUsername }: UserStats
 
   const [userStats, setUserStats] = useState<Stats | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   useEffect(() => {
     async function fetchStats() {
@@ -26,7 +28,7 @@ export default function UserStatsSection({ viewedId, viewedUsername }: UserStats
       setError(null);
 
       try {
-        const stats = await ApiClient.score.getStatsForUser(viewedId);
+        const stats = await api(() => ApiClient.score.getStatsForUser(viewedId));
         setUserStats(stats);
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -34,7 +36,7 @@ export default function UserStatsSection({ viewedId, viewedUsername }: UserStats
     }
 
     fetchStats();
-  }, [viewedId, t]);
+  }, [viewedId, t, api]);
 
   return (
     <>
