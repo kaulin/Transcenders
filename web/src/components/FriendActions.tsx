@@ -1,8 +1,9 @@
+import { Heart, HeartMinus, HeartPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HeartPlus, HeartMinus, Heart } from 'lucide-react';
 
 import { ApiClient } from '@transcenders/api-client';
+import { useApiClient } from '../hooks/useApiClient';
 
 interface FriendActionsProps {
   userId: number | undefined;
@@ -11,6 +12,7 @@ interface FriendActionsProps {
 
 export default function FriendActions({ userId, viewedId }: FriendActionsProps) {
   const { t } = useTranslation();
+  const api = useApiClient();
 
   const [friendshipStatus, setFriendshipStatus] = useState<
     'friends' | 'request_sent' | 'request_received' | 'none'
@@ -24,7 +26,7 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
       setError(null);
 
       try {
-        const friendship = await ApiClient.user.getRelationshipStatus(userId, viewedId);
+        const friendship = await api(() => ApiClient.user.getRelationshipStatus(userId, viewedId));
         setFriendshipStatus(friendship.status);
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -32,7 +34,7 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
     }
 
     verifyFriendshipStatus();
-  }, [userId, viewedId, t]);
+  }, [userId, viewedId, t, api]);
 
   const handleAdd = async () => {
     if (!userId || viewedId === undefined) return;
@@ -40,7 +42,7 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
     setError(null);
 
     try {
-      await ApiClient.user.sendFriendRequest(userId, viewedId);
+      await api(() => ApiClient.user.sendFriendRequest(userId, viewedId));
       setFriendshipStatus('request_sent');
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -53,7 +55,7 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
     setError(null);
 
     try {
-      await ApiClient.user.removeFriend(userId, viewedId);
+      await api(() => ApiClient.user.removeFriend(userId, viewedId));
       setFriendshipStatus('none');
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));

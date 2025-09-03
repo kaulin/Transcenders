@@ -1,9 +1,10 @@
+import { Check, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Check } from 'lucide-react';
 
 import { ApiClient } from '@transcenders/api-client';
 import type { FriendRequestsData } from '@transcenders/contracts';
+import { useApiClient } from '../hooks/useApiClient';
 
 interface FriendRequestsProps {
   userId: number | undefined;
@@ -17,6 +18,7 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
   const [sentRequests, setSentRequests] = useState<FriendRequestsData[]>([]);
   const [usernames, setUsernames] = useState<Record<number, string>>({});
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   useEffect(() => {
     async function fetchRequests() {
@@ -26,8 +28,8 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
 
       try {
         const [sent, received] = await Promise.all([
-          ApiClient.user.getOutgoingFriendRequests(userId),
-          ApiClient.user.getIncomingFriendRequests(userId),
+          api(() => ApiClient.user.getOutgoingFriendRequests(userId)),
+          api(() => ApiClient.user.getIncomingFriendRequests(userId)),
         ]);
 
         setSentRequests(sent);
@@ -43,10 +45,12 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
 
         const users = await Promise.all(
           ids.map((id) =>
-            ApiClient.user
-              .getUserById(id)
-              .then((u) => [id, u.username] as const)
-              .catch(() => [id, `User#${id}`] as const),
+            api(() =>
+              ApiClient.user
+                .getUserById(id)
+                .then((u) => [id, u.username] as const)
+                .catch(() => [id, `User#${id}`] as const),
+            ),
           ),
         );
 
@@ -57,7 +61,7 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
     }
 
     fetchRequests();
-  }, [userId, setIncomingCount, t]);
+  }, [userId, setIncomingCount, t, api]);
 
   const handleAccept = async (initiatorId: number) => {
     if (!userId) return;
@@ -65,7 +69,7 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
     setError(null);
 
     try {
-      await ApiClient.user.acceptFriendRequest(userId, initiatorId);
+      await api(() => ApiClient.user.acceptFriendRequest(userId, initiatorId));
 
       setReceivedRequests((prev) => prev.filter((req) => req.initiator_id !== initiatorId));
       setIncomingCount((prev) => prev - 1);
@@ -80,7 +84,7 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
     setError(null);
 
     try {
-      await ApiClient.user.declineFriendRequest(userId, initiatorId);
+      await api(() => ApiClient.user.declineFriendRequest(userId, initiatorId));
 
       setReceivedRequests((prev) => prev.filter((req) => req.initiator_id !== initiatorId));
       setIncomingCount((prev) => prev - 1);
@@ -95,7 +99,7 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
     setError(null);
 
     try {
-      await ApiClient.user.declineFriendRequest(recipientId, userId);
+      await api(() => ApiClient.user.declineFriendRequest(recipientId, userId));
 
       setSentRequests((prev) => prev.filter((req) => req.recipient_id !== recipientId));
     } catch (err: any) {
@@ -119,9 +123,7 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
             </p>
             {receivedRequests.map((req) => (
               <div key={req.id} className="w-full flex justify-between text-[#fff]">
-                <div className="text-white">
-                  {usernames[req.initiator_id]}
-                </div>
+                <div className="text-white">{usernames[req.initiator_id]}</div>
                 <div>
                   <button onClick={() => handleDecline(req.initiator_id)}>
                     <X className="h-4 text-amber-600 hover:text-amber-700" />
@@ -138,9 +140,7 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
             </p>
             {sentRequests.map((req) => (
               <div key={req.id} className="w-full flex justify-between text-[#fff]">
-                <div className="text-white">
-                  {usernames[req.recipient_id]}
-                </div>
+                <div className="text-white">{usernames[req.recipient_id]}</div>
                 <button
                   onClick={() => handleCancel(req.recipient_id)}
                   className="text-xs lowercase"

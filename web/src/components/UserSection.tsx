@@ -6,10 +6,10 @@ import { ApiClient } from '@transcenders/api-client';
 import type { User } from '@transcenders/contracts';
 import { useUser } from '../hooks/useUser';
 
-import UserProfile from './UserProfile';
-import FriendsList from './FriendsList';
+import { useApiClient } from '../hooks/useApiClient';
 import FriendRequests from './FriendRequests';
-import FriendActions from './FriendActions';
+import FriendsList from './FriendsList';
+import UserProfile from './UserProfile';
 import UserSearch from './UserSearch';
 
 interface UserSectionProps {
@@ -25,6 +25,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
   const [friendView, setFriendView] = useState<'friends' | 'requests'>('friends');
   const [incomingCount, setIncomingCount] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   useEffect(() => {
     async function fetchIncoming() {
@@ -33,7 +34,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
       setError(null);
 
       try {
-        const incoming = await ApiClient.user.getIncomingFriendRequests(user.id);
+        const incoming = await api(() => ApiClient.user.getIncomingFriendRequests(user.id));
         setIncomingCount(incoming.length);
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -41,7 +42,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
     }
 
     fetchIncoming();
-  }, [user?.id, t]);
+  }, [user?.id, t, api]);
 
   const handleSearch = async () => {
     if (!searchedUser?.trim()) return;
@@ -49,7 +50,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
     setError(null);
 
     try {
-      const user = await ApiClient.user.getUserExact({ username: searchedUser });
+      const user = await api(() => ApiClient.user.getUserExact({ username: searchedUser }));
       setViewedUser(user);
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));
