@@ -151,6 +151,9 @@ PROD_DOCKER_COMPOSE := docker compose -f docker-compose.pruned.yml
 prod: env-prod
 		$(PROD_DOCKER_COMPOSE) build --parallel
 		$(PROD_DOCKER_COMPOSE) up -d
+		
+prod-build: env-prod
+		$(PROD_DOCKER_COMPOSE) build --parallel
 
 prod-stop:
 		$(PROD_DOCKER_COMPOSE) down
