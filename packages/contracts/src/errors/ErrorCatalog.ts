@@ -436,10 +436,50 @@ const scoreErrors: Record<Extract<ErrorCode, `SCORE_${string}`>, ErrorDefinition
     category: 'validation',
   },
 
+  [ERROR_CODES.SCORE.WINNER_IS_LOSER]: {
+    code: ERROR_CODES.SCORE.WINNER_IS_LOSER,
+    message: 'Winner and loser have same ID',
+    userMessage: 'Please ensure the winner is not also the loser',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
   [ERROR_CODES.SCORE.INVALID_SCORE_VALUE]: {
     code: ERROR_CODES.SCORE.INVALID_SCORE_VALUE,
     message: 'Score value is invalid or out of range',
     userMessage: 'Invalid score value',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.SCORE.INVALID_DURATION_VALUE]: {
+    code: ERROR_CODES.SCORE.INVALID_DURATION_VALUE,
+    message: 'Game duration value does not match game start and end times',
+    userMessage: 'Please ensure game duration is based on game start and end times',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.SCORE.INVALID_TIMESTAMP_VALUE]: {
+    code: ERROR_CODES.SCORE.INVALID_TIMESTAMP_VALUE,
+    message: 'Timestamp value is invalid',
+    userMessage: 'Please ensure timestamps follow ISO 8601 format',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.SCORE.INVALID_TOURNAMENT_LEVEL]: {
+    code: ERROR_CODES.SCORE.INVALID_TOURNAMENT_LEVEL,
+    message: 'Tournament level is out of range',
+    userMessage: 'Please ensure tournament level matches system specifications',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.SCORE.END_BEFORE_START]: {
+    code: ERROR_CODES.SCORE.END_BEFORE_START,
+    message: 'Game end time is before start time',
+    userMessage: 'Please ensure game start is before game end',
     httpStatus: 400,
     category: 'validation',
   },
