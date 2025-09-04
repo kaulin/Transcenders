@@ -14,7 +14,6 @@ import { Database } from 'sqlite';
 
 export class ScoreService {
   // Private logic methods for internal use
-
   private static async getScoreByIdLogic(database: Database, id: number): Promise<Score | null> {
     const sql = SQL`
       SELECT * FROM scores WHERE id = ${id}
@@ -114,18 +113,61 @@ export class ScoreService {
     return stats;
   }
 
-  /**
-   * #TODO match validatiod via SQL constraints and other checks
-   *
-   * ids cant be same
-   * game_duration = game_end - game_start
-   * tournament level between 0 and 4 (or some higher number for potential upgrades)
-   * other anti cheat stuff, since our game is local
-   */
   private static async createScoreLogic(
     database: Database,
     scoreData: CreateScoreRequest,
   ): Promise<Score> {
+    const {
+      winner_score,
+      loser_score,
+      winner_id,
+      loser_id,
+      game_start,
+      game_end,
+      game_duration,
+      tournament_level,
+    } = scoreData;
+
+    if (winner_id === loser_id && !(winner_id === 0 && loser_id === 0)) {
+      throw new ServiceError(ERROR_CODES.SCORE.WINNER_IS_LOSER, {
+        matchData: scoreData,
+      });
+    }
+
+    if (winner_score != 3 || loser_score >= 3) {
+      throw new ServiceError(ERROR_CODES.SCORE.INVALID_SCORE_VALUE, {
+        matchData: scoreData,
+      });
+    }
+
+    const start_time = new Date(game_start).getTime();
+    const end_time = new Date(game_end).getTime();
+
+    if (isNaN(start_time) || isNaN(end_time)) {
+      throw new ServiceError(ERROR_CODES.SCORE.INVALID_TIMESTAMP_VALUE, {
+        matchData: scoreData,
+      });
+    }
+
+    if (start_time >= end_time) {
+      throw new ServiceError(ERROR_CODES.SCORE.END_BEFORE_START, {
+        matchData: scoreData,
+      });
+    }
+
+    const expectedDuration = end_time - start_time;
+    if (game_duration !== expectedDuration) {
+      throw new ServiceError(ERROR_CODES.SCORE.INVALID_DURATION_VALUE, {
+        matchData: scoreData,
+      });
+    }
+
+    if (tournament_level < 0 || tournament_level > 2) {
+      throw new ServiceError(ERROR_CODES.SCORE.INVALID_TOURNAMENT_LEVEL, {
+        matchData: scoreData,
+      });
+    }
+
     const sql = SQL`
         INSERT INTO scores (winner_id, loser_id, winner_score, loser_score, tournament_level, game_duration, game_start, game_end)
         VALUES (${scoreData.winner_id}, ${scoreData.loser_id}, 
