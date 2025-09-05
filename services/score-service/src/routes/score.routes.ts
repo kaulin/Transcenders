@@ -1,4 +1,5 @@
 import {
+  createMatchSchema,
   createScoreSchema,
   getScoresSchema,
   SCORE_ROUTES,
@@ -40,6 +41,20 @@ export async function registerScoreRoutes(app: FastifyInstance) {
       },
     },
     ScoreController.addScore,
+  );
+
+  app.post(
+    SCORE_ROUTES.MATCH,
+    {
+      preHandler: app.authenticate.required(),
+      schema: {
+        description: 'Add new match entry',
+        tags: ['Score'],
+        body: createMatchSchema.body,
+        response: standardApiResponses,
+      },
+    },
+    ScoreController.addMatch,
   );
 
   app.get(
