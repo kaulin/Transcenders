@@ -1,6 +1,7 @@
 import { ApiClient } from '@transcenders/api-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useApiClient } from '../hooks/useApiClient';
 import { useAuth } from '../hooks/useAuth';
 
 export default function ElevatePassword({ userId }: { userId: number }) {
@@ -9,12 +10,13 @@ export default function ElevatePassword({ userId }: { userId: number }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   async function handleElevate() {
     setError(null);
     setLoading(true);
     try {
-      const { accessToken } = await ApiClient.auth.stepupPassword(userId, password);
+      const { accessToken } = await api(() => ApiClient.auth.stepupPassword(userId, password));
       setAccessToken(accessToken);
     } catch (err: any) {
       setError(err?.localeKey ?? 'something_went_wrong');

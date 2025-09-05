@@ -1,5 +1,4 @@
 import {
-  ApiErrorHandler,
   ChangePasswordRequest,
   ERROR_CODES,
   GoogleAuthCallback,
@@ -7,13 +6,11 @@ import {
   GoogleFlows,
   GoogleUserLogin,
   LoginUser,
-  LogoutUser,
-  RefreshTokenRequest,
   RegisterUser,
   StepupRequest,
   UserIdParam,
 } from '@transcenders/contracts';
-import { DeviceUtils, ENV, TokenValidator } from '@transcenders/server-utils';
+import { ApiErrorHandler, CookieUtils, DeviceUtils, ENV } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from '../services/auth.service.js';
 
@@ -25,7 +22,9 @@ export class AuthController {
 
   static async login(request: FastifyRequest, reply: FastifyReply) {
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-    const result = await AuthService.login(request.body as LoginUser, deviceInfo);
+    const loginInfo = request.body as LoginUser;
+    const loginResult = await AuthService.login(loginInfo, deviceInfo);
+    const result = CookieUtils.handleLoginResponse(reply, loginResult);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
@@ -56,7 +55,8 @@ export class AuthController {
   static async googleLogin(request: FastifyRequest, reply: FastifyReply) {
     const { code } = request.body as GoogleUserLogin;
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-    const result = await AuthService.googleLogin(code, deviceInfo);
+    const loginResult = await AuthService.googleLogin(code, deviceInfo);
+    const result = CookieUtils.handleLoginResponse(reply, loginResult);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
@@ -71,15 +71,17 @@ export class AuthController {
   static async logout(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as UserIdParam;
     const userId = parseInt(id);
-    const { refreshToken } = request.body as LogoutUser;
+    const refreshToken = request.cookies.rt;
     const result = await AuthService.logout(userId, refreshToken);
+    CookieUtils.clearCookies(reply);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
   static async refresh(request: FastifyRequest, reply: FastifyReply) {
-    const { refreshToken } = request.body as RefreshTokenRequest;
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-    const result = await AuthService.refreshToken(refreshToken, deviceInfo);
+    const refreshToken = request.cookies.rt;
+    const loginResult = await AuthService.refreshToken(refreshToken, deviceInfo);
+    const result = CookieUtils.handleLoginResponse(reply, loginResult);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
@@ -107,21 +109,9 @@ export class AuthController {
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
-  // #TODO validation middleware later
   static async getCurrentUser(request: FastifyRequest, reply: FastifyReply) {
-    const authHeader = request.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-      return ApiErrorHandler.error(reply, ERROR_CODES.AUTH.INVALID_CREDENTIALS, 'get current user');
-    }
-    const accessToken = authHeader.substring(7);
-    let userId: number;
-    try {
-      const payload = TokenValidator.verifyAccessToken(accessToken);
-      userId = payload.userId;
-      const result = await AuthService.getCurrentUser(userId);
-      return ApiErrorHandler.handleServiceResult(reply, result);
-    } catch (error: any) {
-      ApiErrorHandler.errorFromFastify(reply, error, 'get current user');
-    }
+    const userId = request.user?.userId;
+    const result = await AuthService.getCurrentUser(userId);
+    return ApiErrorHandler.handleServiceResult(reply, result);
   }
 }

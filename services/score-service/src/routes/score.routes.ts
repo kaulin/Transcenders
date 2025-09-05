@@ -17,6 +17,7 @@ export async function registerScoreRoutes(app: FastifyInstance) {
   app.get(
     SCORE_ROUTES.SCORES,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'List scores (with optional query params: ?id=, ?limit=, ?offset=)',
         tags: ['Score'],
@@ -30,6 +31,7 @@ export async function registerScoreRoutes(app: FastifyInstance) {
   app.post(
     SCORE_ROUTES.SCORE,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Add new score entry',
         tags: ['Score'],
@@ -43,6 +45,7 @@ export async function registerScoreRoutes(app: FastifyInstance) {
   app.get(
     SCORE_ROUTES.SCORES_BY_ID,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Get score data by user ID',
         tags: ['Score'],
@@ -56,6 +59,7 @@ export async function registerScoreRoutes(app: FastifyInstance) {
   app.get(
     SCORE_ROUTES.STATS_BY_ID,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Get user stats by user ID',
         tags: ['Score'],

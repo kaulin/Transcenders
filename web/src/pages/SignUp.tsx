@@ -3,6 +3,7 @@ import { type RegisterUser } from '@transcenders/contracts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useApiClient } from '../hooks/useApiClient';
 import useAuthLogin from '../hooks/useAuthLogin';
 
 const SignUp = () => {
@@ -13,6 +14,8 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  const api = useApiClient();
 
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
@@ -25,7 +28,7 @@ const SignUp = () => {
 
     try {
       const registrationInfo: RegisterUser = { username, password };
-      await ApiClient.auth.register(registrationInfo);
+      await api(() => ApiClient.auth.register(registrationInfo));
       await login(username, password);
     } catch (err: any) {
       setError(t(err.localeKey ?? 'something_went_wrong'));

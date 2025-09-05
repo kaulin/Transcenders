@@ -95,7 +95,7 @@
       "name": "Debug Frontend (Chrome)",
       "type": "chrome",
       "request": "launch",
-      "webRoot": "${workspaceFolder}",
+      "webRoot": "${workspaceFolder}/web",
       "sourceMaps": true,
       "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile",
       "runtimeArgs": [

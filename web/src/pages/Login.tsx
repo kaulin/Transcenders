@@ -3,12 +3,14 @@ import { ERROR_CODES, ServiceError } from '@transcenders/contracts';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { useApiClient } from '../hooks/useApiClient';
 import useAuthLogin from '../hooks/useAuthLogin';
 
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { login, loginWithTokens } = useAuthLogin();
+  const api = useApiClient();
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -37,22 +39,22 @@ const Login = () => {
         const codeOnce = googleCode;
         window.history.replaceState({}, '', window.location.pathname);
         try {
-          const tokens = await ApiClient.auth.googleLogin(codeOnce);
+          const tokens = await api(() => ApiClient.auth.googleLogin(codeOnce));
           await loginWithTokens(tokens);
           navigate('/', { replace: true });
         } catch (err: any) {
-          setError(err?.localeKey ?? 'google_auth_failed');
+          setError(t(err?.localeKey ?? 'google_auth_failed'));
           window.history.replaceState({}, '', window.location.pathname);
         }
       }
     }
 
     handleGoogleAuthFromParams();
-  }, [navigate, loginWithTokens, t]);
+  }, [navigate, loginWithTokens, api, t]);
 
   async function handleGoogleLogin(e: React.FormEvent) {
     e.preventDefault();
-    const googleLink = await ApiClient.auth.googleAuthLogin();
+    const googleLink = await api(() => ApiClient.auth.googleAuthLogin());
     window.location.href = googleLink.url;
   }
 

@@ -1,18 +1,19 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
 import {
-  AreaChart,
   Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
 
 import { ApiClient } from '@transcenders/api-client';
-import { useUser } from '../hooks/useUser';
 import { Score } from '@transcenders/contracts';
+import { useApiClient } from '../hooks/useApiClient';
+import { useUser } from '../hooks/useUser';
 
 interface GoalChartProps {
   viewedId: number | undefined;
@@ -25,6 +26,7 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
 
   const [userScores, setUserScores] = useState<Score[] | undefined>();
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   useEffect(() => {
     async function fetchScores() {
@@ -33,7 +35,7 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
       setError(null);
 
       try {
-        const scores = await ApiClient.score.getScoresForUser(viewedId);
+        const scores = await api(() => ApiClient.score.getScoresForUser(viewedId));
         setUserScores(scores);
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -41,7 +43,7 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
     }
 
     fetchScores();
-  }, [viewedId, t]);
+  }, [viewedId, t, api]);
 
   const chartData = userScores
     ? [...userScores.slice(0, 10)].reverse().map((s) => ({

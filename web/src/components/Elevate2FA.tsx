@@ -1,6 +1,7 @@
 import { ApiClient } from '@transcenders/api-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useApiClient } from '../hooks/useApiClient';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Elevate2FA({ userId }: { userId: number }) {
@@ -10,12 +11,13 @@ export default function Elevate2FA({ userId }: { userId: number }) {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   async function requestCode() {
     setError(null);
     setLoading(true);
     try {
-      await ApiClient.auth.twoFacRequestStepup(userId);
+      await api(() => ApiClient.auth.twoFacRequestStepup(userId));
       setCodeSent(true);
     } catch (err: any) {
       setError(err?.localeKey ?? 'something_went_wrong');
@@ -28,7 +30,7 @@ export default function Elevate2FA({ userId }: { userId: number }) {
     setError(null);
     setLoading(true);
     try {
-      const { accessToken } = await ApiClient.auth.stepup2fa(userId, code);
+      const { accessToken } = await api(() => ApiClient.auth.stepup2fa(userId, code));
       setAccessToken(accessToken);
     } catch (err: any) {
       setError(err?.localeKey ?? 'something_went_wrong');

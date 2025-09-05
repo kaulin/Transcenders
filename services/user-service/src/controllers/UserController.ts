@@ -1,11 +1,11 @@
 import {
-  ApiErrorHandler,
   CreateUserRequest,
   GetUserRequest,
   GetUsersQuery,
   UpdateUserRequest,
   UserIdParam,
 } from '@transcenders/contracts';
+import { ApiErrorHandler } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/UserService.js';
 
@@ -32,7 +32,7 @@ export class UserController {
     const result = await UserService.getUserById(userId);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
-  // #TODO maybe password protect the Update and Delete for anti drive-by deletes for users
+
   static async updateUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as UserIdParam;
     const userId = parseInt(id);

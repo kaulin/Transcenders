@@ -1,6 +1,5 @@
 import {
   AcceptFriendRequestRequest,
-  ApiErrorHandler,
   DeclineFriendRequestRequest,
   GetFriendsRequest,
   GetRequestsRequest,
@@ -8,6 +7,7 @@ import {
   RemoveFriendRequest,
   SendFriendRequestRequest,
 } from '@transcenders/contracts';
+import { ApiErrorHandler } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { FriendshipService } from '../services/FriendshipService.js';
 

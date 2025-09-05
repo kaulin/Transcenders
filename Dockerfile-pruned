@@ -25,6 +25,7 @@ ARG VITE_SCORE_SERVICE_URL
 ENV VITE_USER_SERVICE_URL=$VITE_USER_SERVICE_URL
 ENV VITE_AUTH_SERVICE_URL=$VITE_AUTH_SERVICE_URL
 ENV VITE_SCORE_SERVICE_URL=$VITE_SCORE_SERVICE_URL
+ENV VITE_NODE_ENV=production
 
 # node-gyp toolchain on Alpine (musl)
 # build-base = gcc g++ make; pkgconf provides pkg-config

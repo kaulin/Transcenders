@@ -2,6 +2,7 @@ import { ApiClient } from '@transcenders/api-client';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import { useApiClient } from '../hooks/useApiClient';
 import { useTokenElevation } from '../hooks/useTokenElevation';
 import { useUser } from '../hooks/useUser';
 import { useUserCreds } from '../hooks/useUserCreds';
@@ -13,6 +14,7 @@ export default function TwoFactorSection() {
   const { user } = useUser();
   const { isElevated } = useTokenElevation();
   const [loading, setLoading] = useState(false);
+  const api = useApiClient();
   const {
     hasPassword,
     googleLinked,
@@ -57,8 +59,8 @@ export default function TwoFactorSection() {
   async function onGoogleConnect() {
     if (!isElevated) return;
     setError(null);
-    await ApiClient.auth.googleAuthConnect();
-    const googleLink = await ApiClient.auth.googleAuthConnect();
+    await api(() => ApiClient.auth.googleAuthConnect());
+    const googleLink = await api(() => ApiClient.auth.googleAuthConnect());
     window.location.href = googleLink.url;
   }
 
@@ -72,7 +74,7 @@ export default function TwoFactorSection() {
     if (!user) return;
     begin();
     try {
-      await ApiClient.auth.twoFacRequestDisable(user.id);
+      await api(() => ApiClient.auth.twoFacRequestDisable(user.id));
       refetchCreds();
       setStep('code');
     } catch (err: any) {
@@ -86,7 +88,7 @@ export default function TwoFactorSection() {
     if (!user) return;
     begin();
     try {
-      await ApiClient.auth.twoFacRequestEnroll(user.id, email);
+      await api(() => ApiClient.auth.twoFacRequestEnroll(user.id, email));
       refetchCreds();
       setStep('code');
     } catch (err: any) {
@@ -101,9 +103,9 @@ export default function TwoFactorSection() {
     begin();
     try {
       if (twoFacEnabled) {
-        await ApiClient.auth.twoFacDisable(user.id, code);
+        await api(() => ApiClient.auth.twoFacDisable(user.id, code));
       } else {
-        await ApiClient.auth.twoFacEnable(user.id, code);
+        await api(() => ApiClient.auth.twoFacEnable(user.id, code));
       }
       refetchCreds();
       setStep('idle');

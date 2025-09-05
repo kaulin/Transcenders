@@ -2,7 +2,6 @@ import { Value } from '@sinclair/typebox/value';
 import { ApiClient } from '@transcenders/api-client';
 import {
   AuthConfig,
-  AuthData,
   authDataAccessOnly,
   BooleanOperationResult,
   BooleanResultHelper,
@@ -15,6 +14,7 @@ import {
   GoogleUserInfo,
   googleUserInfoSchema,
   JWTPayload,
+  LoginResult,
   LoginUser,
   RefreshToken,
   RefreshTokenInsert,
@@ -151,7 +151,7 @@ export class AuthService {
     });
   }
 
-  private static generateTokenPair(userId: number, stepupMethod?: StepupMethod): AuthData {
+  private static generateTokenPair(userId: number, stepupMethod?: StepupMethod): LoginResult {
     const basePayload: JWTPayload = {
       userId,
       aud: 'transcenders',
@@ -171,7 +171,7 @@ export class AuthService {
       expiresIn: Math.floor(AuthConfig.REFRESH_TOKEN_EXPIRE_MS / 1000),
     });
 
-    return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS };
+    return { accessToken, refreshToken, expiresIn: AuthConfig.ACCESS_TOKEN_EXPIRE_MS, userId };
   }
 
   private static async storeRefreshToken(
@@ -265,7 +265,7 @@ export class AuthService {
     database: Database,
     userId: number,
     deviceInfo: DeviceInfo,
-  ): Promise<AuthData> {
+  ): Promise<LoginResult> {
     await this.handleDeviceTokens(database, userId, deviceInfo);
     const tokens = this.generateTokenPair(userId);
     await this.storeRefreshToken(database, tokens.refreshToken, deviceInfo);
@@ -286,9 +286,21 @@ export class AuthService {
     else throw result.error;
   }
 
-  static async login(login: LoginUser, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
+  static async login(
+    login: LoginUser,
+    deviceInfo: DeviceInfo,
+  ): Promise<ServiceResult<LoginResult>> {
     const db = await DatabaseManager.for('AUTH').open();
     const { userId, twoFacEnabled } = await this.preLoginRead(login);
+
+    // when only checking for password verification (not returning tokens or cookies)
+    if (login.onlyVerify) {
+      return ResultHelper.success(
+        { accessToken: '42', refreshToken: '42', expiresIn: 42, userId, justVerify: true },
+        'verify login',
+      );
+    }
+
     if (login.code && twoFacEnabled) {
       await ApiClient.auth.twoFacLogin(userId, login.code);
     }
@@ -300,7 +312,7 @@ export class AuthService {
         expiresAt,
       });
     }
-    return await ResultHelper.executeTransaction<AuthData>(
+    return await ResultHelper.executeTransaction<LoginResult>(
       'finalize login',
       db,
       async (database) => {
@@ -474,9 +486,12 @@ export class AuthService {
   }
 
   // #TODO handle failed user creations, by syncing user and auth DB entries
-  static async googleLogin(code: string, deviceInfo: DeviceInfo): Promise<ServiceResult<AuthData>> {
+  static async googleLogin(
+    code: string,
+    deviceInfo: DeviceInfo,
+  ): Promise<ServiceResult<LoginResult>> {
     const db = await DatabaseManager.for('AUTH').open();
-    return await ResultHelper.executeTransaction<AuthData>(
+    return await ResultHelper.executeTransaction<LoginResult>(
       'login or create google user',
       db,
       async (database) => {
@@ -506,10 +521,7 @@ export class AuthService {
           userId = await this.userIdByEmail(database, googleUser.email);
         }
 
-        this.handleDeviceTokens(database, userId, deviceInfo);
-        // generate and save new tokens
-        const newTokens = this.generateTokenPair(userId);
-        await this.storeRefreshToken(database, newTokens.refreshToken, deviceInfo);
+        const newTokens = await this.finalizeLogin(database, userId, deviceInfo);
         return newTokens;
       },
     );
@@ -517,13 +529,16 @@ export class AuthService {
 
   static async logout(
     userId: number,
-    refreshToken: string,
+    refreshToken: string | undefined,
   ): Promise<ServiceResult<BooleanOperationResult>> {
     const db = await DatabaseManager.for('AUTH').open();
     return await ResultHelper.executeQuery<BooleanOperationResult>(
       'logout user',
       db,
       async (database) => {
+        if (!refreshToken) {
+          throw new ServiceError(ERROR_CODES.COMMON.NO_REFRESH_TOKEN);
+        }
         const { jti } = TokenValidator.verifyRefreshToken(refreshToken, userId);
         const sql = SQL`
           SELECT * FROM refresh_tokens WHERE jti = ${jti}
@@ -538,14 +553,17 @@ export class AuthService {
   }
 
   static async refreshToken(
-    refreshToken: string,
+    refreshToken: string | undefined,
     currentDeviceInfo: DeviceInfo,
-  ): Promise<ServiceResult<AuthData>> {
+  ): Promise<ServiceResult<LoginResult>> {
     const db = await DatabaseManager.for('AUTH').open();
-    return await ResultHelper.executeQuery<AuthData>(
+    return await ResultHelper.executeQuery<LoginResult>(
       'refresh access token',
       db,
       async (database) => {
+        if (!refreshToken) {
+          throw new ServiceError(ERROR_CODES.COMMON.NO_REFRESH_TOKEN);
+        }
         const { userId, jti } = TokenValidator.verifyRefreshToken(refreshToken);
         const sql = SQL`
           SELECT * FROM refresh_tokens WHERE jti = ${jti}
@@ -561,7 +579,7 @@ export class AuthService {
         if (!(await DeviceUtils.isSameDevice(storedDeviceInfo, currentDeviceInfo))) {
           // SECURITY EVENT: Token used from different device - revoke ALL user tokens
           await this.revokeRefreshTokens(database, { userId }, 'security_device_change');
-          throw new ServiceError(ERROR_CODES.AUTH.INVALID_REFRESH_TOKEN, {
+          throw new ServiceError(ERROR_CODES.COMMON.AUTH_SESSION_INVALID, {
             jti,
             userId,
             reason: 'Token used from different device - all sessions revoked for security',
@@ -667,8 +685,11 @@ export class AuthService {
     );
   }
 
-  static async getCurrentUser(userId: number): Promise<ServiceResult<User>> {
+  static async getCurrentUser(userId: number | undefined): Promise<ServiceResult<User>> {
     return ResultHelper.executeOperation('get current authenticated user', async () => {
+      if (!userId) {
+        throw new ServiceError(ERROR_CODES.COMMON.AUTH_TOKEN_REQUIRED);
+      }
       const user = await ApiClient.user.getUserById(userId);
       return user;
     });

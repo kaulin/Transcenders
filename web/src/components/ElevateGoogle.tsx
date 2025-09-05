@@ -1,11 +1,13 @@
 import { ApiClient } from '@transcenders/api-client';
 import { useTranslation } from 'react-i18next';
+import { useApiClient } from '../hooks/useApiClient';
 
 export default function ElevateGoogle() {
   const { t } = useTranslation();
+  const api = useApiClient();
 
   async function handleGoogle() {
-    const googleLink = await ApiClient.auth.googleAuthStepup();
+    const googleLink = await api(() => ApiClient.auth.googleAuthStepup());
     window.location.href = googleLink.url;
   }
 

@@ -143,5 +143,7 @@
   "win_percentage": "Voittoprosentti",
   "yes": "Kyllä",
   "you": "Sinä",
-  "your_page": "Oma sivu"
+  "your_page": "Oma sivu",
+  "google": "Google",
+  "session_expired": "Istuntosi on vanhentunut. Kirjaudu sisään uudelleen."
 }

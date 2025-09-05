@@ -1,4 +1,5 @@
-import { ApiErrorHandler, CleanupOfflineQuery } from '@transcenders/contracts';
+import { CleanupOfflineQuery } from '@transcenders/contracts';
+import { ApiErrorHandler } from '@transcenders/server-utils';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AdminService } from '../services/AdminService.js';
 import { HealthResponse } from '../types/api.types.js';
@@ -20,8 +21,6 @@ export class AdminController {
 
   /**
    * Update user activity (called by gateway after auth)
-   * #TODO get the token parsed userId after Gateway is ready
-   * #TODO throttle update pings to potentially like max once a minute (or some configurable value so we dont spam the database with activity changes)
    */
   static async updateUserActivity(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: number };

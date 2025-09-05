@@ -1,17 +1,21 @@
-import { ApiResponseType } from '@transcenders/contracts';
+import { ApiResponseType, getEnvVar } from '@transcenders/contracts';
+import { AdminApiClient } from '../services/admin.api.js';
 import { AuthApiClient } from '../services/auth.api.js';
 import { ScoreApiClient } from '../services/score.api.js';
 import { UserApiClient } from '../services/user.api.js';
 import { ApiCallOptions } from '../types/client.options.js';
 
-let authHeader: string | undefined;
 export class ApiClient {
-  // Set or clear the Authorization header globally
+  private static authHeader?: string;
+  private static bypassUserId?: number;
+
   static setAuthToken(token?: string) {
-    authHeader = token ? `Bearer ${token}` : undefined;
+    this.authHeader = token ? `Bearer ${token}` : undefined;
   }
-  static getAuthToken(): string | undefined {
-    return authHeader;
+
+  // For development/testing
+  static setAuthBypass(userId?: number) {
+    this.bypassUserId = userId;
   }
   /**
    * Simple HTTP client for helpers
@@ -21,8 +25,11 @@ export class ApiClient {
 
     const hdrs = new Headers(headers);
 
-    if (authHeader && !hdrs.has('authorization')) {
-      hdrs.set('Authorization', authHeader);
+    if (this.bypassUserId !== undefined) {
+      hdrs.set('x-auth-bypass', this.bypassUserId.toString());
+    }
+    if (this.authHeader && !hdrs.has('authorization')) {
+      hdrs.set('Authorization', this.authHeader);
     }
     if (!hdrs.has('accept')) {
       hdrs.set('Accept', 'application/json');
@@ -46,7 +53,9 @@ export class ApiClient {
       }
     }
 
-    console.log(`API Call: ${method} ${url}`);
+    if (getEnvVar('NODE_ENV', 'development') == 'development') {
+      console.log(`API Call: ${method} ${url}`);
+    }
     const response = await fetch(url, requestInit);
     const data = await response.json();
     return data as ApiResponseType;
@@ -55,4 +64,5 @@ export class ApiClient {
   static user = UserApiClient;
   static auth = AuthApiClient;
   static score = ScoreApiClient;
+  static admin = AdminApiClient;
 }

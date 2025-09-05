@@ -40,6 +40,9 @@ dev-compiled: setup-check env-local
 		npm run build
 		npm run dev:compiled
 
+dev-build:
+		docker compose build
+
 dev-logs:
 		docker compose logs -f
 
@@ -148,6 +151,9 @@ PROD_DOCKER_COMPOSE := docker compose -f docker-compose.pruned.yml
 prod: env-prod
 		$(PROD_DOCKER_COMPOSE) build --parallel
 		$(PROD_DOCKER_COMPOSE) up -d
+		
+prod-build: env-prod
+		$(PROD_DOCKER_COMPOSE) build --parallel
 
 prod-stop:
 		$(PROD_DOCKER_COMPOSE) down

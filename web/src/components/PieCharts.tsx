@@ -1,9 +1,10 @@
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 import { ApiClient } from '@transcenders/api-client';
 import type { Stats } from '@transcenders/contracts';
+import { useApiClient } from '../hooks/useApiClient';
 
 const COLORS = ['#a7d4373c', '#8198453c'];
 
@@ -81,6 +82,7 @@ export default function PieCharts({ viewedId }: PieChartsProps) {
 
   const [userStats, setUserStats] = useState<Stats | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   useEffect(() => {
     async function fetchStats() {
@@ -89,7 +91,7 @@ export default function PieCharts({ viewedId }: PieChartsProps) {
       setError(null);
 
       try {
-        const stats = await ApiClient.score.getStatsForUser(viewedId);
+        const stats = await api(() => ApiClient.score.getStatsForUser(viewedId));
         setUserStats(stats);
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -97,7 +99,7 @@ export default function PieCharts({ viewedId }: PieChartsProps) {
     }
 
     fetchStats();
-  }, [viewedId, t]);
+  }, [viewedId, t, api]);
 
   const chartsData: ChartConfig[] = useMemo(() => {
     if (!userStats) return [];

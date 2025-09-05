@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ApiClient } from '@transcenders/api-client';
 import type { User } from '@transcenders/contracts';
+import { useApiClient } from '../hooks/useApiClient';
 
 interface FriendsListProps {
   userId: number | undefined;
@@ -12,6 +13,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
   const { t } = useTranslation();
   const [friends, setFriends] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const api = useApiClient();
 
   useEffect(() => {
     async function fetchFriends() {
@@ -20,7 +22,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
       setError(null);
 
       try {
-        const friendsList = await ApiClient.user.getUserFriends(userId);
+        const friendsList = await api(() => ApiClient.user.getUserFriends(userId));
         setFriends(friendsList);
       } catch (err: any) {
         setError(t(err.localeKey ?? 'something_went_wrong'));
@@ -28,7 +30,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
     }
 
     fetchFriends();
-  }, [userId, t]);
+  }, [userId, t, api]);
 
   return (
     <div className="w-80 h-[400px] bg-[#6e5d41]/5 rounded-lg p-6">

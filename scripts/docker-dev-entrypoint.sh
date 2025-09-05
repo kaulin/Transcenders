@@ -21,9 +21,11 @@ done
 
 echo "✅ Dependencies are ready! Starting ${SERVICE_NAME}..."
 
+# Start the service with turbo dev (this filter with '...' runs dev on everything that the service depends on)
+# exec npx turbo dev --filter=${SERVICE_NAME}...
+# but with package-service its less memory usage so we are not watching same package changes from multiple containers
 # package-service case
 if [[ $SERVICE_NAME == package-service ]]; then
   cd /workspace && exec npx turbo dev:package
 fi
-# Start the service
-exec npx tsx watch --inspect=0.0.0.0:${DEBUG_PORT} src/server.ts
+exec npx turbo dev

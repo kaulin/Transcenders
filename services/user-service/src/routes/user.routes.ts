@@ -19,6 +19,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
   app.get(
     USER_ROUTES.USERS,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'List users (with optional query params: ?search=, ?limit=, ?offset=)',
         tags: ['User'],
@@ -32,6 +33,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
   app.post(
     USER_ROUTES.USERS,
     {
+      preHandler: app.authenticate.internal(),
       schema: {
         description: 'Create new user',
         tags: ['Internal ONLY'],
@@ -45,6 +47,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
   app.get(
     USER_ROUTES.USER_BY_ID,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Get specific user by ID',
         tags: ['User'],
@@ -58,6 +61,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
   app.patch(
     USER_ROUTES.USER_BY_ID,
     {
+      preHandler: app.authenticate.owner('id'),
       schema: {
         description: 'Update user by ID',
         tags: ['User'],
@@ -72,6 +76,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
   app.delete(
     USER_ROUTES.USER_BY_ID,
     {
+      preHandler: app.authenticate.stepup('id'),
       schema: {
         description: 'Delete user by ID',
         tags: ['User'],
@@ -85,6 +90,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
   app.get(
     USER_ROUTES.USER_EXISTS,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'Check if username exists',
         tags: ['User'],
@@ -98,6 +104,7 @@ export async function registerUserRoutes(app: FastifyInstance) {
   app.get(
     USER_ROUTES.USERS_EXACT,
     {
+      preHandler: app.authenticate.required(),
       schema: {
         description: 'find user by name (query params: ?username=)',
         tags: ['User'],
