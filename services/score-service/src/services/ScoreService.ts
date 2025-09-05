@@ -134,7 +134,7 @@ export class ScoreService {
       });
     }
 
-    if (winner_score != 3 || loser_score >= 3) {
+    if (winner_score != 3 || loser_score < 0 || loser_score >= 3) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_SCORE_VALUE, {
         matchData: scoreData,
       });
