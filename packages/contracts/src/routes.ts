@@ -125,6 +125,8 @@ export const SCORE_ROUTES = {
   SCORES_BY_ID: '/score/:id',
   // GET /score/:id/stats - Get a user's statistics
   STATS_BY_ID: '/score/:id/stats',
+  // POST /match - Create a new score match entry when game starts
+  MATCH: '/score/match',
 } as const;
 
 export const AVATAR_ROUTES = {

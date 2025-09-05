@@ -1,12 +1,14 @@
 import { Static, TSchema } from '@sinclair/typebox';
 import {
+  CreateMatchRequest,
   CreateScoreRequest,
   GetScoresQuery,
+  MatchSchema,
   SCORE_ROUTES,
   scoreArraySchema,
   ScoreSchema,
-  StatsSchema,
   SERVICE_URLS,
+  StatsSchema,
   toQueryString,
 } from '@transcenders/contracts';
 import { TypedApiClient } from '../api/TypedApiClient.js';
@@ -41,6 +43,15 @@ export class ScoreApiClient extends TypedApiClient {
     const endpoint = SCORE_ROUTES.SCORES;
     const options: ApiCallOptions = { method: 'POST', body: scoreData };
     return this.callScoreService(endpoint, ScoreSchema, options);
+  }
+
+  /**
+   * Creates a new match
+   */
+  static async createMatch(matchData: CreateMatchRequest) {
+    const endpoint = SCORE_ROUTES.MATCH;
+    const options: ApiCallOptions = { method: 'POST', body: matchData };
+    return this.callScoreService(endpoint, MatchSchema, options);
   }
 
   /**
