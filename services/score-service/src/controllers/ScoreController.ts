@@ -1,4 +1,5 @@
 import {
+  CreateMatchRequest,
   CreateScoreRequest,
   GetScoresQuery,
   ScoresByIdRequest,
@@ -21,6 +22,13 @@ export class ScoreController {
     const scoredata = request.body as CreateScoreRequest;
 
     const result = await ScoreService.createScore(scoredata);
+    return ApiErrorHandler.handleServiceResult(reply, result);
+  }
+
+  static async addMatch(request: FastifyRequest, reply: FastifyReply) {
+    const matchdata = request.body as CreateMatchRequest;
+
+    const result = await ScoreService.createMatch(matchdata);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 

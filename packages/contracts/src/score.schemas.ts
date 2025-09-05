@@ -6,6 +6,7 @@ import { TimestampField, UserIdField } from './user.schemas.js';
  */
 export const ScoreSchema = Type.Object({
   id: Type.Optional(Type.Number()),
+  match_id: Type.Optional(Type.String()),
   winner_id: UserIdField,
   loser_id: UserIdField,
   winner_score: Type.Number(),
@@ -15,9 +16,16 @@ export const ScoreSchema = Type.Object({
   game_start: TimestampField,
   game_end: TimestampField,
 });
-
 export const scoreArraySchema = Type.Array(ScoreSchema);
 export type Score = Static<typeof ScoreSchema>;
+
+export const MatchSchema = Type.Object({
+  id: Type.Optional(Type.String()),
+  player1_id: UserIdField,
+  player2_id: UserIdField,
+  start_time: TimestampField,
+});
+export type Match = Static<typeof MatchSchema>;
 
 export const StatsSchema = Type.Object({
   total_games: Type.Number(),
@@ -47,6 +55,11 @@ export const createScoreSchema = {
   body: ScoreSchema,
 };
 export type CreateScoreRequest = Static<typeof createScoreSchema.body>;
+
+export const createMatchSchema = {
+  body: MatchSchema,
+};
+export type CreateMatchRequest = Static<typeof createMatchSchema.body>;
 
 export const getScoresSchema = {
   querystring: Type.Object({
