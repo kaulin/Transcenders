@@ -1,7 +1,9 @@
 import {
+  CreateMatchRequest,
   CreateScoreRequest,
   ERROR_CODES,
   GetScoresQuery,
+  Match,
   ResultHelper,
   Score,
   ServiceError,
@@ -20,6 +22,14 @@ export class ScoreService {
     `;
     const score = await database.get(sql.text, sql.values);
     return score ? (score as Score) : null;
+  }
+
+  private static async getMatchByIdLogic(database: Database, id: string): Promise<Match | null> {
+    const sql = SQL`
+      SELECT * FROM matches WHERE id = ${id}
+    `;
+    const result = await database.get(sql.text, sql.values);
+    return result ? (result as Match) : null;
   }
 
   private static async getScoresByIdLogic(database: Database, id: number): Promise<Score[]> {
@@ -118,6 +128,7 @@ export class ScoreService {
     scoreData: CreateScoreRequest,
   ): Promise<Score> {
     const {
+      match_id,
       winner_score,
       loser_score,
       winner_id,
@@ -128,15 +139,21 @@ export class ScoreService {
       tournament_level,
     } = scoreData;
 
+    if (match_id == undefined) {
+      throw new ServiceError(ERROR_CODES.SCORE.NO_MATCH_PROVIDED, {
+        scoreData: scoreData,
+      });
+    }
+
     if (winner_id === loser_id && !(winner_id === 0 && loser_id === 0)) {
-      throw new ServiceError(ERROR_CODES.SCORE.WINNER_IS_LOSER, {
-        matchData: scoreData,
+      throw new ServiceError(ERROR_CODES.SCORE.DUPLICATE_PLAYER_ID, {
+        scoreData: scoreData,
       });
     }
 
     if (winner_score != 3 || loser_score < 0 || loser_score >= 3) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_SCORE_VALUE, {
-        matchData: scoreData,
+        scoreData: scoreData,
       });
     }
 
@@ -145,46 +162,99 @@ export class ScoreService {
 
     if (isNaN(start_time) || isNaN(end_time)) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_TIMESTAMP_VALUE, {
-        matchData: scoreData,
+        scoreData: scoreData,
       });
     }
 
     if (start_time >= end_time) {
       throw new ServiceError(ERROR_CODES.SCORE.END_BEFORE_START, {
-        matchData: scoreData,
+        scoreData: scoreData,
       });
     }
 
     const expectedDuration = end_time - start_time;
     if (game_duration !== expectedDuration) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_DURATION_VALUE, {
-        matchData: scoreData,
+        scoreData: scoreData,
       });
     }
 
     if (tournament_level < 0 || tournament_level > 2) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_TOURNAMENT_LEVEL, {
-        matchData: scoreData,
+        scoreData: scoreData,
+      });
+    }
+
+    const matchData = await this.getMatchByIdLogic(database, match_id);
+
+    if (!matchData) {
+      throw new ServiceError(ERROR_CODES.SCORE.INVALID_MATCH_ID, {
+        scoreData: scoreData,
+      });
+    }
+
+    if (
+      (matchData.player1_id != winner_id && matchData.player1_id != loser_id) ||
+      (matchData.player2_id != winner_id && matchData.player2_id != loser_id) ||
+      matchData.start_time != game_start
+    ) {
+      throw new ServiceError(ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY, {
+        scoreData: scoreData,
       });
     }
 
     const sql = SQL`
         INSERT INTO scores (winner_id, loser_id, winner_score, loser_score, tournament_level, game_duration, game_start, game_end)
-        VALUES (${scoreData.winner_id}, ${scoreData.loser_id}, 
-        ${scoreData.winner_score}, ${scoreData.loser_score}, ${scoreData.tournament_level}, ${scoreData.game_duration}, 
-        ${scoreData.game_start}, ${scoreData.game_end})
+        VALUES (${winner_id}, ${loser_id}, 
+        ${winner_score}, ${loser_score}, ${tournament_level}, ${game_duration}, 
+        ${game_start}, ${game_end})
       `;
 
     const result = await database.run(sql.text, sql.values);
     if (!result.lastID) {
       throw new ServiceError(ERROR_CODES.SCORE.SCORE_CREATION_FAILED, {
-        matchData: scoreData,
+        scoreData: scoreData,
       });
     }
+
+    // TODO: Remove match entry for added score
+
     return {
       id: result.lastID,
       ...scoreData,
     } as Score;
+  }
+
+  private static async createMatchLogic(
+    database: Database,
+    matchData: CreateMatchRequest,
+  ): Promise<Match> {
+    const { player1_id, player2_id, start_time } = matchData;
+
+    if (player1_id === player2_id && !(player1_id === 0 && player2_id === 0)) {
+      throw new ServiceError(ERROR_CODES.SCORE.DUPLICATE_PLAYER_ID, {
+        matchData: matchData,
+      });
+    }
+
+    const match_id = crypto.randomUUID();
+
+    const sql = SQL`
+        INSERT INTO matches (match_id, player1_id, player2_id, start_time, tournament_level, game_duration, game_start, game_end)
+        VALUES (${match_id}, ${player1_id}, 
+        ${player2_id}, ${start_time})
+      `;
+
+    const result = await database.run(sql.text, sql.values);
+    if (!result.lastID) {
+      throw new ServiceError(ERROR_CODES.SCORE.MATCH_CREATION_FAILED, {
+        matchData: matchData,
+      });
+    }
+    return {
+      id: result.lastID,
+      ...matchData,
+    } as Match;
   }
 
   // Public API methods using ResultHelper
@@ -208,6 +278,13 @@ export class ScoreService {
     const db = await DatabaseManager.for('SCORE').open();
     return ResultHelper.executeQuery<Score>('create score', db, async (database) => {
       return await this.createScoreLogic(database, scoreData);
+    });
+  }
+
+  static async createMatch(matchData: CreateMatchRequest): Promise<ServiceResult<Match>> {
+    const db = await DatabaseManager.for('SCORE').open();
+    return ResultHelper.executeQuery<Match>('create match', db, async (database) => {
+      return await this.createMatchLogic(database, matchData);
     });
   }
 
