@@ -432,14 +432,22 @@ const scoreErrors: Record<Extract<ErrorCode, `SCORE_${string}`>, ErrorDefinition
     code: ERROR_CODES.SCORE.SCORE_CREATION_FAILED,
     message: 'Failed to create score record - database insert did not return an ID',
     userMessage: 'Unable to save the game score.',
-    httpStatus: 400,
-    category: 'validation',
+    httpStatus: 500,
+    category: 'internal',
   },
 
-  [ERROR_CODES.SCORE.WINNER_IS_LOSER]: {
-    code: ERROR_CODES.SCORE.WINNER_IS_LOSER,
-    message: 'Winner and loser have same ID',
-    userMessage: 'Please ensure the winner is not also the loser',
+  [ERROR_CODES.SCORE.MATCH_CREATION_FAILED]: {
+    code: ERROR_CODES.SCORE.MATCH_CREATION_FAILED,
+    message: 'Failed to create match record - database insert did not return an ID',
+    userMessage: 'Unable to save register match.',
+    httpStatus: 500,
+    category: 'internal',
+  },
+
+  [ERROR_CODES.SCORE.DUPLICATE_PLAYER_ID]: {
+    code: ERROR_CODES.SCORE.DUPLICATE_PLAYER_ID,
+    message: 'Same ID used twice for same game',
+    userMessage: 'Please ensure same player id is not used twice',
     httpStatus: 400,
     category: 'validation',
   },
@@ -484,20 +492,36 @@ const scoreErrors: Record<Extract<ErrorCode, `SCORE_${string}`>, ErrorDefinition
     category: 'validation',
   },
 
-  [ERROR_CODES.SCORE.MATCH_NOT_FOUND]: {
-    code: ERROR_CODES.SCORE.MATCH_NOT_FOUND,
-    message: 'Match not found with the provided identifier',
-    userMessage: 'Match not found',
-    httpStatus: 404,
-    category: 'not_found',
-  },
-
   [ERROR_CODES.SCORE.DUPLICATE_SCORE_ENTRY]: {
     code: ERROR_CODES.SCORE.DUPLICATE_SCORE_ENTRY,
     message: 'Score entry already exists for this match',
     userMessage: 'Score has already been recorded for this match',
     httpStatus: 409,
     category: 'conflict',
+  },
+
+  [ERROR_CODES.SCORE.NO_MATCH_PROVIDED]: {
+    code: ERROR_CODES.SCORE.NO_MATCH_PROVIDED,
+    message: 'No match ID provided with score',
+    userMessage: 'Please provide a valid match ID along with game score',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.SCORE.INVALID_MATCH_ID]: {
+    code: ERROR_CODES.SCORE.INVALID_MATCH_ID,
+    message: 'No match with given ID exists',
+    userMessage: 'Please provide a valid match ID along with game score',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
+  [ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY]: {
+    code: ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY,
+    message: 'Score data deviates from existing match data',
+    userMessage: 'Please ensure score data is correct',
+    httpStatus: 400,
+    category: 'validation',
   },
 
   [ERROR_CODES.SCORE.STATS_CALCULATION_FAILED]: {
