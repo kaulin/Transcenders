@@ -4,6 +4,10 @@
 FROM node:22-alpine AS deps-builder
 WORKDIR /workspace
 
+# Accept build arguments for user/group IDs
+ARG HOST_UID
+ARG HOST_GID
+
 # Install build dependencies as root
 USER root
 RUN apk add --no-cache \
@@ -17,6 +21,7 @@ RUN chmod +x ./scripts/docker-deps-check.sh
 
 # Create volume mount point and set permissions
 RUN mkdir -p /workspace/node_modules
+RUN chown -R ${HOST_UID}:${HOST_GID} /workspace/node_modules
 
 # Set environment
 ENV NODE_ENV=development

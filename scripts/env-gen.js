@@ -77,7 +77,7 @@ function getGid() {
 setEnvVar('HOST_UID', getUid());
 setEnvVar('HOST_GID', getGid());
 setEnvVar('GOOGLE_REDIRECT_URI', `http://localhost:${PORTS.AUTH}/auth/google/callback`);
-setEnvVar('FRONTEND_URL', 'http://localhost');
+setEnvVar('FRONTEND_URL', env === 'docker' ? 'http://localhost:8443' : 'http://localhost');
 setEnvVar('MAIL_FROM', '"Transcenders Auth <auth@transcenders.online>"');
 
 // prod overrides

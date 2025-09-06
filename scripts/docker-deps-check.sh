@@ -102,6 +102,9 @@ main() {
     
     # Show final status
     show_status
+    if [ "$(id -u)" -eq 0 ]; then
+      chown -R ${HOST_UID}:${HOST_GID} ${NODE_MODULES_DIR}
+    fi
     
     echo "✅ Dependency management complete"
     echo "📁 node_modules is ready for use"
