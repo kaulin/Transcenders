@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS scores (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   CHECK (winner_id != loser_id OR (winner_id = 0 AND loser_id = 0)),
-  CHECK (winner_score = 3),
-  CHECK (loser_score >= 0 AND loser_score < 3),
+  CHECK (winner_score > 0),
+  CHECK (loser_score >= 0 AND loser_score < winner_score),
   CHECK (game_end > game_start),
   CHECK (game_duration = (julianday(game_end) - julianday(game_start)) * 86400),
   CHECK (tournament_level >= 0 AND tournament_level <= 2),
@@ -23,6 +23,19 @@ CREATE TABLE IF NOT EXISTS scores (
   player1_id INTEGER NOT NULL,
   player2_id INTEGER NOT NULL,
   start_time TIMESTAMP NOT NULL,
+  score_recorded BOOLEAN DEFAULT FALSE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   
   CHECK (player1_id != player2_id OR (player1_id = 0 AND player2_id = 0))
 );
+
+CREATE TRIGGER IF NOT EXISTS matches_updated_at
+AFTER UPDATE ON matches
+BEGIN
+  UPDATE matches
+  SET
+    updated_at = CURRENT_TIMESTAMP
+  WHERE
+    id = NEW.id;
+END;
