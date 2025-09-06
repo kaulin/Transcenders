@@ -41,6 +41,13 @@ export class ScoreService {
     return userScores as Score[];
   }
 
+  private static async setMatchAsRecorded(database: Database, match: Match) {
+    const sql = SQL`
+      UPDATE matches SET match_recorded = true WHERE id = ${match.id}
+    `;
+    const result = await database.run(sql.text, sql.values);
+  }
+
   private static async calculateStats(scores: Score[], id: number): Promise<Stats> {
     let total_games = 0;
     let total_wins = 0;
@@ -139,19 +146,13 @@ export class ScoreService {
       tournament_level,
     } = scoreData;
 
-    if (match_id == undefined) {
-      throw new ServiceError(ERROR_CODES.SCORE.NO_MATCH_PROVIDED, {
-        scoreData: scoreData,
-      });
-    }
-
     if (winner_id === loser_id && !(winner_id === 0 && loser_id === 0)) {
       throw new ServiceError(ERROR_CODES.SCORE.DUPLICATE_PLAYER_ID, {
         scoreData: scoreData,
       });
     }
 
-    if (winner_score != 3 || loser_score < 0 || loser_score >= 3) {
+    if (winner_score <= 0 || loser_score < 0 || loser_score >= winner_score) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_SCORE_VALUE, {
         scoreData: scoreData,
       });
@@ -166,14 +167,14 @@ export class ScoreService {
       });
     }
 
-    if (start_time >= end_time) {
-      throw new ServiceError(ERROR_CODES.SCORE.END_BEFORE_START, {
+    if (start_time >= end_time || end_time > new Date().getTime()) {
+      throw new ServiceError(ERROR_CODES.SCORE.INVALID_TIME_VALUE, {
         scoreData: scoreData,
       });
     }
 
     const expectedDuration = end_time - start_time;
-    if (game_duration !== expectedDuration) {
+    if (game_duration !== expectedDuration || game_duration < 3000) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_DURATION_VALUE, {
         scoreData: scoreData,
       });
@@ -193,10 +194,19 @@ export class ScoreService {
       });
     }
 
+    if (!matchData.score_recorded) {
+      throw new ServiceError(ERROR_CODES.SCORE.DUPLICATE_SCORE_ENTRY, {
+        scoreData: scoreData,
+      });
+    }
+
+    const server_start_time = new Date(matchData.start_time).getTime();
+    const server_time_offset = server_start_time - start_time;
+
     if (
       (matchData.player1_id != winner_id && matchData.player1_id != loser_id) ||
       (matchData.player2_id != winner_id && matchData.player2_id != loser_id) ||
-      matchData.start_time != game_start
+      end_time - server_time_offset - game_duration - server_start_time > 100 //
     ) {
       throw new ServiceError(ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY, {
         scoreData: scoreData,
@@ -217,7 +227,7 @@ export class ScoreService {
       });
     }
 
-    // TODO: Remove match entry for added score
+    this.setMatchAsRecorded(database, matchData);
 
     return {
       id: result.lastID,
@@ -229,7 +239,9 @@ export class ScoreService {
     database: Database,
     matchData: CreateMatchRequest,
   ): Promise<Match> {
-    const { player1_id, player2_id, start_time } = matchData;
+    const { player1_id, player2_id } = matchData;
+
+    const start_time = new Date().toISOString();
 
     if (player1_id === player2_id && !(player1_id === 0 && player2_id === 0)) {
       throw new ServiceError(ERROR_CODES.SCORE.DUPLICATE_PLAYER_ID, {
@@ -251,10 +263,14 @@ export class ScoreService {
         matchData: matchData,
       });
     }
-    return {
-      id: result.lastID,
-      ...matchData,
-    } as Match;
+
+    const match = await this.getMatchByIdLogic(database, match_id);
+    if (!match) {
+      throw new ServiceError(ERROR_CODES.SCORE.MATCH_NOT_FOUND, {
+        matchData: matchData,
+      });
+    }
+    return match;
   }
 
   // Public API methods using ResultHelper

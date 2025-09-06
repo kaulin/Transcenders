@@ -76,6 +76,7 @@ const SQLITE_CONSTRAINT_MAPPINGS: SqliteConstraintMapping[] = [
     errorCode: ERROR_CODES.COMMON.RESOURCE_NOT_FOUND,
     fieldSpecific: {
       users: ERROR_CODES.USER.NOT_FOUND_BY_ID,
+      scores: ERROR_CODES.SCORE.SCORE_NOT_FOUND,
       matches: ERROR_CODES.SCORE.MATCH_NOT_FOUND,
     },
   },

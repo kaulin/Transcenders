@@ -484,10 +484,10 @@ const scoreErrors: Record<Extract<ErrorCode, `SCORE_${string}`>, ErrorDefinition
     category: 'validation',
   },
 
-  [ERROR_CODES.SCORE.END_BEFORE_START]: {
-    code: ERROR_CODES.SCORE.END_BEFORE_START,
-    message: 'Game end time is before start time',
-    userMessage: 'Please ensure game start is before game end',
+  [ERROR_CODES.SCORE.INVALID_TIME_VALUE]: {
+    code: ERROR_CODES.SCORE.INVALID_TIME_VALUE,
+    message: 'Game start or end times are problematic',
+    userMessage: 'Please ensure game start and end times are accurate',
     httpStatus: 400,
     category: 'validation',
   },
@@ -498,14 +498,6 @@ const scoreErrors: Record<Extract<ErrorCode, `SCORE_${string}`>, ErrorDefinition
     userMessage: 'Score has already been recorded for this match',
     httpStatus: 409,
     category: 'conflict',
-  },
-
-  [ERROR_CODES.SCORE.NO_MATCH_PROVIDED]: {
-    code: ERROR_CODES.SCORE.NO_MATCH_PROVIDED,
-    message: 'No match ID provided with score',
-    userMessage: 'Please provide a valid match ID along with game score',
-    httpStatus: 400,
-    category: 'validation',
   },
 
   [ERROR_CODES.SCORE.INVALID_MATCH_ID]: {
@@ -530,6 +522,22 @@ const scoreErrors: Record<Extract<ErrorCode, `SCORE_${string}`>, ErrorDefinition
     userMessage: 'Unable to calculate statistics. Please try again.',
     httpStatus: 500,
     category: 'internal',
+  },
+
+  [ERROR_CODES.SCORE.SCORE_NOT_FOUND]: {
+    code: ERROR_CODES.SCORE.SCORE_NOT_FOUND,
+    message: 'Requested score not found',
+    userMessage: 'The requested score could not be found',
+    httpStatus: 404,
+    category: 'not_found',
+  },
+
+  [ERROR_CODES.SCORE.MATCH_NOT_FOUND]: {
+    code: ERROR_CODES.SCORE.MATCH_NOT_FOUND,
+    message: 'Requested match not found',
+    userMessage: 'The requested match could not be found',
+    httpStatus: 404,
+    category: 'not_found',
   },
 };
 
