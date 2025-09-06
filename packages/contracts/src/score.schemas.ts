@@ -5,7 +5,7 @@ import { TimestampField, UserIdField } from './user.schemas.js';
  * ENTITY SCHEMAS
  */
 export const ScoreSchema = Type.Object({
-  id: Type.Optional(Type.Number()),
+  id: Type.Number(),
   match_id: Type.Optional(Type.String()),
   winner_id: UserIdField,
   loser_id: UserIdField,
@@ -15,15 +15,19 @@ export const ScoreSchema = Type.Object({
   game_duration: Type.Number(),
   game_start: TimestampField,
   game_end: TimestampField,
+  created_at: TimestampField,
 });
 export const scoreArraySchema = Type.Array(ScoreSchema);
 export type Score = Static<typeof ScoreSchema>;
 
 export const MatchSchema = Type.Object({
-  id: Type.Optional(Type.String()),
+  id: Type.String(),
   player1_id: UserIdField,
   player2_id: UserIdField,
   start_time: TimestampField,
+  score_recorded: Type.Boolean(),
+  created_at: TimestampField,
+  updated_at: TimestampField,
 });
 export type Match = Static<typeof MatchSchema>;
 
@@ -52,12 +56,25 @@ export type Stats = Static<typeof StatsSchema>;
  * REQUEST SCHEMAS
  */
 export const createScoreSchema = {
-  body: ScoreSchema,
+  body: Type.Object({
+    match_id: Type.Optional(Type.String()),
+    winner_id: UserIdField,
+    loser_id: UserIdField,
+    winner_score: Type.Number(),
+    loser_score: Type.Number(),
+    tournament_level: Type.Number(),
+    game_duration: Type.Number(),
+    game_start: TimestampField,
+    game_end: TimestampField,
+  }),
 };
 export type CreateScoreRequest = Static<typeof createScoreSchema.body>;
 
 export const createMatchSchema = {
-  body: MatchSchema,
+  body: Type.Object({
+    player1_id: UserIdField,
+    player2_id: UserIdField,
+  }),
 };
 export type CreateMatchRequest = Static<typeof createMatchSchema.body>;
 
