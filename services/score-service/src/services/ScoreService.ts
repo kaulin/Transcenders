@@ -206,8 +206,8 @@ export class ScoreService {
     if (
       (matchData.player1_id != winner_id && matchData.player1_id != loser_id) ||
       (matchData.player2_id != winner_id && matchData.player2_id != loser_id) ||
-      end_time - server_time_offset > new Date().getTime() ||
-      end_time - server_time_offset - game_duration - server_start_time > 100 // required accuracy can be adjusted
+      server_time_offset > 1 * 1000 || // can be adjusted
+      end_time + server_time_offset > new Date().getTime()
     ) {
       throw new ServiceError(ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY, {
         scoreData: scoreData,
