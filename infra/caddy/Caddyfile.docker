@@ -2,8 +2,12 @@
 	local_certs
 }
 
-# Serve on localhost
-localhost {
+:80, :8080, :443 {
+	redir https://localhost:8443{uri} permanent
+}
+
+# HTTPS site - main content
+https://localhost:8443 {
 	log {
 		output file ./caddy-data/logs/caddy.log
 		format json

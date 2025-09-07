@@ -183,6 +183,10 @@ prod-exec:
 # CLEAN
 ################################################################################
 
+fclean: clean
+		rm -rf web/.vite
+		npm run clean-turbo
+
 clean: dev-stop
 		-docker compose down --remove-orphans --rmi all
 		-docker system prune -f
