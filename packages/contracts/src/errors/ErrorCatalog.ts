@@ -508,6 +508,14 @@ const scoreErrors: Record<Extract<ErrorCode, `SCORE_${string}`>, ErrorDefinition
     category: 'validation',
   },
 
+  [ERROR_CODES.SCORE.SUSPICIOUS_TIME_VALUE]: {
+    code: ERROR_CODES.SCORE.SUSPICIOUS_TIME_VALUE,
+    message: 'Not enough time has passed since match start for duration to be possible',
+    userMessage: 'Score time information reeks of foul play',
+    httpStatus: 400,
+    category: 'validation',
+  },
+
   [ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY]: {
     code: ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY,
     message: 'Score data deviates from existing match data',

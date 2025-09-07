@@ -201,13 +201,16 @@ export class ScoreService {
     }
 
     const server_start_time = new Date(matchData.start_time).getTime();
-    const server_time_offset = server_start_time - start_time;
+
+    if (server_start_time + game_duration > new Date().getTime()) {
+      throw new ServiceError(ERROR_CODES.SCORE.SUSPICIOUS_TIME_VALUE, {
+        scoreData: scoreData,
+      });
+    }
 
     if (
       (matchData.player1_id != winner_id && matchData.player1_id != loser_id) ||
-      (matchData.player2_id != winner_id && matchData.player2_id != loser_id) ||
-      server_time_offset > 1 * 1000 || // can be adjusted
-      end_time + server_time_offset > new Date().getTime()
+      (matchData.player2_id != winner_id && matchData.player2_id != loser_id)
     ) {
       throw new ServiceError(ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY, {
         scoreData: scoreData,
