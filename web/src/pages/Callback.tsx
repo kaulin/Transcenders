@@ -1,6 +1,6 @@
 import { ApiClient } from '@transcenders/api-client';
 import { ErrorCode, getErrorLocaleKey, GoogleFlows } from '@transcenders/contracts';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApiClient } from '../hooks/useApiClient';
 import { useUser } from '../hooks/useUser';
@@ -9,13 +9,9 @@ export default function Callback() {
   const navigate = useNavigate();
   const { search } = useLocation();
   const { user, setUser } = useUser();
-  const handledOAuthOnce = useRef(false);
   const api = useApiClient();
 
   useEffect(() => {
-    if (handledOAuthOnce.current) return;
-    handledOAuthOnce.current = true;
-
     const go = (to: string) => {
       navigate(to, { replace: true });
     };

@@ -72,6 +72,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     AuthController.googleAuth,
   );
 
+  //TODO fix this route to go through gateway also, and requre a cookie from google callback
   app.get(
     AUTH_ROUTES.GOOGLE_CALLBACK,
     {

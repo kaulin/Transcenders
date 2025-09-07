@@ -1,6 +1,6 @@
 import { ApiClient } from '@transcenders/api-client';
 import { ERROR_CODES, ServiceError } from '@transcenders/contracts';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApiClient } from '../hooks/useApiClient';
@@ -17,7 +17,6 @@ const Login = () => {
   const [code, setCode] = useState<string>('');
   const [needsCode, setNeedsCode] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const hasHandledOAuth = useRef(false);
 
   useEffect(() => {
     async function handleGoogleAuthFromParams() {
@@ -33,8 +32,6 @@ const Login = () => {
 
       // If code present, treat as Google login attempt
       if (googleCode) {
-        if (hasHandledOAuth.current) return;
-        hasHandledOAuth.current = true;
         // Copy code once, then strip URL to avoid duplicate handling
         const codeOnce = googleCode;
         window.history.replaceState({}, '', window.location.pathname);
@@ -44,7 +41,6 @@ const Login = () => {
           navigate('/', { replace: true });
         } catch (err: any) {
           setError(t(err?.localeKey ?? 'google_auth_failed'));
-          window.history.replaceState({}, '', window.location.pathname);
         }
       }
     }
