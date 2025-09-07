@@ -73,6 +73,8 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   );
 
   //TODO fix this route to go through gateway also, and requre a cookie from google callback
+  //TODO make something to handle activity status back to offline.
+  //TODO maybe some sync thing between some databases where it makes sense
   app.get(
     AUTH_ROUTES.GOOGLE_CALLBACK,
     {
