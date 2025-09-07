@@ -121,12 +121,12 @@ export const SCORE_ROUTES = {
   SCORES: '/score',
   // POST /score - Create a new score entry after a game
   SCORE: '/score',
+  // POST /match - Create a new score match entry when game starts
+  MATCH: '/score/match',
   // GET /score/:id/matches - Get a user's match history
   SCORES_BY_ID: '/score/:id',
   // GET /score/:id/stats - Get a user's statistics
   STATS_BY_ID: '/score/:id/stats',
-  // POST /match - Create a new score match entry when game starts
-  MATCH: '/score/match',
 } as const;
 
 export const AVATAR_ROUTES = {

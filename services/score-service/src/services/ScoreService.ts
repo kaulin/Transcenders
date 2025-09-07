@@ -43,7 +43,7 @@ export class ScoreService {
 
   private static async setMatchAsRecorded(database: Database, match: Match) {
     const sql = SQL`
-      UPDATE matches SET match_recorded = true WHERE id = ${match.id}
+      UPDATE matches SET score_recorded = 1 WHERE id = ${match.id}
     `;
     const result = await database.run(sql.text, sql.values);
   }
@@ -167,7 +167,7 @@ export class ScoreService {
       });
     }
 
-    if (start_time >= end_time || end_time > new Date().getTime()) {
+    if (start_time >= end_time) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_TIME_VALUE, {
         scoreData: scoreData,
       });
@@ -194,7 +194,7 @@ export class ScoreService {
       });
     }
 
-    if (!matchData.score_recorded) {
+    if (matchData.score_recorded) {
       throw new ServiceError(ERROR_CODES.SCORE.DUPLICATE_SCORE_ENTRY, {
         scoreData: scoreData,
       });
@@ -206,7 +206,8 @@ export class ScoreService {
     if (
       (matchData.player1_id != winner_id && matchData.player1_id != loser_id) ||
       (matchData.player2_id != winner_id && matchData.player2_id != loser_id) ||
-      end_time - server_time_offset - game_duration - server_start_time > 100 //
+      end_time - server_time_offset > new Date().getTime() ||
+      end_time - server_time_offset - game_duration - server_start_time > 100 // required accuracy can be adjusted
     ) {
       throw new ServiceError(ERROR_CODES.SCORE.SCORE_MATCH_DISCREPANCY, {
         scoreData: scoreData,
@@ -252,9 +253,8 @@ export class ScoreService {
     const match_id = crypto.randomUUID();
 
     const sql = SQL`
-        INSERT INTO matches (match_id, player1_id, player2_id, start_time, tournament_level, game_duration, game_start, game_end)
-        VALUES (${match_id}, ${player1_id}, 
-        ${player2_id}, ${start_time})
+        INSERT INTO matches (id, player1_id, player2_id, start_time)
+        VALUES (${match_id}, ${player1_id}, ${player2_id}, ${start_time})
       `;
 
     const result = await database.run(sql.text, sql.values);
