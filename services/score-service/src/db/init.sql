@@ -14,11 +14,10 @@ CREATE TABLE IF NOT EXISTS scores (
   CHECK (winner_score > 0),
   CHECK (loser_score >= 0 AND loser_score < winner_score),
   CHECK (game_end > game_start),
-  CHECK (game_duration = (julianday(game_end) - julianday(game_start)) * 86400),
-  CHECK (tournament_level >= 0 AND tournament_level <= 2),
+  CHECK (tournament_level >= 0 AND tournament_level <= 2)
 );
   
-  CREATE TABLE IF NOT EXISTS matches (
+CREATE TABLE IF NOT EXISTS matches (
   id TEXT PRIMARY KEY, -- UUID
   player1_id INTEGER NOT NULL,
   player2_id INTEGER NOT NULL,
@@ -34,8 +33,6 @@ CREATE TRIGGER IF NOT EXISTS matches_updated_at
 AFTER UPDATE ON matches
 BEGIN
   UPDATE matches
-  SET
-    updated_at = CURRENT_TIMESTAMP
-  WHERE
-    id = NEW.id;
+  SET updated_at = CURRENT_TIMESTAMP
+  WHERE id = NEW.id;
 END;

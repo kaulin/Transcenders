@@ -57,7 +57,7 @@ export type Stats = Static<typeof StatsSchema>;
  */
 export const createScoreSchema = {
   body: Type.Object({
-    match_id: Type.Optional(Type.String()),
+    match_id: Type.String(),
     winner_id: UserIdField,
     loser_id: UserIdField,
     winner_score: Type.Number(),
