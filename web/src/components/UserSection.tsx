@@ -69,7 +69,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
     <>
       <UserProfile user={user} viewedUser={viewedUser} />
 
-      <div className="w-full flex flex-col items-center justify-center gap-6">
+      <div className="w-full flex flex-col items-center justify-center gap-[clamp(8px,1.8vh,24px)]">
         {user?.id === viewedUser?.id ? (
           <>
             {friendView === 'friends' && <FriendsList userId={viewedUser?.id} />}
@@ -79,12 +79,14 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
 
             <button
               onClick={toggleFriendView}
-              className="w-80 bg-[#6e5d41]/5 rounded-lg p-2 flex items-center justify-center gap-2 text-sm uppercase"
+              className="w-[55%] min-w-[180px] bg-[#6e5d41]/5 rounded-lg p-[0.5em] flex items-center justify-center gap-[clamp(4px,0.3vw,8px)] text-mini uppercase"
             >
               {friendView === 'friends' ? (
                 <>
                   <span>{t('friend_requests')}</span>
-                  {incomingCount > 0 && <MessageSquareHeart className="h-5 text-[#daf98cd5]" />}
+                  {incomingCount > 0 && (
+                    <MessageSquareHeart className="h-[clamp(11.5px,1.5vh,20px)] aspect-square text-[#daf98cd5]" />
+                  )}
                 </>
               ) : (
                 <span>{t('friends')}</span>
@@ -104,7 +106,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
         handleSearch={handleSearch}
         handleGoBack={handleGoBack}
         error={error}
-      />
+        />
     </>
   );
 }

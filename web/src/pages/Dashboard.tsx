@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [viewedUser, setViewedUser] = useState<User | null>(user);
 
   return (
-    <div className="box xl:gap-4">
+    <div className="box lg:gap-[clamp(9px,0.63vw,16px)]">
       <div className="box-section bg-[#6e5d41]/10 justify-between">
         <UserSection viewedUser={viewedUser} setViewedUser={setViewedUser} />
       </div>

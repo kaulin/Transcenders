@@ -68,8 +68,8 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
     <>
       {friendshipStatus === 'friends' ? (
         <button onClick={handleRemove} className="text-center pt-2 relative group">
-          <HeartMinus className="w-6 h-6" />
-          <span className="absolute bottom-2/3 left-2/3 hidden group-hover:block bg-[#6e5d41]/10 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+          <HeartMinus className="h-[clamp(16px,1.84vh,24px)] aspect-square" />
+          <span className="absolute bottom-2/3 left-2/3 hidden group-hover:block bg-[#6e5d41]/10 text-white text-xs rounded py-[0.25em] px-[0.5em] whitespace-nowrap">
             {t('remove_friend')}
           </span>
         </button>
@@ -77,12 +77,12 @@ export default function FriendActions({ userId, viewedId }: FriendActionsProps) 
         <button
           onClick={handleAdd}
           disabled={friendshipStatus === 'request_sent' || friendshipStatus === 'request_received'}
-          className="text-center pt-2 relative group"
+          className="text-center pt-[clamp(5px,0.6vh,8px)] relative group"
         >
           {friendshipStatus === 'none' ? (
-            <HeartPlus className="w-6 h-6" />
+            <HeartPlus className="h-[clamp(16px,1.84vh,24px)] aspect-square" />
           ) : (
-            <Heart className="w-6 h-6 text-white/50" />
+            <Heart className="h-[clamp(16px,1.84vh,24px)] aspect-square text-white/50" />
           )}
 
           <span className="absolute hidden button-label bottom-2/3 left-2/3">

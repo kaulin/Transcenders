@@ -27,26 +27,29 @@ function PieChartBlock({ title, data }: ChartConfig) {
   const hasData = data.some((d) => (d.value ?? 0) > 0);
 
   return (
-    <div className="flex flex-col mt-6 sm:mt-0 sm:flex-row w-full items-center justify-between text-sm sm:text-base">
+    <div className="flex flex-col sm:flex-row w-full items-center justify-between">
       <div className="flex flex-col items-center sm:items-start">
-        <div className="text-white text-center text-lg sm:text-xl font-fascinate uppercase">
+        <div className="text-white text-center text-small font-fascinate uppercase">
           {title}
         </div>
         {data.map((entry, index) => (
-          <div key={index} className="flex items-center gap-2 mb-1">
+          <div
+            key={index}
+            className="flex items-center gap-[clamp(5px,0.3vw,8px)]"
+          >
             <span
-              className="inline-block w-4 h-4 rounded-full border border-white"
+              className="inline-block w-[clamp(9px,0.5vw,12px)] aspect-square rounded-full border border-white"
               style={{ backgroundColor: COLORS[index % COLORS.length] }}
             />
-            <span className="text-sm sm:text-base">{entry.name}</span>
+            <span className="text-white text-small">{entry.name}</span>
           </div>
         ))}
       </div>
 
-      <div className="w-24 h-36">
+      <div className="w-[clamp(56px,7.3vh,96px)] h-[clamp(56px,7.3vh,96px)] flex flex-shrink-0">
         {!hasData ? (
           <div className="flex h-full justify-center items-center text-center">
-            <p className="tsc-info-message">{t('not_available')}</p>
+            <p className="tsc-info-message text-small">{t('not_available')}</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
@@ -57,8 +60,8 @@ function PieChartBlock({ title, data }: ChartConfig) {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                innerRadius={20}
-                outerRadius={45}
+                innerRadius="30%"
+                outerRadius="90%"
               >
                 {data.map((_, index) => (
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />
@@ -135,11 +138,19 @@ export default function PieCharts({ viewedId }: PieChartsProps) {
     ];
   }, [userStats, t]);
 
-  if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
-  if (!userStats) return <div className="tsc-info-message text-center">{t('loading')}</div>;
+  if (error)
+    return (
+      <div className="tsc-error-message text-center text-mini">{t(error)}</div>
+    );
+  if (!userStats)
+    return (
+      <div className="tsc-info-message text-center text-mini">
+        {t('loading')}
+      </div>
+    );
 
   return (
-    <div className="flex flex-col w-full max-w-[400px]">
+    <div className="flex flex-col justify-between w-[55%] min-w-[180px] gap-[clamp(16px,2.1vh,27px)]">
       {chartsData.map((chart, i) => (
         <PieChartBlock key={i} title={chart.title} data={chart.data} />
       ))}
