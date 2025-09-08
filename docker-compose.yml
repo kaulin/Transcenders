@@ -88,8 +88,8 @@ services:
       - score-service
       - web
     ports:
-      - '80:80'
-      - '443:443'
+      # - '80:80'
+      # - '443:443'
       - '8080:8080'
       - '8443:8443'
     volumes:
@@ -110,18 +110,6 @@ services:
     volumes:
       - .:/workspace:ro
       - shared_node_modules:/workspace/node_modules
-
-  chown-service:
-    container_name: chown-service
-    image: busybox:1.36-musl
-    command: ['/workspace/scripts/docker-chown-service.sh']
-    env_file:
-      - .env
-    restart: 'unless-stopped'
-    volumes:
-      - .:/workspace
-    user: root
-    network_mode: none
 
 volumes:
   shared_node_modules:
