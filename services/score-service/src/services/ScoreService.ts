@@ -1,5 +1,6 @@
 import {
   CreateMatchRequest,
+  CreateMatchResult,
   CreateScoreRequest,
   ERROR_CODES,
   GetScoresQuery,
@@ -242,7 +243,7 @@ export class ScoreService {
   private static async createMatchLogic(
     database: Database,
     matchData: CreateMatchRequest,
-  ): Promise<Match> {
+  ): Promise<CreateMatchResult> {
     const { player1_id, player2_id } = matchData;
 
     const start_time = new Date().toISOString();
@@ -273,7 +274,8 @@ export class ScoreService {
         matchData: matchData,
       });
     }
-    return match;
+
+    return { match_id: match.id } as CreateMatchResult;
   }
 
   // Public API methods using ResultHelper
@@ -300,9 +302,11 @@ export class ScoreService {
     });
   }
 
-  static async createMatch(matchData: CreateMatchRequest): Promise<ServiceResult<Match>> {
+  static async createMatch(
+    matchData: CreateMatchRequest,
+  ): Promise<ServiceResult<CreateMatchResult>> {
     const db = await DatabaseManager.for('SCORE').open();
-    return ResultHelper.executeQuery<Match>('create match', db, async (database) => {
+    return ResultHelper.executeQuery<CreateMatchResult>('create match', db, async (database) => {
       return await this.createMatchLogic(database, matchData);
     });
   }

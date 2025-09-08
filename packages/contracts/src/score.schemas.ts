@@ -4,7 +4,7 @@ import { TimestampField, UserIdField } from './user.schemas.js';
 /**
  * ENTITY SCHEMAS
  */
-export const ScoreSchema = Type.Object({
+export const scoreSchema = Type.Object({
   id: Type.Number(),
   match_id: Type.Optional(Type.String()),
   winner_id: UserIdField,
@@ -17,10 +17,10 @@ export const ScoreSchema = Type.Object({
   game_end: TimestampField,
   created_at: TimestampField,
 });
-export const scoreArraySchema = Type.Array(ScoreSchema);
-export type Score = Static<typeof ScoreSchema>;
+export const scoreArraySchema = Type.Array(scoreSchema);
+export type Score = Static<typeof scoreSchema>;
 
-export const MatchSchema = Type.Object({
+export const matchSchema = Type.Object({
   id: Type.String(),
   player1_id: UserIdField,
   player2_id: UserIdField,
@@ -29,9 +29,14 @@ export const MatchSchema = Type.Object({
   created_at: TimestampField,
   updated_at: TimestampField,
 });
-export type Match = Static<typeof MatchSchema>;
+export type Match = Static<typeof matchSchema>;
 
-export const StatsSchema = Type.Object({
+export const createMatchResultSchema = Type.Object({
+  match_id: Type.String(),
+});
+export type CreateMatchResult = Static<typeof createMatchResultSchema>;
+
+export const statsSchema = Type.Object({
   total_games: Type.Number(),
   total_wins: Type.Number(),
   total_win_percentage: Type.Number(),
@@ -50,7 +55,7 @@ export const StatsSchema = Type.Object({
   total_duration: Type.Number(),
   average_duration: Type.Number(),
 });
-export type Stats = Static<typeof StatsSchema>;
+export type Stats = Static<typeof statsSchema>;
 
 /**
  * REQUEST SCHEMAS
