@@ -33,19 +33,22 @@ export default function FriendsList({ userId }: FriendsListProps) {
   }, [userId, t, api]);
 
   return (
-    <div className="w-80 h-[400px] bg-[#6e5d41]/5 rounded-lg p-6">
-      <p className="text-[#fff] text-center font-fascinate uppercase text-xl mb-6">
+    <div className="w-[55%] min-w-[180px] h-[clamp(229px,29.95vh,390px)] bg-[#6e5d41]/5 rounded-lg px-[clamp(13.5px,0.94vw,24px)] py-[clamp(13px,1.8vh,24px)]">
+      <p className="text-[#fff] text-center font-fascinate uppercase text-small mb-[clamp(13px,1.8vh,24px)]">
         {t('friends')}
       </p>
-      <div className="relative h-[80%] px-2 text-sm sm:text-base overflow-y-auto custom-scrollbar">
+      <div className="relative h-[80%] px-[clamp(4px,0.3vw,8px)] text-small overflow-y-auto custom-scrollbar">
         {error ? (
           <p className="tsc-error-message text-center">{error}</p>
         ) : (
           friends.map((friend) => (
-            <div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
-              <span>{friend.username}</span>
+            <div
+              key={friend.id}
+              className="flex items-center justify-between text-[#fff] py-[clamp(2.3px,0.3vh,4px)]"
+            >
+              <span>{friend.display_name ?? friend.username}</span>
               <span
-                className={`w-3 h-3 rounded-full border border-white ${
+                className={`w-[clamp(9px,0.5vw,12px)] aspect-square rounded-full border border-white ${
                   friend.status === 'online' ? 'bg-[#ceff5d]' : 'bg-transparent'
                 }`}
               />

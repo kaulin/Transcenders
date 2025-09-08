@@ -12,7 +12,6 @@ import {
 
 import { ApiClient } from '@transcenders/api-client';
 import { Score } from '@transcenders/contracts';
-import { useApiClient } from '../hooks/useApiClient';
 import { useUser } from '../hooks/useUser';
 
 interface GoalChartProps {
@@ -53,15 +52,23 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
       }))
     : [];
 
-  if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
-  if (!userScores) return <div className="tsc-info-message text-center">{t('loading')}</div>;
+  if (error)
+    return (
+      <div className="tsc-error-message text-center text-mini">{t(error)}</div>
+    );
+  if (!userScores)
+    return (
+      <div className="tsc-info-message text-center text-mini">
+        {t('loading')}
+      </div>
+    );
 
   return (
     <div className="flex flex-col items-center w-full">
-      <p className="text-center text-[#fff] font-fascinate text-xl uppercase">
+      <p className="text-center text-[#fff] font-fascinate text-small uppercase">
         {t('latest_outcomes')}
       </p>
-      <div className="flex w-full justify-center items-center h-40 pr-10">
+      <div className="flex w-full justify-center items-center h-[clamp(94px,12.3vh,160px)] pr-[clamp(35px,1.6vw,40px)] text-small">
         <ResponsiveContainer width="80%" height="80%">
           <AreaChart data={chartData}>
             <defs>
@@ -78,7 +85,7 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
             <XAxis
               dataKey="date"
               stroke="#fff"
-              tick={{ fontSize: 12, fill: '#fff' }}
+              tick={{ fontSize: '60%', fill: '#fff' }}
               interval="preserveStartEnd"
               tickFormatter={(value) =>
                 new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit' }).format(
@@ -111,13 +118,13 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex flex-col sm:flex-row text-sm sm:text-base gap-4">
-        <div className="flex gap-2 items-center text-white">
-          <div className="w-4 h-4 rounded-full bg-[#a7d4373c] border border-white"></div>
+      <div className="flex text-small gap-[clamp(9px,0.63vw,16px)]">
+        <div className="flex gap-[clamp(5px,0.3vw,8px)] items-center text-white">
+          <div className="w-[clamp(9px,0.5vw,12px)] aspect-square rounded-full bg-[#a7d4373c] border border-white"></div>
           {viewedUsername === user?.username ? t('you') : viewedUsername}
         </div>
-        <div className="flex gap-2 items-center text-white">
-          <div className="w-4 h-4 rounded-full bg-[#5d6b2f52] border border-white"></div>
+        <div className="flex gap-[clamp(5px,0.3vw,8px)] items-center text-white">
+          <div className="w-[clamp(9px,0.5vw,12px)] aspect-square rounded-full bg-[#5d6b2f52] border border-white"></div>
           {t('opponent')}
         </div>
       </div>

@@ -5,7 +5,7 @@ interface StatRowProps {
 
 export default function StatRow({ label, value }: StatRowProps) {
   return (
-    <div className="w-full flex items-baseline text-sm sm:text-base">
+    <div className="w-full flex items-baseline text-small">
       <span>{label}</span>
       <span className="flex-1 border-b border-dotted mx-2"></span>
       <span className="font-sans">{value}</span>

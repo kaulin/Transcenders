@@ -20,7 +20,7 @@ const MainContainer = () => {
         <div className="absolute inset-0 bg-black/5" />
       </div>
 
-      <div className="relative h-full z-10 p-4 pt-24 sm:p-24 sm:pt-32">
+      <div className="relative h-full z-10 px-[clamp(0.125rem,6vw,5rem)] pt-[clamp(0.125rem,2vh,0.75rem)] pb-[clamp(0.125rem,6vh,5rem)]">
         {user ? (
           <Routes>
             <Route path="/" element={<Home />} />

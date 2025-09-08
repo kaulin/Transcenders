@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { ApiClient } from '@transcenders/api-client';
 import type { Stats } from '@transcenders/contracts';
 
-import { useApiClient } from '../hooks/useApiClient';
 import GoalChart from './GoalChart';
 import PieCharts from './PieCharts';
+import StatRow from './StatRow';
 import StatRow from './StatRow';
 
 interface UserStatsProps {
@@ -40,33 +40,35 @@ export default function UserStatsSection({ viewedId, viewedUsername }: UserStats
 
   return (
     <>
-      <div className="flex flex-col text-center">
-        <p className="w-[300px] text-xl sm:text-2xl font-fascinate uppercase text-[#fff] mb-2">
+      <div className="w-full h-full flex flex-col items-center text-center justify-between">
+        <p className="w-[clamp(168px,11.7vw,300px)] text-medium font-fascinate uppercase text-[#fff]">
           {t('games_played')}
         </p>
-        {error ? (
-          <div className="tsc-error-message text-center">{t(error)}</div>
-        ) : (
-          <>
-            <StatRow label={t('total')} value={userStats?.total_games ?? 0} />
-            <StatRow label={t('wins')} value={userStats?.total_wins ?? 0} />
-            <StatRow
-              label={t('losses')}
-              value={(userStats?.total_games ?? 0) - (userStats?.total_wins ?? 0)}
-            />
-            <StatRow
-              label={t('average_score')}
-              value={(userStats?.average_score ?? 0).toFixed(1)}
-            />
-            <StatRow
-              label={t('win_percentage')}
-              value={(userStats?.total_win_percentage ?? 0).toFixed(1)}
-            />
-          </>
-        )}
+        <div className="flex flex-col w-full h-[90%] sm:min-h-[470px] min-h-[858px] items-center justify-between">
+          {error ? (
+            <div className="tsc-error-message text-center text-small">{t(error)}</div>
+          ) : (
+            <div className="w-[55%] min-w-[180px]">
+              <StatRow label={t('total')} value={userStats?.total_games ?? 0} />
+              <StatRow label={t('wins')} value={userStats?.total_wins ?? 0} />
+              <StatRow
+                label={t('losses')}
+                value={(userStats?.total_games ?? 0) - (userStats?.total_wins ?? 0)}
+              />
+              <StatRow
+                label={t('average_score')}
+                value={(userStats?.average_score ?? 0).toFixed(1)}
+              />
+              <StatRow
+                label={t('win_percentage')}
+                value={(userStats?.total_win_percentage ?? 0).toFixed(1)}
+              />
+            </div>
+          )}
+          <PieCharts viewedId={viewedId} />
+          <GoalChart viewedId={viewedId} viewedUsername={viewedUsername} />
+        </div>
       </div>
-      <PieCharts viewedId={viewedId} />
-      <GoalChart viewedId={viewedId} viewedUsername={viewedUsername} />
     </>
   );
 }

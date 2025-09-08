@@ -108,34 +108,34 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
   };
 
   return (
-    <div className="w-80 h-[400px] bg-[#6e5d41]/5 rounded-lg p-6">
-      <p className="text-[#fff] text-center font-fascinate uppercase text-xl mb-6">
+    <div className="w-[55%] min-w-[180px] h-[clamp(229px,29.95vh,390px)] bg-[#6e5d41]/5 rounded-lg px-[clamp(13.5px,0.94vw,24px)] py-[clamp(13px,1.8vh,24px)]">
+      <p className="text-[#fff] text-center font-fascinate uppercase text-small mb-[clamp(13px,1.8vh,24px)]">
         {t('friend_requests')}
       </p>
 
-      <div className="relative h-[80%] px-2 overflow-y-auto custom-scrollbar">
+      <div className="relative h-[80%] px-[clamp(4px,0.3vw,8px)] text-small overflow-y-auto custom-scrollbar">
         {error ? (
           <p className="tsc-error-message text-center">{error}</p>
         ) : (
           <>
-            <p className="text-white mb-2 text-sm uppercase">
+            <p className="text-white mb-[clamp(5px,0.6vh,8px)] text-mini uppercase">
               {t('received')} ({receivedRequests.length ?? 0})
             </p>
             {receivedRequests.map((req) => (
               <div key={req.id} className="w-full flex justify-between text-[#fff]">
                 <div className="text-white">{usernames[req.initiator_id]}</div>
-                <div>
+                <div className="flex gap-[clamp(9px,0.63vw,16px)]">
                   <button onClick={() => handleDecline(req.initiator_id)}>
-                    <X className="h-4 text-amber-600 hover:text-amber-700" />
+                    <X className="h-[clamp(9px,1.2vh,16px)] w-[clamp(9px,1.2vh,16px)] text-amber-600 hover:text-amber-700" />
                   </button>
                   <button onClick={() => handleAccept(req.initiator_id)}>
-                    <Check className="h-4 text-lime-200 hover:text-lime-500" />
+                    <Check className="h-[clamp(9px,1.2vh,16px)] w-[clamp(9px,1.2vh,16px)] text-lime-200 hover:text-lime-500" />
                   </button>
                 </div>
               </div>
             ))}
 
-            <p className="text-white mt-4 mb-2 text-sm uppercase">
+            <p className="text-white mt-[clamp(9px,1.2vh,16px)] mb-[clamp(5px,0.6vh,8px)] text-mini uppercase">
               {t('sent')} ({sentRequests.length ?? 0})
             </p>
             {sentRequests.map((req) => (
@@ -143,7 +143,7 @@ export default function FriendRequests({ userId, setIncomingCount }: FriendReque
                 <div className="text-white">{usernames[req.recipient_id]}</div>
                 <button
                   onClick={() => handleCancel(req.recipient_id)}
-                  className="text-xs lowercase"
+                  className="text-mini lowercase"
                 >
                   {t('cancel')}
                 </button>

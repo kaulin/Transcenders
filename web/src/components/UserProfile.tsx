@@ -13,7 +13,7 @@ export default function UserProfile({ user, viewedUser }: UserProfileProps) {
   const { getTransformFromUrl } = useAvatarTransform();
   return (
     <div className="flex flex-col items-center">
-      <div className="bubble bg-white/50 w-56 h-56 flex justify-center overflow-hidden">
+      <div className="bubble bg-white/50 w-[clamp(126px,16.5vh,224px)] h-[clamp(126px,16.5vh,224px)] flex justify-center overflow-hidden">
         {viewedUser?.avatar ? (
           <img
             src={ApiClient.user.getFullAvatarURL(viewedUser.avatar)}
@@ -25,10 +25,11 @@ export default function UserProfile({ user, viewedUser }: UserProfileProps) {
           />
         ) : null}
       </div>
-      <div className="flex pt-6 gap-4">
-        <h1 className="text-5xl text-[#fff] font-fascinate">{viewedUser?.username}</h1>
+      <div className="flex pt-[clamp(13px,1.8vh,24px)] gap-[clamp(9px,0.63vw,16px)]">
+        <h1 className="text-xxlarge text-[#fff] font-fascinate">{viewedUser?.username}</h1>
         {user !== viewedUser && <FriendActions userId={user?.id} viewedId={viewedUser?.id} />}
       </div>
     </div>
   );
 }
+
