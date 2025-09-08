@@ -4,10 +4,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* --font-sans: 'Inter', 'sans-serif'; */
   --font-fascinate: 'Fascinate', 'system-ui';
-
-  --breakpoint-xl: 1300px;
 }
 
 @layer base {
@@ -41,13 +38,13 @@
 }
 
 @utility box {
-  @apply flex flex-col xl:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
+  @apply flex flex-col lg:flex-row h-full overflow-y-auto overflow-x-hidden custom-scrollbar
         rounded-xs border border-white shadow-[0_0_3px_3px_#fff] backdrop-blur-3xl;
 }
 
 @utility box-section {
   @apply backdrop-blur-xs w-full min-h-full shrink-0
-        xl:flex-1 xl:h-[1106px] xl:flex-shrink px-4 py-24 flex flex-col items-center;
+        lg:flex-1 lg:flex-shrink lg:min-h-[630px] py-[clamp(3.5rem,3.7vh,6rem)] flex flex-col items-center;
 }
 
 @utility bubble {
@@ -95,6 +92,30 @@
 @utility rounded-button {
   @apply rounded-full border border-white hover:border-[#786647] link-color transition py-[0.75em] px-[1em] text-center;
   @apply disabled:opacity-50 disabled:cursor-default disabled:saturate-50 disabled:hover:border-white;
+}
+
+@utility text-mini {
+  @apply text-[clamp(0.65rem,0.55vw,0.875rem)];
+}
+
+@utility text-small {
+  @apply text-[clamp(0.875rem,0.625vw,1rem)];
+}
+
+@utility text-medium {
+  @apply text-[clamp(1rem,1vw,1.25rem)];
+}
+
+@utility text-large {
+  @apply text-[clamp(1.25rem,1.4vw,2rem)];
+}
+
+@utility text-xlarge {
+  @apply text-[clamp(1.5rem,1.7vw,2.5rem)];
+}
+
+@utility text-xxlarge {
+  @apply text-[clamp(1.75rem,2vw,3rem)];
 }
 
 @utility tsc-error-message {
