@@ -7,6 +7,7 @@ import { registerAdminRoutes } from './routes/admin.routes.js';
 import { registerAvatarRoutes } from './routes/avatar.routes.js';
 import { registerFriendshipRoutes } from './routes/friend.routes.js';
 import { registerUserRoutes } from './routes/user.routes.js';
+import { AdminService } from './services/AdminService.js';
 import { AvatarService } from './services/AvatarService.js';
 
 const config: ServerConfig = {
@@ -37,6 +38,20 @@ async function start() {
   await registerUserRoutes(fastify);
   await registerFriendshipRoutes(fastify);
   await registerAvatarRoutes(fastify);
+
+  let checkUsersInterval: NodeJS.Timeout;
+  fastify.addHook('onReady', async () => {
+    checkUsersInterval = setInterval(async () => {
+      try {
+        await AdminService.cleanupOfflineUsers();
+      } catch (err) {}
+    }, 60 * 1000);
+  });
+  fastify.addHook('onClose', async () => {
+    if (checkUsersInterval) {
+      clearInterval(checkUsersInterval);
+    }
+  });
 
   await startServer(fastify, config);
 }
