@@ -46,7 +46,7 @@ export class ScoreService {
     const sql = SQL`
       UPDATE matches SET score_recorded = 1 WHERE id = ${match.id}
     `;
-    const result = await database.run(sql.text, sql.values);
+    await database.run(sql.text, sql.values);
   }
 
   private static async calculateStats(scores: Score[], id: number): Promise<Stats> {
@@ -311,7 +311,6 @@ export class ScoreService {
     });
   }
 
-  // TODO Add query string support for limit and offset to implement pagination support
   static async getScoresById(id: number): Promise<ServiceResult<Score[]>> {
     const db = await DatabaseManager.for('SCORE').open();
     return ResultHelper.executeQuery<Score[]>('get scores by id', db, async (database) => {
