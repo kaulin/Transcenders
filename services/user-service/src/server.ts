@@ -1,6 +1,6 @@
 import multipart from '@fastify/multipart';
 import staticFiles from '@fastify/static';
-import { AvatarConfig } from '@transcenders/contracts';
+import { AvatarConfig, UserConfig } from '@transcenders/contracts';
 import { createFastifyServer, ServerConfig, startServer } from '@transcenders/fastify-server';
 import { ENV } from '@transcenders/server-utils';
 import { registerAdminRoutes } from './routes/admin.routes.js';
@@ -41,11 +41,12 @@ async function start() {
 
   let checkUsersInterval: NodeJS.Timeout;
   fastify.addHook('onReady', async () => {
-    checkUsersInterval = setInterval(async () => {
-      try {
+    checkUsersInterval = setInterval(
+      async () => {
         await AdminService.cleanupOfflineUsers();
-      } catch (err) {}
-    }, 60 * 1000);
+      },
+      UserConfig.CLEANUP_INTERVAL_MINUTES * 60 * 1000,
+    );
   });
   fastify.addHook('onClose', async () => {
     if (checkUsersInterval) {
