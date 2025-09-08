@@ -1,6 +1,5 @@
 import {
   ChangePasswordRequest,
-  ERROR_CODES,
   GoogleAuthCallback,
   GoogleFlowParam,
   GoogleFlows,
@@ -44,12 +43,48 @@ export class AuthController {
 
   static async googleCallback(request: FastifyRequest, reply: FastifyReply) {
     const { code, state, error } = request.query as GoogleAuthCallback;
-    const params = new URLSearchParams();
-    params.set('type', state);
 
-    if (code) params.set('code', code);
-    if (error) params.set('error', ERROR_CODES.AUTH.GOOGLE_AUTH_FAILED);
-    return reply.redirect(`${ENV.FRONTEND_URL}/callback?${params.toString()}`);
+    // Handle error case
+    if (error || !code) {
+      const params = new URLSearchParams();
+      params.set('error', 'google_auth_failed');
+      return reply.redirect(`${ENV.FRONTEND_URL}/login?${params.toString()}`);
+    }
+
+    try {
+      const flow = state as GoogleFlows;
+
+      if (flow === 'login') {
+        const deviceInfo = DeviceUtils.extractDeviceInfo(request);
+        const loginResult = await AuthService.googleLogin(code, deviceInfo);
+
+        if (loginResult.success) {
+          CookieUtils.handleLoginResponse(reply, loginResult);
+          return reply.redirect(`${ENV.FRONTEND_URL}/`);
+        } else {
+          // Login failed, redirect to login with error
+          const params = new URLSearchParams();
+          params.set('error', 'google_login_failed');
+          return reply.redirect(`${ENV.FRONTEND_URL}/login?${params.toString()}`);
+        }
+      } else if (flow === 'stepup' || flow === 'connect') {
+        // For stepup and connect flows, still pass the code to frontend
+        const params = new URLSearchParams();
+        params.set('type', state);
+        params.set('code', code);
+        return reply.redirect(`${ENV.FRONTEND_URL}/callback?${params.toString()}`);
+      } else {
+        // Unknown flow
+        const params = new URLSearchParams();
+        params.set('error', 'invalid_flow');
+        return reply.redirect(`${ENV.FRONTEND_URL}/login?${params.toString()}`);
+      }
+    } catch (err) {
+      console.error('Google OAuth callback error:', err);
+      const params = new URLSearchParams();
+      params.set('error', 'google_auth_failed');
+      return reply.redirect(`${ENV.FRONTEND_URL}/login?${params.toString()}`);
+    }
   }
 
   static async googleLogin(request: FastifyRequest, reply: FastifyReply) {
