@@ -31,6 +31,7 @@ export interface GameResult {
   game_duration: number;
   game_start: number;
   game_end: number;
+  match_id?: string;
 }
 
 // type named GameStatus declared- any variable of type GameStatus
@@ -55,6 +56,7 @@ export interface GameState {
   canvasWidth: number;
   canvasHeight: number;
   gameStartTime: number;
+  matchId?: string;
 }
 
 export const Controls = {
@@ -120,6 +122,7 @@ export const createInitialGameState = (width: number, height: number): GameState
       initialSpeed: DEFAULT_GAME_SETTINGS.ballInitialSpeed,
     },
     gameStartTime: 0,
+    matchId: undefined,
   };
 };
 
@@ -156,6 +159,7 @@ export const createGameResult = (
   gameStartTime: number,
   gameEndTime: number,
   tournamentLevel = 0,
+  matchId?: string,
 ): GameResult => {
   const isPlayer1Winner = player1Score > player2Score;
 
@@ -168,5 +172,6 @@ export const createGameResult = (
     game_duration: gameEndTime - gameStartTime,
     game_start: gameStartTime,
     game_end: gameEndTime,
+    match_id: matchId,
   };
 };
