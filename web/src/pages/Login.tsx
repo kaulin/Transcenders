@@ -19,34 +19,15 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function handleGoogleAuthFromParams() {
-      const sp = new URLSearchParams(window.location.search);
-      const errorLocaleKey = sp.get('error');
-      const googleCode = sp.get('code');
+    // Only handle error messages from URL params
+    const sp = new URLSearchParams(window.location.search);
+    const errorLocaleKey = sp.get('error');
 
-      if (errorLocaleKey) {
-        setError(t(errorLocaleKey ?? 'something_went_wrong'));
-        window.history.replaceState({}, '', window.location.pathname);
-        return;
-      }
-
-      // If code present, treat as Google login attempt
-      if (googleCode) {
-        // Copy code once, then strip URL to avoid duplicate handling
-        const codeOnce = googleCode;
-        window.history.replaceState({}, '', window.location.pathname);
-        try {
-          const tokens = await api(() => ApiClient.auth.googleLogin(codeOnce));
-          await loginWithTokens(tokens);
-          navigate('/', { replace: true });
-        } catch (err: any) {
-          setError(t(err?.localeKey ?? 'google_auth_failed'));
-        }
-      }
+    if (errorLocaleKey) {
+      setError(t(errorLocaleKey ?? 'something_went_wrong'));
+      window.history.replaceState({}, '', window.location.pathname);
     }
-
-    handleGoogleAuthFromParams();
-  }, [navigate, loginWithTokens, api, t]);
+  }, [t]);
 
   async function handleGoogleLogin(e: React.FormEvent) {
     e.preventDefault();

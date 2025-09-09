@@ -43,48 +43,50 @@ export class AuthController {
 
   static async googleCallback(request: FastifyRequest, reply: FastifyReply) {
     const { code, state, error } = request.query as GoogleAuthCallback;
-
-    // Handle error case
-    if (error || !code) {
-      const params = new URLSearchParams();
-      params.set('error', 'google_auth_failed');
-      return reply.redirect(`${ENV.FRONTEND_URL}/login?${params.toString()}`);
-    }
+    const flow = state as GoogleFlows;
+    const params = new URLSearchParams();
+    let result = flow === 'login' ? '/login' : '/profile';
 
     try {
-      const flow = state as GoogleFlows;
-
-      if (flow === 'login') {
-        const deviceInfo = DeviceUtils.extractDeviceInfo(request);
-        const loginResult = await AuthService.googleLogin(code, deviceInfo);
-
-        if (loginResult.success) {
-          CookieUtils.handleLoginResponse(reply, loginResult);
-          return reply.redirect(`${ENV.FRONTEND_URL}/`);
-        } else {
-          // Login failed, redirect to login with error
-          const params = new URLSearchParams();
-          params.set('error', 'google_login_failed');
-          return reply.redirect(`${ENV.FRONTEND_URL}/login?${params.toString()}`);
-        }
-      } else if (flow === 'stepup' || flow === 'connect') {
-        // For stepup and connect flows, still pass the code to frontend
-        const params = new URLSearchParams();
-        params.set('type', state);
-        params.set('code', code);
-        return reply.redirect(`${ENV.FRONTEND_URL}/callback?${params.toString()}`);
-      } else {
-        // Unknown flow
-        const params = new URLSearchParams();
-        params.set('error', 'invalid_flow');
-        return reply.redirect(`${ENV.FRONTEND_URL}/login?${params.toString()}`);
+      if (error || !code) {
+        throw error;
       }
-    } catch (err) {
-      console.error('Google OAuth callback error:', err);
-      const params = new URLSearchParams();
+      switch (flow) {
+        case 'login':
+          const deviceInfo = DeviceUtils.extractDeviceInfo(request);
+          const loginResult = await AuthService.googleLogin(code, deviceInfo);
+          CookieUtils.handleLoginResponse(reply, loginResult);
+          result = '/login';
+          break;
+
+        case 'stepup':
+          result = `/profile`;
+          params.set('code', code);
+          break;
+
+        case 'connect':
+          const userId = request.user?.userId;
+          if (!userId) {
+            result = '/login';
+            params.set('error', 'auth_required');
+            break;
+          }
+          const connectResult = await AuthService.googleConnect(userId, code);
+          result = '/profile';
+          if (!connectResult.success) {
+            params.set('error', 'google_auth_failed');
+          }
+          break;
+
+        default:
+          result = '/login';
+      }
+    } catch {
+      result = '/login';
       params.set('error', 'google_auth_failed');
-      return reply.redirect(`${ENV.FRONTEND_URL}/login?${params.toString()}`);
     }
+    const resultUrl = `${ENV.FRONTEND_URL}${result}?${params.toString()}`;
+    return reply.redirect(resultUrl);
   }
 
   static async googleLogin(request: FastifyRequest, reply: FastifyReply) {
