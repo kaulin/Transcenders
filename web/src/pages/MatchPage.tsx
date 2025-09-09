@@ -28,6 +28,16 @@ function MatchPage() {
 
   const api = useApiClient();
 
+  // Redirect back to home if players not correctly set
+  useEffect(() => {
+    const allPlayersArray = [players[1], players[2]];
+    const validPlayers = allPlayersArray.filter((p) => p?.username);
+
+    if (validPlayers.length != 2) {
+      navigate('/', { replace: true });
+    }
+  }, [players, navigate]);
+
   const handleStartPause = useCallback(() => {
     if (gameStatus === GameStatus.WAITING || gameStatus === GameStatus.PAUSED) {
       setShouldStart(true);
