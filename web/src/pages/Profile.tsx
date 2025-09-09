@@ -133,16 +133,6 @@ const Profile = () => {
           />
         </div>
         <div className="w-full max-w-md">
-          <label className="fascinate-label">{t('display_name')}</label>
-          <input
-            type="text"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            className="input-field"
-            disabled={!isElevated}
-          />
-        </div>
-        <div className="w-full max-w-md">
           <label className="fascinate-label">{t('two_fac_auth')}</label>
           <TwoFactorSection />
         </div>
