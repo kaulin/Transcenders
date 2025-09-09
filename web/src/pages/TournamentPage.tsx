@@ -23,7 +23,6 @@ function TournamentPage() {
   const { players, setPlayer } = usePlayers();
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   const api = useApiClient();
 
   const [tournamentState, setTournamentState] = useState<TournamentState>({
@@ -72,7 +71,7 @@ function TournamentPage() {
     const validPlayers = allPlayersArray.filter((p) => p?.username);
 
     if (validPlayers.length < 4) {
-      return;
+      navigate('/', { replace: true });
     }
 
     // Create shuffled tournament order
@@ -81,7 +80,7 @@ function TournamentPage() {
 
     setPlayer(1, shuffledPlayers[0]);
     setPlayer(2, shuffledPlayers[1]);
-  }, [players, setPlayer]);
+  }, [navigate, players, setPlayer]);
 
   // Get current players for rendering the page from the SHUFFLED tournament order
   const getCurrentMatchPlayers = () => {
