@@ -18,6 +18,10 @@ find "$WORKSPACE_DIR" -type d -name ".turbo" -exec rm -rf {} + 2>/dev/null || tr
 echo "Removing .vite/ directories..."
 find "$WORKSPACE_DIR" -type d -name ".vite" -exec rm -rf {} + 2>/dev/null || true
 
+# Remove .vite-temp directory
+echo "Removing .vite-temp/ directories..."
+find "$WORKSPACE_DIR" -type d -name ".vite-temp" -exec rm -rf {} + 2>/dev/null || true
+
 # Remove tsbuildinfo files
 echo "Removing *.tsbuildinfo files..."
 find "$WORKSPACE_DIR" -name "*.tsbuildinfo" -exec rm -f {} + 2>/dev/null || true
