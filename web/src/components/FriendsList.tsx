@@ -43,7 +43,7 @@ export default function FriendsList({ userId }: FriendsListProps) {
         ) : (
           friends.map((friend) => (
             <div key={friend.id} className="flex items-center justify-between text-[#fff] py-1">
-              <span>{friend.display_name ?? friend.username}</span>
+              <span>{friend.username}</span>
               <span
                 className={`w-3 h-3 rounded-full border border-white ${
                   friend.status === 'online' ? 'bg-[#ceff5d]' : 'bg-transparent'
