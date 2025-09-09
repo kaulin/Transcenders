@@ -88,7 +88,11 @@ function MatchPage() {
   const handleGameComplete = async (result: GameResult, winnerName?: string) => {
     setWinner(winnerName ?? 'Unknown Player');
     try {
+      if(!result.match_id) {
+        return;
+      }
       const scoreData: CreateScoreRequest = {
+        match_id: result.match_id,
         winner_id: result.winner_id,
         loser_id: result.loser_id,
         winner_score: result.winner_score,
@@ -99,7 +103,7 @@ function MatchPage() {
         game_end: new Date(result.game_end).toISOString(),
       };
 
-      const response = await api(() => ApiClient.score.createScore(scoreData));
+      const response = await ApiClient.score.createScore(scoreData);
       console.log('SUCCESS: sent score data to backend', response);
     } catch (error) {
       console.error('Failed to send score data:', error);

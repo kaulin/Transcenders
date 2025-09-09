@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PongCanvas from './canvas/PongCanvas';
 import { usePlayers } from '../../hooks/usePlayers';
 import { type GameResult } from './models/GameState';
+import { ApiClient } from '@transcenders/api-client';
+import { type CreateMatchRequest } from '@transcenders/contracts';
 
 import {
   type GameState,
@@ -44,6 +46,8 @@ const GameContainer: React.FC<GameContainerProps> = ({
   const [gameState, setGameState] = useState<GameState>(createInitialGameState(width, height));
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
   const [isProcessingGameEnd, setIsProcessingGameEnd] = useState(false);
+  const matchCreationRef = useRef<boolean>(false);
+
 
   // Contexts
   const { players } = usePlayers();
@@ -93,6 +97,35 @@ const GameContainer: React.FC<GameContainerProps> = ({
     }
     return null;
   };
+  
+  //create match for score service security, gets matchId
+  const createMatch = async (): Promise <string | null> => {
+    const currentPlayers = getCurrentPlayers();
+    if (!currentPlayers) {
+      console.error('No players available to create match');
+      return null;
+    }
+    
+    try {
+      const matchData: CreateMatchRequest = {
+        player1_id: currentPlayers.player1.id,
+        player2_id: currentPlayers.player2.id,
+      };
+      
+      const response = await ApiClient.score.createMatch(matchData);
+      
+      if (response && response.match_id) {
+        console.log('Match created with ID:', response.match_id);
+        return response.match_id;
+      } else {
+        console.error('Failed to create match because there is no match_id in response');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error creating match:', error);
+      return null;
+    }
+  };
 
   // Handle external control signals
   useEffect(() => {
@@ -101,6 +134,20 @@ const GameContainer: React.FC<GameContainerProps> = ({
         if (prevState.status === GameStatus.WAITING) {
           const startTime = Date.now();
           setGameStartTime(startTime);
+          
+          //call to get matchId when starting a new game
+          if (!matchCreationRef.current) {
+            matchCreationRef.current = true;
+            createMatch().then((matchId) => {
+              if (matchId) {
+                setGameState((currentState) => ({
+                  ...currentState,
+                  matchId: matchId,
+                }));
+              }
+            });
+          }
+          
           const newState = resetBall({
             ...prevState,
             status: GameStatus.RUNNING,
@@ -157,6 +204,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
         gameStartTime,
         Date.now(),
         0, // tournament level handled by parent
+        finalGameState.matchId,
       );
 
       try {
