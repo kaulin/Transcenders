@@ -4,27 +4,27 @@ set -e
 
 WORKSPACE_DIR="/workspace"
 
-echo "🧹 Starting build artifact cleanup..."
+echo "Starting build artifact cleanup..."
 
-# Remove dist directories
-echo "Removing dist/ directories..."
-find "$WORKSPACE_DIR" -type d -name "dist" -exec rm -rf {} + 2>/dev/null || true
+# Remove dist directories (excluding node_modules)
+echo "-- Removing dist/ directories..."
+find "$WORKSPACE_DIR" -type d -name "node_modules" -prune -o -type d -name "dist" -print0 | xargs -0 rm -rfv || true
 
-# Remove .turbo directories  
-echo "Removing .turbo/ directories..."
-find "$WORKSPACE_DIR" -type d -name ".turbo" -exec rm -rf {} + 2>/dev/null || true
+# Remove .turbo directories (excluding node_modules)
+echo "-- Removing .turbo/ directories..."
+find "$WORKSPACE_DIR" -type d -name "node_modules" -prune -o -type d -name ".turbo" -print0 | xargs -0 rm -rfv || true
 
-# Remove .vite directory
-echo "Removing .vite/ directories..."
-find "$WORKSPACE_DIR" -type d -name ".vite" -exec rm -rf {} + 2>/dev/null || true
+# Remove tsbuildinfo files (excluding node_modules)
+echo "-- Removing *.tsbuildinfo files..."
+find "$WORKSPACE_DIR" -type d -name "node_modules" -prune -o -name "*.tsbuildinfo" -print0 | xargs -0 rm -fv || true
 
-# Remove .vite-temp directory
-echo "Removing .vite-temp/ directories..."
-find "$WORKSPACE_DIR" -type d -name ".vite-temp" -exec rm -rf {} + 2>/dev/null || true
-
-# Remove tsbuildinfo files
-echo "Removing *.tsbuildinfo files..."
-find "$WORKSPACE_DIR" -name "*.tsbuildinfo" -exec rm -f {} + 2>/dev/null || true
+# Specific 1 dir artifacts
+# Remove web/.vite directory
+echo "-- Removing web/.vite"
+rm -rf "$WORKSPACE_DIR/web/.vite"
+# Remove node_modules/.vite-temp directory
+echo "-- Removing node_modules/.vite-temp"
+rm -rf "$WORKSPACE_DIR/node_modules/.vite-temp"
 
 # More if I find more root owned build artifacts after docker running
 
