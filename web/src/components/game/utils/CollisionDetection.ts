@@ -44,40 +44,61 @@ export const checkPaddleCollision = (ball: Ball, paddle: Paddle): boolean => {
   return distanceSquared <= ball.radius * ball.radius;
 };
 
+const handlePaddleHit = (gameState: GameState, paddle: Paddle, side: 'left' | 'right') => {
+  const { ball } = gameState;
+
+  // get the collision point
+  const ballX = ball.position.x;
+  const ballY = ball.position.y;
+
+  // Find closest point on paddle to ball center
+  const closestX = Math.max(paddle.position.x, Math.min(ballX, paddle.position.x + paddle.width));
+  const closestY = Math.max(paddle.position.y, Math.min(ballY, paddle.position.y + paddle.height));
+
+  // Calculate collision normal
+  let normalX = ballX - closestX;
+  let normalY = ballY - closestY;
+
+  // Normalize the collision normal
+  const length = Math.sqrt(normalX * normalX + normalY * normalY);
+  if (length > 0) {
+    normalX /= length;
+    normalY /= length;
+  }
+
+  // Reflect the ball's velocity using the collision normal
+  const dotProduct = ball.velocity.dx * normalX + ball.velocity.dy * normalY;
+  gameState.ball.velocity.dx -= 2 * dotProduct * normalX;
+  gameState.ball.velocity.dy -= 2 * dotProduct * normalY;
+
+  // Add spin based on where the ball hit the paddle
+  if (Math.abs(normalX) > Math.abs(normalY)) { // hit on vertical face
+    const paddleCenterY = paddle.position.y + paddle.height / 2;
+    const hitPosition = (ballY - paddleCenterY) / (paddle.height / 2);
+    const clampedHit = Math.max(-0.8, Math.min(0.8, hitPosition)); // Limit extreme angles
+    
+    // add spin effect
+    const spinForce = clampedHit * 100;
+    gameState.ball.velocity.dy += spinForce;
+  }
+
+  // Move ball to just outside the paddle
+  const pushDistance = ball.radius + 1;
+  gameState.ball.position.x = closestX + normalX * pushDistance;
+  gameState.ball.position.y = closestY + normalY * pushDistance;
+
+  gameState.ball.velocity.dx *= 1.05; //increasing speed of ball by 5%
+  gameState.ball.velocity.dy *= 1.05;
+};
+
 export const handlePaddleCollisions = (gameState: GameState): GameState => {
   const { ball, leftPaddle, rightPaddle } = gameState;
   const newState = { ...gameState };
 
-  if (checkPaddleCollision(ball, leftPaddle)) {
-    //where on the paddle the ball hit (normalized from -1 to 1)
-    const hitPosition =
-      (ball.position.y - (leftPaddle.position.y + leftPaddle.height / 2)) / (leftPaddle.height / 2);
-
-    // change ball position to be on the right side of the paddle to prevent getting stuck
-    newState.ball.position.x = leftPaddle.position.x + leftPaddle.width + ball.radius;
-
-    // Reverse horizontal direction and adjust angle based on where the ball hit the paddle
-    newState.ball.velocity.dx = Math.abs(ball.velocity.dx); //positive dx = moving right
-    newState.ball.velocity.dy = ball.initialSpeed * hitPosition; // Adjust vertical speed based on hit position
-
-    //increase speed
-    newState.ball.velocity.dx *= 1.05;
-  }
-
-  if (checkPaddleCollision(ball, rightPaddle)) {
-    const hitPosition =
-      (ball.position.y - (rightPaddle.position.y + rightPaddle.height / 2)) /
-      (rightPaddle.height / 2);
-
-    // change ball pos to be on the left side
-    newState.ball.position.x = rightPaddle.position.x - ball.radius;
-
-    // reverse direction and adjust angle based on where the ball hit the paddle
-    newState.ball.velocity.dx = -Math.abs(ball.velocity.dx); // negative dx (moving left)
-    newState.ball.velocity.dy = ball.initialSpeed * hitPosition; // Adjust vertical speed based on hit position
-
-    // Slightly increase speed to make game progressively harder
-    newState.ball.velocity.dx *= 1.05;
+  if (ball.velocity.dx < 0 && checkPaddleCollision(ball, leftPaddle)) {
+    handlePaddleHit(newState, leftPaddle, 'left');
+  } else if (ball.velocity.dx > 0 && checkPaddleCollision(ball, rightPaddle)) {
+    handlePaddleHit(newState, rightPaddle, 'right');
   }
   return newState;
 };

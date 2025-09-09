@@ -69,7 +69,7 @@ export const Controls = {
 };
 
 export const DEFAULT_GAME_SETTINGS = {
-  paddleWidth: 40,
+  paddleWidth: 70,
   paddleHeight: 100,
   paddleSpeed: 550, //pixels per second
   ballRadius: 20,
