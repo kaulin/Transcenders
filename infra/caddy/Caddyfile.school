@@ -1,0 +1,40 @@
+# serve on app.transcenders.online domain
+{
+	local_certs
+}
+
+:80, :8080, :443 {
+	redir https://localhost:8443{uri} permanent
+}
+
+https://localhost:8443 {
+	log {
+		output file /var/log/caddy.log
+		format json
+	}
+	@skip path_regexp \.(js|css|png|jpe?g|gif|ico|woff|otf|ttf|eot|svg|txt|pdf|docx?|xlsx?)$
+	log_skip @skip
+
+	encode gzip zstd
+
+	header {
+		# Remove internal / dev-only auth bypass header
+		-x-auth-bypass
+	}
+
+	handle_path /api/* {
+		@auth path /auth*
+		@users path /users* /friendships* /avatars* /admin* /media*
+		@score path /score*
+
+		reverse_proxy @users user-service:3000
+		reverse_proxy @auth auth-service:3000
+		reverse_proxy @score score-service:3000
+	}
+
+	handle {
+		root * /usr/share/caddy
+		try_files {path} /index.html
+		file_server
+	}
+}

@@ -81,9 +81,13 @@ setEnvVar('FRONTEND_URL', 'http://localhost:8080');
 setEnvVar('MAIL_FROM', '"Transcenders Auth <auth@transcenders.online>"');
 
 // prod overrides
+// if (env === 'production') {
+//   setEnvVar('FRONTEND_URL', 'http://app.transcenders.online');
+//   setEnvVar('GOOGLE_REDIRECT_URI', `http://app.transcenders.online/api/auth/google/callback`);
+// }
 if (env === 'production') {
-  setEnvVar('FRONTEND_URL', 'http://app.transcenders.online');
-  setEnvVar('GOOGLE_REDIRECT_URI', `http://app.transcenders.online/api/auth/google/callback`);
+  setEnvVar('FRONTEND_URL', 'http://localhost:8080');
+  setEnvVar('GOOGLE_REDIRECT_URI', `http://localhost:8080/api/auth/google/callback`);
 }
 
 // Set service URLs
