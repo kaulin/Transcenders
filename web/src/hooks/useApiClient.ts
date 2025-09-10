@@ -72,7 +72,6 @@ export function useApiClient() {
           case 401:
             try {
               await ensureRefreshedOnce(setAccessToken);
-              return await apiCall();
             } catch (refreshError) {
               if (ServiceError.isServiceError(refreshError)) {
                 logout(refreshError.localeKey ?? 'session_expired');
@@ -80,6 +79,7 @@ export function useApiClient() {
                 logout('session_expired');
               }
             }
+            return await apiCall();
         }
         // Rethrow any other ServiceError
         throw error;
