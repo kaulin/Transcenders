@@ -1,5 +1,4 @@
 x-service-base: &service-base
-  user: ${HOST_UID:-1000}
   environment:
     - NODE_ENV=development
   restart: 'unless-stopped'
@@ -73,7 +72,6 @@ services:
 
   package-service:
     container_name: package-service
-    user: ${HOST_UID:-1000}
     image: package-service:hive
     build:
       <<: *service-build
@@ -90,32 +88,19 @@ services:
       - score-service
       - web
     ports:
-      - '80:80'
-      - '443:443'
+      # - '80:80'
+      # - '443:443'
+      - '8080:8080'
+      - '8443:8443'
     volumes:
       - ./infra/caddy/Caddyfile.docker:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped
 
-  preflight:
-    image: busybox
-    env_file:
-      - .env
-    entrypoint:
-      [
-        'sh',
-        '-c',
-        'mkdir -p /workspace/node_modules && chown ${HOST_UID}:${HOST_GID} /workspace/node_modules',
-      ]
-    restart: 'no'
-    volumes:
-      - .:/workspace
-
   deps-service:
     container_name: deps-service
     image: deps-service:hive
-    depends_on: [preflight]
     build:
       context: .
       dockerfile: Dockerfile-deps
