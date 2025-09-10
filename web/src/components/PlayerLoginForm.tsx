@@ -10,9 +10,10 @@ import type { Player } from '../types/types';
 interface Props {
   playerNumber: number;
   player?: Player;
+  displayLabel?: string;
 }
 
-const PlayerLoginForm = ({ playerNumber, player }: Props) => {
+const PlayerLoginForm = ({ playerNumber, player, displayLabel }: Props) => {
   const { players, setPlayer, resetPlayer } = usePlayers();
   const { login } = useVerifyLogin();
   const { t } = useTranslation();
@@ -91,7 +92,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
     return (
       <>
         <h2 className="fascinate-label mb-3">
-          {t('player')} {playerNumber}
+          {displayLabel || `${t('player')} ${playerNumber}`}
         </h2>
         <div className="flex flex-col gap-2 items-start text-sm">
           <button
@@ -116,7 +117,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
     return (
       <>
         <h2 className="fascinate-label">
-          {t('player')} {playerNumber}
+          {displayLabel || `${t('player')} ${playerNumber}`}
         </h2>
         <p className="border-b-2 border-white text-lg">{player.username}</p>
         <div className="flex justify-between">
@@ -133,7 +134,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
   return (
     <>
       <h2 className="fascinate-label">
-        {t('player')} {playerNumber}
+        {displayLabel || `${t('player')} ${playerNumber}`}
       </h2>
       <input
         type="text"
