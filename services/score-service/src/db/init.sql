@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS scores (
   CHECK (winner_score > 0),
   CHECK (loser_score >= 0 AND loser_score < winner_score),
   CHECK (game_end > game_start),
-  CHECK (tournament_level >= 0 AND tournament_level <= 2)
+  CHECK (tournament_level >= 0 AND tournament_level <= 4)
 );
   
 CREATE TABLE IF NOT EXISTS matches (
