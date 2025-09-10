@@ -81,7 +81,7 @@ function TournamentPage() {
     setPlayer(1, shuffledPlayers[0]);
     setPlayer(2, shuffledPlayers[1]);
   }, [navigate, players, setPlayer, resetPlayer]);
-  
+
   //cleanup
   useEffect(() => {
     return () => {
