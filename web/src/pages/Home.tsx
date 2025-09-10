@@ -108,13 +108,13 @@ const Home = () => {
                 <p className="flex justify-end text-lg mt-2 p-2">✓</p>
               </div>
               <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={4} player={players[4]} />
+                <PlayerLoginForm playerNumber={2} player={players[4]} />
               </div>
               <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={5} player={players[5]} />
+                <PlayerLoginForm playerNumber={3} player={players[5]} />
               </div>
               <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={6} player={players[6]} />
+                <PlayerLoginForm playerNumber={4} player={players[6]} />
               </div>
             </div>
           )}
