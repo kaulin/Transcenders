@@ -24,8 +24,18 @@ const Home = () => {
         mode: 'login',
         ready: true,
       });
+      
+      if (gameMode === 'tournament') {
+        setPlayer(3, {
+          id: user?.id,
+          username: user?.username,
+          avatar: user?.avatar,
+          mode: 'login',
+          ready: true,
+        });
+      }
     }
-  }, [user?.id, user?.username, user?.avatar, setPlayer]);
+  }, [user?.id, user?.username, user?.avatar, setPlayer, gameMode]);
 
   const handleGameMode = (mode: 'match' | 'tournament') => {
     setGameMode(mode);
@@ -98,21 +108,22 @@ const Home = () => {
                 <p className="flex justify-end text-lg mt-2 p-2">✓</p>
               </div>
               <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={2} player={players[2]} />
-              </div>
-              <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={3} player={players[3]} />
-              </div>
-              <div className="w-full max-w-[384px] h-[174px] p-4">
                 <PlayerLoginForm playerNumber={4} player={players[4]} />
+              </div>
+              <div className="w-full max-w-[384px] h-[174px] p-4">
+                <PlayerLoginForm playerNumber={5} player={players[5]} />
+              </div>
+              <div className="w-full max-w-[384px] h-[174px] p-4">
+                <PlayerLoginForm playerNumber={6} player={players[6]} />
               </div>
             </div>
           )}
           <div className="absolute bottom-[130px]">
             {gameMode === 'tournament' &&
-              players[2]?.ready &&
               players[3]?.ready &&
-              players[4]?.ready && (
+              players[4]?.ready &&
+              players[5]?.ready &&
+              players[6]?.ready && (
                 <Link
                   to="/TournamentPage"
                   className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase"

@@ -4,10 +4,31 @@ import { PlayersContext } from './PlayersContext';
 import type { PlayersMap } from './PlayersContext';
 import type { Player } from '../types/types';
 
+const emptyPlayer: Player = {
+  id: undefined,
+  username: '',
+  avatar: '',
+  mode: null,
+  ready: false,
+};
+
+const initialPlayers: PlayersMap = {
+  1: { ...emptyPlayer }, // match player 1
+  2: { ...emptyPlayer }, // match player 2
+  3: { ...emptyPlayer }, // tournament player 1
+  4: { ...emptyPlayer }, // tournament player 2
+  5: { ...emptyPlayer }, // tournament player 3
+  6: { ...emptyPlayer }, // tournament player 4
+};
+
 export function PlayersProvider({ children }: { children: ReactNode }) {
   const [players, setPlayers] = useState<PlayersMap>({});
 
   const setPlayer = useCallback((num: number, data: Player) => {
+    if (num < 1 || num > 6) {
+      console.warn(`Invalid player slot: ${num}. Only slots 1-6 are allowed.`);
+      return;
+    }
     setPlayers((prev) => ({
       ...prev,
       [num]: {
@@ -18,15 +39,18 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetPlayer = useCallback((num: number) => {
-    setPlayers((prev) => {
-      const newPlayers = { ...prev };
-      delete newPlayers[num];
-      return newPlayers;
-    });
+    if (num < 1 || num > 6) {
+      console.warn(`Invalid player slot: ${num}. Only slots 1-6 are allowed.`);
+      return;
+    }
+    setPlayers((prev) => ({
+      ...prev,
+      [num]: { ...emptyPlayer },
+    }));
   }, []);
 
   const resetAll = useCallback(() => {
-    setPlayers({});
+    setPlayers({...initialPlayers});
   }, []);
 
   const contextValue = useMemo(
