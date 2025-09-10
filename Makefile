@@ -183,10 +183,21 @@ prod-exec:
 # CLEAN
 ################################################################################
 
+clean-artifacts:
+		-@docker run --rm \
+				-v .:/workspace \
+				--user root \
+				busybox:1.36-musl \
+				/workspace/scripts/artifact-cleanup.sh
+
+fclean: clean clean-artifacts
+		-rm -rf web/.vite
+		-npm run clean-turbo
+
 clean: dev-stop
 		-docker compose down --remove-orphans --rmi all
 		-docker system prune -f
-		npm run clean
+		-npm run clean
 
 clean-volumes: dev-stop prod-stop
 		docker compose down -v --remove-orphans --rmi all
