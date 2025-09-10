@@ -20,7 +20,7 @@ interface TournamentState {
 }
 
 function TournamentPage() {
-  const { players, setPlayer } = usePlayers();
+  const { players, setPlayer, resetPlayer } = usePlayers();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const api = useApiClient();
@@ -67,7 +67,7 @@ function TournamentPage() {
     }
 
     // create new tournament from current context
-    const allPlayersArray = [players[1], players[2], players[3], players[4]];
+    const allPlayersArray = [players[3], players[4], players[5], players[6]];
     const validPlayers = allPlayersArray.filter((p) => p?.username);
 
     if (validPlayers.length < 4) {
@@ -80,7 +80,21 @@ function TournamentPage() {
 
     setPlayer(1, shuffledPlayers[0]);
     setPlayer(2, shuffledPlayers[1]);
-  }, [navigate, players, setPlayer]);
+  }, [navigate, players, setPlayer, resetPlayer]);
+  
+  //cleanup
+  useEffect(() => {
+    return () => {
+      //always cleanup when leaving tournament page
+      resetPlayer(1);
+      resetPlayer(2);
+      resetPlayer(3);
+      resetPlayer(4);
+      resetPlayer(5);
+      resetPlayer(6);
+      fixedPlayersRef.current = [];
+    };
+  }, [resetPlayer]);
 
   // Get current players for rendering the page from the SHUFFLED tournament order
   const getCurrentMatchPlayers = () => {
@@ -134,7 +148,7 @@ function TournamentPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameStatus, handleStartPause]);
 
-  const handleTGameComplete = (result: GameResult, winnerName?: string) => {
+  const handleTGameComplete = async (result: GameResult, winnerName?: string) => {
     const { currentMatch, winners, gameResults } = tournamentState;
     const fixedPlayers = fixedPlayersRef.current;
 
@@ -190,27 +204,33 @@ function TournamentPage() {
       }
     }
     setWinner(winnerName ?? 'Unknown Player'); //sets winner for rendering after match
-
     const newWinners = [...winners, winner];
     const newResults = [...gameResults, updatedResult];
-
-    // mark round as complete and store the result, but don't advance yet
-    setTournamentState((prev) => ({
-      ...prev,
-      roundComplete: true,
-      lastGameResult: updatedResult,
-      winners: newWinners,
-      gameResults: newResults,
-    }));
+    
+    // If final match, send scores immediately and mark complete
+    if (currentMatch === 3) {
+      setTournamentState((prev) => ({
+        ...prev,
+        roundComplete: true,
+        lastGameResult: updatedResult,
+        winners: newWinners,
+        gameResults: newResults,
+        isComplete: true,
+      }));
+      
+      // Send all results immediately
+      await sendTournamentResults(newResults);
+    } else {
+      // update state, but don't advance yet
+      setTournamentState((prev) => ({
+        ...prev,
+        roundComplete: true,
+        lastGameResult: updatedResult,
+        winners: newWinners,
+        gameResults: newResults,
+      }));
+    }
     setIsProcessingGameEnd(false);
-  };
-
-  const emptyPlayer = {
-    username: '',
-    id: undefined,
-    mode: null,
-    ready: false,
-    avatar: '',
   };
 
   const handleContinueToNextRound = () => {
@@ -238,20 +258,15 @@ function TournamentPage() {
         gameKey: prev.gameKey + 1,
       }));
     } else if (currentMatch === 3) {
-      const finalResults = tournamentState.gameResults;
-
-      setTournamentState((prev) => ({
-        ...prev,
-        isComplete: true,
-        roundComplete: false,
-      }));
-      // Send all tournament results to backend
-      sendTournamentResults(finalResults);
+      resetPlayer(3);
+      resetPlayer(4);
+      resetPlayer(5);
+      resetPlayer(6);
+      resetPlayer(1);
+      resetPlayer(2);
       fixedPlayersRef.current = [];
-      setPlayer(1, emptyPlayer);
-      setPlayer(2, emptyPlayer);
-      setPlayer(3, emptyPlayer);
-      setPlayer(4, emptyPlayer);
+      navigate('/');
+      return;
     }
     //reset game for new round
     setGameStatus(GameStatus.WAITING);
@@ -440,12 +455,7 @@ function TournamentPage() {
               <button
                 className="rounded-button bg-[#c2410c]/10 font-fascinate uppercase text-sm sm:text-lg"
                 disabled={isProcessingGameEnd}
-                onClick={() => {
-                  handleContinueToNextRound();
-                  if (tournamentState.currentMatch === 3) {
-                    navigate('/');
-                  }
-                }}
+                onClick={() => handleContinueToNextRound()}
               >
                 {tournamentState.currentMatch === 3
                   ? t('back_to_home')
