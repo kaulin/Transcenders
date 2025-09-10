@@ -1,19 +1,20 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import PongCanvas from './canvas/PongCanvas';
-import { usePlayers } from '../../hooks/usePlayers';
-import { type GameResult } from './models/GameState';
 import { ApiClient } from '@transcenders/api-client';
 import { type CreateMatchRequest } from '@transcenders/contracts';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { usePlayers } from '../../hooks/usePlayers';
+import PongCanvas from './canvas/PongCanvas';
+import { type GameResult } from './models/GameState';
 
+import { useApiClient } from '../../hooks/useApiClient';
 import {
+  Controls,
+  createGameResult,
+  createInitialGameState,
   type GameState,
   GameStatus,
-  Controls,
-  createInitialGameState,
   resetBall,
-  createGameResult,
 } from './models/GameState';
-import { checkWallCollision, handlePaddleCollisions, checkScore } from './utils/CollisionDetection';
+import { checkScore, checkWallCollision, handlePaddleCollisions } from './utils/CollisionDetection';
 
 interface GameContainerProps {
   width?: number;
@@ -48,7 +49,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
   const [isProcessingGameEnd, setIsProcessingGameEnd] = useState(false);
   const matchCreationRef = useRef<boolean>(false);
 
-
   // Contexts
   const { players } = usePlayers();
 
@@ -57,6 +57,8 @@ const GameContainer: React.FC<GameContainerProps> = ({
   const gameStateRef = useRef(gameState);
   const animationFrameRef = useRef<number>(0);
   const keysPressedRef = useRef<Record<string, boolean>>({});
+
+  const api = useApiClient();
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -97,24 +99,24 @@ const GameContainer: React.FC<GameContainerProps> = ({
     }
     return null;
   };
-  
+
   //create match for score service security, gets matchId
-  const createMatch = async (): Promise <string | null> => {
+  const createMatch = async (): Promise<string | null> => {
     const currentPlayers = getCurrentPlayers();
     if (!currentPlayers) {
       console.error('No players available to create match');
       return null;
     }
-    
+
     try {
       const matchData: CreateMatchRequest = {
         player1_id: currentPlayers.player1.id,
         player2_id: currentPlayers.player2.id,
       };
-      
-      const response = await ApiClient.score.createMatch(matchData);
-      
-      if (response && response.match_id) {
+
+      const response = await api(() => ApiClient.score.createMatch(matchData));
+
+      if (response?.match_id) {
         console.log('Match created with ID:', response.match_id);
         return response.match_id;
       } else {
@@ -132,9 +134,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
     if (shouldStart) {
       setGameState((prevState) => {
         if (prevState.status === GameStatus.WAITING) {
-          const startTime = Date.now();
-          setGameStartTime(startTime);
-          
           //call to get matchId when starting a new game
           if (!matchCreationRef.current) {
             matchCreationRef.current = true;
@@ -144,10 +143,11 @@ const GameContainer: React.FC<GameContainerProps> = ({
                   ...currentState,
                   matchId: matchId,
                 }));
+                setGameStartTime(Date.now());
               }
             });
           }
-          
+
           const newState = resetBall({
             ...prevState,
             status: GameStatus.RUNNING,
