@@ -102,7 +102,7 @@ export async function registerFriendshipRoutes(app: FastifyInstance) {
   app.delete(
     FRIENDSHIP_ROUTES.DECLINE_FRIEND_REQUEST,
     {
-      preHandler: app.authenticate.owner('id'),
+      preHandler: app.authenticate.owner(['id', 'requestingUserId']),
       schema: {
         description: 'Decline/cancel a friend request',
         tags: ['friendship'],

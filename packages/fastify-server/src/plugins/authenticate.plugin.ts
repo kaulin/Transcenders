@@ -19,10 +19,10 @@ interface AuthenticateDecorators {
   required: () => preHandlerHookHandler;
 
   // Requires a valid access token AND ownership of the given route param (default: "id").
-  owner: (paramName: string) => preHandlerHookHandler;
+  owner: (paramName: string | string[]) => preHandlerHookHandler;
 
   // Requires token + ownership + elevated (step-up) flag (default: "id").
-  stepup: (paramName: string) => preHandlerHookHandler;
+  stepup: (paramName: string | string[]) => preHandlerHookHandler;
 
   // Meant for internal use only - requires bypass header, no fallback, no activity ping
   internal: () => preHandlerHookHandler;
@@ -51,10 +51,10 @@ declare module 'fastify' {
 
 const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done) {
   // Helpers
-  const hasBypass = (request: FastifyRequest): boolean => {
+  const hasBypass = (request: FastifyRequest, mockId?: number): boolean => {
     const authBypass = request.headers['x-auth-bypass'] as string | undefined;
     if (authBypass) {
-      const bypassUserId = parseInt(authBypass, 10);
+      const bypassUserId = mockId ?? parseInt(authBypass, 10);
       if (!isNaN(bypassUserId)) {
         request.user = {
           userId: bypassUserId,
@@ -108,7 +108,7 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
   const checkOwnership = async (
     request: FastifyRequest,
     _reply: FastifyReply,
-    paramName?: string,
+    paramName?: string | string[],
   ) => {
     if (!request.user || !paramName) {
       throw new ServiceError(ERROR_CODES.COMMON.UNAUTHORIZED_ACCESS, {
@@ -116,20 +116,37 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
       });
     }
 
+    // If bypass is enabled, allow access
+    if (hasBypass(request, request.user.userId)) {
+      return;
+    }
+
     const params = request.params as Record<string, string>;
-    const requestedUserIdStr = params[paramName];
-    if (!requestedUserIdStr) {
+    const paramNames = Array.isArray(paramName) ? paramName : [paramName];
+
+    // Check if user owns ANY of the specified parameters
+    for (const param of paramNames) {
+      const requestedUserIdStr = params[param];
+      if (requestedUserIdStr) {
+        const requestedUserId = parseInt(requestedUserIdStr, 10);
+        if (!isNaN(requestedUserId) && requestedUserId === request.user.userId) {
+          return;
+        }
+      }
+    }
+
+    // No ownership found - check if any parameters existed
+    const existingParams = paramNames.filter((param) => params[param]);
+    if (existingParams.length === 0) {
       throw new ServiceError(ERROR_CODES.COMMON.AUTH_MISSING_PARAMETER, {
-        reason: `Missing required parameter: ${paramName}`,
+        reason: `Missing required parameter(s): ${paramNames.join(', ')}`,
       });
     }
 
-    const requestedUserId = parseInt(requestedUserIdStr, 10);
-    if (isNaN(requestedUserId) || requestedUserId !== request.user.userId) {
-      throw new ServiceError(ERROR_CODES.COMMON.AUTH_OWNERSHIP_REQUIRED, {
-        reason: 'You can only access your own resources',
-      });
-    }
+    // Parameters exist but user doesn't own any of them
+    throw new ServiceError(ERROR_CODES.COMMON.AUTH_OWNERSHIP_REQUIRED, {
+      reason: 'You can only access your own resources',
+    });
   };
 
   const checkStepup = async (request: FastifyRequest, _reply: FastifyReply) => {
@@ -164,7 +181,7 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
     },
 
     // Requires token + ownership of paramName
-    owner: (paramName = 'id'): preHandlerHookHandler => {
+    owner: (paramName: string | string[] = 'id'): preHandlerHookHandler => {
       return async (request, reply) => {
         await authenticateToken(request);
         await checkOwnership(request, reply, paramName);
@@ -173,7 +190,7 @@ const authenticatePlugin: FastifyPluginCallback = function (fastify, _opts, done
     },
 
     // Requires token + ownership + step-up authentication
-    stepup: (paramName = 'id'): preHandlerHookHandler => {
+    stepup: (paramName: string | string[] = 'id'): preHandlerHookHandler => {
       return async (request, reply) => {
         await authenticateToken(request);
         await checkOwnership(request, reply, paramName);
