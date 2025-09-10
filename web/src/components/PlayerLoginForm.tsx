@@ -10,9 +10,10 @@ import type { Player } from '../types/types';
 interface Props {
   playerNumber: number;
   player?: Player;
+  displayLabel?: string;
 }
 
-const PlayerLoginForm = ({ playerNumber, player }: Props) => {
+const PlayerLoginForm = ({ playerNumber, player, displayLabel }: Props) => {
   const { players, setPlayer, resetPlayer } = usePlayers();
   const { login } = useVerifyLogin();
   const { t } = useTranslation();
@@ -87,7 +88,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
     return (
       <>
         <h2 className="fascinate-label mb-[clamp(7px,0.47vw,12px)]">
-          {t('player')} {playerNumber}
+          {displayLabel || `${t('player')} ${playerNumber}`}
         </h2>
         <div className="flex flex-col gap-[clamp(5px,0.31vw,8px)] items-center">
           <button
@@ -112,7 +113,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
     return (
       <>
         <h2 className="fascinate-label">
-          {t('player')} {playerNumber}
+          {displayLabel || `${t('player')} ${playerNumber}`}
         </h2>
         <p className="border-b-2 border-white text-start text-fluid-sm">{player.username}</p>
         <div className="flex justify-between mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
@@ -129,7 +130,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
   return (
     <>
       <h2 className="fascinate-label">
-        {t('player')} {playerNumber}
+        {displayLabel || `${t('player')} ${playerNumber}`}
       </h2>
       <input
         type="text"
