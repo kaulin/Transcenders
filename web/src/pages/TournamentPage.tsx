@@ -263,10 +263,10 @@ function TournamentPage() {
   const sendTournamentResults = async (allResults: GameResult[]) => {
     try {
       for (const result of allResults) {
-        if(!result.match_id) {
+        if (!result.match_id) {
           console.error('Missing match_id for tournament result:', result);
         }
-        
+
         const scoreData: CreateScoreRequest = {
           winner_id: result.winner_id,
           loser_id: result.loser_id,
@@ -276,10 +276,10 @@ function TournamentPage() {
           game_duration: result.game_duration,
           game_start: new Date(result.game_start).toISOString(),
           game_end: new Date(result.game_end).toISOString(),
-          match_id:result.match_id!,
+          match_id: result.match_id!,
         };
 
-        const response = await ApiClient.score.createScore(scoreData);
+        const response = await api(() => ApiClient.score.createScore(scoreData));
 
         console.log('Tournament result saved successfully', response);
       }
