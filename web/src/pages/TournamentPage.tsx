@@ -394,7 +394,7 @@ function TournamentPage() {
 
           {/* Game Canvas */}
           <div className="flex justify-center">
-            <div className="relative w-full max-w-[1000px] aspect-[5/4] overflow-hidden">
+            <div className="relative w-full max-w-[min(70vw,1000px)] max-h-[min(40vh,800px)] aspect-[5/4] overflow-hidden">
               <GameContainer
                 key={tournamentState.gameKey}
                 width={1000}
