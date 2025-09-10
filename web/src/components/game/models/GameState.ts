@@ -23,6 +23,7 @@ export interface Ball {
 }
 
 export interface GameResult {
+  match_id?: string;
   winner_id: number;
   loser_id: number;
   winner_score: number;
@@ -31,7 +32,6 @@ export interface GameResult {
   game_duration: number;
   game_start: number;
   game_end: number;
-  match_id?: string;
 }
 
 // type named GameStatus declared- any variable of type GameStatus
@@ -164,6 +164,7 @@ export const createGameResult = (
   const isPlayer1Winner = player1Score > player2Score;
 
   return {
+    match_id: matchId,
     winner_id: isPlayer1Winner ? player1Id : player2Id,
     loser_id: isPlayer1Winner ? player2Id : player1Id,
     winner_score: Math.max(player1Score, player2Score),
@@ -172,6 +173,5 @@ export const createGameResult = (
     game_duration: gameEndTime - gameStartTime,
     game_start: gameStartTime,
     game_end: gameEndTime,
-    match_id: matchId,
   };
 };
