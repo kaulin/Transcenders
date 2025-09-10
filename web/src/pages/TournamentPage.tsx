@@ -264,11 +264,11 @@ function TournamentPage() {
     try {
       const promises = allResults.map((result) => {
         if (!result.match_id) {
-          console.error('Missing match_id for tournament result:', result);
           return Promise.resolve(null); // skip invalid result
         }
 
         const scoreData: CreateScoreRequest = {
+          match_id: result.match_id!,
           winner_id: result.winner_id,
           loser_id: result.loser_id,
           winner_score: result.winner_score,
@@ -277,7 +277,6 @@ function TournamentPage() {
           game_duration: result.game_duration,
           game_start: new Date(result.game_start).toISOString(),
           game_end: new Date(result.game_end).toISOString(),
-          match_id: result.match_id!,
         };
 
         return api(() => ApiClient.score.createScore(scoreData));
