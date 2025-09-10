@@ -181,7 +181,7 @@ export class ScoreService {
       });
     }
 
-    if (tournament_level < 0 || tournament_level > 2) {
+    if (tournament_level < 0 || tournament_level > 4) {
       throw new ServiceError(ERROR_CODES.SCORE.INVALID_TOURNAMENT_LEVEL, {
         scoreData: scoreData,
       });
