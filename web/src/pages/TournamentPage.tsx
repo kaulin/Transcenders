@@ -206,7 +206,7 @@ function TournamentPage() {
     setWinner(winnerName ?? 'Unknown Player'); //sets winner for rendering after match
     const newWinners = [...winners, winner];
     const newResults = [...gameResults, updatedResult];
-    
+
     // If final match, send scores immediately and mark complete
     if (currentMatch === 3) {
       setTournamentState((prev) => ({
@@ -217,7 +217,7 @@ function TournamentPage() {
         gameResults: newResults,
         isComplete: true,
       }));
-      
+
       // Send all results immediately
       await sendTournamentResults(newResults);
     } else {
@@ -296,12 +296,7 @@ function TournamentPage() {
 
         return api(() => ApiClient.score.createScore(scoreData));
       });
-
-      const responses = await Promise.all(promises);
-      console.log('All tournament results saved successfully', responses);
-    } catch (error) {
-      console.error('Failed to send tournament results:', error);
-    }
+    } catch (error) {}
   };
 
   const getMatchTitle = () => {

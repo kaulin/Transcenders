@@ -22,7 +22,7 @@ const Home = () => {
         mode: 'login',
         ready: true,
       });
-      
+
       if (gameMode === 'tournament') {
         setPlayer(3, {
           id: user?.id,
@@ -98,15 +98,33 @@ const Home = () => {
                 </p>
                 <p className="flex justify-end text-lg mt-2 p-2">✓</p>
               </div>
-              
+
               <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={4} player={players[4]} displayLabel={`${t('player')} 2`}/>
+                <PlayerLoginForm
+                  playerNumber={4}
+                  player={players[4]}
+                  displayLabel={`${t('player')} 2`}
+                />
               </div>
               <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={5} player={players[5]} displayLabel={`${t('player')} 3`}/>
+                <PlayerLoginForm
+                  playerNumber={5}
+                  player={players[5]}
+                  displayLabel={`${t('player')} 3`}
+                />
               </div>
               <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={6} player={players[6]} displayLabel={`${t('player')} 4`}/>
+                <PlayerLoginForm
+                  playerNumber={6}
+                  player={players[6]}
+                  displayLabel={`${t('player')} 4`}
+                />
+              </div>
+              <div className="w-full max-w-[384px] h-[174px] p-4">
+                <PlayerLoginForm playerNumber={5} player={players[5]} />
+              </div>
+              <div className="w-full max-w-[384px] h-[174px] p-4">
+                <PlayerLoginForm playerNumber={6} player={players[6]} />
               </div>
             </div>
           )}
