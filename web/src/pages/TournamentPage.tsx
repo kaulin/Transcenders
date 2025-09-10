@@ -262,9 +262,10 @@ function TournamentPage() {
 
   const sendTournamentResults = async (allResults: GameResult[]) => {
     try {
-      for (const result of allResults) {
+      const promises = allResults.map((result) => {
         if (!result.match_id) {
           console.error('Missing match_id for tournament result:', result);
+          return Promise.resolve(null); // skip invalid result
         }
 
         const scoreData: CreateScoreRequest = {
@@ -279,10 +280,11 @@ function TournamentPage() {
           match_id: result.match_id!,
         };
 
-        const response = await api(() => ApiClient.score.createScore(scoreData));
+        return api(() => ApiClient.score.createScore(scoreData));
+      });
 
-        console.log('Tournament result saved successfully', response);
-      }
+      const responses = await Promise.all(promises);
+      console.log('All tournament results saved successfully', responses);
     } catch (error) {
       console.error('Failed to send tournament results:', error);
     }
