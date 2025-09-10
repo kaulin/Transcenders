@@ -49,7 +49,8 @@ services:
     restart: unless-stopped
 
   # --- Caddy reverse proxy + HTTPS ---
-  gateway:
+  caddy:
+    container_name: caddy
     build:
       context: .
       dockerfile: Dockerfile-pruned
@@ -61,8 +62,8 @@ services:
         VITE_SCORE_SERVICE_URL: ${VITE_SCORE_SERVICE_URL}
     restart: unless-stopped
     ports:
-      - '80:80'
-      - '443:443'
+      - '8080:8080'
+      - '8443:8443'
     depends_on:
       - user-service
       - auth-service

@@ -84,4 +84,5 @@ FROM caddy:2 AS web
 # Caddy serves from /usr/share/caddy by default
 COPY --from=builder /repo/web/dist /usr/share/caddy
 
-COPY infra/caddy/Caddyfile.prod /etc/caddy/Caddyfile
+# COPY infra/caddy/Caddyfile.prod /etc/caddy/Caddyfile
+COPY infra/caddy/Caddyfile.school /etc/caddy/Caddyfile
