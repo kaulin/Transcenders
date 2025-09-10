@@ -1,6 +1,6 @@
 import { ApiClient } from '@transcenders/api-client';
 import { ERROR_CODES, ServiceError } from '@transcenders/contracts';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApiClient } from '../hooks/useApiClient';
@@ -17,40 +17,17 @@ const Login = () => {
   const [code, setCode] = useState<string>('');
   const [needsCode, setNeedsCode] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const hasHandledOAuth = useRef(false);
 
   useEffect(() => {
-    async function handleGoogleAuthFromParams() {
-      const sp = new URLSearchParams(window.location.search);
-      const errorLocaleKey = sp.get('error');
-      const googleCode = sp.get('code');
+    // Only handle error messages from URL params
+    const sp = new URLSearchParams(window.location.search);
+    const errorLocaleKey = sp.get('error');
 
-      if (errorLocaleKey) {
-        setError(t(errorLocaleKey ?? 'something_went_wrong'));
-        window.history.replaceState({}, '', window.location.pathname);
-        return;
-      }
-
-      // If code present, treat as Google login attempt
-      if (googleCode) {
-        if (hasHandledOAuth.current) return;
-        hasHandledOAuth.current = true;
-        // Copy code once, then strip URL to avoid duplicate handling
-        const codeOnce = googleCode;
-        window.history.replaceState({}, '', window.location.pathname);
-        try {
-          const tokens = await api(() => ApiClient.auth.googleLogin(codeOnce));
-          await loginWithTokens(tokens);
-          navigate('/', { replace: true });
-        } catch (err: any) {
-          setError(t(err?.localeKey ?? 'google_auth_failed'));
-          window.history.replaceState({}, '', window.location.pathname);
-        }
-      }
+    if (errorLocaleKey) {
+      setError(t(errorLocaleKey ?? 'something_went_wrong'));
+      window.history.replaceState({}, '', window.location.pathname);
     }
-
-    handleGoogleAuthFromParams();
-  }, [navigate, loginWithTokens, api, t]);
+  }, [t]);
 
   async function handleGoogleLogin(e: React.FormEvent) {
     e.preventDefault();
