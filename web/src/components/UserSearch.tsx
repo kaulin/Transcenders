@@ -35,12 +35,16 @@ export default function UserSearch({
             className="p-[clamp(3px,0.16vw,4px)] h-[clamp(26px,2.76vh,36px)] aspect-square rounded-full bg-white/10 flex items-center justify-center relative group"
           >
             <ChevronRight className="h-[clamp(11.5px,1.5vh,20px)] aspect-square" />
+            <span className="absolute hidden button-label bottom-full left-2/3">{t('search')}</span>
           </button>
           <button
             onClick={handleGoBack}
             className="p-[clamp(5px,0.31vw,8px)] h-[clamp(26px,2.76vh,36px)] aspect-square rounded-full bg-white/10 flex items-center justify-center relative group"
           >
             <Cat className="h-[clamp(11.5px,1.5vh,20px)] aspect-square" />
+            <span className="absolute hidden button-label bottom-full left-2/3">
+              {t('your_page')}
+            </span>
           </button>
         </div>
 
