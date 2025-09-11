@@ -41,12 +41,12 @@ export default function UserStatsSection({ viewedId, viewedUsername }: UserStats
   return (
     <>
       <div className="w-full h-full flex flex-col items-center text-center justify-between">
-        <p className="w-[clamp(168px,11.7vw,300px)] text-medium font-fascinate uppercase text-[#fff]">
+        <p className="w-[clamp(168px,11.7vw,300px)] text-fluid-base font-fascinate uppercase text-[#fff]">
           {t('games_played')}
         </p>
         <div className="flex flex-col w-full h-[90%] sm:min-h-[470px] min-h-[858px] items-center justify-between">
           {error ? (
-            <div className="tsc-error-message text-center text-small">{t(error)}</div>
+            <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>
           ) : (
             <div className="w-[55%] min-w-[180px]">
               <StatRow label={t('total')} value={userStats?.total_games ?? 0} />

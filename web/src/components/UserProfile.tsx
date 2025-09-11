@@ -26,7 +26,7 @@ export default function UserProfile({ user, viewedUser }: UserProfileProps) {
         ) : null}
       </div>
       <div className="flex pt-[clamp(13px,1.8vh,24px)] gap-[clamp(9px,0.63vw,16px)]">
-        <h1 className="text-xxlarge text-[#fff] font-fascinate">{viewedUser?.username}</h1>
+        <h1 className="text-fluid-3xl text-[#fff] font-fascinate">{viewedUser?.username}</h1>
         {user !== viewedUser && <FriendActions userId={user?.id} viewedId={viewedUser?.id} />}
       </div>
     </div>

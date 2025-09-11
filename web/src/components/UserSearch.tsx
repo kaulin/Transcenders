@@ -28,7 +28,7 @@ export default function UserSearch({
             value={searchedUser}
             placeholder={t('search_user')}
             onChange={(e) => setSearchedUser(e.target.value)}
-            className="input-field flex-1 w-full text-small"
+            className="input-field flex-1 w-full text-fluid-sm"
           />
           <button
             onClick={handleSearch}
@@ -45,7 +45,7 @@ export default function UserSearch({
         </div>
 
         <div className="h-[clamp(14px,1.8vh,24px)] pt-[clamp(5px,0.61vh,8px)] w-full">
-          {error && <p className="flex justify-start text-[#786647] text-small">{error}</p>}
+          {error && <p className="flex justify-start text-[#786647] text-fluid-xs">{error}</p>}
         </div>
       </div>
     </div>

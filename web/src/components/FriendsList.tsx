@@ -34,10 +34,10 @@ export default function FriendsList({ userId }: FriendsListProps) {
 
   return (
     <div className="w-[55%] min-w-[180px] h-[clamp(229px,29.95vh,390px)] bg-[#6e5d41]/5 rounded-lg px-[clamp(13.5px,0.94vw,24px)] py-[clamp(13px,1.8vh,24px)]">
-      <p className="text-[#fff] text-center font-fascinate uppercase text-small mb-[clamp(13px,1.8vh,24px)]">
+      <p className="text-[#fff] text-center font-fascinate uppercase text-fluid-sm mb-[clamp(13px,1.8vh,24px)]">
         {t('friends')}
       </p>
-      <div className="relative h-[80%] px-[clamp(4px,0.3vw,8px)] text-small overflow-y-auto custom-scrollbar">
+      <div className="relative h-[80%] px-[clamp(4px,0.3vw,8px)] text-fluid-xs overflow-y-auto custom-scrollbar">
         {error ? (
           <p className="tsc-error-message text-center">{error}</p>
         ) : (
