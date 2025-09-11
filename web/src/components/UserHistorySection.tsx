@@ -39,7 +39,7 @@ export default function UserHistory({ viewedId }: UserHistoryProps) {
               ApiClient.user
                 .getUserById(id)
                 .then((u) => [id, u.username] as const)
-                .catch(() => [id, `User#${id}`] as const),
+                .catch(() => [id, `Guest`] as const),
             ),
           ),
         );
