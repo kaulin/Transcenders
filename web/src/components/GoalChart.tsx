@@ -52,16 +52,9 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
       }))
     : [];
 
-  if (error)
-    return (
-      <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>
-    );
+  if (error) return <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>;
   if (!userScores)
-    return (
-      <div className="tsc-info-message text-center text-fluid-xs">
-        {t('loading')}
-      </div>
-    );
+    return <div className="tsc-info-message text-center text-fluid-xs">{t('loading')}</div>;
 
   return (
     <div className="flex flex-col items-center w-full">

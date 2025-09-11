@@ -29,14 +29,9 @@ function PieChartBlock({ title, data }: ChartConfig) {
   return (
     <div className="flex flex-col sm:flex-row w-full items-center justify-between">
       <div className="flex flex-col items-center sm:items-start">
-        <div className="text-white text-center text-fluid-sm font-fascinate uppercase">
-          {title}
-        </div>
+        <div className="text-white text-center text-fluid-sm font-fascinate uppercase">{title}</div>
         {data.map((entry, index) => (
-          <div
-            key={index}
-            className="flex items-center gap-[clamp(5px,0.3vw,8px)]"
-          >
+          <div key={index} className="flex items-center gap-[clamp(5px,0.3vw,8px)]">
             <span
               className="inline-block w-[clamp(9px,0.5vw,12px)] aspect-square rounded-full border border-white"
               style={{ backgroundColor: COLORS[index % COLORS.length] }}
@@ -138,16 +133,9 @@ export default function PieCharts({ viewedId }: PieChartsProps) {
     ];
   }, [userStats, t]);
 
-  if (error)
-    return (
-      <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>
-    );
+  if (error) return <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>;
   if (!userStats)
-    return (
-      <div className="tsc-info-message text-center text-fluid-xs">
-        {t('loading')}
-      </div>
-    );
+    return <div className="tsc-info-message text-center text-fluid-xs">{t('loading')}</div>;
 
   return (
     <div className="flex flex-col justify-between w-[55%] min-w-[180px] gap-[clamp(16px,2.1vh,27px)]">

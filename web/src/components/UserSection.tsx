@@ -106,7 +106,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
         handleSearch={handleSearch}
         handleGoBack={handleGoBack}
         error={error}
-        />
+      />
     </>
   );
 }

@@ -77,15 +77,9 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
 
   const backAndContinueButtons = (onContinue: () => void) => (
     <div className="flex justify-between text-fluid-xs mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
-      <button
-        onClick={handleGoBack}
-      >
-        ← {t('go_back')}
-      </button>
+      <button onClick={handleGoBack}>← {t('go_back')}</button>
 
-      <button onClick={onContinue}>
-        {t('continue')} →
-      </button>
+      <button onClick={onContinue}>{t('continue')} →</button>
     </div>
   );
 
