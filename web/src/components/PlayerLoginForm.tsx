@@ -120,13 +120,13 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
         <h2 className="fascinate-label">
           {t('player')} {playerNumber}
         </h2>
-        <p className="border-b-2 border-white text-start text-fluid-base">{player.username}</p>
+        <p className="border-b-2 border-white text-start text-fluid-sm">{player.username}</p>
         <div className="flex justify-between mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
-          <button className=" text-fluid-sm" onClick={handleGoBack}>
+          <button className=" text-fluid-xs" onClick={handleGoBack}>
             ← {t('go_back')}
           </button>
 
-          <p className="text-fluid-sm">✓</p>
+          <p className="text-fluid-xs">✓</p>
         </div>
       </>
     );
