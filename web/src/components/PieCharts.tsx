@@ -44,7 +44,7 @@ function PieChartBlock({ title, data }: ChartConfig) {
       <div className="w-[clamp(56px,7.3vh,96px)] h-[clamp(56px,7.3vh,96px)] flex flex-shrink-0">
         {!hasData ? (
           <div className="flex h-full justify-center items-center text-center">
-            <p className="tsc-info-message text-fluid-xs">{t('not_available')}</p>
+            <p className="tsc-info-message">{t('not_available')}</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
@@ -133,9 +133,9 @@ export default function PieCharts({ viewedId }: PieChartsProps) {
     ];
   }, [userStats, t]);
 
-  if (error) return <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>;
+  if (error) return <div className="tsc-error-message text-center">{t(error)}</div>;
   if (!userStats)
-    return <div className="tsc-info-message text-center text-fluid-xs">{t('loading')}</div>;
+    return <div className="tsc-info-message text-center">{t('loading')}</div>;
 
   return (
     <div className="flex flex-col justify-between w-[55%] min-w-[180px] gap-[clamp(16px,2.1vh,27px)]">

@@ -146,7 +146,7 @@
 
 
 @utility tsc-error-message {
-  @apply text-[#786647] text-fluid-xs;
+  @apply text-[#786647af] text-fluid-xs;
 }
 
 @utility tsc-info-message {

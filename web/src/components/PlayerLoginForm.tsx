@@ -153,7 +153,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
         ? backAndContinueButtons(handleLoginContinue)
         : backAndContinueButtons(handleGuestContinue)}
 
-      {error && <div className="text-[#786647] text-fluid-xs">{error}</div>}
+      {error && <div className="tsc-error-message">{error}</div>}
     </>
   );
 };
