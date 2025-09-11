@@ -1,6 +1,5 @@
 import { ApiClient } from '@transcenders/api-client';
 import * as Contracts from '@transcenders/contracts';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
@@ -15,7 +14,6 @@ window.api = ApiClient;
 window.utils = Contracts;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <UserProvider>
@@ -24,6 +22,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           </PlayersProvider>
         </UserProvider>
       </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
+    </BrowserRouter>,
 );
