@@ -104,9 +104,7 @@ function MatchPage() {
       };
 
       const response = await api(() => ApiClient.score.createScore(scoreData));
-      console.log('SUCCESS: sent score data to backend', response);
     } catch (error) {
-      console.error('Failed to send score data:', error);
     } finally {
       setIsProcessingGameEnd(false);
     }
