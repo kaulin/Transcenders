@@ -104,7 +104,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
   const createMatch = async (): Promise<string | null> => {
     const currentPlayers = getCurrentPlayers();
     if (!currentPlayers) {
-      console.error('No players available to create match');
       return null;
     }
 
@@ -117,15 +116,12 @@ const GameContainer: React.FC<GameContainerProps> = ({
       const response = await api(() => ApiClient.score.createMatch(matchData));
 
       if (response?.match_id) {
-        console.log('Match created with ID:', response.match_id);
         return response.match_id;
       } else {
-        console.error('Failed to create match because there is no match_id in response');
-        return null;
+          return null;
       }
     } catch (error) {
-      console.error('Error creating match:', error);
-      return null;
+        return null;
     }
   };
 
@@ -210,7 +206,6 @@ const GameContainer: React.FC<GameContainerProps> = ({
       try {
         onGameComplete?.(gameResult, actualWinner.name);
       } catch (error) {
-        console.error('Failed to save game result:', error);
       } finally {
         setIsProcessingGameEnd(false);
       }
@@ -268,16 +263,14 @@ const GameContainer: React.FC<GameContainerProps> = ({
       );
     }
 
+    const previousBallX = newState.ball.position.x; //ADDED 
+    
     // Move ball
     newState.ball.position.x += newState.ball.velocity.dx * deltaTime;
     newState.ball.position.y += newState.ball.velocity.dy * deltaTime;
-
-    // Check collisions
-    newState = checkWallCollision(newState);
-    newState = handlePaddleCollisions(newState);
-
-    // Check scoring
-    const { newState: stateAfterScoring, scored } = checkScore(newState);
+    
+    //check score
+    const { newState: stateAfterScoring, scored } = checkScore(newState, previousBallX);
 
     if (scored) {
       // Notify parent of score change
@@ -294,10 +287,18 @@ const GameContainer: React.FC<GameContainerProps> = ({
         handleGameEnd(finalState);
         return;
       }
-      newState = resetBall(stateAfterScoring);
-    } else {
-      newState = stateAfterScoring;
+       const resetState = resetBall(stateAfterScoring);
+      setGameState(resetState);
+      animationFrameRef.current = requestAnimationFrame(updateGame);
+      return;
     }
+    //no goal scored- continue collision checks
+    newState = stateAfterScoring;
+    // Check wall collisions
+    newState = checkWallCollision(newState);
+    
+    // Check paddle collisions
+    newState = handlePaddleCollisions(newState);
     setGameState(newState);
 
     // Continue animation loop regardless of game state (for smooth rendering)

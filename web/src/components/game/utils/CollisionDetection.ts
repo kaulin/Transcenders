@@ -103,22 +103,33 @@ export const handlePaddleCollisions = (gameState: GameState): GameState => {
   return newState;
 };
 
-// Check if a point is scored
-export const checkScore = (gameState: GameState): { newState: GameState; scored: boolean } => {
+export const checkScore = (
+  gameState: GameState, 
+  previousBallX: number
+): { newState: GameState; scored: boolean } => {
   const { ball, canvasWidth, leftScore, rightScore } = gameState;
   const newState = { ...gameState };
   let scored = false;
 
-  // if ball passes left edge, right player scores
-  if (ball.position.x - ball.radius <= 0) {
+  const currentBallX = ball.position.x;
+  const ballRadius = ball.radius;
+
+  // check if ball crossed left boundary during this frame
+  const ballLeftEdge = currentBallX - ballRadius;
+  const ballRightEdge = currentBallX + ballRadius;
+  const prevBallLeftEdge = previousBallX - ballRadius;
+  const prevBallRightEdge = previousBallX + ballRadius;
+
+  // Left goal: check if ball crossed from positive to negative (or was already past)
+  if ((prevBallLeftEdge > 0 && ballLeftEdge <= 0) || ballLeftEdge <= 0) {
     newState.rightScore = rightScore + 1;
     scored = true;
   }
-
-  // if ball passes the right edge, left player scores
-  if (ball.position.x + ball.radius >= canvasWidth) {
+  // Right goal: check if ball crossed from left side to past right boundary
+  else if ((prevBallRightEdge < canvasWidth && ballRightEdge >= canvasWidth) || ballRightEdge >= canvasWidth) {
     newState.leftScore = leftScore + 1;
     scored = true;
   }
+
   return { newState, scored };
 };
