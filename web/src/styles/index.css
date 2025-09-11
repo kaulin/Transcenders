@@ -5,6 +5,16 @@
 
 @theme {
   --font-fascinate: 'Fascinate', 'system-ui';
+  --font-size-xs: clamp(0.65rem, 0.7vw, 0.75rem);   /* 10.5px – 12px */
+  --font-size-sm: clamp(0.75rem, 0.8vw, 0.875rem);  /* 12px – 14px */
+  --font-size-base: clamp(0.875rem, 0.9vw, 1rem);   /* 14px – 16px */
+  --font-size-lg: clamp(1rem, 1vw, 1.125rem);       /* 16px – 18px */
+  --font-size-xl: clamp(1.125rem, 1.2vw, 1.25rem);  /* 18px – 20px */
+  --font-size-2xl: clamp(1.25rem, 1.6vw, 1.5rem);   /* 20px – 24px */
+  --font-size-3xl: clamp(1.5rem, 2vw, 1.875rem);    /* 24px – 30px */
+  --font-size-4xl: clamp(1.875rem, 2.5vw, 2.25rem); /* 30px – 36px */
+  --font-size-5xl: clamp(2.5rem, 3vw, 3rem);        /* 40px – 48px */
+  --font-size-6xl: clamp(2.5rem,2.8vw,4.5rem);       /* 40px – 72px */
 }
 
 @layer base {
@@ -43,8 +53,17 @@
 }
 
 @utility box-section {
-  @apply backdrop-blur-xs w-full min-h-full shrink-0
+  @apply w-full min-h-full shrink-0
+        lg:flex-1 lg:flex-shrink py-[clamp(3.5rem,3.7vh,6rem)] flex flex-col items-center;
+}
+
+@utility box-section-single {
+  @apply w-full min-h-0 shrink-0
         lg:flex-1 lg:flex-shrink lg:min-h-[630px] py-[clamp(3.5rem,3.7vh,6rem)] flex flex-col items-center;
+}
+
+@utility box-section-single {
+  @apply flex flex-col items-center flex-1 min-h-0 py-[clamp(2rem,3vh,4rem)];
 }
 
 @utility bubble {
@@ -68,11 +87,11 @@
 }
 
 @utility fascinate-label {
-  @apply block font-fascinate text-2xl uppercase mb-2;
+  @apply block font-fascinate text-fluid-base uppercase mb-[clamp(5px,0.61vh,8px)];
 }
 
 @utility input-field {
-  @apply w-full bg-transparent border-b-2 border-white focus:outline-hidden focus:border-white/70 text-white text-lg placeholder-white/60;
+  @apply w-full bg-transparent border-b-2 border-white focus:outline-hidden focus:border-white/70 text-white text-fluid-sm placeholder-white/60;
   @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/40 disabled:text-white/70 disabled:placeholder-white/40;
 }
 
@@ -94,7 +113,7 @@
   @apply disabled:opacity-50 disabled:cursor-default disabled:saturate-50 disabled:hover:border-white;
 }
 
-@utility text-mini {
+/* @utility text-mini {
   @apply text-[clamp(0.65rem,0.55vw,0.875rem)];
 }
 
@@ -114,14 +133,59 @@
   @apply text-[clamp(1.5rem,1.7vw,2.5rem)];
 }
 
-@utility text-xxlarge {
+@utility text-2xlarge {
   @apply text-[clamp(1.75rem,2vw,3rem)];
 }
 
+@utility text-6xlarge {
+  @apply text-[clamp(2.5rem,2.8vw,4.5rem)];
+} */
+
+@utility text-fluid-xs {
+  font-size: clamp(0.75rem, 0.6vw + 0.3vh, 1rem); /* 12px → 16px */
+}
+
+@utility text-fluid-sm {
+  font-size: clamp(0.875rem, 0.7vw + 0.35vh, 1.125rem); /* 14px → 18px */
+}
+
+@utility text-fluid-base {
+  font-size: clamp(1rem, 0.8vw + 0.4vh, 1.25rem); /* 16px → 20px */
+}
+
+@utility text-fluid-lg {
+  font-size: clamp(1.125rem, 0.9vw + 0.45vh, 1.5rem); /* 18px → 24px */
+}
+
+@utility text-fluid-xl {
+  font-size: clamp(1.25rem, 1vw + 0.5vh, 1.75rem); /* 20px → 28px */
+}
+
+@utility text-fluid-2xl {
+  font-size: clamp(1.5rem, 1.2vw + 0.6vh, 2rem); /* 24px → 32px */
+}
+
+@utility text-fluid-3xl {
+  font-size: clamp(1.875rem, 1.4vw + 0.7vh, 2.5rem); /* 30px → 40px */
+}
+
+@utility text-fluid-4xl {
+  font-size: clamp(2.25rem, 1.6vw + 0.8vh, 3rem); /* 36px → 48px */
+}
+
+@utility text-fluid-5xl {
+  font-size: clamp(3rem, 2vw + 1vh, 3.75rem); /* 48px → 60px */
+}
+
+@utility text-fluid-6xl {
+  font-size: clamp(3.75rem, 2.5vw + 1.2vh, 4.5rem); /* 60px → 72px */
+}
+
+
 @utility tsc-error-message {
-  @apply text-[#786647] text-xs sm:text-sm;
+  @apply text-[#786647] text-fluid-xs;
 }
 
 @utility tsc-info-message {
-  @apply text-white text-xs sm:text-sm;
+  @apply text-white text-fluid-xs;
 }
