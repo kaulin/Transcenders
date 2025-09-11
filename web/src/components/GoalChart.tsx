@@ -54,21 +54,21 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
 
   if (error)
     return (
-      <div className="tsc-error-message text-center text-mini">{t(error)}</div>
+      <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>
     );
   if (!userScores)
     return (
-      <div className="tsc-info-message text-center text-mini">
+      <div className="tsc-info-message text-center text-fluid-xs">
         {t('loading')}
       </div>
     );
 
   return (
     <div className="flex flex-col items-center w-full">
-      <p className="text-center text-[#fff] font-fascinate text-small uppercase">
+      <p className="text-center text-[#fff] font-fascinate text-fluid-sm uppercase">
         {t('latest_outcomes')}
       </p>
-      <div className="flex w-full justify-center items-center h-[clamp(94px,12.3vh,160px)] pr-[clamp(35px,1.6vw,40px)] text-small">
+      <div className="flex w-full justify-center items-center h-[clamp(94px,12.3vh,160px)] pr-[clamp(35px,1.6vw,40px)] text-fluid-sm">
         <ResponsiveContainer width="80%" height="80%">
           <AreaChart data={chartData}>
             <defs>
@@ -118,7 +118,7 @@ export default function GoalChart({ viewedId, viewedUsername }: GoalChartProps) 
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex text-small gap-[clamp(9px,0.63vw,16px)]">
+      <div className="flex text-fluid-sm gap-[clamp(9px,0.63vw,16px)]">
         <div className="flex gap-[clamp(5px,0.3vw,8px)] items-center text-white">
           <div className="w-[clamp(9px,0.5vw,12px)] aspect-square rounded-full bg-[#a7d4373c] border border-white"></div>
           {viewedUsername === user?.username ? t('you') : viewedUsername}

@@ -29,7 +29,7 @@ function PieChartBlock({ title, data }: ChartConfig) {
   return (
     <div className="flex flex-col sm:flex-row w-full items-center justify-between">
       <div className="flex flex-col items-center sm:items-start">
-        <div className="text-white text-center text-small font-fascinate uppercase">
+        <div className="text-white text-center text-fluid-sm font-fascinate uppercase">
           {title}
         </div>
         {data.map((entry, index) => (
@@ -41,7 +41,7 @@ function PieChartBlock({ title, data }: ChartConfig) {
               className="inline-block w-[clamp(9px,0.5vw,12px)] aspect-square rounded-full border border-white"
               style={{ backgroundColor: COLORS[index % COLORS.length] }}
             />
-            <span className="text-white text-small">{entry.name}</span>
+            <span className="text-white text-fluid-sm">{entry.name}</span>
           </div>
         ))}
       </div>
@@ -49,7 +49,7 @@ function PieChartBlock({ title, data }: ChartConfig) {
       <div className="w-[clamp(56px,7.3vh,96px)] h-[clamp(56px,7.3vh,96px)] flex flex-shrink-0">
         {!hasData ? (
           <div className="flex h-full justify-center items-center text-center">
-            <p className="tsc-info-message text-small">{t('not_available')}</p>
+            <p className="tsc-info-message text-fluid-xs">{t('not_available')}</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
@@ -140,11 +140,11 @@ export default function PieCharts({ viewedId }: PieChartsProps) {
 
   if (error)
     return (
-      <div className="tsc-error-message text-center text-mini">{t(error)}</div>
+      <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>
     );
   if (!userStats)
     return (
-      <div className="tsc-info-message text-center text-mini">
+      <div className="tsc-info-message text-center text-fluid-xs">
         {t('loading')}
       </div>
     );
