@@ -32,4 +32,3 @@ export default function UserProfile({ user, viewedUser }: UserProfileProps) {
     </div>
   );
 }
-
