@@ -13,6 +13,7 @@ import {
 import { ApiClient } from '@transcenders/api-client';
 import { Score } from '@transcenders/contracts';
 import { useUser } from '../hooks/useUser';
+import { useApiClient } from '../hooks/useApiClient';
 
 interface GoalChartProps {
   viewedId: number | undefined;
