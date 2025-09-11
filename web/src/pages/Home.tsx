@@ -55,7 +55,10 @@ const Home = () => {
       {gameMode === 'match' && (
         <div className="box-section bg-[#6e5d41]/10 justify-center">
           <h1 className="text-fluid-4xl font-fascinate uppercase">{t('one_v_one')}</h1>
-          <button onClick={() => setGameMode('none')} className="mb-[clamp(40px,3.7vw,90px)]">
+          <button
+            onClick={() => setGameMode('none')}
+            className="mb-[clamp(40px,3.7vw,90px)]"
+          >
             {t('switch_game_mode')}
           </button>
           <div className="flex flex-col sm:flex-row justify-center sm:gap-10">
@@ -64,7 +67,7 @@ const Home = () => {
               <p className="border-b-2 border-white text-fluid-sm flex justify-start">
                 {user?.username}
               </p>
-              <p className="flex justify-end text-fluid-xs mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
+              <p className="flex justify-end text-fluid-xs mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)] text-[#e3ff9d]">
                 ✓
               </p>
             </div>
@@ -98,7 +101,7 @@ const Home = () => {
                 <p className="border-b-2 border-white text-fluid-sm flex justify-between">
                   {user?.username}
                 </p>
-                <p className="flex justify-end text-fluid-xs mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
+                <p className="flex justify-end text-fluid-xs mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)] text-[#e3ff9d]">
                   ✓
                 </p>
               </div>
