@@ -53,7 +53,6 @@ const PongCanvas: React.FC<PongCanvasProps> = ({ gameState }) => {
         });
         setImagesLoaded(true);
       } catch (error) {
-        console.error('Failed to load game images:', error);
       }
     };
     loadImages();
