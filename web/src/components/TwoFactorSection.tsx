@@ -137,11 +137,11 @@ export default function TwoFactorSection() {
           type="button"
           onClick={onGoogleConnect}
           disabled={disabled || googleLinked}
-          className="rounded-button inline-flex items-center text-sm px-4 py-2"
+          className="rounded-button inline-flex items-center text-fluid-sm px-4 py-2"
         >
           {/* Simple Google icon (inline) */}
           <svg
-            className="w-4 h-4 mr-2"
+            className="h-[clamp(11.5px,1.5vh,20px)] aspect-square mr-2"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"
@@ -174,7 +174,7 @@ export default function TwoFactorSection() {
           type="button"
           onClick={!twoFacEnabled ? onStartEmail2FA : onDisable2FA}
           disabled={disabled}
-          className="rounded-button inline-flex items-center text-sm px-4 py-2"
+          className="rounded-button inline-flex items-center text-fluid-sm px-4 py-2"
         >
           {twoFacEnabled ? (t('disable_2fa') ?? 'Disable 2FA') : (t('enable_2fa') ?? 'Enable 2FA')}
           <svg
@@ -207,14 +207,14 @@ export default function TwoFactorSection() {
               disabled={disabled}
             />
             <div className="flex gap-4">
-              <button type="button" onClick={onCancel} className="text-sm">
+              <button type="button" onClick={onCancel} className="text-fluid-xs">
                 {t('cancel') ?? 'Cancel'}
               </button>
               <button
                 type="button"
                 onClick={onSendCode}
                 disabled={disabled || email.length === 0}
-                className="text-sm disabled:text-white/60"
+                className="text-fluid-xs disabled:text-white/60"
               >
                 {loading ? (t('sending') ?? 'Sending...') : (t('send_code') ?? 'Send code')}
               </button>
@@ -236,18 +236,18 @@ export default function TwoFactorSection() {
             />
             <div className="flex gap-4">
               {!twoFacEnabled && (
-                <button type="button" onClick={onBackToEmail} className="text-sm pr-4">
+                <button type="button" onClick={onBackToEmail} className="text-fluid-xs pr-4">
                   {t('edit_email') ?? 'Edit email'}
                 </button>
               )}
-              <button type="button" onClick={onCancel} className="text-sm">
+              <button type="button" onClick={onCancel} className="text-fluid-xs">
                 {t('cancel') ?? 'Cancel'}
               </button>
               <button
                 type="button"
                 onClick={onVerifyCode}
                 disabled={disabled || code.length === 0}
-                className="text-sm disabled:text-white/60"
+                className="text-fluid-xs disabled:text-white/60"
               >
                 {loading ? (t('verifying') ?? 'Verifying...') : (t('verify') ?? 'Verify')}
               </button>

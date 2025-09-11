@@ -237,7 +237,7 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
 
   return (
     <div className={className}>
-      <div className="bubble relative bg-white/50 w-56 h-56 sm:w-80 sm:h-80 xl:!w-[500px] xl:!h-[500px] flex justify-center overflow-hidden">
+      <div className="bubble relative bg-white/50 w-[clamp(200px,28.8vh,375px)] h-[clamp(200px,28.8vh,375px)] flex justify-center overflow-hidden">
         {!loading && (
           <img
             ref={imgRef}
@@ -252,21 +252,21 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
       <div className="flex flex-col items-center mt-4">
         <div className="w-full flex justify-center">
           <div className="relative inline-flex items-center">
-            <div className="flex min-w-[200px] justify-center gap-2 items-center p-2 rounded-full border-white hover:border-[#786647] bg-white/10 text-white">
+            <div className="flex min-w-[200px] justify-center gap-2 items-center p-2 rounded-full border-white hover:border-[#786647] bg-white/10 text-white text-fluid-xs">
               <button
                 onClick={prev}
                 disabled={!isElevated || avatars.length === 0}
                 aria-label={t('previous')}
               >
-                <ChevronLeft />
+                <ChevronLeft className="h-[clamp(11.5px,1.5vh,20px)] aspect-square" />
               </button>
-              <p>{t('select_avatar')}</p>
+              <p className="">{t('select_avatar')}</p>
               <button
                 onClick={next}
                 disabled={!isElevated || avatars.length === 0}
                 aria-label={t('next')}
               >
-                <ChevronRight />
+                <ChevronRight className="h-[clamp(11.5px,1.5vh,20px)] aspect-square" />
               </button>
               {/* random cat */}
             </div>
@@ -277,15 +277,15 @@ export default function AvatarPicker({ className }: AvatarPickerProps) {
               title={t('random_cat')}
               className="absolute left-full top-1/2 -translate-y-1/2 p-2 ml-2 rounded-full bg-white/10"
             >
-              <Dice5 className="h-5 w-5" />
+              <Dice5 className="h-[clamp(11.5px,1.5vh,20px)] aspect-square" />
             </button>
           </div>
         </div>
 
-        <div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full border-white hover:border-[#786647] bg-white/10 text-white">
+        <div className="flex min-w-[200px] justify-center gap-2 mt-2 items-center p-2 rounded-full border-white hover:border-[#786647] bg-white/10 text-white text-fluid-xs">
           <p className="pt-1">{t('upload_avatar')}</p>
           <button onClick={onUploadClick} disabled={!isElevated} aria-label={t('upload_avatar')}>
-            <Upload className="h-5 w-5" />
+            <Upload className="h-[clamp(11.5px,1.5vh,20px)] aspect-square" />
           </button>
           <input
             ref={fileInputRef}

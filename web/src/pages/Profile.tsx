@@ -102,7 +102,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="box xl:gap-4">
+    <div className="box lg:gap-4">
       {!isElevated && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
           <div className="absolute inset-0 backdrop-blur-xs transition-opacity duration-200" />
@@ -113,16 +113,16 @@ const Profile = () => {
         </div>
       )}
       <div
-        className={`box-section ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center gap-10`}
+        className={`box-section lg:min-h-[630px] ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center`}
       >
         {/* avatar section */}
         <AvatarPicker className="flex flex-col items-center" />
       </div>
       <div
-        className={`box-section ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center gap-12`}
+        className={`box-section lg:min-h-[630px] ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center gap-[clamp(9px,1.23vh,16px)]`}
       >
         {/* User Info section */}
-        <div className="w-full max-w-md">
+        <div className="w-[70%] max-w-[448px]">
           <label className="fascinate-label">{t('username')}</label>
           <input
             type="text"
@@ -132,11 +132,11 @@ const Profile = () => {
             disabled={!isElevated}
           />
         </div>
-        <div className="w-full max-w-md">
+        <div className="w-[70%] max-w-[448px]">
           <label className="fascinate-label">{t('two_fac_auth')}</label>
           <TwoFactorSection />
         </div>
-        <div className="w-full max-w-md">
+        <div className="w-[70%] max-w-[448px]">
           <label className="fascinate-label">{t('password')}</label>
           <input
             type="password"
@@ -157,16 +157,16 @@ const Profile = () => {
             placeholder={t('repeat_pw')}
             className={`input-field ${
               password === repeatPassword ? 'text-white' : 'text-white/40'
-            } text-lg placeholder-white/60`}
+            } placeholder-white/60`}
             disabled={!isElevated}
           />
         </div>
-        <div className="w-full max-w-md">
+        <div className="w-[70%] max-w-[448px]">
           <label className="fascinate-label">{t('language')}</label>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="w-full bg-transparent border-b-2 border-white focus:outline-hidden focus:border-white/70 text-white text-lg"
+            className="w-full bg-transparent border-b-2 border-white focus:outline-hidden focus:border-white/70 text-white text-fluid-sm"
             disabled={!isElevated}
           >
             <option value="en" className="bg-white text-[#786647]">
@@ -180,10 +180,10 @@ const Profile = () => {
             </option>
           </select>
         </div>
-        <div className="flex flex-col gap-4 items-center">
+        <div className="flex flex-col gap-4 mt-[clamp(9px,1.23vh,16px)] items-center">
           <button
             onClick={handleConfirm}
-            className="rounded-button w-[282px] bg-[#6e5d41]/15 font-fascinate uppercase"
+            className="font-fascinate uppercase text-fluid-sm"
             disabled={!isElevated}
           >
             {t('confirm')}
@@ -194,7 +194,7 @@ const Profile = () => {
               setSuccess(null);
               setError(null);
             }}
-            className="rounded-button w-[282px] bg-[#6e5d41]/15 font-fascinate uppercase"
+            className="font-fascinate uppercase text-fluid-sm"
             disabled={!isElevated}
           >
             {t('delete_account')}
