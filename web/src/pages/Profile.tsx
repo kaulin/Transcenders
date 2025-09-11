@@ -102,7 +102,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="box lg:gap-4">
+    <div className="box lg:gap-[clamp(9px,0.63vw,16px)]">
       {!isElevated && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
           <div className="absolute inset-0 backdrop-blur-xs transition-opacity duration-200" />
@@ -113,13 +113,13 @@ const Profile = () => {
         </div>
       )}
       <div
-        className={`box-section lg:min-h-[630px] ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center`}
+        className={`box-section ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center`}
       >
         {/* avatar section */}
         <AvatarPicker className="flex flex-col items-center" />
       </div>
       <div
-        className={`box-section lg:min-h-[630px] ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center gap-[clamp(9px,1.23vh,16px)]`}
+        className={`box-section ${!isElevated ? 'blur-[3px]' : ''} bg-[#6e5d41]/10 justify-center gap-[clamp(9px,1.23vh,16px)]`}
       >
         {/* User Info section */}
         <div className="w-[70%] max-w-[448px]">

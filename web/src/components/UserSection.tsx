@@ -79,7 +79,7 @@ export default function UserSection({ viewedUser, setViewedUser }: UserSectionPr
 
             <button
               onClick={toggleFriendView}
-              className="w-[55%] min-w-[180px] bg-[#6e5d41]/5 rounded-lg p-[0.5em] flex items-center justify-center gap-[clamp(4px,0.3vw,8px)] text-fluid-xs uppercase"
+              className="w-[55%] min-w-[180px] bg-[#6e5d41]/5 rounded-lg p-[0.5em] flex items-center justify-center gap-[clamp(4px,0.3vw,8px)] text-fluid-xs"
             >
               {friendView === 'friends' ? (
                 <>

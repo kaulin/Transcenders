@@ -16,13 +16,13 @@ const Dashboard = () => {
 
   return (
     <div className="box lg:gap-[clamp(9px,0.63vw,16px)]">
-      <div className="box-section lg:min-h-[630px] bg-[#6e5d41]/10 justify-between">
+      <div className="box-section bg-[#6e5d41]/10 justify-between">
         <UserSection viewedUser={viewedUser} setViewedUser={setViewedUser} />
       </div>
-      <div className="box-section lg:min-h-[630px] bg-[#6e5d41]/10 justify-between">
+      <div className="box-section bg-[#6e5d41]/10 justify-between">
         <UserStatsSection viewedId={viewedUser?.id} viewedUsername={viewedUser?.username} />
       </div>
-      <div className="box-section lg:min-h-[630px] bg-[#6e5d41]/10 justify-between">
+      <div className="box-section bg-[#6e5d41]/10 justify-between">
         <UserHistorySection viewedId={viewedUser?.id} />
       </div>
     </div>
