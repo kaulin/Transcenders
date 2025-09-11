@@ -132,7 +132,6 @@ export class AuthService {
     return result.changes ?? 0;
   }
 
-  // #TODO maybe a seperate try catch to delete user if something actually goes wrong, then rethrow to close up the transaction
   static async register(registration: RegisterUser): Promise<ServiceResult<User>> {
     const userCreationInfo: CreateUserRequest = {
       username: registration.username,
@@ -485,7 +484,6 @@ export class AuthService {
     );
   }
 
-  // #TODO handle failed user creations, by syncing user and auth DB entries
   static async googleLogin(
     code: string,
     deviceInfo: DeviceInfo,

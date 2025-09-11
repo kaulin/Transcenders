@@ -118,10 +118,10 @@ const GameContainer: React.FC<GameContainerProps> = ({
       if (response?.match_id) {
         return response.match_id;
       } else {
-          return null;
+        return null;
       }
     } catch (error) {
-        return null;
+      return null;
     }
   };
 
@@ -263,12 +263,12 @@ const GameContainer: React.FC<GameContainerProps> = ({
       );
     }
 
-    const previousBallX = newState.ball.position.x; //ADDED 
-    
+    const previousBallX = newState.ball.position.x; //ADDED
+
     // Move ball
     newState.ball.position.x += newState.ball.velocity.dx * deltaTime;
     newState.ball.position.y += newState.ball.velocity.dy * deltaTime;
-    
+
     //check score
     const { newState: stateAfterScoring, scored } = checkScore(newState, previousBallX);
 
@@ -287,7 +287,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
         handleGameEnd(finalState);
         return;
       }
-       const resetState = resetBall(stateAfterScoring);
+      const resetState = resetBall(stateAfterScoring);
       setGameState(resetState);
       animationFrameRef.current = requestAnimationFrame(updateGame);
       return;
@@ -296,7 +296,7 @@ const GameContainer: React.FC<GameContainerProps> = ({
     newState = stateAfterScoring;
     // Check wall collisions
     newState = checkWallCollision(newState);
-    
+
     // Check paddle collisions
     newState = handlePaddleCollisions(newState);
     setGameState(newState);
