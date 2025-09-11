@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS scores (
   game_duration INTEGER NOT NULL,
   game_start TIMESTAMP NOT NULL,
   game_end TIMESTAMP NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   
   CHECK (winner_id != loser_id OR (winner_id = 0 AND loser_id = 0)),
   CHECK (winner_score > 0),

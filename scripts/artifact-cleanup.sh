@@ -22,6 +22,7 @@ find "$WORKSPACE_DIR" -type d -name "node_modules" -prune -o -name "*.tsbuildinf
 # Remove web/.vite directory
 echo "-- Removing web/.vite"
 rm -rf "$WORKSPACE_DIR/web/.vite"
+rm -rf "$WORKSPACE_DIR/database/"
 # Remove node_modules/.vite-temp directory
 echo "-- Removing node_modules/.vite-temp"
 rm -rf "$WORKSPACE_DIR/node_modules/.vite-temp"
