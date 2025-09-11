@@ -1,6 +1,6 @@
 # Transcenders Makefile
 
-all: local
+all: prod
 
 ################################################################################
 # SETUP
@@ -160,6 +160,9 @@ prod-stop:
 
 prod-clean:
 		$(PROD_DOCKER_COMPOSE) down --rmi all
+		
+prod-fcean:
+		$(PROD_DOCKER_COMPOSE) down -v --rmi all
 
 prod-logs:
 	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
@@ -177,7 +180,7 @@ prod-exec:
 		$(PROD_DOCKER_COMPOSE) exec -it $$SVC ash; \
 	fi
 
-.PHONY: prod prod-local prod-stop prod-logs prod-clean prod-clean-data
+.PHONY: prod prod-local prod-stop prod-logs prod-clean prod-clean-data prod-fcean
 
 ################################################################################
 # CLEAN
