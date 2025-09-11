@@ -57,11 +57,11 @@ export default function UserHistory({ viewedId }: UserHistoryProps) {
       <div className="w-full h-[90%] flex items-center justify-center">
         <div className="relative w-[55%] min-w-[180px] h-[clamp(400px,68vh,880px)] bg-[#6e5d41]/5 rounded-lg px-[clamp(9px,0.63vw,16px)] py-[clamp(33px,4.3vh,56px)]">
           {error ? (
-            <div className="tsc-error-message text-center text-fluid-xs">{t(error)}</div>
+            <div className="tsc-error-message text-center">{t(error)}</div>
           ) : !userScores ? (
-            <div className="tsc-info-message text-center text-fluid-xs">{t('loading')}</div>
+            <div className="tsc-info-message text-center">{t('loading')}</div>
           ) : !userScores.length ? (
-            <div className="tsc-info-message text-center text-fluid-xs">{t('not_available')}</div>
+            <div className="tsc-info-message text-center">{t('not_available')}</div>
           ) : (
             <div className="relative h-full w-full px-[clamp(5px,0.31vw,8px)] overflow-y-auto custom-scrollbar flex flex-col gap-[clamp(28px,3.7vh,48px)]">
               {userScores?.map(
