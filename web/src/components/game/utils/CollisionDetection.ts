@@ -65,21 +65,31 @@ const handlePaddleHit = (gameState: GameState, paddle: Paddle, side: 'left' | 'r
     normalX /= length;
     normalY /= length;
   }
+  // Check if this is a corner hit by seeing if both X and Y normals are significant
+  const isCornerHit = Math.abs(normalX) > 0.1 && Math.abs(normalY) > 0.1;
 
-  // Reflect the ball's velocity using the collision normal
-  const dotProduct = ball.velocity.dx * normalX + ball.velocity.dy * normalY;
-  gameState.ball.velocity.dx -= 2 * dotProduct * normalX;
-  gameState.ball.velocity.dy -= 2 * dotProduct * normalY;
-
-  // Add spin based on where the ball hit the paddle
-  if (Math.abs(normalX) > Math.abs(normalY)) { // hit on vertical face
+  if (isCornerHit) {
+    // For corner hits, use predictable reflection that ensures good angles
     const paddleCenterY = paddle.position.y + paddle.height / 2;
     const hitPosition = (ballY - paddleCenterY) / (paddle.height / 2);
-    const clampedHit = Math.max(-0.8, Math.min(0.8, hitPosition)); // Limit extreme angles
+    const clampedHit = Math.max(-0.8, Math.min(0.8, hitPosition));
     
-    // add spin effect
-    const spinForce = clampedHit * 100;
-    gameState.ball.velocity.dy += spinForce;
+    // Create a new velocity that ensures good gameplay angles
+    const speed = Math.sqrt(ball.velocity.dx * ball.velocity.dx + ball.velocity.dy * ball.velocity.dy);
+    const newDirection = side === 'left' ? 1 : -1;
+    
+    // Ensure minimum angle to prevent shallow bounces
+    const minAngle = Math.PI / 6; // 30 degrees minimum
+    const angle = clampedHit * (Math.PI / 4); // up to 45 degrees based on hit position
+    const finalAngle = Math.sign(angle) * Math.max(Math.abs(angle), minAngle);
+    
+    gameState.ball.velocity.dx = Math.cos(finalAngle) * newDirection * speed;
+    gameState.ball.velocity.dy = Math.sin(finalAngle) * speed;
+  } else {
+    // Reflect the ball's velocity using the collision normal
+    const dotProduct = ball.velocity.dx * normalX + ball.velocity.dy * normalY;
+    gameState.ball.velocity.dx -= 2 * dotProduct * normalX;
+    gameState.ball.velocity.dy -= 2 * dotProduct * normalY;
   }
 
   // Move ball to just outside the paddle
