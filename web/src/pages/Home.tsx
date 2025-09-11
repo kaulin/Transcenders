@@ -59,16 +59,16 @@ const Home = () => {
             {t('switch_game_mode')}
           </button>
           <div className="flex flex-col sm:flex-row justify-center sm:gap-10">
-            <div className="w-[clamp(250px,15.6vw,320px)] h-[clamp(100px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
+            <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(100px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
               <h2 className="fascinate-label">{t('player')} 1</h2>
-              <p className="border-b-2 border-white text-fluid-base flex justify-start">
+              <p className="border-b-2 border-white text-fluid-sm flex justify-start">
                 {user?.username}
               </p>
-              <p className="flex justify-end text-fluid-sm mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
+              <p className="flex justify-end text-fluid-xs mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
                 ✓
               </p>
             </div>
-            <div className="w-[clamp(250px,15.6vw,320px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
+            <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
               <PlayerLoginForm playerNumber={2} player={players[2]} />
             </div>
           </div>
@@ -93,22 +93,24 @@ const Home = () => {
           </button>
           <div className="flex flex-col justify-center sm:gap-10">
             <div className="flex flex-col sm:flex-row justify-center sm:gap-10">
-              <div className="w-[clamp(250px,15.6vw,320px)] h-[clamp(100px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
+              <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(100px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
                 <h2 className="fascinate-label mb-[clamp(5px,0.61vh,8px)]">{t('player')} 1</h2>
-                <p className="border-b-2 border-white text-fluid-base flex justify-between">
+                <p className="border-b-2 border-white text-fluid-sm flex justify-between">
                   {user?.username}
                 </p>
-                <p className="flex justify-end text-fluid-sm pt-[clamp(9px,0.63vw,16px)]">✓</p>
+                <p className="flex justify-end text-fluid-xs mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
+                  ✓
+                </p>
               </div>
-              <div className="w-[clamp(250px,15.6vw,320px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
+              <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
                 <PlayerLoginForm playerNumber={2} player={players[2]} />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row justify-center sm:gap-10">
-              <div className="w-[clamp(250px,15.6vw,320px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
+              <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
                 <PlayerLoginForm playerNumber={3} player={players[3]} />
               </div>
-              <div className="w-[clamp(250px,15.6vw,320px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
+              <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
                 <PlayerLoginForm playerNumber={4} player={players[4]} />
               </div>
             </div>
