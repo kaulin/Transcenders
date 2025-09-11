@@ -120,20 +120,6 @@ const Home = () => {
                   displayLabel={`${t('player')} 4`}
                 />
               </div>
-              <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm
-                  playerNumber={5}
-                  player={players[5]}
-                  displayLabel={`${t('player')} 3`}
-                />
-              </div>
-              <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm
-                  playerNumber={6}
-                  player={players[6]}
-                  displayLabel={`${t('player')} 4`}
-                />
-              </div>
             </div>
           )}
           <div className="absolute bottom-[130px]">
