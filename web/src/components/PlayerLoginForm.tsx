@@ -76,12 +76,14 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
   };
 
   const backAndContinueButtons = (onContinue: () => void) => (
-    <div className="flex justify-between text-sm sm:text-base">
-      <button className="mt-2 p-2" onClick={handleGoBack}>
+    <div className="flex justify-between text-fluid-xs mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
+      <button
+        onClick={handleGoBack}
+      >
         ← {t('go_back')}
       </button>
 
-      <button className="mt-2 p-2" onClick={onContinue}>
+      <button onClick={onContinue}>
         {t('continue')} →
       </button>
     </div>
@@ -90,19 +92,19 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
   if (!player?.mode) {
     return (
       <>
-        <h2 className="fascinate-label mb-3">
+        <h2 className="fascinate-label mb-[clamp(7px,0.47vw,12px)]">
           {t('player')} {playerNumber}
         </h2>
-        <div className="flex flex-col gap-2 items-start text-sm">
+        <div className="flex flex-col gap-[clamp(5px,0.31vw,8px)] items-center">
           <button
-            className="flex items-center text-lg gap-1"
+            className="flex items-center text-fluid-sm"
             onClick={() => setPlayer(playerNumber, { mode: 'guest' })}
           >
             {t('play_as_guest')}
           </button>
 
           <button
-            className="flex items-center text-lg gap-1"
+            className="flex items-center text-fluid-sm"
             onClick={() => setPlayer(playerNumber, { mode: 'login' })}
           >
             {t('log_in')}
@@ -118,13 +120,13 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
         <h2 className="fascinate-label">
           {t('player')} {playerNumber}
         </h2>
-        <p className="border-b-2 border-white text-lg">{player.username}</p>
-        <div className="flex justify-between">
-          <button className="mt-2 p-2" onClick={handleGoBack}>
+        <p className="border-b-2 border-white text-start text-fluid-base">{player.username}</p>
+        <div className="flex justify-between mt-[clamp(5px,0.61vh,8px)] p-[clamp(5px,0.31vw,8px)]">
+          <button className=" text-fluid-sm" onClick={handleGoBack}>
             ← {t('go_back')}
           </button>
 
-          <p className="text-lg pt-4">✓</p>
+          <p className="text-fluid-sm">✓</p>
         </div>
       </>
     );
@@ -157,7 +159,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
         ? backAndContinueButtons(handleLoginContinue)
         : backAndContinueButtons(handleGuestContinue)}
 
-      {error && <div className="text-[#786647] text-xs sm:text-sm">{error}</div>}
+      {error && <div className="text-[#786647] text-fluid-xs">{error}</div>}
     </>
   );
 };
