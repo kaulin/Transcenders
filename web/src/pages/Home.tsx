@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useTranslation } from 'react-i18next';
@@ -22,8 +22,8 @@ const Home = () => {
         mode: 'login',
         ready: true,
       });
-
-      if (gameMode === 'tournament') {
+      
+      if (gameMode === 'tournament'){
         setPlayer(3, {
           id: user?.id,
           username: user?.username,
@@ -65,10 +65,7 @@ const Home = () => {
       {gameMode === 'match' && (
         <div className="box-section bg-[#6e5d41]/10 justify-center">
           <h1 className="text-fluid-4xl font-fascinate uppercase">{t('one_v_one')}</h1>
-          <button
-            onClick={() => setGameMode('none')}
-            className="mb-[clamp(40px,3.7vw,90px)]"
-          >
+          <button onClick={() => setGameMode('none')} className="mb-[clamp(40px,3.7vw,90px)]">
             {t('switch_game_mode')}
           </button>
           <div className="flex flex-col sm:flex-row justify-center sm:gap-10">
@@ -81,62 +78,12 @@ const Home = () => {
                 ✓
               </p>
             </div>
-            <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm playerNumber={2} player={players[2]} />
-              </div>
-          )}
-
-          {gameMode === 'tournament' && (
-            <div
-              ref={playerFormRef}
-              className="box-section xl:bg-[#6e5d41]/10 justify-center xl:max-w-[790px]"
-            >
-              <div className="w-full max-w-[384px] h-[174px] p-4">
-                <h2 className="fascinate-label mb-3">{t('player')} 1</h2>
-                <p className="border-b-2 border-white text-lg flex justify-between">
-                  {user?.username}
-                </p>
-                <p className="flex justify-end text-lg mt-2 p-2">✓</p>
-              </div>
-
-              <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm
-                  playerNumber={4}
-                  player={players[4]}
-                  displayLabel={`${t('player')} 2`}
-                />
-              </div>
-              <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm
-                  playerNumber={5}
-                  player={players[5]}
-                  displayLabel={`${t('player')} 3`}
-                />
-              </div>
-              <div className="w-full max-w-[384px] h-[174px] p-4">
-                <PlayerLoginForm
-                  playerNumber={6}
-                  player={players[6]}
-                  displayLabel={`${t('player')} 4`}
-                />
-              </div>
+            <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
+              <PlayerLoginForm playerNumber={2} player={players[2]} />
             </div>
-          )}
-          <div className="absolute bottom-[130px]">
-            {gameMode === 'tournament' &&
-              players[3]?.ready &&
-              players[4]?.ready &&
-              players[5]?.ready &&
-              players[6]?.ready && (
-                <Link
-                  to="/TournamentPage"
-                  className="rounded-button bg-[#6e5d41]/15 font-fascinate uppercase"
-                >
-                  start
-                </Link>
-              )}
-
-            {gameMode === 'match' && players[2]?.ready && (
+          </div>
+          <div className="flex justify-center h-[36px]">
+            {players[2]?.ready && (
               <Link
                 to="/MatchPage"
                 className="font-fascinate uppercase text-fluid-xl text-white hover:text-[#786647] mt-[clamp(37px,2.8vw,72px)]"
@@ -166,20 +113,20 @@ const Home = () => {
                 </p>
               </div>
               <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
-                <PlayerLoginForm playerNumber={2} player={players[2]} />
+                <PlayerLoginForm playerNumber={4} player={players[4]} displayLabel={`${t('player')} 2`}/>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row justify-center sm:gap-10">
               <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
-                <PlayerLoginForm playerNumber={3} player={players[3]} />
+                <PlayerLoginForm playerNumber={5} player={players[5]} displayLabel={`${t('player')} 3`}/>
               </div>
               <div className="w-[clamp(250px,15.6vw,280px)] h-[clamp(130px,13.35vh,174px)] p-[clamp(9px,0.63vw,16px)] text-center">
-                <PlayerLoginForm playerNumber={4} player={players[4]} />
+                <PlayerLoginForm playerNumber={6} player={players[6]} displayLabel={`${t('player')} 4`}/>
               </div>
             </div>
           </div>
           <div className="flex justify-center h-[36px]">
-            {players[2]?.ready && players[3]?.ready && players[4]?.ready && (
+            {players[4]?.ready && players[5]?.ready && players[6]?.ready && (
               <Link
                 to="/TournamentPage"
                 className="font-fascinate uppercase text-fluid-xl text-white hover:text-[#786647] mt-[clamp(37px,2.8vw,72px)]"
