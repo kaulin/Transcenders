@@ -42,7 +42,7 @@ const SignUp = () => {
 
         <input
           type="text"
-          maxLength={20}
+          maxLength={12}
           required
           value={username}
           placeholder={t('username')}
