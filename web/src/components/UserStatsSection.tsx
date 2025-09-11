@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 
 import { ApiClient } from '@transcenders/api-client';
 import type { Stats } from '@transcenders/contracts';
+import { useApiClient } from '../hooks/useApiClient';
 
 import GoalChart from './GoalChart';
 import PieCharts from './PieCharts';
-import StatRow from './StatRow';
 import StatRow from './StatRow';
 
 interface UserStatsProps {

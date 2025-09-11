@@ -66,8 +66,8 @@ export default function UserHistory({ viewedId }: UserHistoryProps) {
             <div className="relative h-full w-full px-[clamp(5px,0.31vw,8px)] overflow-y-auto custom-scrollbar flex flex-col gap-[clamp(28px,3.7vh,48px)]">
               {userScores?.map(
                 ({ id, winner_id, loser_id, winner_score, loser_score, game_end }) => (
-                  <div className="flex flex-col justify-center items-center">
-                    <div key={id} className="w-full flex justify-between text-[#fff]">
+                  <div key={id} className="flex flex-col justify-center items-center">
+                    <div className="w-full flex justify-between text-[#fff]">
                       <div className="font-fascinate uppercase text-fluid-sm">
                         {winner_id === user?.id ? 'win' : 'loss'}
                       </div>
