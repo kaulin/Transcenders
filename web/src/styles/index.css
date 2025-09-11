@@ -54,16 +54,7 @@
 
 @utility box-section {
   @apply w-full min-h-full shrink-0
-        lg:flex-1 lg:flex-shrink py-[clamp(3.5rem,3.7vh,6rem)] flex flex-col items-center;
-}
-
-@utility box-section-single {
-  @apply w-full min-h-0 shrink-0
         lg:flex-1 lg:flex-shrink lg:min-h-[630px] py-[clamp(3.5rem,3.7vh,6rem)] flex flex-col items-center;
-}
-
-@utility box-section-single {
-  @apply flex flex-col items-center flex-1 min-h-0 py-[clamp(2rem,3vh,4rem)];
 }
 
 @utility bubble {
@@ -112,34 +103,6 @@
   @apply rounded-full border border-white hover:border-[#786647] link-color transition py-[0.75em] px-[1em] text-center;
   @apply disabled:opacity-50 disabled:cursor-default disabled:saturate-50 disabled:hover:border-white;
 }
-
-/* @utility text-mini {
-  @apply text-[clamp(0.65rem,0.55vw,0.875rem)];
-}
-
-@utility text-small {
-  @apply text-[clamp(0.875rem,0.625vw,1rem)];
-}
-
-@utility text-medium {
-  @apply text-[clamp(1rem,1vw,1.25rem)];
-}
-
-@utility text-large {
-  @apply text-[clamp(1.25rem,1.4vw,2rem)];
-}
-
-@utility text-xlarge {
-  @apply text-[clamp(1.5rem,1.7vw,2.5rem)];
-}
-
-@utility text-2xlarge {
-  @apply text-[clamp(1.75rem,2vw,3rem)];
-}
-
-@utility text-6xlarge {
-  @apply text-[clamp(2.5rem,2.8vw,4.5rem)];
-} */
 
 @utility text-fluid-xs {
   font-size: clamp(0.75rem, 0.6vw + 0.3vh, 1rem); /* 12px → 16px */
