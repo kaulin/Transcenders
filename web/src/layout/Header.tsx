@@ -27,7 +27,7 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full h-[clamp(75px,9.8vh,128px)] px-[clamp(0.125rem,6vw,5rem)] z-50 flex">
+    <header className="w-full h-[clamp(75px,9.8vh,128px)] px-[clamp(0.125rem,6vw,5rem)] z-50 flex items-center">
       {user ? (
         <>
           <div className="flex basis-1/2 justify-start items-center text-center gap-4 sm:gap-10">
