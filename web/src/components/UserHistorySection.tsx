@@ -36,7 +36,7 @@ export default function UserHistory({ viewedId }: UserHistoryProps) {
             ApiClient.user
               .getUserById(id)
               .then((u) => [id, u.username] as const)
-              .catch(() => [id, `User#${id}`] as const),
+              .catch(() => [id, t('guest')] as const),
           ),
         );
 
@@ -78,8 +78,16 @@ export default function UserHistory({ viewedId }: UserHistoryProps) {
                         }).format(new Date(game_end))}
                       </div>
                     </div>
-                    <StatRow label={usernames[winner_id] ?? t('loading')} value={winner_score} />
-                    <StatRow label={usernames[loser_id] ?? t('loading')} value={loser_score} />
+                    <StatRow
+                      id={winner_id}
+                      label={usernames[winner_id] ?? t('loading')}
+                      value={winner_score}
+                    />
+                    <StatRow
+                      id={loser_id}
+                      label={usernames[loser_id] ?? t('loading')}
+                      value={loser_score}
+                    />
                   </div>
                 ),
               )}
