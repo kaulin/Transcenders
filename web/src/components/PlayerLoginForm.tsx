@@ -120,7 +120,7 @@ const PlayerLoginForm = ({ playerNumber, player }: Props) => {
             ← {t('go_back')}
           </button>
 
-          <p className="text-fluid-xs">✓</p>
+          <p className="text-fluid-xs text-[#e3ff9d]">✓</p>
         </div>
       </>
     );
