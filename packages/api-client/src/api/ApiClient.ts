@@ -38,7 +38,6 @@ export class ApiClient {
     const requestInit: RequestInit = {
       method,
       headers: hdrs,
-      //#TODO temporary disabled timeout for debugging
       // signal: AbortSignal.timeout(timeout),
     };
 
