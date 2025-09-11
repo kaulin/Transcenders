@@ -15,7 +15,7 @@ export const scoreSchema = Type.Object({
   game_duration: Type.Number(),
   game_start: TimestampField,
   game_end: TimestampField,
-  created_at: Type.Optional(TimestampField),
+  created_at: TimestampField,
 });
 export const scoreArraySchema = Type.Array(scoreSchema);
 export type Score = Static<typeof scoreSchema>;
