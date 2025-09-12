@@ -7,13 +7,13 @@ const env = process.argv[2] || 'local';
 const outFile = '.env';
 
 const PORTS = {
-  USER: env === 'production' ? 3000 : 3001,
-  AUTH: env === 'production' ? 3000 : 3002,
-  SCORE: env === 'production' ? 3000 : 3003,
+  USER: env === 'production' || env === 'website' ? 3000 : 3001,
+  AUTH: env === 'production' || env === 'website' ? 3000 : 3002,
+  SCORE: env === 'production' || env === 'website' ? 3000 : 3003,
 };
 
 function usage() {
-  console.log('Usage: node env-gen.js <local|docker|production>');
+  console.log('Usage: node env-gen.js <local|docker|production|website>');
   process.exit(1);
 }
 
@@ -24,6 +24,9 @@ switch (env) {
     nodeEnv = 'development';
     break;
   case 'production':
+    nodeEnv = 'production';
+    break;
+  case 'website':
     nodeEnv = 'production';
     break;
   default:
@@ -81,10 +84,11 @@ setEnvVar('FRONTEND_URL', 'http://localhost:8080');
 setEnvVar('MAIL_FROM', '"Transcenders Auth <auth@transcenders.online>"');
 
 // prod overrides
-// if (env === 'production') {
-//   setEnvVar('FRONTEND_URL', 'http://app.transcenders.online');
-//   setEnvVar('GOOGLE_REDIRECT_URI', `http://app.transcenders.online/api/auth/google/callback`);
-// }
+if (env === 'website') {
+  setEnvVar('FRONTEND_URL', 'http://app.transcenders.online');
+  setEnvVar('GOOGLE_REDIRECT_URI', `http://app.transcenders.online/api/auth/google/callback`);
+}
+
 if (env === 'production') {
   setEnvVar('FRONTEND_URL', 'http://localhost:8080');
   setEnvVar('GOOGLE_REDIRECT_URI', `http://localhost:8080/api/auth/google/callback`);

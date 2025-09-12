@@ -18,7 +18,10 @@ env-docker:
 env-prod:
 		@scripts/env-gen.js production
 
-.PHONY: setup-check env-local env-docker env-prod
+env-website:
+		@scripts/env-gen.js website
+
+.PHONY: setup-check env-local env-docker env-prod env-website
 
 ################################################################################
 # DEVELOPMENT
@@ -158,10 +161,12 @@ prod-build: env-prod
 prod-stop:
 		$(PROD_DOCKER_COMPOSE) down
 
+prod-restart: prod-stop prod
+
 prod-clean:
 		$(PROD_DOCKER_COMPOSE) down --rmi all
 		
-prod-fcean:
+prod-fclean:
 		$(PROD_DOCKER_COMPOSE) down -v --rmi all
 
 prod-logs:
@@ -180,7 +185,81 @@ prod-exec:
 		$(PROD_DOCKER_COMPOSE) exec -it $$SVC ash; \
 	fi
 
-.PHONY: prod prod-local prod-stop prod-logs prod-clean prod-clean-data prod-fcean
+prod-status:
+		$(PROD_DOCKER_COMPOSE) ps
+
+.PHONY: prod prod-build prod-stop prod-restart prod-logs prod-clean prod-fclean prod-exec prod-status
+
+################################################################################
+# WEBSITE DEPLOYMENT
+################################################################################
+WEBSITE_DOCKER_COMPOSE := docker compose -f docker-compose.website.yml
+
+website: env-website
+		$(WEBSITE_DOCKER_COMPOSE) build --parallel
+		$(WEBSITE_DOCKER_COMPOSE) up -d
+
+website-build: env-website
+		$(WEBSITE_DOCKER_COMPOSE) build --parallel
+
+website-rebuild: env-website
+		$(WEBSITE_DOCKER_COMPOSE) build --parallel --no-cache
+
+website-stop:
+		$(WEBSITE_DOCKER_COMPOSE) down
+
+website-restart: website-stop website
+
+website-clean:
+		$(WEBSITE_DOCKER_COMPOSE) down --rmi all
+		
+website-fclean:
+		$(WEBSITE_DOCKER_COMPOSE) down -v --rmi all
+
+website-logs:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		$(WEBSITE_DOCKER_COMPOSE) logs -f; \
+	else \
+		SVC=$(filter-out $@,$(MAKECMDGOALS)) && \
+		$(WEBSITE_DOCKER_COMPOSE) logs $$SVC -f; \
+	fi
+
+website-exec:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "Usage: make website-exec <service>"; \
+	else \
+		SVC=$(filter-out $@,$(MAKECMDGOALS)) && \
+		$(WEBSITE_DOCKER_COMPOSE) exec -it $$SVC ash; \
+	fi
+
+website-status:
+		@echo "Website Deployment Status:"
+		@$(WEBSITE_DOCKER_COMPOSE) ps --format "table {{.Service}}\t{{.Status}}\t{{.Ports}}"
+
+website-pull:
+		@echo "ℹNote: Using local builds - pulling git changes instead"
+		git pull origin main
+
+website-deploy: website-pull env-website website-rebuild website
+		@echo "Full website deployment completed"
+
+website-update: website-pull website-restart
+		@echo "Website updated and restarted"
+
+website-health:
+		@echo "🏥 Checking service health..."
+		@$(WEBSITE_DOCKER_COMPOSE) ps --filter "status=running" --quiet | while read container; do \
+			if [ -n "$$container" ]; then \
+				echo "✅ Container $$container is running"; \
+			fi; \
+		done
+		@$(WEBSITE_DOCKER_COMPOSE) ps --filter "status=exited" --quiet | while read container; do \
+			if [ -n "$$container" ]; then \
+				echo "❌ Container $$container has exited"; \
+			fi; \
+		done
+
+.PHONY: website website-build website-rebuild website-stop website-restart website-logs website-clean website-fclean website-exec website-status website-pull website-deploy website-update website-health
 
 ################################################################################
 # CLEAN
@@ -197,13 +276,15 @@ fclean: clean clean-artifacts
 		-rm -rf web/.vite
 		-npm run clean-turbo
 
-clean: dev-stop
+clean: dev-stop prod-stop website-stop
 		-docker compose down --remove-orphans --rmi all
 		-docker system prune -f
 		-npm run clean
 
-clean-volumes: dev-stop prod-stop
+clean-volumes: dev-stop prod-stop website-stop
 		docker compose down -v --remove-orphans --rmi all
+		$(PROD_DOCKER_COMPOSE) down -v --remove-orphans --rmi all
+		$(WEBSITE_DOCKER_COMPOSE) down -v --remove-orphans --rmi all
 		docker system prune -f
 
 clean-db:
@@ -228,6 +309,7 @@ help:
 		@echo "  env-local       Generate local environment files"
 		@echo "  env-docker      Generate Docker environment files"
 		@echo "  env-prod        Generate production environment files"
+		@echo "  env-website     Generate website deployment environment files"
 		@echo ""
 		@echo "Development:"
 		@echo "  dev             Start Docker development environment"
@@ -253,10 +335,28 @@ help:
 		@echo ""
 		@echo "Production:"
 		@echo "  prod            Start production Docker environment"
-		@echo "  prod-local      Start production build locally"
+		@echo "  prod-build      Build production containers"
 		@echo "  prod-stop       Stop production environment"
+		@echo "  prod-restart    Restart production environment"
 		@echo "  prod-logs       Show production logs"
+		@echo "  prod-status     Show production service status"
 		@echo "  prod-clean      Clean production containers and images"
+		@echo "  prod-fclean     Clean production including volumes"
+		@echo ""
+		@echo "Website Deployment:"
+		@echo "  website         Start website deployment"
+		@echo "  website-build   Build website containers"
+		@echo "  website-rebuild Rebuild website containers (no cache)"
+		@echo "  website-stop    Stop website deployment"
+		@echo "  website-restart Restart website deployment"
+		@echo "  website-logs    Show website logs"
+		@echo "  website-status  Show website service status with ports"
+		@echo "  website-health  Check website service health"
+		@echo "  website-pull    Pull latest git changes"
+		@echo "  website-deploy  Full deployment (git pull + rebuild + start)"
+		@echo "  website-update  Quick update (git pull + restart)"
+		@echo "  website-clean   Clean website containers and images"
+		@echo "  website-fclean  Clean website including volumes"
 		@echo ""
 		@echo "Clean:"
 		@echo "  clean           Stop all and clean Docker resources"
