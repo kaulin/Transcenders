@@ -109,3 +109,28 @@ make local    # Local development (no Docker)
   - Score: http://localhost:3003
 
 Run `make help` for complete command reference.
+
+## Contributors
+
+This project was made possible by the amazing work of our core team:
+
+<div align="center">
+
+| Contributor         | Role                          | GitHub                                         |
+| ------------------- | ----------------------------- | ---------------------------------------------- |
+| **Allar Klein**     | Lead Developer & Architecture | [@wassaaa](https://github.com/wassaaa)         |
+| **Annika Mäkelä**   | Frontend Developer & UI/UX    | [@makelannika](https://github.com/makelannika) |
+| **Jaakko Junttila** | Backend Developer & DevOps    | [@kaulin](https://github.com/kaulin)           |
+| **Aida Neitenbach** | Pong game & Frontend          | [@aneitenb](https://github.com/aneitenb)       |
+
+</div>
+
+### Special Thanks
+
+A huge thank you to all our contributors who have helped make Transcenders what it is today! 🚀
+
+- **325+ commits** from our dedicated team
+- **Microservices architecture** design and implementation
+- **Real-time game engine** development
+- **Modern UI/UX** design and frontend development
+- **DevOps and deployment** infrastructure
