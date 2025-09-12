@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss()],
   cacheDir: '.vite',
   envDir: '..',
@@ -11,9 +11,21 @@ export default defineConfig({
     host: true,
   },
   build: {
-    sourcemap: true,
+    sourcemap: mode === 'development',
+    minify: mode === 'production' ? 'esbuild' : false,
+    rollupOptions: {
+      output: {
+        // Split chunks for better caching
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+        },
+      },
+    },
   },
   esbuild: {
-    sourcemap: true,
+    // Only include source maps in development
+    sourcemap: mode === 'development',
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
-});
+}));
