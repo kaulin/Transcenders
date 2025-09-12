@@ -103,7 +103,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   app.post(
     AUTH_ROUTES.GOOGLE_CONNECT,
     {
-      preHandler: app.authenticate.owner('id'),
+      preHandler: app.authenticate.none(),
       schema: {
         description: 'Complete Google login with code',
         tags: ['Auth-google'],

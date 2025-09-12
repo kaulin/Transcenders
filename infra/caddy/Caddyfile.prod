@@ -8,7 +8,7 @@ app.transcenders.online {
 	log_skip @skip
 
 	tls prod@transcenders.online {
-		ca https://acme.zerossl.com/v2/DV90
+		ca https://acme-v02.api.letsencrypt.org/directory
 	}
 
 	encode gzip zstd

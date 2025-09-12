@@ -1,5 +1,6 @@
 import {
   ChangePasswordRequest,
+  decodeToken,
   GoogleAuthCallback,
   GoogleFlowParam,
   GoogleFlows,
@@ -65,16 +66,17 @@ export class AuthController {
           break;
 
         case 'connect':
-          const userId = request.user?.userId;
-          if (!userId) {
+          const refreshToken = request.cookies.rt;
+          if (!refreshToken) {
             result = '/login';
             params.set('error', 'auth_required');
             break;
           }
+          const userId = decodeToken(refreshToken).userId;
           const connectResult = await AuthService.googleConnect(userId, code);
           result = '/profile';
           if (!connectResult.success) {
-            params.set('error', 'google_auth_failed');
+            params.set('error', connectResult.error.localeKey ?? 'google_auth_failed');
           }
           break;
 
@@ -117,8 +119,7 @@ export class AuthController {
   static async refresh(request: FastifyRequest, reply: FastifyReply) {
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
     const refreshToken = request.cookies.rt;
-    const loginResult = await AuthService.refreshToken(refreshToken, deviceInfo);
-    const result = CookieUtils.handleLoginResponse(reply, loginResult);
+    const result = await AuthService.refreshToken(refreshToken, deviceInfo);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 
