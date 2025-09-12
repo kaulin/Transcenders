@@ -119,8 +119,7 @@ export class AuthController {
   static async refresh(request: FastifyRequest, reply: FastifyReply) {
     const deviceInfo = DeviceUtils.extractDeviceInfo(request);
     const refreshToken = request.cookies.rt;
-    const loginResult = await AuthService.refreshToken(refreshToken, deviceInfo);
-    const result = CookieUtils.handleLoginResponse(reply, loginResult);
+    const result = await AuthService.refreshToken(refreshToken, deviceInfo);
     return ApiErrorHandler.handleServiceResult(reply, result);
   }
 

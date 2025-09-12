@@ -2,6 +2,7 @@ import { Value } from '@sinclair/typebox/value';
 import { ApiClient } from '@transcenders/api-client';
 import {
   AuthConfig,
+  AuthData,
   authDataAccessOnly,
   BooleanOperationResult,
   BooleanResultHelper,
@@ -553,9 +554,9 @@ export class AuthService {
   static async refreshToken(
     refreshToken: string | undefined,
     currentDeviceInfo: DeviceInfo,
-  ): Promise<ServiceResult<LoginResult>> {
+  ): Promise<ServiceResult<AuthData>> {
     const db = await DatabaseManager.for('AUTH').open();
-    return await ResultHelper.executeQuery<LoginResult>(
+    return await ResultHelper.executeQuery<AuthData>(
       'refresh access token',
       db,
       async (database) => {
@@ -585,10 +586,13 @@ export class AuthService {
         }
         // generate and store new tokens
         const newTokens = this.generateTokenPair(userId);
-        await this.storeRefreshToken(database, newTokens.refreshToken, currentDeviceInfo);
-        // revoke old token
-        this.revokeRefreshTokens(database, { jti }, 'token_rotation');
-        return newTokens;
+        const result: AuthData = {
+          accessToken: newTokens.accessToken,
+          expiresIn: newTokens.expiresIn,
+          userId: newTokens.userId,
+          justVerify: newTokens.justVerify,
+        };
+        return result;
       },
     );
   }
